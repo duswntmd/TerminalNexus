@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.pe.tn.mapper.AuthorityMapper">
+    <resultMap id="authorityResultMap" type="kr.pe.tn.dto.AuthorityDTO">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="authority" column="authority"/>
+    </resultMap>
+
+    <select id="findAuthoritiesByUserId" resultMap="authorityResultMap">
+        SELECT * FROM authorities WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertAuthority">
+        INSERT INTO authorities (user_id, authority)
+        VALUES (#{userId}, #{authority})
+    </insert>
+
+    <delete id="deleteAuthorityByUserId">
+        DELETE FROM authorities WHERE user_id = #{userId}
+    </delete>
+</mapper>

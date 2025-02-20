@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.pe.tn.mapper.UserMapper">
+    <resultMap id="userResultMap" type="kr.pe.tn.dto.UserDTO">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="userResultMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, name, email, enabled, created_at, updated_at)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{enabled}, NOW(), NOW())
+    </insert>
+
+    <update id="updateUser">
+        UPDATE users
+        SET password = #{password}, name = #{name}, email = #{email}, enabled = #{enabled}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUser">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+</mapper>
