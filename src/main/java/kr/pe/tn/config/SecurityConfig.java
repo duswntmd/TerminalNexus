@@ -1,3 +1,107 @@
+package kr.pe.tn.config;
+
+import jakarta.servlet.http.HttpServletRequest;
+import kr.pe.tn.jwt.JWTFilter;
+import kr.pe.tn.jwt.JWTUtil;
+import kr.pe.tn.jwt.LoginFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
+    }
+
+    //AuthenticationManager Bean 등록
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        //프론트 프레임워크 cors
+        http
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+                        CorsConfiguration configuration = new CorsConfiguration();
+
+                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                        configuration.setAllowCredentials(true);
+                        configuration.setAllowedHeaders(Collections.singletonList("*"));
+                        configuration.setMaxAge(3600L);
+
+                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                        return configuration;
+                    }
+                })));
+
+        //csrf disable
+        http
+                .csrf((auth) -> auth.disable());
+
+        //From 로그인 방식 disable
+        http
+                .formLogin((auth) -> auth.disable());
+
+        //http basic 인증 방식 disable
+        http
+                .httpBasic((auth) -> auth.disable());
+        //JWTFilter 등록
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        //경로별 인가 작업
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/login", "/", "/join").permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .anyRequest().authenticated());
+        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        //세션 설정
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }
+}
+
 //package kr.pe.tn.config;
 //
 //import jakarta.servlet.DispatcherType;
@@ -5,6 +109,7 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,49 +129,20 @@
 //    private DataSource dataSource;
 //
 //    // 생성자 주입
-////    @Autowired
-////    public SecurityConfig(DataSource dataSource) {
-////        this.dataSource = dataSource;
-////    }
-//
-//
-////    public static void main(String[] args) {
-////        SpringApplication.run(SecurityConfig.class, args);
-////    }
-//
-////    @Bean
-////    public ServletWebServerFactory servletContainer() {
-////        // Tomcat을 커스터마이징하여 HTTP 요청을 HTTPS로 리디렉션
-////        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
-////            @Override
-////            protected void postProcessContext(Context context) {
-////                SecurityConstraint securityConstraint = new SecurityConstraint();
-////                securityConstraint.setUserConstraint("CONFIDENTIAL"); // HTTPS 강제
-////                SecurityCollection collection = new SecurityCollection();
-////                collection.addPattern("/*"); // 모든 경로에 적용
-////                securityConstraint.addCollection(collection);
-////                context.addConstraint(securityConstraint);
-////            }
-////        };
-////
-////        // HTTP → HTTPS 리디렉션 설정 추가
-////        tomcat.addAdditionalTomcatConnectors(httpToHttpsRedirectConnector());
-////
-////        return tomcat;
-////    }
-////
-////    private Connector httpToHttpsRedirectConnector() {
-////        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-////        connector.setScheme("http");
-////        connector.setPort(80); // HTTP 포트
-////        connector.setSecure(false);
-////        connector.setRedirectPort(443); // HTTPS 포트로 리디렉션
-////        return connector;
-////    }
+//    @Autowired
+//    public SecurityConfig(DataSource dataSource) {
+//        this.dataSource = dataSource;
+//    }
 //
 //    @Bean
 //    public BCryptPasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+//        return http.getSharedObject(AuthenticationManagerBuilder.class)
+//                .build();
 //    }
 //
 //    @Bean
@@ -94,33 +170,9 @@
 //
 //        http.authorizeHttpRequests(authz -> authz
 //                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-//                        .requestMatchers("/", "/favicon.ico", "/login/**", "/register/add", "/board/list", "/comments/list",
-//                                "/findME", "findResult", "/exerciseDetail/**",
-//                                "/ShopImage/**", "/css/**", "/Assets/**", "/boardimages/**", "/files/**", "/image/**", "/js/**", "/static/**",
-//                                "/mail/**","favicon.ico", "/video_storage/**",
-//                                "/ai/chatBot/**", "/shop/**","/ai/predict_result","/ai/predict_exercise","/ai/aiResult",
-//                                "/trainer/**","/challenge","/challenge/detail/*","/challenge/search","/proofShot/*","/challenge/detail/*"
-//
-//                        ).permitAll()
-//
-//                        .requestMatchers("/cart/**").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/qna/**").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/register/updateuser", "/register/deleteuser").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/board/write", "/board/search", "/board/view/**", "/board/view/**", "/board/view/**",
-//                                "/board/view/**", "/board/edit/**", "/board/delete/**", "/board/download/**",
-//                                "/board/download/**", "/board/like/**", "/board/unlike/**", "/comments/add/**",
-//                                "/comments/add/**", "/comments/edit/**", "/comments/delete/**").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/kakao/map/**", "/kakao/reviewDetail/**", "/kakao/addReview/**", "/kakao/editReview/**",
-//                                "/kakao/deleteReview").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/ai/userVideos", "/ai/uploadVideo", "/ai/analyzeVideo", "/ai/detailvideo/**").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/ws/**","/chat", "/tChat", "/alarm").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/consultation/**").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/challenge/add","/challenge/save","/challenge/participate/*","/challenge/participate",
-//                                "challenge/myChall","/chellComment/**","/challenge/delete/*","/challenge/edit","/challenge/cancel/*").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/proofComment/**","/proofComment/editComment/*","proofShot/addProofShotForm/*","proofShot/add/","proofShot/addChatProof","proofShot/verify","proofShot/deletePost/*").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("pay/*","cancel/**" ,"verify/**","/savePayment","/orderPayment","/getMyPayments","/myOrder","/getMyPaymentsData").hasAnyRole("USER","ADMIN")
-//                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
-//                        .requestMatchers("/user/myPage").hasAnyRole("USER","ADMIN")
+//                        .requestMatchers("/", "/login/**", "/register/add", "/css/**", "/images/**", "/js/**", "/static/**")
+//                        .permitAll()
+//                        .requestMatchers("/register/updateuser", "/register/deleteuser").hasAnyRole("USER", "ADMIN")
 //
 //                        //.anyRequest().authenticated()  // 그 외의 모든 요청은 인증 필요
 //                        .anyRequest().denyAll()
@@ -148,6 +200,5 @@
 //
 //        return http.build();
 //    }
-//
 //
 //}
