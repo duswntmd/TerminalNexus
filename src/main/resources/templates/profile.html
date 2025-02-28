@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>내 프로필</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h2>내 프로필</h2>
+
+<p><strong>아이디:</strong> <span th:text="${username}"></span></p>
+<p><strong>이메일:</strong> <span th:text="${email}"></span></p>
+<p><strong>닉네임:</strong> <span th:text="${nickname}"></span></p>
+
+<p id="message"></p>
+
+<script>
+    $(document).ready(function () {
+        $.get("/api/message?type=welcome", function (data) {
+            $("#message").text(data);
+        });
+    });
+</script>
+
+<a href="/users/logout">로그아웃</a>
+</body>
+</html>

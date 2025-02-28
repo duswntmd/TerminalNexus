@@ -21,21 +21,27 @@ public class JoinService {
     public void joinProcess(JoinDTO joinDTO) {
 
         String username = joinDTO.getUsername();
+        String email = joinDTO.getEmail();
+        String nickname = joinDTO.getNickname();
         String password = joinDTO.getPassword();
 
-        Boolean isExist = userRepository.existsByUsername(username);
-
-        if (isExist) {
-
-            return;
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+        if (userRepository.existsByNickname(nickname)) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
-        UserEntity data = new UserEntity();
+        UserEntity user = new UserEntity();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setNickname(nickname);
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        user.setRole("ROLE_USER");
 
-        data.setUsername(username);
-        data.setPassword(bCryptPasswordEncoder.encode(password));
-        data.setRole("ROLE_ADMIN");
-
-        userRepository.save(data);
+        userRepository.save(user);
     }
 }
