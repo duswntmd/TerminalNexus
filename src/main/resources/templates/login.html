@@ -1,32 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
+    <title>로그인</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<h2>Login</h2>
+<h2>로그인</h2>
 
-<form action="/login" method="post">
-    <div>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
-    </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-    </div>
-    <div>
-        <button type="submit">Login</button>
-    </div>
+<form id="loginForm">
+    <label>아이디:</label>
+    <input type="text" id="username" required /><br/>
+
+    <label>비밀번호:</label>
+    <input type="password" id="password" required /><br/>
+
+    <button type="submit">로그인</button>
 </form>
 
-<div th:if="${param.logout}">
-    <p>You have been logged out successfully.</p>
-</div>
+<p id="message"></p>
 
-<div th:if="${param.error}">
-    <p>Invalid username or password.</p>
-</div>
+<script>
+    $(document).ready(function () {
+        // 페이지 로드 시 환영 메시지 가져오기
+        $.get("/api/message?type=welcome", function (data) {
+            $("#message").text(data);
+        });
+
+        // 로그인 버튼 클릭 이벤트
+        $("#loginForm").submit(function (event) {
+            event.preventDefault(); // 기본 폼 제출 방지
+
+            var username = $("#username").val();
+            var password = $("#password").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/users/login",
+                contentType: "application/json",
+                data: JSON.stringify({ username: username, password: password }),
+                success: function (data, textStatus, xhr) {
+                    var token = xhr.getResponseHeader("Authorization"); // 헤더에서 JWT 토큰 가져오기
+                    if (token) {
+                        localStorage.setItem("jwtToken", token); // 로컬 스토리지에 저장
+                        alert("로그인 성공!");
+                        window.location.href = "/users/profile"; // 프로필 페이지로 이동
+                    } else {
+                        alert("로그인 실패: 토큰을 받을 수 없습니다.");
+                    }
+                },
+                error: function (xhr) {
+                    alert("로그인 실패: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+<a href="/users/register">회원가입 페이지로 이동</a>
 </body>
 </html>
