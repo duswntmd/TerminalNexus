@@ -4,9 +4,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.pe.tn.entity.RefreshEntity;
-import kr.pe.tn.jwt.JWTUtil;
-import kr.pe.tn.repository.RefreshRepository;
+import kr.pe.tn.domain.user.entity.RefreshEntity;
+import kr.pe.tn.domain.user.jwt.JWTUtil;
+import kr.pe.tn.domain.user.repository.RefreshRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -46,6 +46,10 @@ public class ReissueController {
 
             //response status code
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+        }
+
+        if (cookies == null) {
+            return new ResponseEntity<>("No cookies found", HttpStatus.BAD_REQUEST);
         }
 
         //expired check

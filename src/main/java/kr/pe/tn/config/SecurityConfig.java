@@ -1,13 +1,17 @@
 package kr.pe.tn.config;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
-import kr.pe.tn.jwt.CustomLogoutFilter;
-import kr.pe.tn.jwt.JWTFilter;
-import kr.pe.tn.jwt.JWTUtil;
-import kr.pe.tn.jwt.LoginFilter;
-import kr.pe.tn.repository.RefreshRepository;
+import kr.pe.tn.domain.user.jwt.CustomLogoutFilter;
+import kr.pe.tn.domain.user.jwt.JWTFilter;
+import kr.pe.tn.domain.user.jwt.JWTUtil;
+import kr.pe.tn.domain.user.jwt.LoginFilter;
+import kr.pe.tn.domain.user.repository.RefreshRepository;
+import kr.pe.tn.domain.user.entity.UserRoleType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -51,6 +55,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 시큐리티 role 계층화
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+
+        return RoleHierarchyImpl.withRolePrefix("ROLE_")
+                .role(UserRoleType.ROLE_ADMIN.toString()).implies(UserRoleType.ROLE_USER.toString())
+                .build();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -69,8 +82,8 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
+//                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.setExposedHeaders(Collections.singletonList("access"));
                         return configuration;
                     }
                 })));
@@ -80,9 +93,8 @@ public class SecurityConfig {
                 .csrf((auth) -> auth.disable());
 
         // From 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
-
+//        http
+//                .formLogin((auth) -> auth.disable());
         // http basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
@@ -92,8 +104,10 @@ public class SecurityConfig {
         // 경로별 인증 및 인가 설정
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/users/login", "/users/register", "/users/profile", "/api/message", "/login", "/reissue").permitAll()
+//                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/", "favicon.ico", "/user/loginForm", "/user/login", "/user/register", "/api/message", "/login", "/reissue").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/user/profile").hasRole("USER")
                         .anyRequest().authenticated());
         // 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http

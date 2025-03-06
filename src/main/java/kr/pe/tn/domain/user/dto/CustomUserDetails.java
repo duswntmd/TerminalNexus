@@ -1,6 +1,6 @@
-package kr.pe.tn.dto;
+package kr.pe.tn.domain.user.dto;
 
-import kr.pe.tn.entity.UserEntity;
+import kr.pe.tn.domain.user.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -27,7 +27,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return userEntity.getRole();
+                return userEntity.getRole().name();
             }
         });
 
@@ -35,15 +35,15 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-
-        return userEntity.getPassword();
-    }
-
-    @Override
     public String getUsername() {
 
         return userEntity.getUsername();
+    }
+
+    @Override
+    public String getPassword() {
+
+        return userEntity.getPassword();
     }
 
     @Override

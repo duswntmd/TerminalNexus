@@ -3,11 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <h1>test</h1>
-<a href="/users/login">로그인</a>
-<a href="/users/register">회원가입</a>
-<a href="/users/logout">로그아웃</a>
+<a href="/user/loginForm">로그인</a>
+<a href="/user/register">회원가입</a>
+<a href="/user/profile">프로필</a>
+<a href="/user/logout">로그아웃</a>
+
+<script>
+    $(document).ready(function () {
+        // 로컬 스토리지에서 JWT 토큰 가져오기
+        var token = localStorage.getItem("jwtToken");
+
+        if (token) {
+            console.log("JWT Token: ", token); // 토큰이 있으면 콘솔에 출력
+
+            // 요청을 보낼 때마다 헤더에 토큰을 자동으로 추가
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("access", token); // access 토큰을 헤더에 추가
+                }
+            });
+
+            // AJAX 요청 예시
+            $.ajax({
+                type: "GET",
+                url: "/", // 실제 API URL
+                success: function (data) {
+                    console.log("요청 성공", data);
+                },
+                error: function (xhr) {
+                    console.log("요청 실패", xhr);
+                }
+            });
+        } else {
+            console.log("No JWT Token found");
+        }
+    });
+</script>
+
 </body>
 </html>
