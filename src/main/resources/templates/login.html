@@ -21,31 +21,40 @@
 
 <script>
     $(document).ready(function () {
-        // 페이지 로드 시 환영 메시지 가져오기
+        // 페이지 로드 시 환영 메시지 가져오기 (Thymeleaf에서 전달된 메시지 사용)
         $.get("/api/message?type=welcome", function (data) {
             $("#message").text(data);
         });
 
-        // 로그인 버튼 클릭 이벤트
+        // 페이지 로드 시 토큰 있는지 확인하고 있으면 자동 설정
+        var token = localStorage.getItem("jwtToken");
+        if (token) {
+            setGlobalTokenHeader(token);
+        }
+
+        // 로그인 폼 제출 이벤트
         $("#loginForm").submit(function (event) {
-            event.preventDefault(); // 기본 폼 제출 방지
+            event.preventDefault();
 
             var username = $("#username").val();
             var password = $("#password").val();
 
             $.ajax({
                 type: "POST",
-                url: "/users/login",
+                url: "/user/login",
                 contentType: "application/json",
                 data: JSON.stringify({ username: username, password: password }),
                 success: function (data, textStatus, xhr) {
-                    var token = xhr.getResponseHeader("Authorization"); // 헤더에서 JWT 토큰 가져오기
-                    if (token) {
-                        localStorage.setItem("jwtToken", token); // 로컬 스토리지에 저장
+                    var accessToken = xhr.getResponseHeader("access");
+                    if (accessToken) {
+                        // 토큰 저장 + 이후 요청에 자동으로 토큰 붙이기
+                        localStorage.setItem("jwtToken", accessToken);
+                        setGlobalTokenHeader(accessToken);
+
                         alert("로그인 성공!");
-                        window.location.href = "/users/profile"; // 프로필 페이지로 이동
+                        window.location.href = "/"; // 메인 페이지 이동
                     } else {
-                        alert("로그인 실패: 토큰을 받을 수 없습니다.");
+                        alert("로그인 성공했지만, 토큰 수신에 실패했습니다.");
                     }
                 },
                 error: function (xhr) {
@@ -53,9 +62,19 @@
                 }
             });
         });
+
+        // 전역 AJAX 설정 함수 (토큰 헤더 자동 추가)
+        function setGlobalTokenHeader(token) {
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                }
+            });
+        }
     });
 </script>
 
-<a href="/users/register">회원가입 페이지로 이동</a>
+<!-- 타임리프에서 사용할 수 있는 링크 추가 -->
+<a th:href="@{/users/register}">회원가입 페이지로 이동</a>
 </body>
 </html>
