@@ -65,7 +65,7 @@ public class SecurityConfig {
         // oauth2 로그인 방식
         http
                 .oauth2Login((oauth2) -> oauth2
-                        .loginPage("/user/login")
+                        .loginPage("/user/loginForm")
                         .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
                         .userInfoEndpoint((userInfoEndpointConfig) ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService)));
@@ -73,8 +73,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 //                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/", "favicon.ico", "/user/loginForm", "/user/login", "/user/register",
-                                "/api/message", "/oauth2/**", "/login/**")
+                        .requestMatchers("/", "favicon.ico", "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
+                                "/api/message", "/oauth2/**", "/login/**", "/logout")
                         .permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/user/profile").hasRole("USER")

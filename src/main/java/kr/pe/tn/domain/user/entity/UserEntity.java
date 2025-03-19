@@ -21,19 +21,22 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-//    @Column(nullable = false, unique = true)
-//    private String nickname;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
-//    @Column(nullable = false)
-//    private String password;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRoleType role;
 
-//    @CreationTimestamp
-//    private LocalDateTime createdAt;
-//
-//    @UpdateTimestamp
-//    private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthProvider provider; // 수정된 부분: 소셜 로그인 공급자 정보
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
