@@ -24,6 +24,7 @@
 
 <p th:if="${error}" th:text="${error}" style="color: red;"></p>
 
-<a href="/users/login">로그인 페이지로 이동</a>
+<a th:href="@{/}">메인페이지로 이동</a>
+<a href="/user/loginForm">로그인 페이지로 이동</a>
 </body>
 </html>
