@@ -16,7 +16,14 @@ public class MainController {
 
         model.addAttribute("title", "메인 페이지");
         model.addAttribute("message", "환영합니다! Spring Boot + Thymeleaf");
-        return "index";
+        return "test";
+
+//    @GetMapping("/")
+//    public String mainP(Model model) {
+//
+//        model.addAttribute("title", "메인 페이지");
+//        model.addAttribute("message", "환영합니다! Spring Boot + Thymeleaf");
+//        return "index";
 
 
 //        String name = SecurityContextHolder.getContext().getAuthentication().getName();
