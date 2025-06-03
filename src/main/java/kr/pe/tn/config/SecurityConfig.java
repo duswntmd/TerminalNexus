@@ -73,7 +73,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 //                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/", "favicon.ico", "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**", "favicon.ico",
+                                "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
                                 "/api/message", "/oauth2/**", "/login/**", "/logout")
                         .permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
