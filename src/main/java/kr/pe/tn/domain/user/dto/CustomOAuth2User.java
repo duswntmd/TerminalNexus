@@ -3,52 +3,36 @@ package kr.pe.tn.domain.user.dto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final OAuth2Response oAuth2Response;
-    private final String role;
+    private final Map<String, Object> attributes;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private final String username;
 
-    public CustomOAuth2User(OAuth2Response oAuth2Response, String role) {
-
-        this.oAuth2Response = oAuth2Response;
-        this.role = role;
+    public CustomOAuth2User(Map<String, Object> attributes,
+                            Collection<? extends GrantedAuthority> authorities,
+                            String username) {
+        this.attributes = attributes;
+        this.authorities = authorities;
+        this.username = username;
     }
 
     @Override
     public Map<String, Object> getAttributes() {
-
-        return null;
+        return attributes;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add(new GrantedAuthority() {
-
-            @Override
-            public String getAuthority() {
-
-                return role;
-            }
-        });
-
-        return collection;
+        return authorities;
     }
 
     @Override
     public String getName() {
-
-        return oAuth2Response.getName();
+        return username;
     }
 
-    public String getUsername() {
-
-        return oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-    }
 }

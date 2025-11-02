@@ -1,42 +1,66 @@
 package kr.pe.tn.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import kr.pe.tn.domain.user.dto.UserRequestDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "user_entity")
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", unique = true, nullable = false, updatable = false)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false, unique = true)
-    private String nickname;
-
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRoleType role;
+    @Column(name = "is_lock", nullable = false)
+    private Boolean isLock;
+
+    @Column(name = "is_social", nullable = false)
+    private Boolean isSocial;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AuthProvider provider; // 수정된 부분: 소셜 로그인 공급자 정보
+    @Column(name = "social_provider_type")
+    private SocialProviderType socialProviderType;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_type", nullable = false)
+    private UserRoleType roleType;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @Column(name = "nickname")
+    private String nickname;
+
+    @Column(name = "email")
+    private String email;
+
+    @CreatedDate
+    @Column(name = "created_date", updatable = false)
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
+
+    public void updateUser(UserRequestDTO dto) {
+        this.email = dto.getEmail();
+        this.nickname = dto.getNickname();
+    }
+
 }
