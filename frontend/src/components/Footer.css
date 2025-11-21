@@ -1,0 +1,9 @@
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #1a1a1a;
+  border-top: 1px solid #333;
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: auto; /* Push to bottom if flex container */
+}

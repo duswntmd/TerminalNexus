@@ -46,7 +46,8 @@ export async function fetchWithAccess(url, options = {}) {
             // Refreshing이 실패했기 때문에 로컬스토리지 삭제 후, 로그인 페이지로
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
-            location.href = '/login';
+            // 현재 페이지 URL을 redirect 파라미터로 전달
+            location.href = `/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
         }
 
     }

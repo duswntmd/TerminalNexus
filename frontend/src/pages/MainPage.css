@@ -1,0 +1,144 @@
+.main-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero {
+  margin-bottom: 4rem;
+  animation: fadeIn 1s ease-in-out;
+  max-width: 800px;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.highlight {
+  color: #00ff00;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+}
+
+.subtitle {
+  font-size: 1.8rem;
+  color: #e0e0e0;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.description {
+  font-size: 1.2rem;
+  color: #aaa;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #00ff00, #00cc00);
+  color: #000;
+  box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 0, 0.5);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.features {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2.5rem;
+  border-radius: 15px;
+  width: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  border-color: #00ff00;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.feature-card h3 {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.feature-card p {
+  color: #bbb;
+  line-height: 1.5;
+}
+
+.info-section {
+  margin-top: 5rem;
+  padding: 3rem;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,255,0,0.05) 100%);
+  border-radius: 20px;
+  max-width: 900px;
+}
+
+.info-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.info-section p {
+  font-size: 1.2rem;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
