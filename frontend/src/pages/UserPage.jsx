@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchWithAccess } from "../util/fetchUtil";
+import "./UserPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
 const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -41,11 +42,28 @@ function UserPage() {
     }, []);
 
     return (
-        <div>
-            <h1>내 정보</h1>
-            <p>아이디: {userInfo?.username}</p>
-            <p>닉네임: {userInfo?.nickname}</p>
-            <p>이메일: {userInfo?.email}</p>
+        <div className="user-page">
+            <div className="user-container">
+                <h1>내 정보</h1>
+                {error ? (
+                    <p className="error-message">{error}</p>
+                ) : (
+                    <div className="user-info">
+                        <div className="info-item">
+                            <label>아이디</label>
+                            <p>{userInfo?.username}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>닉네임</label>
+                            <p>{userInfo?.nickname}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>이메일</label>
+                            <p>{userInfo?.email}</p>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

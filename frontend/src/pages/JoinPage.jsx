@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./JoinPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
 const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -80,58 +81,68 @@ function JoinPage() {
 
     // 페이지
     return (
-        <div>
-            <h1>회원 가입</h1>
+        <div className="join-page">
+            <div className="join-container">
+                <h1>회원 가입</h1>
 
-            <form onSubmit={handleSignUp}>
-                <label>아이디</label>
-                <input
-                    type="text"
-                    placeholder="아이디 (4자 이상)"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    minLength={4}
-                />
-                {username.length >= 4 && isUsernameValid === false && (
-                    <p>이미 사용 중인 아이디입니다.</p>
-                )}
-                {username.length >= 4 && isUsernameValid === true && (
-                    <p>사용 가능한 아이디입니다.</p>
-                )}
+                <form onSubmit={handleSignUp} className="join-form">
+                    <div className="form-group">
+                        <label>아이디</label>
+                        <input
+                            type="text"
+                            placeholder="아이디 (4자 이상)"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            minLength={4}
+                        />
+                        {username.length >= 4 && isUsernameValid === false && (
+                            <p className="validation-msg error">이미 사용 중인 아이디입니다.</p>
+                        )}
+                        {username.length >= 4 && isUsernameValid === true && (
+                            <p className="validation-msg success">사용 가능한 아이디입니다.</p>
+                        )}
+                    </div>
 
-                <label>비밀번호</label>
-                <input
-                    type="password"
-                    placeholder="비밀번호 (4자 이상)"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={4}
-                />
+                    <div className="form-group">
+                        <label>비밀번호</label>
+                        <input
+                            type="password"
+                            placeholder="비밀번호 (4자 이상)"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={4}
+                        />
+                    </div>
 
-                <label>닉네임</label>
-                <input
-                    type="text"
-                    placeholder="닉네임"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    required
-                />
+                    <div className="form-group">
+                        <label>닉네임</label>
+                        <input
+                            type="text"
+                            placeholder="닉네임"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                <label>이메일</label>
-                <input
-                    type="email"
-                    placeholder="이메일 주소"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+                    <div className="form-group">
+                        <label>이메일</label>
+                        <input
+                            type="email"
+                            placeholder="이메일 주소"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                {error && <p>{error}</p>}
+                    {error && <p className="error-message">{error}</p>}
 
-                <button type="submit" disabled={isUsernameValid !== true}>회원가입</button>
-            </form>
+                    <button type="submit" className="join-btn" disabled={isUsernameValid !== true}>회원가입</button>
+                </form>
+            </div>
         </div>
     );
 }

@@ -115,7 +115,7 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         String sessionRole = context.getAuthentication().getAuthorities().iterator().next().getAuthority();
 
         boolean isOwner = sessionUsername.equals(dto.getUsername());
-        boolean isAdmin = sessionRole.equals("ROLE_"+UserRoleType.ADMIN.name());
+        boolean isAdmin = sessionRole.equals("ROLE_" + UserRoleType.ADMIN.name());
 
         if (!isOwner && !isAdmin) {
             throw new AccessDeniedException("본인 혹은 관리자만 삭제할 수 있습니다.");
