@@ -98,6 +98,14 @@ function LoginPage() {
                     {error && <p className="error-message">{error}</p>}
 
                     <button type="submit" className="login-btn">계속</button>
+                    
+                    <div className="signup-link" style={{ marginTop: '15px', textAlign: 'center' }}>
+                        <span style={{ color: '#666' }}>계정이 없으신가요? </span>
+                        <a href="/join" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold', cursor: 'pointer' }} onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/join');
+                        }}>회원가입</a>
+                    </div>
                 </form>
 
                 <div className="divider">
