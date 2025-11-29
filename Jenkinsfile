@@ -72,7 +72,7 @@ pipeline {
                     sh "mv ${BUILT_JAR} app.jar"
                     
                     writeFile file: 'Dockerfile', text: """
-                        FROM openjdk:21-slim
+                        FROM eclipse-temurin:21-jre
                         COPY app.jar /tn.jar
                         VOLUME ${CONTAINER_UPLOAD_DIR}
                         EXPOSE 8080
