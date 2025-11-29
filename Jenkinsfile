@@ -99,7 +99,7 @@ pipeline {
                             --name ${CONTAINER_NAME} \
                             ${DOCKER_IMAGE}
                         
-                        // Remove unused images (dangling images)
+                        # Remove unused images (dangling images)
                         docker image prune -f
                     """
                 }
