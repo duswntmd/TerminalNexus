@@ -97,6 +97,10 @@ pipeline {
                             -p 8080:8080 \
                             -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \
                             --name ${CONTAINER_NAME} \
+                            --add-host=host.docker.internal:host-gateway \
+                            -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \
+                            -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
+                            -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
                             ${DOCKER_IMAGE}
                         
                         # Remove unused images (dangling images)
