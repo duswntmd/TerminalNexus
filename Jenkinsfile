@@ -98,6 +98,9 @@ pipeline {
                             -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \
                             --name ${CONTAINER_NAME} \
                             ${DOCKER_IMAGE}
+                        
+                        // Remove unused images (dangling images)
+                        docker image prune -f
                     """
                 }
             }
