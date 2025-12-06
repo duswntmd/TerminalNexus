@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import CookiePage from "./pages/CookiePage";
 import UserPage from "./pages/UserPage";
 import MainPage from "./pages/MainPage";
+import GuidePage from "./pages/GuidePage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthContext";
@@ -24,6 +25,7 @@ function App() {
               <Route path="/" element={<MainPage />} />
               <Route path="/join" element={<JoinPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/guide" element={<GuidePage />} />
               <Route 
                 path="/cookie" 
                 element={
