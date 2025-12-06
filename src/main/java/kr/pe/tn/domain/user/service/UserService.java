@@ -42,6 +42,12 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         this.jwtService = jwtService;
     }
 
+    // 닉네임 존재 여부
+    @Transactional(readOnly = true)
+    public Boolean existNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     // 자체 로그인 회원 가입 (존재 여부)
     @Transactional(readOnly = true)
     public Boolean existUser(UserRequestDTO dto) {
@@ -54,6 +60,10 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
 
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("이미 유저가 존재합니다.");
+        }
+
+        if (userRepository.existsByNickname(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
 
         UserEntity entity = UserEntity.builder()
@@ -98,6 +108,27 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         // 조회
         UserEntity entity = userRepository.findByUsernameAndIsLockAndIsSocial(dto.getUsername(), false, false)
                 .orElseThrow(() -> new UsernameNotFoundException(dto.getUsername()));
+
+        // 닉네임 중복 확인 (기존 닉네임과 다를 경우에만)
+        if (!entity.getNickname().equals(dto.getNickname()) && userRepository.existsByNickname(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        }
+
+        // 비밀번호 변경 로직 (입력된 경우)
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+
+            // 현재 비밀번호 검증 (소셜 로그인이 아닐 경우)
+            if (!entity.getIsSocial()) {
+                if (dto.getCurrentPassword() == null || dto.getCurrentPassword().isBlank()) {
+                    throw new IllegalArgumentException("현재 비밀번호를 입력해주세요.");
+                }
+                if (!passwordEncoder.matches(dto.getCurrentPassword(), entity.getPassword())) {
+                    throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+                }
+            }
+
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
 
         // 회원 정보 수정
         entity.updateUser(dto);
