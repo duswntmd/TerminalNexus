@@ -8,26 +8,31 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    // Optional: Redirect to home or login page after logout
-    // window.location.href = "/"; 
   };
 
   return (
     <header className="header">
-      <div className="logo">
-        <Link to="/">TN</Link>
+      <div className="header-container">
+        <div className="logo">
+          <Link to="/">TN</Link>
+        </div>
+        <nav className="nav">
+          <ul>
+            <li><Link to="/join">회원가입</Link></li>
+            {isLoggedIn ? (
+              <>
+                <li><Link to="/user">마이페이지</Link></li>
+                <li><button onClick={handleLogout} className="logout-btn">로그아웃</button></li>
+              </>
+            ) : (
+              <>
+                <li><Link to="/guide">이용안내</Link></li>
+                <li><Link to="/login">로그인</Link></li>
+              </>
+            )}
+          </ul>
+        </nav>
       </div>
-      <nav className="nav">
-        <ul>
-          <li><Link to="/join">회원가입</Link></li>
-          {isLoggedIn ? (
-            <li><button onClick={handleLogout} className="logout-btn">로그아웃</button></li>
-          ) : (
-            <li><Link to="/login">로그인</Link></li>
-          )}
-          <li><Link to="/user">마이페이지</Link></li>
-        </ul>
-      </nav>
     </header>
   );
 };

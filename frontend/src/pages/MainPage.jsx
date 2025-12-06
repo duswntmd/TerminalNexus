@@ -1,44 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Carousel from '../components/Carousel';
+import heroBg from '../assets/hero-bg.png';
 import './MainPage.css';
 
 const MainPage = () => {
-  const carouselItems = [
-    {
-      title: "TN에 오신 것을 환영합니다",
-      description: "터미널 관리의 미래가 여기에 있습니다.",
-      // image: "https://via.placeholder.com/1200x400?text=Slide+1" // Example image
-    },
-    {
-      title: "보안 및 속도",
-      description: "엔터프라이즈급 보안과 놀라운 성능을 경험하세요.",
-      // image: "https://via.placeholder.com/1200x400?text=Slide+2"
-    },
-    {
-      title: "협업",
-      description: "팀원들과 실시간으로 협업하세요.",
-      // image: "https://via.placeholder.com/1200x400?text=Slide+3"
-    }
-  ];
-
   return (
     <div className="main-page">
-      <Carousel items={carouselItems} />
-      
-      <section className="hero">
-        <div className="hero-content">
-          <h1><span className="highlight">TN</span>에 오신 것을 환영합니다</h1>
-          <p className="subtitle">고급 터미널 관리를 위한 당신의 관문</p>
-          <p className="description">
-            커맨드 라인의 강력함을 현대적인 웹 시각화로 연결하고, 관리하고, 배포하세요.
-          </p>
-          <div className="cta-buttons">
-            <Link to="/join" className="btn btn-primary">시작하기</Link>
-            <Link to="/login" className="btn btn-secondary">로그인</Link>
+      <div className="hero-wrapper">
+        <img src={heroBg} alt="Hero Background" className="hero-bg-image" />
+        <section className="hero">
+          <div className="hero-content">
+            <h1><span className="highlight">TN</span>과 함께하는<br/>더 나은 터미널 관리</h1>
+            <p className="subtitle">현대적인 웹 환경에서 경험하는 강력한 터미널</p>
+            <p className="description">
+              복잡한 인프라 관리를 단순하게. 보안과 효율성을 동시에 잡으세요.
+            </p>
+            <div className="cta-buttons">
+              <Link to="/join" className="btn btn-primary">무료로 시작하기</Link>
+              <Link to="/login" className="btn btn-secondary">로그인</Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
       
       <section className="features">
         <div className="feature-card">
