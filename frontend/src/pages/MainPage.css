@@ -3,85 +3,125 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  /* Remove padding to allow full-width hero */
+  padding: 0; 
   text-align: center;
   width: 100%;
-  max-width: 1400px;
+  /* Remove max-width on container to allow full width sections */
+  max-width: 100%; 
   margin: 0 auto;
 }
 
-.hero {
-  margin-bottom: 4rem;
-  animation: fadeIn 1s ease-in-out;
-  max-width: 800px;
+/* ... existing hero styles preserved ... */
+
+/* Wrapper for content that needs to be constrained */
+.content-wrapper {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.hero h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  color: #fff;
-  letter-spacing: -1px;
+/* Features */
+.features {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 1200px; /* Constrain max width */
+  padding: 0 2rem;
 }
 
-.highlight {
-  color: #00ff00;
-  text-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+/* ... existing feature card styles ... */
+
+.info-section {
+  margin-top: 5rem;
+  padding: 3rem;
+  background: linear-gradient(180deg, #f9f9f9 0%, #ffffff 100%); /* Light gradient */
+  border-radius: 20px;
+  max-width: 900px;
+  border: 1px solid #eee;
+  margin-bottom: 4rem; /* Add spacing at bottom */
 }
 
-.subtitle {
-  font-size: 1.8rem;
-  color: #e0e0e0;
+.info-section h2 {
+  font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  font-weight: 300;
+  color: #111; /* Dark text */
 }
+
+.info-section p {
+  font-size: 1.2rem;
+  color: #666; /* Grey text */
+  line-height: 1.8;
+}
+
+/* Hero Section - Cleaned for TerminalHero */
+.hero-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
 
 .description {
-  font-size: 1.2rem;
-  color: #aaa;
+  font-size: 1.125rem;
+  color: #666;
+  max-width: 600px;
   margin: 0 auto 2.5rem;
   line-height: 1.6;
 }
 
 .cta-buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
 }
 
 .btn {
-  padding: 1rem 2.5rem;
-  border-radius: 50px;
+  padding: 0.875rem 2rem;
+  border-radius: 8px; /* Slightly rounded, not pill */
   text-decoration: none;
   font-weight: 600;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #00ff00, #00cc00);
-  color: #000;
-  box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
-  border: none;
+  background-color: #111;
+  color: #fff;
+  border: 1px solid #111;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #111;
 }
 
 .btn-primary:hover {
+  background-color: #333;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
 .btn-secondary {
-  background-color: transparent;
-  border: 2px solid #00ff00;
-  color: #00ff00;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #111;
 }
 
 .btn-secondary:hover {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: #f5f5f5;
+  border-color: #ccc;
   transform: translateY(-2px);
 }
 
+/* Features */
 .features {
   display: flex;
   gap: 2rem;
@@ -92,53 +132,101 @@
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   padding: 2.5rem;
-  border-radius: 15px;
+  border-radius: 12px;
   width: 280px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #eee;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
-  border-color: #00ff00;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-color: #2563eb;
 }
 
 .feature-card h3 {
-  color: #fff;
+  color: #111;
   margin-bottom: 1rem;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .feature-card p {
-  color: #bbb;
-  line-height: 1.5;
+  color: #666;
+  line-height: 1.6;
 }
 
 .info-section {
   margin-top: 5rem;
   padding: 3rem;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,255,0,0.05) 100%);
+  background: linear-gradient(180deg, #f9f9f9 0%, #ffffff 100%);
   border-radius: 20px;
   max-width: 900px;
+  border: 1px solid #eee;
+  margin-bottom: 4rem;
 }
 
 .info-section h2 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: #fff;
+  color: #111;
 }
 
 .info-section p {
   font-size: 1.2rem;
-  color: #ccc;
+  color: #666;
   line-height: 1.8;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-wrapper {
+    height: auto;
+    min-height: 500px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero .subtitle {
+    font-size: 1.25rem;
+  }
+
+  .hero .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .features {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature-card {
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  .info-section {
+    padding: 1.5rem;
+    margin-top: 3rem;
+  }
+  
+  .info-section h2 {
+    font-size: 1.75rem;
+  }
 }

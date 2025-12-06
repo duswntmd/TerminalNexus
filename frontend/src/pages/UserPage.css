@@ -7,22 +7,22 @@
 }
 
 .user-container {
-  background-color: #1e1e1e;
+  background-color: #ffffff;
   padding: 3rem;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); /* Softer shadow */
   width: 100%;
   max-width: 500px;
-  border: 1px solid #333;
+  border: 1px solid #e0e0e0;
 }
 
 .user-container h1 {
   text-align: center;
   margin-bottom: 2.5rem;
-  color: #fff;
+  color: #111;
   font-size: 2rem;
   letter-spacing: -0.5px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .info-item label {
-  color: #888;
+  color: #666;
   font-size: 0.9rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -47,20 +47,100 @@
 }
 
 .info-item p {
-  color: #fff;
+  color: #111;
   font-size: 1.2rem;
   font-weight: 400;
-  background-color: #2a2a2a;
+  background-color: #f9f9f9;
   padding: 1rem;
   border-radius: 6px;
-  border: 1px solid #333;
+  border: 1px solid #eee;
 }
 
 .error-message {
   background-color: rgba(244, 67, 54, 0.1);
-  color: #f44336;
+  color: #dc2626; /* Updated color */
   padding: 1rem;
   border-radius: 6px;
   text-align: center;
   border: 1px solid rgba(244, 67, 54, 0.2);
+  margin-top: 1rem; /* Added */
+  font-weight: 500; /* Added */
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.btn-withdraw {
+  width: 100%;
+  padding: 1rem;
+  background-color: #ffffff;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-withdraw:hover {
+  background-color: #ffcccc;
+  border-color: #ff3333;
+  color: #cc0000;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit, .btn-save, .btn-cancel {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+}
+
+.btn-edit {
+  background-color: #333;
+  color: #fff;
+}
+
+.btn-save {
+  background-color: #27c93f; /* Green */
+  color: #fff;
+}
+
+.btn-cancel {
+  background-color: #999;
+  color: #fff;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-container {
+    padding: 1.5rem;
+  }
+  
+  .user-container h1 {
+    font-size: 1.5rem;
+  }
 }

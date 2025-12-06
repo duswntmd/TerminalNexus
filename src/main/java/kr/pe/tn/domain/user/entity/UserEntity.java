@@ -21,7 +21,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username", unique = true, nullable = false, updatable = false)
@@ -61,6 +62,9 @@ public class UserEntity {
     public void updateUser(UserRequestDTO dto) {
         this.email = dto.getEmail();
         this.nickname = dto.getNickname();
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            this.password = dto.getPassword();
+        }
     }
 
 }
