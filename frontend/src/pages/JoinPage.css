@@ -7,19 +7,19 @@
 }
 
 .join-container {
-  background-color: #1e1e1e;
+  background-color: #ffffff;
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 450px;
-  border: 1px solid #333;
+  border: 1px solid #e0e0e0;
 }
 
 .join-container h1 {
   text-align: center;
   margin-bottom: 2rem;
-  color: #fff;
+  color: #111;
   font-size: 2rem;
   letter-spacing: -0.5px;
 }
@@ -37,25 +37,26 @@
 }
 
 .form-group label {
-  color: #aaa;
+  color: #666;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .form-group input {
   padding: 0.8rem 1rem;
-  background-color: #2a2a2a;
-  border: 1px solid #444;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  color: #fff;
+  color: #111;
   font-size: 1rem;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #646cff;
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  background-color: #fff;
 }
 
 .validation-msg {
@@ -64,27 +65,27 @@
 }
 
 .validation-msg.success {
-  color: #4caf50;
+  color: #10b981;
 }
 
 .validation-msg.error {
-  color: #f44336;
+  color: #ef4444;
 }
 
 .error-message {
-  background-color: rgba(244, 67, 54, 0.1);
-  color: #f44336;
+  background-color: #fef2f2;
+  color: #ef4444;
   padding: 0.8rem;
   border-radius: 6px;
   font-size: 0.9rem;
   text-align: center;
-  border: 1px solid rgba(244, 67, 54, 0.2);
+  border: 1px solid #fecaca;
 }
 
 .join-btn {
   margin-top: 1rem;
   padding: 0.9rem;
-  background: linear-gradient(135deg, #646cff 0%, #535bf2 100%);
+  background: #111;
   color: white;
   border: none;
   border-radius: 6px;
@@ -96,11 +97,12 @@
 
 .join-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(83, 91, 242, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #333;
 }
 
 .join-btn:disabled {
-  background: #444;
+  background: #ccc;
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 1;
 }
