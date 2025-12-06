@@ -1,6 +1,5 @@
 package kr.pe.tn.api;
 
-
 import kr.pe.tn.domain.user.dto.UserRequestDTO;
 import kr.pe.tn.domain.user.dto.UserResponseDTO;
 import kr.pe.tn.domain.user.service.UserService;
@@ -25,16 +24,21 @@ public class UserController {
     // 자체 로그인 유저 존재 확인
     @PostMapping(value = "/user/exist", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> existUserApi(
-            @Validated(UserRequestDTO.existGroup.class) @RequestBody UserRequestDTO dto
-    ) {
+            @Validated(UserRequestDTO.existGroup.class) @RequestBody UserRequestDTO dto) {
         return ResponseEntity.ok(userService.existUser(dto));
+    }
+
+    // 닉네임 중복 확인
+    @PostMapping(value = "/user/exist/nickname", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> existNicknameApi(
+            @RequestBody UserRequestDTO dto) {
+        return ResponseEntity.ok(userService.existNickname(dto.getNickname()));
     }
 
     // 회원가입
     @PostMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> joinApi(
-            @Validated(UserRequestDTO.addGroup.class) @RequestBody UserRequestDTO dto
-    ) {
+            @Validated(UserRequestDTO.addGroup.class) @RequestBody UserRequestDTO dto) {
         Long id = userService.addUser(dto);
         Map<String, Long> responseBody = Collections.singletonMap("userEntityId", id);
         return ResponseEntity.status(201).body(responseBody);
@@ -49,16 +53,14 @@ public class UserController {
     // 유저 수정 (자체 로그인 유저만)
     @PutMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> updateUserApi(
-            @Validated(UserRequestDTO.updateGroup.class) @RequestBody UserRequestDTO dto
-    ) throws AccessDeniedException {
+            @Validated(UserRequestDTO.updateGroup.class) @RequestBody UserRequestDTO dto) throws AccessDeniedException {
         return ResponseEntity.status(200).body(userService.updateUser(dto));
     }
 
     // 유저 제거 (자체/소셜)
     @DeleteMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> deleteUserApi(
-            @Validated(UserRequestDTO.deleteGroup.class) @RequestBody UserRequestDTO dto
-    ) throws AccessDeniedException {
+            @Validated(UserRequestDTO.deleteGroup.class) @RequestBody UserRequestDTO dto) throws AccessDeniedException {
 
         userService.deleteUser(dto);
         return ResponseEntity.status(200).body(true);

@@ -16,6 +16,7 @@ function JoinPage() {
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [isNicknameValid, setIsNicknameValid] = useState(null);
 
     // username 입력창 변경 이벤트
     useEffect(() => {
@@ -46,6 +47,29 @@ function JoinPage() {
         const delay = setTimeout(checkUsername, 300);
         return () => clearTimeout(delay);
     }, [username]);
+
+    // nickname 중복 확인
+    useEffect(() => {
+        const checkNickname = async () => {
+            if (nickname.trim() === "") {
+                setIsNicknameValid(null);
+                return;
+            }
+            try {
+                const res = await fetch(`${BACKEND_API_BASE_URL}/user/exist/nickname`, {
+                   method: "POST",
+                   headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify({ nickname }) 
+                });
+                const exists = await res.json();
+                setIsNicknameValid(!exists);
+            } catch {
+                setIsNicknameValid(null);
+            }
+        }
+        const delay = setTimeout(checkNickname, 300);
+        return () => clearTimeout(delay);
+    }, [nickname]);
 
     // 회원 가입 이벤트
     const handleSignUp = async (e) => {
@@ -125,6 +149,12 @@ function JoinPage() {
                             onChange={(e) => setNickname(e.target.value)}
                             required
                         />
+                        {nickname.length > 0 && isNicknameValid === false && (
+                            <p className="validation-msg error">이미 사용 중인 닉네임입니다.</p>
+                        )}
+                        {nickname.length > 0 && isNicknameValid === true && (
+                            <p className="validation-msg success">사용 가능한 닉네임입니다.</p>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -140,7 +170,7 @@ function JoinPage() {
 
                     {error && <p className="error-message">{error}</p>}
 
-                    <button type="submit" className="join-btn" disabled={isUsernameValid !== true}>회원가입</button>
+                    <button type="submit" className="join-btn" disabled={isUsernameValid !== true || isNicknameValid !== true}>회원가입</button>
                 </form>
             </div>
         </div>

@@ -1,0 +1,45 @@
+{
+  "header": {
+    "signup": "Sign Up",
+    "login": "Log In",
+    "logout": "Log Out",
+    "mypage": "My Page",
+    "guide": "Guide"
+  },
+  "main": {
+    "hero_title": "Open the Future <1>Terminal Nexus</1>",
+    "hero_subtitle": "Experience the Next-Gen Cloud Terminal Ecosystem.",
+    "hero_desc": "TN is an intuitive and powerful cloud terminal access management service for developers and engineers. Connect easily, manage safely.",
+    "start_now": "Start Now",
+    "features_title": "Key Features",
+    "feature_1_title": "Fast Access",
+    "feature_1_desc": "Connect to servers with one click, no complex setup required.",
+    "feature_2_title": "Strong Security",
+    "feature_2_desc": "Protect your data with state-of-the-art encryption technology.",
+    "feature_3_title": "Intuitive UI",
+    "feature_3_desc": "Clean interface that anyone can use easily.",
+    "why_tn_title": "Why TN?",
+    "why_tn_desc": "TN prioritizes user experience. We constantly strive to provide a fast, secure, and beautiful terminal environment."
+  },
+  "user": {
+    "title": "My Page",
+    "username": "Username",
+    "nickname": "Nickname",
+    "email": "Email",
+    "provider": "Provider",
+    "withdraw_btn": "Delete Account",
+    "withdraw_confirm": "Are you sure you want to delete your account? This action cannot be undone.",
+    "withdraw_success": "Account deleted successfully.",
+    "withdraw_fail": "Deletion failed",
+    "withdraw_error": "An error occurred during account deletion: "
+  },
+  "guide": {
+    "title": "User Guide",
+    "welcome": "Welcome to TN Service.",
+    "step_1": "1. <1>Sign Up</1>: Create an account via the 'Sign Up' menu.",
+    "step_2": "2. <1>Log In</1>: Log in with your account to use the service.",
+    "step_3": "3. <1>Terminal Management</1>: Manage terminals from the dashboard after logging in.",
+    "step_4": "4. <1>My Page</1>: Edit profile and delete account in My Page.",
+    "contact": "Contact: contact@tn.pe.kr"
+  }
+}
