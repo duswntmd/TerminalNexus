@@ -32,9 +32,11 @@ const FreeBoardList = () => {
         <div className="freeboard-container">
             <h1 className="freeboard-title">Free Board</h1>
             
-            <button className="freeboard-action-btn" onClick={() => navigate('/freeboard/register')}>
-                Write New Post
-            </button>
+            <div className="freeboard-actions">
+                <button className="freeboard-action-btn" onClick={() => navigate('/freeboard/register')}>
+                    Write New Post
+                </button>
+            </div>
 
             <table className="freeboard-table">
                 <thead>
