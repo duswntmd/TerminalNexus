@@ -4,6 +4,7 @@
     "login": "로그인",
     "logout": "로그아웃",
     "mypage": "마이페이지",
+    "freeboard": "자유게시판",
     "guide": "이용안내"
   },
   "main": {
@@ -26,6 +27,10 @@
     "username": "아이디 (유저명)",
     "nickname": "닉네임",
     "email": "이메일",
+    "password": "비밀번호",
+    "password_current": "현재 비밀번호",
+    "password_new": "새 비밀번호",
+    "password_confirm": "비밀번호 확인",
     "provider": "가입 경로",
     "withdraw_btn": "회원 탈퇴",
     "withdraw_confirm": "정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.",

@@ -4,6 +4,7 @@
     "login": "Log In",
     "logout": "Log Out",
     "mypage": "My Page",
+    "freeboard": "Free Board",
     "guide": "Guide"
   },
   "main": {
@@ -26,6 +27,10 @@
     "username": "Username",
     "nickname": "Nickname",
     "email": "Email",
+    "password": "Password",
+    "password_current": "Current Password",
+    "password_new": "New Password",
+    "password_confirm": "Confirm Password",
     "provider": "Provider",
     "withdraw_btn": "Delete Account",
     "withdraw_confirm": "Are you sure you want to delete your account? This action cannot be undone.",

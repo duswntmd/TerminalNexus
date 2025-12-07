@@ -11,6 +11,7 @@ const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 function UserPage() {
     // 정보
     const [userInfo, setUserInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     
     // Auth
@@ -21,7 +22,28 @@ function UserPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({ nickname: '', email: '', currentPassword: '', password: '', confirmPassword: '' });
 
-    // ... (useEffect omitted)
+    // 페이지 방문시 유저 정보 요청
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/user`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                
+                if (!res.ok) throw new Error("유저 정보 불러오기 실패");
+                
+                const data = await res.json();
+                setUserInfo(data);
+                setEditForm({ nickname: data.nickname || '', email: data.email || '', currentPassword: '', password: '', confirmPassword: '' });
+            } catch (err) {
+                setError("유저 정보를 불러오지 못했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getUserInfo();
+    }, []);
 
     const toggleEdit = () => {
         setIsEditing(!isEditing);
@@ -33,10 +55,19 @@ function UserPage() {
     const handleUpdate = async () => {
         if (!userInfo) return;
         
-        // 비밀번호 변경 시 확인
-        if (editForm.password && editForm.password !== editForm.confirmPassword) {
-            setError("새 비밀번호가 일치하지 않습니다.");
-            return;
+        // 비밀번호 변경 유효성 검사
+        const hasPasswordInput = editForm.currentPassword || editForm.password || editForm.confirmPassword;
+        if (hasPasswordInput) {
+            // 3가지 필드 모두 입력 확인
+            if (!editForm.currentPassword || !editForm.password || !editForm.confirmPassword) {
+                setError("비밀번호 변경 시 현재 비밀번호, 새 비밀번호, 비밀번호 확인을 모두 입력해야 합니다.");
+                return;
+            }
+            // 새 비밀번호 일치 확인
+            if (editForm.password !== editForm.confirmPassword) {
+                setError("새 비밀번호가 일치하지 않습니다.");
+                return;
+            }
         }
 
         try {
@@ -108,7 +139,7 @@ function UserPage() {
         }
     };
 
-    if (!userInfo) return <div className="user-page">Loading...</div>;
+    if (loading) return <div className="user-page">Loading...</div>;
 
     return (
         <div className="user-page">
@@ -116,7 +147,7 @@ function UserPage() {
                 <h1>{t('user.title')}</h1>
                 {error && <p className="error-message">{error}</p>}
                 
-                {!error && (
+                {!error && userInfo && (
                     <>
                         <div className="user-info">
                             <div className="info-item">

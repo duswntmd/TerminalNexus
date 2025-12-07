@@ -36,6 +36,7 @@ const Header = () => {
               </>
             )}
             <li><Link to="/join">{t('header.signup')}</Link></li>
+            <li><Link to="/freeboard">{t('header.freeboard')}</Link></li>
             <li>
                 <div className="lang-switcher">
                     <button onClick={() => changeLanguage('ko')} className={i18n.language === 'ko' ? 'active' : ''}>KO</button>
