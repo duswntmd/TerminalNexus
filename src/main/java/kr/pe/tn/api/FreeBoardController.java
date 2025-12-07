@@ -45,4 +45,10 @@ public class FreeBoardController {
         return ResponseEntity.ok(freeBoardService.list(pageRequestDTO));
     }
 
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Map<String, Boolean>> toggleLike(@PathVariable("id") Long id) {
+        boolean isLiked = freeBoardService.toggleLike(id);
+        return ResponseEntity.ok(Collections.singletonMap("isLiked", isLiked));
+    }
+
 }

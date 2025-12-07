@@ -55,6 +55,38 @@ const FreeBoardRead = () => {
                 {post.content}
             </div>
 
+            <div style={{textAlign: 'center', marginBottom: '30px'}}>
+                <button 
+                    onClick={async () => {
+                        try {
+                            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/like`, { method: 'POST' });
+                            if(res.ok) {
+                                const result = await res.json();
+                                setPost(prev => ({
+                                    ...prev, 
+                                    isLiked: result.isLiked,
+                                    likeCount: result.isLiked ? prev.likeCount + 1 : prev.likeCount - 1
+                                }));
+                            } else {
+                                alert("Login required to like!");
+                            }
+                        } catch(e) { console.error(e); }
+                    }}
+                    style={{
+                        padding: '10px 20px',
+                        fontSize: '1.2rem',
+                        cursor: 'pointer',
+                        borderRadius: '20px',
+                        border: '2px solid #ff4444',
+                        background: post.isLiked ? '#ff4444' : 'transparent',
+                        color: post.isLiked ? 'white' : '#ff4444',
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    {post.isLiked ? '♥ Liked' : '♡ Like'} {post.likeCount}
+                </button>
+            </div>
+
             {post.fileDTOs && post.fileDTOs.length > 0 && (
                 <div className="read-files">
                     {post.fileDTOs.map((file, idx) => (

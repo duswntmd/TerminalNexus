@@ -48,6 +48,9 @@ public class FreeBoard {
     @LastModifiedDate
     private LocalDateTime modDate;
 
+    @Builder.Default
+    private Long likeCount = 0L;
+
     // 댓글 OneToMany
     @Builder.Default
     @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,6 +60,11 @@ public class FreeBoard {
     @Builder.Default
     @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FreeBoardFile> files = new ArrayList<>();
+
+    // 좋아요 OneToMany (Optional, for cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FreeBoardLike> likes = new ArrayList<>();
 
     public void changeTitle(String title) {
         this.title = title;
@@ -76,5 +84,9 @@ public class FreeBoard {
 
     public void addFile(FreeBoardFile file) {
         this.files.add(file);
+    }
+
+    public void updateLikeCount(int delta) {
+        this.likeCount = this.likeCount + delta;
     }
 }

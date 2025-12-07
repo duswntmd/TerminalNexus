@@ -3,7 +3,9 @@ package kr.pe.tn.domain.freeboard.service;
 import kr.pe.tn.domain.common.dto.PageRequestDTO;
 import kr.pe.tn.domain.common.dto.PageResponseDTO;
 import kr.pe.tn.domain.freeboard.dto.FreeBoardDTO;
+import kr.pe.tn.domain.freeboard.dto.UploadResultDTO;
 import kr.pe.tn.domain.freeboard.entity.FreeBoard;
+import kr.pe.tn.domain.freeboard.repository.FreeBoardLikeRepository;
 import kr.pe.tn.domain.freeboard.repository.FreeBoardRepository;
 import kr.pe.tn.domain.user.entity.UserEntity;
 import kr.pe.tn.domain.user.repository.UserRepository;
@@ -26,14 +28,13 @@ public class FreeBoardService {
 
     private final FreeBoardRepository freeBoardRepository;
     private final UserRepository userRepository;
+    private final FreeBoardLikeRepository freeBoardLikeRepository;
 
     // 등록
     public Long register(FreeBoardDTO.Request requestDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserEntity user = userRepository.findByUsernameAndIsLockAndIsSocial(username, false, false) // Social handled?
-                                                                                                    // checkUserService
-                                                                                                    // logic.
-                .or(() -> userRepository.findByUsernameAndIsLock(username, false)) // Allow all active users
+        UserEntity user = userRepository.findByUsernameAndIsLockAndIsSocial(username, false, false)
+                .or(() -> userRepository.findByUsernameAndIsLock(username, false))
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
         FreeBoard freeBoard = FreeBoard.builder()
@@ -60,6 +61,8 @@ public class FreeBoardService {
     }
 
     // 조회
+    // 사실 조회수 증가 때문에 Transactional 필요함
+    @Transactional
     public FreeBoardDTO.Response read(Long id) {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Board not found"));
@@ -67,7 +70,18 @@ public class FreeBoardService {
         // 조회수 증가
         freeBoard.increaseViewCount();
 
-        return FreeBoardDTO.Response.from(freeBoard);
+        FreeBoardDTO.Response response = FreeBoardDTO.Response.from(freeBoard);
+
+        // Check Like
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!username.equals("anonymousUser")) {
+            UserEntity user = userRepository.findByUsernameAndIsLock(username, false).orElse(null);
+            if (user != null) {
+                response.setLiked(freeBoardLikeRepository.existsByUserAndFreeBoard(user, freeBoard));
+            }
+        }
+
+        return response;
     }
 
     // 수정
@@ -92,7 +106,7 @@ public class FreeBoardService {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Board not found"));
 
-        // 본인 확인 (Admin check logic could be added)
+        // 본인 확인
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!freeBoard.getUser().getUsername().equals(username)) {
             throw new AccessDeniedException("Only the writer can delete.");
@@ -118,5 +132,35 @@ public class FreeBoardService {
                 .total((int) result.getTotalElements())
                 .pageRequestDTO(pageRequestDTO)
                 .build();
+    }
+
+    // 좋아요 토글
+    public boolean toggleLike(Long boardId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findByUsernameAndIsLock(username, false)
+                .orElseThrow(() -> new NoSuchElementException("User not found or locked"));
+
+        FreeBoard freeBoard = freeBoardRepository.findById(boardId)
+                .orElseThrow(() -> new NoSuchElementException("Board not found"));
+
+        if (freeBoardLikeRepository.existsByUserAndFreeBoard(user, freeBoard)) {
+            // Cancel Like
+            kr.pe.tn.domain.freeboard.entity.FreeBoardLike like = freeBoardLikeRepository
+                    .findByUserAndFreeBoard(user, freeBoard)
+                    .orElseThrow();
+            freeBoardLikeRepository.delete(like);
+            freeBoard.updateLikeCount(-1);
+            return false;
+        } else {
+            // Add Like
+            kr.pe.tn.domain.freeboard.entity.FreeBoardLike like = kr.pe.tn.domain.freeboard.entity.FreeBoardLike
+                    .builder()
+                    .user(user)
+                    .freeBoard(freeBoard)
+                    .build();
+            freeBoardLikeRepository.save(like);
+            freeBoard.updateLikeCount(1);
+            return true;
+        }
     }
 }
