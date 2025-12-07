@@ -6,6 +6,10 @@ import CookiePage from "./pages/CookiePage";
 import UserPage from "./pages/UserPage";
 import MainPage from "./pages/MainPage";
 import GuidePage from "./pages/GuidePage";
+import FreeBoardList from "./pages/freeboard/FreeBoardList";
+import FreeBoardRegister from "./pages/freeboard/FreeBoardRegister";
+import FreeBoardRead from "./pages/freeboard/FreeBoardRead";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthContext";
@@ -39,6 +43,30 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UserPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/freeboard" 
+                element={
+                  <ProtectedRoute>
+                    <FreeBoardList />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/freeboard/register" 
+                element={
+                  <ProtectedRoute>
+                    <FreeBoardRegister />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/freeboard/:id" 
+                element={
+                  <ProtectedRoute>
+                    <FreeBoardRead />
                   </ProtectedRoute>
                 } 
               />

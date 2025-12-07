@@ -34,141 +34,151 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final AuthenticationSuccessHandler loginSuccessHandler;
-    private final AuthenticationSuccessHandler socialSuccessHandler;
-    private final JwtService jwtService;
+        private final AuthenticationConfiguration authenticationConfiguration;
+        private final AuthenticationSuccessHandler loginSuccessHandler;
+        private final AuthenticationSuccessHandler socialSuccessHandler;
+        private final JwtService jwtService;
 
-    public SecurityConfig(
-            AuthenticationConfiguration authenticationConfiguration,
-            @Qualifier("LoginSuccessHandler") AuthenticationSuccessHandler loginSuccessHandler,
-            @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
-            JwtService jwtService
-    ) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.loginSuccessHandler = loginSuccessHandler;
-        this.socialSuccessHandler = socialSuccessHandler;
-        this.jwtService = jwtService;
-    }
+        public SecurityConfig(
+                        AuthenticationConfiguration authenticationConfiguration,
+                        @Qualifier("LoginSuccessHandler") AuthenticationSuccessHandler loginSuccessHandler,
+                        @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
+                        JwtService jwtService) {
+                this.authenticationConfiguration = authenticationConfiguration;
+                this.loginSuccessHandler = loginSuccessHandler;
+                this.socialSuccessHandler = socialSuccessHandler;
+                this.jwtService = jwtService;
+        }
 
-    // 커스텀 자체 로그인 필터를 위한 AuthenticationManager Bean 수동 등록
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+        // 커스텀 자체 로그인 필터를 위한 AuthenticationManager Bean 수동 등록
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+                return configuration.getAuthenticationManager();
+        }
 
-    // 권한 계층
-    @Bean
-    public RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.withRolePrefix("ROLE_")
-                .role(UserRoleType.ADMIN.name()).implies(UserRoleType.USER.name())
-                .build();
-    }
+        // 권한 계층
+        @Bean
+        public RoleHierarchy roleHierarchy() {
+                return RoleHierarchyImpl.withRolePrefix("ROLE_")
+                                .role(UserRoleType.ADMIN.name()).implies(UserRoleType.USER.name())
+                                .build();
+        }
 
-    // 비밀번호 단방향(BCrypt) 암호화용 Bean
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        // 비밀번호 단방향(BCrypt) 암호화용 Bean
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    // CORS Bean
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
-        configuration.setMaxAge(3600L);
+        // CORS Bean
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+                configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // CSRF 보안 필터 disable
-        http
-                .csrf(AbstractHttpConfigurer::disable);
+                // CSRF 보안 필터 disable
+                http
+                                .csrf(AbstractHttpConfigurer::disable);
 
-        // CORS 설정
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                // CORS 설정
+                http
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        // 기본 로그아웃 필터 + 커스텀 Refresh 토큰 삭제 핸들러 추가
-        http
-                .logout(logout -> logout
-                        .addLogoutHandler(new RefreshTokenLogoutHandler(jwtService)));
+                // 기본 로그아웃 필터 + 커스텀 Refresh 토큰 삭제 핸들러 추가
+                http
+                                .logout(logout -> logout
+                                                .addLogoutHandler(new RefreshTokenLogoutHandler(jwtService)));
 
-        // 기본 Form 기반 인증 필터들 disable
-        http
-                .formLogin(AbstractHttpConfigurer::disable);
+                // 기본 Form 기반 인증 필터들 disable
+                http
+                                .formLogin(AbstractHttpConfigurer::disable);
 
-        // 기본 Basic 인증 필터 disable
-        http
-                .httpBasic(AbstractHttpConfigurer::disable);
+                // 기본 Basic 인증 필터 disable
+                http
+                                .httpBasic(AbstractHttpConfigurer::disable);
 
-        // OAuth2 인증용
-        http
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(socialSuccessHandler));
+                // OAuth2 인증용
+                http
+                                .oauth2Login(oauth2 -> oauth2
+                                                .successHandler(socialSuccessHandler));
 
-        // 인가
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/exist", "/user").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/user").hasRole(UserRoleType.USER.name())
-                        .requestMatchers(HttpMethod.PUT, "/user").hasRole(UserRoleType.USER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/user").hasRole(UserRoleType.USER.name())
-                        .anyRequest().authenticated()
-                );
+                // 인가
+                http
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/user/exist", "/user/exist/nickname",
+                                                                "/user")
+                                                .permitAll()
+                                                .requestMatchers("/display").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/user")
+                                                .hasRole(UserRoleType.USER.name())
+                                                .requestMatchers(HttpMethod.PUT, "/user")
+                                                .hasRole(UserRoleType.USER.name())
+                                                .requestMatchers(HttpMethod.DELETE, "/user")
+                                                .hasRole(UserRoleType.USER.name())
+                                                .requestMatchers("/freeboard/**").hasRole(UserRoleType.USER.name())
+                                                .anyRequest().authenticated());
 
-        // 예외 처리
-        http
-                .exceptionHandling(e -> e
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED); // 401 응답
-                        })
-                        .accessDeniedHandler((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN); // 403 응답
-                        })
-                );
+                // 예외 처리
+                http
+                                .exceptionHandling(e -> e
+                                                .authenticationEntryPoint((request, response, authException) -> {
+                                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                                                                                                                 // 응답
+                                                })
+                                                .accessDeniedHandler((request, response, authException) -> {
+                                                        response.sendError(HttpServletResponse.SC_FORBIDDEN); // 403 응답
+                                                }));
 
-        // 커스텀 필터 추가
-        http
-                .addFilterBefore(new JWTFilter(), LogoutFilter.class);
+                // 커스텀 필터 추가
+                http
+                                .addFilterBefore(new JWTFilter(), LogoutFilter.class);
 
-        http
-                .addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), loginSuccessHandler), UsernamePasswordAuthenticationFilter.class);
+                http
+                                .addFilterBefore(
+                                                new LoginFilter(authenticationManager(authenticationConfiguration),
+                                                                loginSuccessHandler),
+                                                UsernamePasswordAuthenticationFilter.class);
 
-        // 세션 필터 설정 (STATELESS)
-        http
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                // 세션 필터 설정 (STATELESS)
+                http
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        return http.build();
-    }
+                return http.build();
+        }
 }
 
 //// oauth2 로그인 방식
-//        http
-//                .oauth2Login((oauth2) -> oauth2
-//        .loginPage("/user/loginForm")
-//                        .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
-//        .userInfoEndpoint((userInfoEndpointConfig) ->
-//        userInfoEndpointConfig.userService(customOAuth2UserService)));
+// http
+// .oauth2Login((oauth2) -> oauth2
+// .loginPage("/user/loginForm")
+// .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
+// .userInfoEndpoint((userInfoEndpointConfig) ->
+// userInfoEndpointConfig.userService(customOAuth2UserService)));
 //// 경로별 인증 및 인가 설정
-//        http
-//                .authorizeHttpRequests((auth) -> auth
-////                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-//        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**", "favicon.ico",
-//                                 "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
-//                                 "/api/message", "/oauth2/**", "/login/**", "/logout")
-//                        .permitAll()
-//                        .requestMatchers("/admin").hasRole("ADMIN")
-//                        .requestMatchers("/user/profile").hasRole("USER")
-//                        .anyRequest().authenticated());
+// http
+// .authorizeHttpRequests((auth) -> auth
+//// .dispatcherTypeMatchers(DispatcherType.FORWARD,
+//// DispatcherType.ERROR).permitAll()
+// .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**",
+//// "favicon.ico",
+// "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
+// "/api/message", "/oauth2/**", "/login/**", "/logout")
+// .permitAll()
+// .requestMatchers("/admin").hasRole("ADMIN")
+// .requestMatchers("/user/profile").hasRole("USER")
+// .anyRequest().authenticated());

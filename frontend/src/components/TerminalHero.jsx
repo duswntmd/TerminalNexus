@@ -1,22 +1,51 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { fetchWithAccess } from '../util/fetchUtil';
 import './TerminalHero.css';
+
+const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 const TerminalHero = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(true);
+  const [promptUser, setPromptUser] = useState('Guest');
   const scrollRef = useRef(null);
 
-  // Initial Welcome Message
+  // Fetch nickname if logged in
+  useEffect(() => {
+    const fetchNickname = async () => {
+      if (isLoggedIn) {
+        try {
+          const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/user`, {
+             method: 'GET',
+             headers: { 'Content-Type': 'application/json' },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPromptUser(data.nickname || 'Guest');
+          }
+        } catch (e) {
+          // Ignore error, stay as Guest
+        }
+      } else {
+        setPromptUser('Guest');
+      }
+    };
+    fetchNickname();
+  }, [isLoggedIn]);
+
   // Initial Welcome Message
   const welcomeText = [
     "Welcome to TN (Terminal Nexus) CLI v1.0.0",
     "",
-    "Type '/help' to see available commands."
+    "Type 'ls' to see available commands."
   ];
 
+  // ... (Typewriter effect unchanged)
   useEffect(() => {
     let lineIndex = 0;
     let charIndex = 0;
@@ -66,11 +95,29 @@ const TerminalHero = () => {
         output = [
           "Available commands:",
           "  /help     - Show this help message",
+          "  ls        - List available commands",
           "  /login    - Go to login page",
           "  /join     - Go to sign up page",
+          "  freeboard - Go to community board",
           "  /guide    - Go to user guide",
           "  clear     - Clear terminal screen"
         ];
+        break;
+      case 'ls':
+        output = [
+          "COMMANDS:",
+          "  /help",
+          "  ls",
+          "  /login",
+          "  /join",
+          "  freeboard",
+          "  /guide",
+          "  clear"
+        ];
+        break;
+      case 'freeboard':
+        output = ["Redirecting to Free Board..."];
+        setTimeout(() => navigate('/freeboard'), 800);
         break;
       case '/login':
         output = ["Redirecting to Login..."];
@@ -96,7 +143,7 @@ const TerminalHero = () => {
 
     setHistory(prev => [
       ...prev, 
-      { type: 'input', content: `C:\\Users\\Guest> ${cmd}` },
+      { type: 'input', content: `C:\\Users\\${promptUser}> ${cmd}` },
       ...output.map(line => ({ type: 'text', content: line }))
     ]);
   };
@@ -127,7 +174,7 @@ const TerminalHero = () => {
           ))}
           {!isTyping && (
             <div className="input-line">
-              <span className="prompt">C:\Users\Guest&gt;</span>
+              <span className="prompt">C:\Users\{promptUser}&gt;</span>
               <input 
                 id="terminal-input"
                 type="text" 
