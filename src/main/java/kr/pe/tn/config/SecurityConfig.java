@@ -102,47 +102,6 @@ public class SecurityConfig {
                                 .logout(logout -> logout
                                                 .addLogoutHandler(new RefreshTokenLogoutHandler(jwtService)));
 
-                // 기본 Form 기반 인증 필터들 disable
-                http
-                                .formLogin(AbstractHttpConfigurer::disable);
-
-                // 기본 Basic 인증 필터 disable
-                http
-                                .httpBasic(AbstractHttpConfigurer::disable);
-
-                // OAuth2 인증용
-                http
-                                .oauth2Login(oauth2 -> oauth2
-                                                .successHandler(socialSuccessHandler));
-
-                // 인가
-                http
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/user/exist", "/user/exist/nickname",
-                                                                "/user")
-                                                .permitAll()
-                                                .requestMatchers("/display").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/user")
-                                                .hasRole(UserRoleType.USER.name())
-                                                .requestMatchers(HttpMethod.PUT, "/user")
-                                                .hasRole(UserRoleType.USER.name())
-                                                .requestMatchers(HttpMethod.DELETE, "/user")
-                                                .hasRole(UserRoleType.USER.name())
-                                                .requestMatchers("/freeboard/**").hasRole(UserRoleType.USER.name())
-                                                .anyRequest().authenticated());
-
-                // 예외 처리
-                http
-                                .exceptionHandling(e -> e
-                                                .authenticationEntryPoint((request, response, authException) -> {
-                                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED); // 401
-                                                                                                                 // 응답
-                                                })
-                                                .accessDeniedHandler((request, response, authException) -> {
-                                                        response.sendError(HttpServletResponse.SC_FORBIDDEN); // 403 응답
-                                                }));
-
                 // 커스텀 필터 추가
                 http
                                 .addFilterBefore(new JWTFilter(), LogoutFilter.class);
