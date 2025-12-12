@@ -48,6 +48,8 @@ public class RefreshTokenLogoutHandler implements LogoutHandler {
             jwtService.removeRefresh(refreshToken);
 
         } catch (IOException e) {
+            System.err.println("Logout Handler Error: Failed to read refresh token");
+            e.printStackTrace();
             throw new RuntimeException("Failed to read refresh token", e);
         }
     }
