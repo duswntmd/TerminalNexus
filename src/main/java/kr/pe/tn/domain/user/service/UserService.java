@@ -210,6 +210,14 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
             userRepository.save(entity.get());
         } else {
             // 신규 유저 추가
+
+            // 닉네임 중복 처리
+            String newNickname = nickname;
+            java.util.Random random = new java.util.Random();
+            while (userRepository.existsByNickname(newNickname)) {
+                newNickname = nickname + "_" + (1000 + random.nextInt(9000));
+            }
+
             UserEntity newUserEntity = UserEntity.builder()
                     .username(username)
                     .password("")
@@ -217,7 +225,7 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
                     .isSocial(true)
                     .socialProviderType(SocialProviderType.valueOf(registrationId))
                     .roleType(UserRoleType.USER)
-                    .nickname(nickname)
+                    .nickname(newNickname)
                     .email(email)
                     .build();
 

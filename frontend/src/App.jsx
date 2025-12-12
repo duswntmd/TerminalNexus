@@ -30,14 +30,7 @@ function App() {
               <Route path="/join" element={<JoinPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/guide" element={<GuidePage />} />
-              <Route 
-                path="/cookie" 
-                element={
-                  <ProtectedRoute>
-                    <CookiePage />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/cookie" element={<CookiePage />} />
               <Route 
                 path="/user" 
                 element={

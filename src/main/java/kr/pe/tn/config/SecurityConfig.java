@@ -2,6 +2,8 @@ package kr.pe.tn.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import kr.pe.tn.domain.jwt.service.JwtService;
+import kr.pe.tn.domain.user.oauth2.CustomClientRegistrationRepo;
+import kr.pe.tn.domain.user.service.UserService;
 import kr.pe.tn.domain.user.entity.UserRoleType;
 import kr.pe.tn.filter.JWTFilter;
 import kr.pe.tn.filter.LoginFilter;
@@ -18,8 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,16 +39,22 @@ public class SecurityConfig {
         private final AuthenticationSuccessHandler loginSuccessHandler;
         private final AuthenticationSuccessHandler socialSuccessHandler;
         private final JwtService jwtService;
+        private final CustomClientRegistrationRepo customClientRegistrationRepo;
+        private final UserService userService;
 
         public SecurityConfig(
                         AuthenticationConfiguration authenticationConfiguration,
                         @Qualifier("LoginSuccessHandler") AuthenticationSuccessHandler loginSuccessHandler,
                         @Qualifier("SocialSuccessHandler") AuthenticationSuccessHandler socialSuccessHandler,
-                        JwtService jwtService) {
+                        JwtService jwtService,
+                        CustomClientRegistrationRepo customClientRegistrationRepo,
+                        UserService userService) {
                 this.authenticationConfiguration = authenticationConfiguration;
                 this.loginSuccessHandler = loginSuccessHandler;
                 this.socialSuccessHandler = socialSuccessHandler;
                 this.jwtService = jwtService;
+                this.customClientRegistrationRepo = customClientRegistrationRepo;
+                this.userService = userService;
         }
 
         // 커스텀 자체 로그인 필터를 위한 AuthenticationManager Bean 수동 등록
@@ -62,12 +69,6 @@ public class SecurityConfig {
                 return RoleHierarchyImpl.withRolePrefix("ROLE_")
                                 .role(UserRoleType.ADMIN.name()).implies(UserRoleType.USER.name())
                                 .build();
-        }
-
-        // 비밀번호 단방향(BCrypt) 암호화용 Bean
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
         }
 
         // CORS Bean
@@ -117,27 +118,30 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+                // oauth2 로그인 방식
+                http
+                                .oauth2Login((oauth2) -> oauth2
+                                                .loginPage("/user/loginForm")
+                                                .clientRegistrationRepository(customClientRegistrationRepo
+                                                                .clientRegistrationRepository())
+                                                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                                                .userService(userService))
+                                                .successHandler(socialSuccessHandler));
+
+                // 경로별 인증 및 인가 설정
+                http
+                                .authorizeHttpRequests((auth) -> auth
+                                                .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**",
+                                                                "/user/loginForm", "/user/login", "/user/registerForm",
+                                                                "/user/register",
+                                                                "/api/message", "/oauth2/**", "/login/**", "/logout",
+                                                                "/jwt/**", "/user/exist/**")
+                                                .permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                                                .requestMatchers("/admin").hasRole("ADMIN")
+                                                .requestMatchers("/user/profile").hasRole("USER")
+                                                .anyRequest().authenticated());
+
                 return http.build();
         }
 }
-
-//// oauth2 로그인 방식
-// http
-// .oauth2Login((oauth2) -> oauth2
-// .loginPage("/user/loginForm")
-// .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
-// .userInfoEndpoint((userInfoEndpointConfig) ->
-// userInfoEndpointConfig.userService(customOAuth2UserService)));
-//// 경로별 인증 및 인가 설정
-// http
-// .authorizeHttpRequests((auth) -> auth
-//// .dispatcherTypeMatchers(DispatcherType.FORWARD,
-//// DispatcherType.ERROR).permitAll()
-// .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**",
-//// "favicon.ico",
-// "/user/loginForm", "/user/login", "/user/registerForm", "/user/register",
-// "/api/message", "/oauth2/**", "/login/**", "/logout")
-// .permitAll()
-// .requestMatchers("/admin").hasRole("ADMIN")
-// .requestMatchers("/user/profile").hasRole("USER")
-// .anyRequest().authenticated());
