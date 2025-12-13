@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,8 +54,16 @@ public class UploadController {
             try {
                 uploadFile.transferTo(savePath); // Save file
 
-                String type = uploadFile.getContentType().startsWith("image") ? "IMAGE" : "VIDEO";
-                resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath, type));
+                String contentType = uploadFile.getContentType();
+                String type;
+                if (contentType != null && contentType.startsWith("image")) {
+                    type = "IMAGE";
+                } else if (contentType != null && contentType.startsWith("video")) {
+                    type = "VIDEO";
+                } else {
+                    type = "FILE";
+                }
+                resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath, type, null));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -89,5 +98,25 @@ public class UploadController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return result;
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> download(String fileName) {
+        try {
+            String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+            File file = new File(uploadPath + File.separator + srcFileName);
+
+            String originName = file.getName().substring(file.getName().indexOf("_") + 1);
+            String encodedName = URLEncoder.encode(originName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", "application/octet-stream");
+            headers.add("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
+
+            return new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

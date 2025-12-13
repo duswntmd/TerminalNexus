@@ -17,7 +17,8 @@ public class UploadResultDTO implements Serializable {
     private String fileName;
     private String uuid;
     private String folderPath;
-    private String type; // IMAGE, VIDEO
+    private String type; // IMAGE, VIDEO, YOUTUBE
+    private String youtubeUrl;
 
     public String getImageURL() {
         try {

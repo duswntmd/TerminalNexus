@@ -51,6 +51,7 @@ public class FreeBoardService {
                         .originalName(fileDTO.getFileName())
                         .path(fileDTO.getFolderPath())
                         .type(fileDTO.getType())
+                        .youtubeUrl(fileDTO.getYoutubeUrl())
                         .freeBoard(freeBoard)
                         .build();
                 freeBoard.addFile(boardFile);

@@ -11,6 +11,7 @@ import {
     Stack,
     IconButton,
     List,
+    Divider,
     ListItem,
     ListItemText
 } from '@mui/material';
@@ -18,6 +19,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 // Toast UI Editor
 import { Editor } from '@toast-ui/react-editor';
@@ -31,6 +33,66 @@ const FreeBoardRegister = () => {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [fileDTOs, setFileDTOs] = useState([]);
+    const [youtubeLink, setYoutubeLink] = useState('');
+
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        let videoId = '';
+        if (url.includes('v=')) {
+            videoId = url.split('v=')[1];
+            const ampersandPosition = videoId.indexOf('&');
+            if(ampersandPosition !== -1) {
+                videoId = videoId.substring(0, ampersandPosition);
+            }
+        } else if (url.includes('youtu.be/')) {
+           videoId = url.split('youtu.be/')[1];
+        }
+        return `https://www.youtube.com/embed/${videoId}`;
+    };
+
+    const handleAddYoutube = () => {
+        if (!youtubeLink.trim()) return;
+        
+        const embedUrl = getEmbedUrl(youtubeLink);
+        if (!embedUrl) {
+            alert("올바른 YouTube 링크가 아닙니다.");
+            return;
+        }
+
+        // Insert a custom shortcode instead of iframe to avoid sanitizer issues in the editor.
+        // We will parse this shortcode in the Viewer (Read page) to display the video.
+        let videoId = '';
+        if (youtubeLink.includes('v=')) {
+            videoId = youtubeLink.split('v=')[1];
+            const ampersandPosition = videoId.indexOf('&');
+            if(ampersandPosition !== -1) {
+                videoId = videoId.substring(0, ampersandPosition);
+            }
+        } else if (youtubeLink.includes('youtu.be/')) {
+           videoId = youtubeLink.split('youtu.be/')[1];
+        }
+
+        if (!videoId) {
+             alert("YouTube ID를 추출할 수 없습니다.");
+             return;
+        }
+
+        // Insert a thumbnail image with a specific alt text.
+        // This allows the user to see where the video is and move it around like an image.
+        // In the Viewer (Read page), we will replace this image with the actual video player.
+        const shortcode = `\n![youtube_video](https://img.youtube.com/vi/${videoId}/0.jpg)\n`;
+        
+        try {
+            const editorInstance = editorRef.current.getInstance();
+            const currentMarkdown = editorInstance.getMarkdown();
+            editorInstance.setMarkdown(currentMarkdown + shortcode);
+            setYoutubeLink('');
+            console.log("YouTube thumbnail inserted:", shortcode);
+        } catch (err) {
+            console.error("Editor Insert Error:", err);
+            alert("에디터에 동영상을 추가하는 중 오류가 발생했습니다.");
+        }
+    };
     
     // Editor ref
     const editorRef = useRef();
@@ -45,18 +107,15 @@ const FreeBoardRegister = () => {
         }
 
         try {
-            const res = await fetch(`${BACKEND_API_BASE_URL}/uploadAjax`, {
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/uploadAjax`, {
                 method: 'POST',
                 body: formData
             });
-            if (res.ok) {
-                const result = await res.json();
-                setFileDTOs([...fileDTOs, ...result]);
-            } else {
-                alert("File Upload Failed");
-            }
+            const result = await res.json();
+            setFileDTOs([...fileDTOs, ...result]);
         } catch (e) {
             console.error(e);
+            alert("File Upload Failed");
         }
     };
 
@@ -134,11 +193,66 @@ const FreeBoardRegister = () => {
                             initialEditType="wysiwyg"
                             useCommandShortcut={true}
                             plugins={[colorSyntax]}
+                            customHTMLSanitizer={html => {
+                                return html; // Allow custom HTML (iframe)
+                            }}
+                            hooks={{
+                                addImageBlobHook: async (blob, callback) => {
+                                    const formData = new FormData();
+                                    formData.append("uploadFiles", blob);
+
+                                    try {
+                                        const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/uploadAjax`, {
+                                            method: 'POST',
+                                            body: formData
+                                        });
+
+                                        const result = await res.json();
+                                        if (result && result.length > 0) {
+                                            let imageUrl = '';
+                                            if (result[0].imageURL) {
+                                                imageUrl = `${BACKEND_API_BASE_URL}/display?fileName=${result[0].imageURL}`;
+                                            } else {
+                                                const { folderPath, uuid, fileName } = result[0];
+                                                const normalizedPath = folderPath.replace(/\\/g, '/'); 
+                                                const encodedPath = encodeURIComponent(`${normalizedPath}/${uuid}_${fileName}`);
+                                                imageUrl = `${BACKEND_API_BASE_URL}/display?fileName=${encodedPath}`;
+                                            }
+                                            callback(imageUrl, 'image');
+                                        }
+                                    } catch (e) {
+                                        console.error("Image Upload Error:", e);
+                                        alert("이미지 업로드 중 오류가 발생했습니다.");
+                                    }
+                                }
+                            }}
                         />
                     </Box>
 
-                    {/* File Upload Section */}
+                    {/* File & YouTube Upload Section */}
                     <Box sx={{ mb: 3, p: 2, border: '1px dashed #ccc', borderRadius: 2 }}>
+                        {/* YouTube Link Input */}
+                        <Stack direction="row" spacing={1} mb={2} alignItems="center">
+                             <TextField
+                                label="YouTube 링크"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                value={youtubeLink}
+                                onChange={(e) => setYoutubeLink(e.target.value)}
+                                placeholder="https://www.youtube.com/watch?v=..."
+                            />
+                            <Button 
+                                variant="contained" 
+                                onClick={handleAddYoutube}
+                                sx={{ whiteSpace: 'nowrap' }}
+                            >
+                                추가
+                            </Button>
+                        </Stack>
+                        
+                        <Divider sx={{ my: 2 }} />
+
                         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
                             <Button
                                 component="label"
