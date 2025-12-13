@@ -10,7 +10,10 @@ import {
     Divider,
     Stack,
     Chip,
-    Avatar
+    Avatar,
+    Dialog,
+    DialogContent,
+    IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/List';
@@ -19,6 +22,9 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 // Toast UI Viewer
 import { Viewer } from '@toast-ui/react-editor';
@@ -30,6 +36,33 @@ const FreeBoardRead = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
+    const [openPreview, setOpenPreview] = useState(false);
+    const [previewFile, setPreviewFile] = useState(null);
+
+    const handlePreview = (file) => {
+        setPreviewFile(file);
+        setOpenPreview(true);
+    };
+
+    const handleClosePreview = () => {
+        setOpenPreview(false);
+        setPreviewFile(null);
+    };
+
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        let videoId = '';
+        if (url.includes('v=')) {
+            videoId = url.split('v=')[1];
+            const ampersandPosition = videoId.indexOf('&');
+            if(ampersandPosition !== -1) {
+                videoId = videoId.substring(0, ampersandPosition);
+            }
+        } else if (url.includes('youtu.be/')) {
+           videoId = url.split('youtu.be/')[1];
+        }
+        return `https://www.youtube.com/embed/${videoId}`;
+    };
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -115,32 +148,120 @@ const FreeBoardRead = () => {
 
                 {/* Content (Viewer) */}
                 <Box sx={{ minHeight: '300px', mb: 4 }}>
-                    <Viewer initialValue={post.content || ''} />
+                    <Viewer 
+                        initialValue={post.content ? post.content.replace(/!\[youtube_video\]\(https:\/\/img\.youtube\.com\/vi\/([a-zA-Z0-9_-]+)\/0\.jpg\)/g, (match, videoId) => {
+                            return `<div style="display: flex; justify-content: center; margin: 20px 0;"><iframe src="https://www.youtube.com/embed/${videoId}" width="640" height="360" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                        }) : ''}
+                        customHTMLSanitizer={html => {
+                            return html; // Allow iframe
+                        }}
+                    />
                 </Box>
 
-                {/* Files */}
-                {post.fileDTOs && post.fileDTOs.length > 0 && (
-                    <Box sx={{ mt: 4, p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
-                        <Typography variant="h6" gutterBottom>첨부 파일</Typography>
-                        {post.fileDTOs.map((file, idx) => (
-                            <Box key={idx} mb={2}>
-                                {file.type === 'IMAGE' ? (
-                                    <img 
-                                        src={`${BACKEND_API_BASE_URL}/display?fileName=${file.imageURL}`} 
-                                        alt={file.fileName} 
-                                        style={{ maxWidth: '100%', borderRadius: '8px' }} 
-                                    />
-                                ) : (
-                                    <video 
-                                        src={`${BACKEND_API_BASE_URL}/display?fileName=${file.imageURL}`} 
-                                        controls 
-                                        style={{ maxWidth: '100%' }} 
-                                    />
-                                )}
-                            </Box>
-                        ))}
+
+                {/* Attached Files List */}
+                {post.fileDTOs && post.fileDTOs.filter(f => f.type !== 'YOUTUBE').length > 0 && (
+                    <Box sx={{ mt: 4, p: 3, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+                        <Typography variant="h6" gutterBottom fontWeight="bold">첨부 파일</Typography>
+                        <Stack spacing={1}>
+                            {post.fileDTOs.filter(f => f.type !== 'YOUTUBE').map((file, idx) => {
+                                const fileUrl = `${BACKEND_API_BASE_URL}/display?fileName=${file.imageURL}`;
+                                const downloadUrl = `${BACKEND_API_BASE_URL}/download?fileName=${file.imageURL}`;
+                                return (
+                                    <Stack 
+                                        key={idx} 
+                                        direction="row" 
+                                        alignItems="center" 
+                                        justifyContent="space-between"
+                                        sx={{ 
+                                            p: 1.5, 
+                                            bgcolor: '#fff', 
+                                            borderRadius: 1, 
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                            transition: 'transform 0.2s',
+                                            '&:hover': { transform: 'translateY(-2px)' }
+                                        }}
+                                    >
+                                        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ overflow: 'hidden' }}>
+                                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#e3f2fd', color: '#1976d2' }}>
+                                                <ListIcon fontSize="small" />
+                                            </Avatar>
+                                            <Typography variant="body2" noWrap sx={{ maxWidth: '300px' }}>{file.fileName}</Typography>
+                                        </Stack>
+                                        
+                                        <Stack direction="row" spacing={1}>
+                                            {(file.type === 'IMAGE' || file.type === 'VIDEO') && (
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => handlePreview(file)}
+                                                    title="미리보기"
+                                                    sx={{ bgcolor: '#f5f5f5' }}
+                                                >
+                                                    <SearchIcon color="primary" />
+                                                </IconButton>
+                                            )}
+                                            <Button 
+                                                variant="outlined" 
+                                                size="small" 
+                                                href={downloadUrl}
+                                                // download attribute is optional when server sets Content-Disposition
+                                                sx={{ minWidth: '80px' }}
+                                            >
+                                                다운로드
+                                            </Button>
+                                        </Stack>
+                                    </Stack>
+                                );
+                            })}
+                        </Stack>
                     </Box>
                 )}
+
+                {/* Preview Dialog */}
+                <Dialog 
+                    open={openPreview} 
+                    onClose={handleClosePreview}
+                    maxWidth="lg"
+                    PaperProps={{
+                        sx: { 
+                            bgcolor: 'transparent', 
+                            boxShadow: 'none',
+                            maxHeight: '90vh',
+                            overflow: 'visible'
+                        }
+                    }}
+                >
+                    <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <IconButton 
+                            onClick={handleClosePreview}
+                            sx={{ 
+                                position: 'absolute', 
+                                top: -40, 
+                                right: 0, 
+                                color: 'white', 
+                                bgcolor: 'rgba(0,0,0,0.5)', 
+                                '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' } 
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        {previewFile && previewFile.type === 'IMAGE' && (
+                            <img 
+                                src={`${BACKEND_API_BASE_URL}/display?fileName=${previewFile.imageURL}`} 
+                                alt="Preview" 
+                                style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '8px', boxShadow: '0 8px 16px rgba(0,0,0,0.3)' }} 
+                            />
+                        )}
+                        {previewFile && previewFile.type === 'VIDEO' && (
+                            <video 
+                                src={`${BACKEND_API_BASE_URL}/display?fileName=${previewFile.imageURL}`} 
+                                controls 
+                                autoPlay
+                                style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '8px', boxShadow: '0 8px 16px rgba(0,0,0,0.3)' }} 
+                            />
+                        )}
+                    </Box>
+                </Dialog>
 
                 {/* Like Button */}
                 <Box display="flex" justifyContent="center" mt={6} mb={4}>

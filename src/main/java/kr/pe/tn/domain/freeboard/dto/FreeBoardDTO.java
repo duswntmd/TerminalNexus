@@ -59,7 +59,7 @@ public class FreeBoardDTO {
                     .modDate(entity.getModDate())
                     .fileDTOs(entity.getFiles().stream()
                             .map(file -> new UploadResultDTO(file.getOriginalName(), file.getUuid(), file.getPath(),
-                                    file.getType()))
+                                    file.getType(), file.getYoutubeUrl()))
                             .toList())
                     .build();
         }

@@ -135,7 +135,8 @@ public class SecurityConfig {
                                                                 "/user/loginForm", "/user/login", "/user/registerForm",
                                                                 "/user/register",
                                                                 "/api/message", "/oauth2/**", "/login/**", "/logout",
-                                                                "/jwt/**", "/user/exist/**")
+                                                                "/jwt/**", "/user/exist/**", "/display", "/download",
+                                                                "/upload/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
                                                 .requestMatchers("/admin").hasRole("ADMIN")
