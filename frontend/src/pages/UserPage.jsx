@@ -98,7 +98,17 @@ function UserPage() {
                 setError("");
             } else {
                 const errData = await res.json().catch(() => ({}));
-                const errMsg = errData.message || `수정 실패 (${res.status})`;
+                let errMsg = errData.message;
+
+                // 메시지가 없거나 불명확한 경우 상태 코드별 기본 메시지 제공
+                if (!errMsg) {
+                    if (res.status === 400 || res.status === 409) {
+                        errMsg = "이미 사용 중인 닉네임이거나 입력값이 올바르지 않습니다.";
+                    } else {
+                        errMsg = `수정 실패 (${res.status})`;
+                    }
+                }
+                
                 setError(errMsg);
             }
         } catch (err) {

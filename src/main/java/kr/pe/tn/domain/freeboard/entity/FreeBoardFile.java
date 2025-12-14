@@ -24,7 +24,7 @@ public class FreeBoardFile {
 
     private String path;
 
-    private String type; // IMAGE, VIDEO, ETC
+    private String type; // IMAGE, VIDEO, YOUTUBE (Deprecated), FILE
 
     // 유저가 요청한 YouTube URL (있을 경우)
     private String youtubeUrl;

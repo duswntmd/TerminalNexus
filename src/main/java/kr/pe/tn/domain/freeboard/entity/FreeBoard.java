@@ -51,6 +51,9 @@ public class FreeBoard {
     @Builder.Default
     private Long likeCount = 0L;
 
+    @Builder.Default
+    private Long dislikeCount = 0L;
+
     // 댓글 OneToMany
     @Builder.Default
     @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -65,6 +68,11 @@ public class FreeBoard {
     @Builder.Default
     @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FreeBoardLike> likes = new ArrayList<>();
+
+    // 싫어요 OneToMany (Optional, for cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FreeBoardDislike> dislikes = new ArrayList<>();
 
     public void changeTitle(String title) {
         this.title = title;
@@ -87,6 +95,16 @@ public class FreeBoard {
     }
 
     public void updateLikeCount(int delta) {
+        if (this.likeCount == null) {
+            this.likeCount = 0L;
+        }
         this.likeCount = this.likeCount + delta;
+    }
+
+    public void updateDislikeCount(int delta) {
+        if (this.dislikeCount == null) {
+            this.dislikeCount = 0L;
+        }
+        this.dislikeCount = this.dislikeCount + delta;
     }
 }
