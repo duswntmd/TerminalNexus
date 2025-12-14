@@ -36,37 +36,59 @@ public class UploadController {
 
         for (MultipartFile uploadFile : uploadFiles) {
 
-            // Image check
-            if (!uploadFile.getContentType().startsWith("image") && !uploadFile.getContentType().startsWith("video")) {
-                // Allow video too
-                // return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            if (uploadFile.isEmpty()) {
+                continue;
             }
 
             String originalName = uploadFile.getOriginalFilename();
+            // NPE Check
+            if (originalName == null || originalName.trim().isEmpty()) {
+                originalName = "unknown_" + UUID.randomUUID().toString();
+            }
+
             String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
 
             String folderPath = makeFolder();
             String uuid = UUID.randomUUID().toString();
-            String saveName = uploadPath + File.separator + folderPath + File.separator + uuid + "_" + fileName;
+            // Debug Log
+            System.out.println("Uploading... Name: " + fileName + ", Size: " + uploadFile.getSize());
 
+            String saveName = uploadPath + File.separator + folderPath + File.separator + uuid + "_" + fileName;
             Path savePath = Paths.get(saveName);
 
             try {
                 uploadFile.transferTo(savePath); // Save file
 
                 String contentType = uploadFile.getContentType();
-                String type;
+                if (contentType == null) {
+                    try {
+                        contentType = Files.probeContentType(savePath);
+                    } catch (IOException e) {
+                        System.out.println("Failed to probe content type for: " + fileName);
+                    }
+                }
+
+                String type = "FILE";
+                String lowerOriginalName = originalName.toLowerCase();
+
                 if (contentType != null && contentType.startsWith("image")) {
                     type = "IMAGE";
-                } else if (contentType != null && contentType.startsWith("video")) {
+                } else if ((contentType != null && contentType.startsWith("video")) ||
+                        (lowerOriginalName.endsWith(".mp4") || lowerOriginalName.endsWith(".avi")
+                                || lowerOriginalName.endsWith(".mov") || lowerOriginalName.endsWith(".mkv")
+                                || lowerOriginalName.endsWith(".webm"))) {
                     type = "VIDEO";
-                } else {
-                    type = "FILE";
+                } else if (lowerOriginalName.endsWith(".jpg") || lowerOriginalName.endsWith(".jpeg")
+                        || lowerOriginalName.endsWith(".png") || lowerOriginalName.endsWith(".gif")
+                        || lowerOriginalName.endsWith(".bmp")) {
+                    type = "IMAGE";
                 }
-                resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath, type, null));
+
+                resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath, type));
 
             } catch (IOException e) {
                 e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return new ResponseEntity<>(resultDTOList, HttpStatus.OK);
@@ -84,20 +106,65 @@ public class UploadController {
     }
 
     @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName) {
-        ResponseEntity<byte[]> result = null;
+    public ResponseEntity<byte[]> getFile(
+            String fileName,
+            @RequestHeader(value = "Range", required = false) String rangeHeader) {
+
         try {
             String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
             File file = new File(uploadPath + File.separator + srcFileName);
-            HttpHeaders header = new HttpHeaders();
 
-            // MIME type
-            header.add("Content-Type", Files.probeContentType(file.toPath()));
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+            if (!file.exists()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            long fileSize = file.length();
+            String contentType = Files.probeContentType(file.toPath());
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", contentType);
+            headers.add("Accept-Ranges", "bytes");
+
+            // Handle Range requests (essential for video streaming)
+            if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
+                String[] ranges = rangeHeader.substring(6).split("-");
+                long start = Long.parseLong(ranges[0]);
+                long end = ranges.length > 1 && !ranges[1].isEmpty()
+                        ? Long.parseLong(ranges[1])
+                        : fileSize - 1;
+
+                if (start >= fileSize || end >= fileSize || start > end) {
+                    headers.add("Content-Range", "bytes */" + fileSize);
+                    return new ResponseEntity<>(headers, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+                }
+
+                long contentLength = end - start + 1;
+
+                headers.add("Content-Range", "bytes " + start + "-" + end + "/" + fileSize);
+                headers.add("Content-Length", String.valueOf(contentLength));
+
+                // Read the requested byte range
+                byte[] data = new byte[(int) contentLength];
+                try (var raf = new java.io.RandomAccessFile(file, "r")) {
+                    raf.seek(start);
+                    raf.readFully(data);
+                }
+
+                return new ResponseEntity<>(data, headers, HttpStatus.PARTIAL_CONTENT);
+            }
+
+            // Full file response (no range request)
+            headers.add("Content-Length", String.valueOf(fileSize));
+            byte[] data = FileCopyUtils.copyToByteArray(file);
+            return new ResponseEntity<>(data, headers, HttpStatus.OK);
+
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
     @GetMapping("/download")

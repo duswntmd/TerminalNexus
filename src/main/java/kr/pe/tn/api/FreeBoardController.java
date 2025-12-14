@@ -51,4 +51,10 @@ public class FreeBoardController {
         return ResponseEntity.ok(Collections.singletonMap("isLiked", isLiked));
     }
 
+    @PostMapping("/{id}/dislike")
+    public ResponseEntity<Map<String, Boolean>> toggleDislike(@PathVariable("id") Long id) {
+        boolean isDisliked = freeBoardService.toggleDislike(id);
+        return ResponseEntity.ok(Collections.singletonMap("isDisliked", isDisliked));
+    }
+
 }
