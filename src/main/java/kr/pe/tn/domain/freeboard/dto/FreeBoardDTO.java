@@ -33,7 +33,9 @@ public class FreeBoardDTO {
         private String writerUsername;
         private Long viewCount;
         private Long likeCount;
+        private Long dislikeCount;
         private boolean isLiked;
+        private boolean isDisliked;
         private LocalDateTime regDate;
         private LocalDateTime modDate;
         private int commentCount;
@@ -54,7 +56,9 @@ public class FreeBoardDTO {
                     .writerUsername(entity.getUser().getUsername())
                     .viewCount(entity.getViewCount())
                     .likeCount(entity.getLikeCount())
+                    .dislikeCount(entity.getDislikeCount())
                     .isLiked(false) // Default
+                    .isDisliked(false) // Default
                     .regDate(entity.getRegDate())
                     .modDate(entity.getModDate())
                     .fileDTOs(entity.getFiles().stream()

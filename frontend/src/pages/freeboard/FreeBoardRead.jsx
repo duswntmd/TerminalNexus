@@ -17,8 +17,10 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/List';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -104,6 +106,22 @@ const FreeBoardRead = () => {
                     ...prev, 
                     isLiked: result.isLiked,
                     likeCount: result.isLiked ? prev.likeCount + 1 : prev.likeCount - 1
+                }));
+            } else {
+                alert("로그인이 필요합니다.");
+            }
+        } catch(e) { console.error(e); }
+    };
+
+    const handleDislike = async () => {
+        try {
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/dislike`, { method: 'POST' });
+            if(res.ok) {
+                const result = await res.json();
+                setPost(prev => ({
+                    ...prev, 
+                    isDisliked: result.isDisliked,
+                    dislikeCount: result.isDisliked ? prev.dislikeCount + 1 : prev.dislikeCount - 1
                 }));
             } else {
                 alert("로그인이 필요합니다.");
@@ -263,17 +281,28 @@ const FreeBoardRead = () => {
                     </Box>
                 </Dialog>
 
-                {/* Like Button */}
-                <Box display="flex" justifyContent="center" mt={6} mb={4}>
+                {/* Like & Dislike Buttons */}
+                <Box display="flex" justifyContent="center" gap={2} mt={6} mb={4}>
                     <Button
                         variant={post.isLiked ? "contained" : "outlined"}
-                        color="error"
+                        color="primary"
                         size="large"
-                        startIcon={post.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        startIcon={post.isLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
                         onClick={handleLike}
                         sx={{ borderRadius: 10, px: 4, py: 1 }}
                     >
                         좋아요 {post.likeCount}
+                    </Button>
+                    
+                    <Button
+                        variant={post.isDisliked ? "contained" : "outlined"}
+                        color="error"
+                        size="large"
+                        startIcon={post.isDisliked ? <ThumbDownIcon /> : <ThumbDownOffAltIcon />}
+                        onClick={handleDislike}
+                        sx={{ borderRadius: 10, px: 4, py: 1 }}
+                    >
+                        싫어요 {post.dislikeCount || 0}
                     </Button>
                 </Box>
 

@@ -5,6 +5,7 @@ import kr.pe.tn.domain.common.dto.PageResponseDTO;
 import kr.pe.tn.domain.freeboard.dto.FreeBoardDTO;
 import kr.pe.tn.domain.freeboard.dto.UploadResultDTO;
 import kr.pe.tn.domain.freeboard.entity.FreeBoard;
+import kr.pe.tn.domain.freeboard.repository.FreeBoardDislikeRepository;
 import kr.pe.tn.domain.freeboard.repository.FreeBoardLikeRepository;
 import kr.pe.tn.domain.freeboard.repository.FreeBoardRepository;
 import kr.pe.tn.domain.user.entity.UserEntity;
@@ -29,6 +30,7 @@ public class FreeBoardService {
     private final FreeBoardRepository freeBoardRepository;
     private final UserRepository userRepository;
     private final FreeBoardLikeRepository freeBoardLikeRepository;
+    private final FreeBoardDislikeRepository freeBoardDislikeRepository;
 
     // 등록
     public Long register(FreeBoardDTO.Request requestDTO) {
@@ -73,12 +75,13 @@ public class FreeBoardService {
 
         FreeBoardDTO.Response response = FreeBoardDTO.Response.from(freeBoard);
 
-        // Check Like
+        // Check Like & Dislike
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!username.equals("anonymousUser")) {
             UserEntity user = userRepository.findByUsernameAndIsLock(username, false).orElse(null);
             if (user != null) {
                 response.setLiked(freeBoardLikeRepository.existsByUserAndFreeBoard(user, freeBoard));
+                response.setDisliked(freeBoardDislikeRepository.existsByUserAndFreeBoard(user, freeBoard));
             }
         }
 
@@ -161,6 +164,36 @@ public class FreeBoardService {
                     .build();
             freeBoardLikeRepository.save(like);
             freeBoard.updateLikeCount(1);
+            return true;
+        }
+    }
+
+    // 싫어요 토글
+    public boolean toggleDislike(Long boardId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findByUsernameAndIsLock(username, false)
+                .orElseThrow(() -> new NoSuchElementException("User not found or locked"));
+
+        FreeBoard freeBoard = freeBoardRepository.findById(boardId)
+                .orElseThrow(() -> new NoSuchElementException("Board not found"));
+
+        if (freeBoardDislikeRepository.existsByUserAndFreeBoard(user, freeBoard)) {
+            // Cancel Dislike
+            kr.pe.tn.domain.freeboard.entity.FreeBoardDislike dislike = freeBoardDislikeRepository
+                    .findByUserAndFreeBoard(user, freeBoard)
+                    .orElseThrow();
+            freeBoardDislikeRepository.delete(dislike);
+            freeBoard.updateDislikeCount(-1);
+            return false;
+        } else {
+            // Add Dislike
+            kr.pe.tn.domain.freeboard.entity.FreeBoardDislike dislike = kr.pe.tn.domain.freeboard.entity.FreeBoardDislike
+                    .builder()
+                    .user(user)
+                    .freeBoard(freeBoard)
+                    .build();
+            freeBoardDislikeRepository.save(dislike);
+            freeBoard.updateDislikeCount(1);
             return true;
         }
     }

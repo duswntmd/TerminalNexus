@@ -14,6 +14,13 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor
 public class UploadResultDTO implements Serializable {
 
+    public UploadResultDTO(String fileName, String uuid, String folderPath, String type) {
+        this.fileName = fileName;
+        this.uuid = uuid;
+        this.folderPath = folderPath;
+        this.type = type;
+    }
+
     private String fileName;
     private String uuid;
     private String folderPath;
