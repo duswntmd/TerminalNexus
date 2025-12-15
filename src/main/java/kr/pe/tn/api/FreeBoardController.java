@@ -1,5 +1,6 @@
 package kr.pe.tn.api;
 
+import jakarta.servlet.http.HttpSession;
 import kr.pe.tn.domain.common.dto.PageRequestDTO;
 import kr.pe.tn.domain.common.dto.PageResponseDTO;
 import kr.pe.tn.domain.freeboard.dto.FreeBoardDTO;
@@ -25,8 +26,8 @@ public class FreeBoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FreeBoardDTO.Response> read(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(freeBoardService.read(id));
+    public ResponseEntity<FreeBoardDTO.Response> read(@PathVariable("id") Long id, HttpSession session) {
+        return ResponseEntity.ok(freeBoardService.read(id, session));
     }
 
     @PutMapping("/{id}")

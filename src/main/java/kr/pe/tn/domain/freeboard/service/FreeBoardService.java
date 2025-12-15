@@ -66,22 +66,35 @@ public class FreeBoardService {
     // 조회
     // 사실 조회수 증가 때문에 Transactional 필요함
     @Transactional
-    public FreeBoardDTO.Response read(Long id) {
+    public FreeBoardDTO.Response read(Long id, jakarta.servlet.http.HttpSession session) {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Board not found"));
 
-        // 조회수 증가
-        freeBoard.increaseViewCount();
+        // 조회수 증가 (세션 기반 중복 방지)
+        String viewedKey = "viewed_board_" + id;
+        if (session.getAttribute(viewedKey) == null) {
+            freeBoard.increaseViewCount();
+            session.setAttribute(viewedKey, true);
+            // 세션 유지 시간: 30분 (초 단위)
+            session.setMaxInactiveInterval(1800);
+        }
 
         FreeBoardDTO.Response response = FreeBoardDTO.Response.from(freeBoard);
 
-        // Check Like & Dislike
+        // Check Like & Dislike & 권한 체크
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!username.equals("anonymousUser")) {
             UserEntity user = userRepository.findByUsernameAndIsLock(username, false).orElse(null);
             if (user != null) {
                 response.setLiked(freeBoardLikeRepository.existsByUserAndFreeBoard(user, freeBoard));
                 response.setDisliked(freeBoardDislikeRepository.existsByUserAndFreeBoard(user, freeBoard));
+
+                // 권한 체크: 작성자이거나 관리자인 경우
+                boolean isWriter = freeBoard.getUser().getUsername().equals(username);
+                boolean isAdmin = user.getRoleType() == kr.pe.tn.domain.user.entity.UserRoleType.ADMIN;
+
+                response.setCanEdit(isWriter || isAdmin);
+                response.setCanDelete(isWriter || isAdmin);
             }
         }
 
@@ -101,6 +114,27 @@ public class FreeBoardService {
 
         freeBoard.changeTitle(requestDTO.getTitle());
         freeBoard.changeContent(requestDTO.getContent());
+
+        // 삭제할 파일 처리
+        if (requestDTO.getDeletedFileIds() != null && !requestDTO.getDeletedFileIds().isEmpty()) {
+            freeBoard.getFiles().removeIf(file -> requestDTO.getDeletedFileIds().contains(file.getUuid()));
+        }
+
+        // 새로운 파일 추가
+        if (requestDTO.getFileDTOs() != null) {
+            requestDTO.getFileDTOs().forEach(fileDTO -> {
+                kr.pe.tn.domain.freeboard.entity.FreeBoardFile boardFile = kr.pe.tn.domain.freeboard.entity.FreeBoardFile
+                        .builder()
+                        .uuid(fileDTO.getUuid())
+                        .originalName(fileDTO.getFileName())
+                        .path(fileDTO.getFolderPath())
+                        .type(fileDTO.getType())
+                        .youtubeUrl(fileDTO.getYoutubeUrl())
+                        .freeBoard(freeBoard)
+                        .build();
+                freeBoard.addFile(boardFile);
+            });
+        }
 
         return freeBoard.getId();
     }
