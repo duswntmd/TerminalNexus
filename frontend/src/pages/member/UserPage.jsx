@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchWithAccess } from "../util/fetchUtil";
-import { useAuth } from "../context/AuthContext";
+import { fetchWithAccess } from "../../util/fetchUtil";
+import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from 'react-i18next';
 import "./UserPage.css";
 

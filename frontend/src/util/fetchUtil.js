@@ -31,6 +31,9 @@ export async function fetchWithAccess(url, options = {}) {
     if (!options.headers) options.headers = {};
     options.headers["Authorization"] = `Bearer ${accessToken}`;
     
+    // 세션 쿠키 전달을 위한 credentials 설정
+    options.credentials = 'include';
+    
     // 요청 진행
     let response = await fetch(url, options);
 

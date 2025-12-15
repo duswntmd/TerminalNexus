@@ -13,9 +13,11 @@ import {
     Avatar,
     Dialog,
     DialogContent,
-    IconButton
+    IconButton,
+    TextField
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import ListIcon from '@mui/icons-material/List';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
@@ -40,6 +42,12 @@ const FreeBoardRead = () => {
     const [post, setPost] = useState(null);
     const [openPreview, setOpenPreview] = useState(false);
     const [previewFile, setPreviewFile] = useState(null);
+    
+    // 댓글 관련 상태
+    const [comments, setComments] = useState([]);
+    const [commentText, setCommentText] = useState('');
+    const [replyMode, setReplyMode] = useState({ active: false, parentId: null, parentNickname: '' });
+    const [editMode, setEditMode] = useState({ active: false, commentId: null, text: '' });
 
     const handlePreview = (file) => {
         setPreviewFile(file);
@@ -71,7 +79,11 @@ const FreeBoardRead = () => {
             try {
                 const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}`, { method: 'GET' });
                 if (res.ok) {
-                    setPost(await res.json());
+                    const data = await res.json();
+                    console.log('📖 게시글 데이터:', data);
+                    console.log('📝 Content:', data.content);
+                    console.log('📎 파일 목록:', data.fileDTOs);
+                    setPost(data);
                 } else {
                     alert("Could not load post");
                     navigate('/freeboard');
@@ -129,6 +141,114 @@ const FreeBoardRead = () => {
         } catch(e) { console.error(e); }
     };
 
+    // 댓글 조회
+    const fetchComments = async () => {
+        try {
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/comments`, { method: 'GET' });
+            if (res.ok) {
+                const data = await res.json();
+                setComments(data);
+            }
+        } catch (e) {
+            console.error('댓글 조회 오류:', e);
+        }
+    };
+
+    // 댓글 작성
+    const handleCommentSubmit = async () => {
+        if (!commentText.trim()) {
+            alert('댓글 내용을 입력하세요.');
+            return;
+        }
+
+        try {
+            const payload = {
+                comment: commentText,
+                parentId: replyMode.active ? replyMode.parentId : null
+            };
+
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                setCommentText('');
+                setReplyMode({ active: false, parentId: null, parentNickname: '' });
+                fetchComments();
+            }
+        } catch (e) {
+            console.error('댓글 작성 오류:', e);
+            alert('댓글 작성에 실패했습니다.');
+        }
+    };
+
+    // 댓글 수정
+    const handleCommentEdit = async (commentId) => {
+        if (!editMode.text.trim()) {
+            alert('댓글 내용을 입력하세요.');
+            return;
+        }
+
+        try {
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/comments/${commentId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ comment: editMode.text })
+            });
+
+            if (res.ok) {
+                setEditMode({ active: false, commentId: null, text: '' });
+                fetchComments();
+            }
+        } catch (e) {
+            console.error('댓글 수정 오류:', e);
+            alert('댓글 수정에 실패했습니다.');
+        }
+    };
+
+    // 댓글 삭제
+    const handleCommentDelete = async (commentId) => {
+        if (!confirm('댓글을 삭제하시겠습니까?')) return;
+
+        try {
+            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}/comments/${commentId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                fetchComments();
+            }
+        } catch (e) {
+            console.error('댓글 삭제 오류:', e);
+            alert('댓글 삭제에 실패했습니다.');
+        }
+    };
+
+    // 게시글과 댓글 동시 조회
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}`, { method: 'GET' });
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log('📖 게시글 데이터:', data);
+                    console.log('📝 Content:', data.content);
+                    console.log('📎 파일 목록:', data.fileDTOs);
+                    setPost(data);
+                    fetchComments(); // 댓글도 함께 조회
+                } else {
+                    alert("Could not load post");
+                    navigate('/freeboard');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchData();
+    }, [id, navigate]);
+
     if (!post) return <Container sx={{ mt: 4 }}>Loading...</Container>;
 
     return (
@@ -167,11 +287,46 @@ const FreeBoardRead = () => {
                 {/* Content (Viewer) */}
                 <Box sx={{ minHeight: '300px', mb: 4 }}>
                     <Viewer 
-                        initialValue={post.content ? post.content.replace(/!\[youtube_video\]\(https:\/\/img\.youtube\.com\/vi\/([a-zA-Z0-9_-]+)\/0\.jpg\)/g, (match, videoId) => {
-                            return `<div style="display: flex; justify-content: center; margin: 20px 0;"><iframe src="https://www.youtube.com/embed/${videoId}" width="640" height="360" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
-                        }) : ''}
-                        customHTMLSanitizer={html => {
-                            return html; // Allow iframe
+                        initialValue={post.content ? post.content
+                            // YouTube 비디오 처리 (개별 div로 완전히 감싸기)
+                            .replace(/!\[youtube_video\]\(https:\/\/img\.youtube\.com\/vi\/([a-zA-Z0-9_-]+)\/0\.jpg\)/g, (match, videoId) => {
+                                return `\n\n<div style="display: flex; justify-content: center; margin: 20px 0;"><iframe src="https://www.youtube.com/embed/${videoId}" width="640" height="360" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\n\n`;
+                            })
+                            // 일반 이미지를 HTML img 태그로 변환 (개별 div로 감싸기)
+                            .replace(/!\[(.*?)\]\((http:\/\/localhost:8080\/display\?fileName=.*?)\)/g, (match, alt, url) => {
+                                return `\n\n<div style="text-align: center; margin: 20px 0;"><img src="${url}" alt="${alt}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /></div>\n\n`;
+                            })
+                            : ''}
+                        linkAttributes={{
+                            target: '_blank',
+                            rel: 'noopener noreferrer'
+                        }}
+                        customHTMLRenderer={{
+                            htmlBlock: {
+                                iframe(node) {
+                                    return [
+                                        { type: 'openTag', tagName: 'iframe', outerNewLine: true, attributes: node.attrs },
+                                        { type: 'html', content: node.childrenHTML },
+                                        { type: 'closeTag', tagName: 'iframe', outerNewLine: true }
+                                    ];
+                                },
+                                div(node) {
+                                    return [
+                                        { type: 'openTag', tagName: 'div', outerNewLine: true, attributes: node.attrs },
+                                        { type: 'html', content: node.childrenHTML },
+                                        { type: 'closeTag', tagName: 'div', outerNewLine: true }
+                                    ];
+                                },
+                                img(node) {
+                                    return [
+                                        { type: 'openTag', tagName: 'img', outerNewLine: true, attributes: node.attrs, selfClose: true }
+                                    ];
+                                }
+                            }
+                        }}
+                        customHTMLSanitizer={(html) => {
+                            // iframe, div, img 모두 허용
+                            return html;
                         }}
                     />
                 </Box>
@@ -308,6 +463,243 @@ const FreeBoardRead = () => {
 
                 <Divider sx={{ mb: 3 }} />
 
+                {/* 댓글 섹션 */}
+                <Box sx={{ mb: 4 }}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        댓글 {comments.length}개
+                    </Typography>
+
+                    {/* 댓글 작성 */}
+                    <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: '#f9f9f9' }}>
+                        {replyMode.active && (
+                            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body2" color="primary">
+                                    @{replyMode.parentNickname}님에게 답글 작성 중...
+                                </Typography>
+                                <Button 
+                                    size="small" 
+                                    onClick={() => {
+                                        setReplyMode({ active: false, parentId: null, parentNickname: '' });
+                                        setCommentText('');
+                                    }}
+                                >
+                                    취소
+                                </Button>
+                            </Box>
+                        )}
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={3}
+                            placeholder={replyMode.active ? "답글을 입력하세요..." : "댓글을 입력하세요..."}
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            variant="outlined"
+                            sx={{ mb: 1, bgcolor: 'white' }}
+                        />
+                        <Stack direction="row" justifyContent="flex-end">
+                            <Button 
+                                variant="contained" 
+                                onClick={handleCommentSubmit}
+                                disabled={!commentText.trim()}
+                            >
+                                {replyMode.active ? '답글 작성' : '댓글 작성'}
+                            </Button>
+                        </Stack>
+                    </Paper>
+
+                    {/* 댓글 목록 */}
+                    <Stack spacing={2}>
+                        {comments.map((comment) => (
+                            <Box key={comment.id}>
+                                {/* 댓글 */}
+                                <Paper elevation={1} sx={{ p: 2 }}>
+                                    <Stack direction="row" spacing={2} alignItems="flex-start">
+                                        <Avatar sx={{ bgcolor: 'primary.main' }}>
+                                            {comment.writerNickname?.charAt(0) || 'U'}
+                                        </Avatar>
+                                        <Box sx={{ flex: 1 }}>
+                                            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                    {comment.writerNickname}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {new Date(comment.regDate).toLocaleString('ko-KR')}
+                                                </Typography>
+                                                {comment.modDate !== comment.regDate && (
+                                                    <Chip label="수정됨" size="small" variant="outlined" />
+                                                )}
+                                            </Stack>
+
+                                            {/* 수정 모드 */}
+                                            {editMode.active && editMode.commentId === comment.id ? (
+                                                <>
+                                                    <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        rows={2}
+                                                        value={editMode.text}
+                                                        onChange={(e) => setEditMode({ ...editMode, text: e.target.value })}
+                                                        sx={{ mb: 1 }}
+                                                    />
+                                                    <Stack direction="row" spacing={1}>
+                                                        <Button 
+                                                            size="small" 
+                                                            variant="contained"
+                                                            onClick={() => handleCommentEdit(comment.id)}
+                                                        >
+                                                            저장
+                                                        </Button>
+                                                        <Button 
+                                                            size="small"
+                                                            onClick={() => setEditMode({ active: false, commentId: null, text: '' })}
+                                                        >
+                                                            취소
+                                                        </Button>
+                                                    </Stack>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Typography variant="body1" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
+                                                        {comment.isDeleted ? '삭제된 댓글입니다.' : comment.comment}
+                                                    </Typography>
+                                                    {!comment.isDeleted && (
+                                                        <Stack direction="row" spacing={1}>
+                                                            <Button 
+                                                                size="small"
+                                                                onClick={() => setReplyMode({ 
+                                                                    active: true, 
+                                                                    parentId: comment.id, 
+                                                                    parentNickname: comment.writerNickname 
+                                                                })}
+                                                            >
+                                                                답글
+                                                            </Button>
+                                                            {comment.canEdit && (
+                                                                <Button 
+                                                                    size="small"
+                                                                    onClick={() => setEditMode({ 
+                                                                        active: true, 
+                                                                        commentId: comment.id, 
+                                                                        text: comment.comment 
+                                                                    })}
+                                                                >
+                                                                    수정
+                                                                </Button>
+                                                            )}
+                                                            {comment.canDelete && (
+                                                                <Button 
+                                                                    size="small" 
+                                                                    color="error"
+                                                                    onClick={() => handleCommentDelete(comment.id)}
+                                                                >
+                                                                    삭제
+                                                                </Button>
+                                                            )}
+                                                        </Stack>
+                                                    )}
+                                                </>
+                                            )}
+                                        </Box>
+                                    </Stack>
+                                </Paper>
+
+                                {/* 대댓글 */}
+                                {comment.children && comment.children.length > 0 && (
+                                    <Box sx={{ ml: 6, mt: 1 }}>
+                                        <Stack spacing={1}>
+                                            {comment.children.map((reply) => (
+                                                <Paper key={reply.id} elevation={1} sx={{ p: 2, bgcolor: '#f5f5f5' }}>
+                                                    <Stack direction="row" spacing={2} alignItems="flex-start">
+                                                        <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
+                                                            {reply.writerNickname?.charAt(0) || 'U'}
+                                                        </Avatar>
+                                                        <Box sx={{ flex: 1 }}>
+                                                            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                    {reply.writerNickname}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    {new Date(reply.regDate).toLocaleString('ko-KR')}
+                                                                </Typography>
+                                                                {reply.modDate !== reply.regDate && (
+                                                                    <Chip label="수정됨" size="small" variant="outlined" />
+                                                                )}
+                                                            </Stack>
+
+                                                            {/* 대댓글 수정 모드 */}
+                                                            {editMode.active && editMode.commentId === reply.id ? (
+                                                                <>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        multiline
+                                                                        rows={2}
+                                                                        value={editMode.text}
+                                                                        onChange={(e) => setEditMode({ ...editMode, text: e.target.value })}
+                                                                        sx={{ mb: 1 }}
+                                                                    />
+                                                                    <Stack direction="row" spacing={1}>
+                                                                        <Button 
+                                                                            size="small" 
+                                                                            variant="contained"
+                                                                            onClick={() => handleCommentEdit(reply.id)}
+                                                                        >
+                                                                            저장
+                                                                        </Button>
+                                                                        <Button 
+                                                                            size="small"
+                                                                            onClick={() => setEditMode({ active: false, commentId: null, text: '' })}
+                                                                        >
+                                                                            취소
+                                                                        </Button>
+                                                                    </Stack>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Typography variant="body2" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
+                                                                        {reply.isDeleted ? '삭제된 댓글입니다.' : reply.comment}
+                                                                    </Typography>
+                                                                    {!reply.isDeleted && (
+                                                                        <Stack direction="row" spacing={1}>
+                                                                            {reply.canEdit && (
+                                                                                <Button 
+                                                                                    size="small"
+                                                                                    onClick={() => setEditMode({ 
+                                                                                        active: true, 
+                                                                                        commentId: reply.id, 
+                                                                                        text: reply.comment 
+                                                                                    })}
+                                                                                >
+                                                                                    수정
+                                                                                </Button>
+                                                                            )}
+                                                                            {reply.canDelete && (
+                                                                                <Button 
+                                                                                    size="small" 
+                                                                                    color="error"
+                                                                                    onClick={() => handleCommentDelete(reply.id)}
+                                                                                >
+                                                                                    삭제
+                                                                                </Button>
+                                                                            )}
+                                                                        </Stack>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </Box>
+                                                    </Stack>
+                                                </Paper>
+                                            ))}
+                                        </Stack>
+                                    </Box>
+                                )}
+                            </Box>
+                        ))}
+                    </Stack>
+                </Box>
+
+                <Divider sx={{ mb: 3 }} />
+
                 {/* Footer Actions */}
                 <Stack direction="row" justifyContent="space-between">
                     <Button 
@@ -317,14 +709,30 @@ const FreeBoardRead = () => {
                     >
                         목록
                     </Button>
-                    <Button 
-                        variant="contained" 
-                        color="error" 
-                        startIcon={<DeleteIcon />} 
-                        onClick={handleDelete}
-                    >
-                        삭제
-                    </Button>
+                    {(post.canEdit || post.canDelete) && (
+                        <Stack direction="row" spacing={1}>
+                            {post.canEdit && (
+                                <Button 
+                                    variant="contained" 
+                                    color="primary" 
+                                    startIcon={<EditIcon />} 
+                                    onClick={() => navigate(`/freeboard/edit/${id}`)}
+                                >
+                                    수정
+                                </Button>
+                            )}
+                            {post.canDelete && (
+                                <Button 
+                                    variant="contained" 
+                                    color="error" 
+                                    startIcon={<DeleteIcon />} 
+                                    onClick={handleDelete}
+                                >
+                                    삭제
+                                </Button>
+                            )}
+                        </Stack>
+                    )}
                 </Stack>
             </Paper>
         </Container>

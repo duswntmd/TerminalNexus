@@ -1,33 +1,44 @@
+
+/* TerminalHero.css - Restored to Standard/Large Size for Section 2 */
+
 .terminal-hero {
   width: 100%;
-  height: 600px;
+  height: 600px; /* Standard large height */
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0; /* Light background behind terminal */
-  padding: 2rem;
+  padding: 0;
+  position: relative;
+  background: transparent;
+  z-index: 10;
 }
 
 .terminal-window {
   width: 100%;
-  max-width: 900px;
+  max-width: 900px; /* Wide standard width */
   height: 500px;
-  background-color: #0c0c0c;
-  border-radius: 8px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  background-color: rgba(22, 27, 33, 0.9); /* Dark background */
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); /* Strong shadow for depth */
   display: flex;
   flex-direction: column;
   overflow: hidden;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.terminal-window:hover {
+    transform: translateY(-5px);
 }
 
 .terminal-header {
-  background-color: #1f1f1f;
-  padding: 0.5rem 1rem;
+  background-color: #212830;
+  padding: 0.8rem 1.2rem;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .window-controls {
@@ -48,82 +59,70 @@
 .maximize { background-color: #27c93f; }
 
 .window-title {
-  color: #999;
+  color: #c9d1d9;
   font-size: 0.9rem;
-  margin: 0 auto; /* Center title */
-  transform: translateX(-26px); /* Compensate controls width roughly */
+  margin: 0 auto;
+  transform: translateX(-26px);
+  font-weight: 500;
 }
 
 .terminal-body {
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
-  color: #cccccc;
-  font-size: 1rem;
-  line-height: 1.5;
+  color: #e0e0e0;
+  font-size: 1.05rem;
+  line-height: 1.6;
   text-align: left;
 }
 
-/* Custom Scrollbar */
+/* Scrollbar */
 .terminal-body::-webkit-scrollbar {
   width: 10px;
 }
 .terminal-body::-webkit-scrollbar-track {
-  background: #0c0c0c; 
+  background: transparent; 
 }
 .terminal-body::-webkit-scrollbar-thumb {
-  background: #333; 
+  background: #424e5a; 
   border-radius: 5px;
 }
 .terminal-body::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #586573; 
 }
 
 .line {
-  margin-bottom: 0.2rem;
-  white-space: pre-wrap; /* Preserve spaces and wrap */
+  margin-bottom: 0.3rem;
+  white-space: pre-wrap;
 }
 
 .line.input {
-  color: #cccccc;
-}
-
-.line.text {
-    color: #f0f0f0;
-}
-
-.input-line {
-  display: flex;
-  align-items: center;
-  margin-top: 0.2rem;
+  color: #58a6ff; 
+  font-weight: bold;
 }
 
 .prompt {
-  color: #cccccc;
-  margin-right: 0.5rem;
+  color: #58a6ff; 
+  font-weight: bold;
+  margin-right: 0.7rem;
 }
 
 #terminal-input {
   background: transparent;
   border: none;
-  color: #cccccc;
+  color: #fff;
   font-family: inherit;
   font-size: inherit;
   outline: none;
   flex: 1;
-  caret-color: #cccccc; /* Blinking cursor color */
-}
-
-/* Highlighting specific keywords */
-.highlight-tn {
-  color: #00ff00; /* Terminal Green */
-  font-weight: bold;
+  caret-color: #58a6ff;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
     .terminal-hero {
-        padding: 1rem;
         height: auto;
+        padding: 2rem 1rem;
     }
     .terminal-window {
         height: 400px;
