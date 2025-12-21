@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo '⚛️ React Frontend 빌드 중...'
                 dir('frontend') {
-                    sh 'npm install'
+                    sh 'npm install --legacy-peer-deps'
                     sh 'npm run build'
                 }
             }
