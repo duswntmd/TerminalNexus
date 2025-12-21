@@ -113,10 +113,11 @@ public class SecurityConfig {
                                                                 loginSuccessHandler),
                                                 UsernamePasswordAuthenticationFilter.class);
 
-                // 세션 필터 설정 (STATELESS)
+                // 세션 필터 설정 (IF_REQUIRED: 필요할 때만 세션 생성)
+                // JWT 인증은 유지하면서 조회수 카운팅 등에 세션 사용
                 http
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
                 // oauth2 로그인 방식
                 http

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchWithAccess } from '../../util/fetchUtil';
 import { 
     Container, 
@@ -28,9 +28,6 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import MovieIcon from '@mui/icons-material/Movie';
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 
 // Toast UI Editor
 import { Editor } from '@toast-ui/react-editor';
@@ -42,9 +39,14 @@ const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 const FreeBoardRegister = () => {
     const navigate = useNavigate();
+    const { id } = useParams(); // 수정 모드인지 체크
+    const isEditMode = !!id;
+    
     const [title, setTitle] = useState('');
     const [fileDTOs, setFileDTOs] = useState([]); 
     const [isLoading, setIsLoading] = useState(false); 
+    const [existingFiles, setExistingFiles] = useState([]); // 기존 파일 목록
+    const [deletedFileIds, setDeletedFileIds] = useState([]); // 삭제된 파일 ID
     
     // YouTube Dialog State
     const [openYoutubeDialog, setOpenYoutubeDialog] = useState(false);
@@ -53,16 +55,39 @@ const FreeBoardRegister = () => {
     const editorRef = useRef();
     const videoInputRef = useRef(); 
 
-    // --- Alignment Logic ---
-    const handleAlign = (alignType) => {
-        const editorInstance = editorRef.current?.getInstance();
-        if(!editorInstance) return;
-        
-        const selection = editorInstance.getSelectedText();
-        const contentByAlign = selection ? selection : '&nbsp;'; 
-        const html = `\n<div align="${alignType}">${contentByAlign}</div>\n`;
-        editorInstance.setMarkdown(editorInstance.getMarkdown() + html);
-    };
+    // 수정 모드일 때 기존 데이터 로드
+    useEffect(() => {
+        if (isEditMode) {
+            const fetchPost = async () => {
+                try {
+                    const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard/${id}`, { method: 'GET' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        console.log('📄 불러온 게시글 데이터:', data); // 디버깅용
+                        setTitle(data.title);
+                        if (editorRef.current) {
+                            editorRef.current.getInstance().setMarkdown(data.content || '');
+                        }
+                        // 기존 파일 목록 저장
+                        if (data.fileDTOs) {
+                            const files = data.fileDTOs.filter(f => f.type !== 'YOUTUBE');
+                            console.log('📎 기존 첨부파일:', files); // 디버깅용
+                            setExistingFiles(files);
+                        }
+                    } else {
+                        alert("게시글을 불러올 수 없습니다.");
+                        navigate('/freeboard');
+                    }
+                } catch (e) {
+                    console.error('❌ 게시글 로드 오류:', e);
+                    alert("오류가 발생했습니다.");
+                    navigate('/freeboard');
+                }
+            };
+            fetchPost();
+        }
+    }, [id, isEditMode, navigate]);
+ 
 
     // --- YouTube Logic ---
     const handleInsertYoutube = () => {
@@ -129,6 +154,7 @@ const FreeBoardRegister = () => {
                  if (editorInstance) {
                     editorInstance.setMarkdown(editorInstance.getMarkdown() + shortcode);
                  }
+                 setFileDTOs(prev => [...prev, ...result]);
             } else {
                 throw new Error("No response data");
             }
@@ -188,33 +214,62 @@ const FreeBoardRegister = () => {
              return;
         }
 
+        // deletedFileIds에서 유효한 값만 필터링
+        const validDeletedFileIds = deletedFileIds.filter(id => id && id.trim() !== '');
+
         const payload = { 
             title, 
             content, 
-            fileDTOs: fileDTOs 
+            fileDTOs: fileDTOs,
+            ...(isEditMode && validDeletedFileIds.length > 0 && { deletedFileIds: validDeletedFileIds })
         };
+        
+        console.log('💾 전송할 데이터:', {
+            mode: isEditMode ? '수정' : '등록',
+            payload,
+            새파일개수: fileDTOs.length,
+            삭제된파일개수: validDeletedFileIds.length,
+            삭제된파일IDs: validDeletedFileIds
+        });
         
         try {
             setIsLoading(true);
-            const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/freeboard`, {
-                method: 'POST',
+            const url = isEditMode 
+                ? `${BACKEND_API_BASE_URL}/freeboard/${id}` 
+                : `${BACKEND_API_BASE_URL}/freeboard`;
+            const method = isEditMode ? 'PUT' : 'POST';
+            
+            const res = await fetchWithAccess(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            
             if (res.ok) {
-                navigate('/freeboard');
+                console.log('✅ 성공:', isEditMode ? '수정완료' : '등록완료');
+                if (isEditMode) {
+                    navigate(`/freeboard/${id}`);
+                } else {
+                    navigate('/freeboard');
+                }
             } else {
                 const errData = await res.json().catch(() => ({}));
-                const errMsg = errData.message || `등록 실패 (${res.status})`;
-                alert(errMsg);
+                console.error('❌ 서버 응답 오류:', {
+                    status: res.status,
+                    statusText: res.statusText,
+                    errorData: errData
+                });
+                const errMsg = errData.message || errData.error || `${isEditMode ? '수정' : '등록'} 실패 (${res.status})`;
+                alert(`오류: ${errMsg}\n\n자세한 내용은 콘솔을 확인하세요.`);
             }
         } catch (e) {
-            console.error("Network Error:", e);
+            console.error("❌ Network Error:", e);
             alert("네트워크 오류가 발생했습니다.");
         } finally {
             setIsLoading(false);
         }
     };
+
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -226,7 +281,7 @@ const FreeBoardRegister = () => {
             </Backdrop>
 
             <Typography variant="h4" fontWeight="bold" gutterBottom>
-                게시글 작성
+                {isEditMode ? '게시글 수정' : '게시글 작성'}
             </Typography>
 
             <Paper elevation={3} sx={{ p: 4, mt: 2 }}>
@@ -241,6 +296,50 @@ const FreeBoardRegister = () => {
                         required
                         sx={{ mb: 3, backgroundColor: '#fff' }}
                     />
+
+                    {/* 기존 파일 목록 (수정 모드일 때만 표시) */}
+                    {isEditMode && existingFiles.length > 0 && (
+                        <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
+                            <Typography variant="h6" gutterBottom fontWeight="bold">
+                                기존 첨부 파일
+                            </Typography>
+                            <List>
+                                {existingFiles.map((file, index) => (
+                                    <ListItem
+                                        key={file.uuid || file.imageURL || index}
+                                        secondaryAction={
+                                            <IconButton 
+                                                edge="end" 
+                                                onClick={() => {
+                                                    console.log('🗑️ 삭제할 파일:', file);
+                                                    // uuid 또는 imageURL을 사용하여 삭제
+                                                    const fileId = file.uuid || file.imageURL;
+                                                    
+                                                    if (fileId) {
+                                                        console.log('📌 FileId:', fileId);
+                                                        setExistingFiles(prev => prev.filter((f, i) => i !== index));
+                                                        setDeletedFileIds(prev => [...prev, fileId]);
+                                                    } else {
+                                                        console.error('❌ 파일 ID를 찾을 수 없습니다:', file);
+                                                        alert('파일 ID를 찾을 수 없습니다.');
+                                                    }
+                                                }}
+                                                color="error"
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        }
+                                        sx={{ bgcolor: 'white', mb: 1, borderRadius: 1 }}
+                                    >
+                                        <ListItemText 
+                                            primary={file.fileName} 
+                                            secondary={`타입: ${file.type || '파일'}`}
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Box>
+                    )}
 
                     {/* Toolbar */}
                     <Box sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, bgcolor: '#fafafa' }}>
@@ -284,23 +383,6 @@ const FreeBoardRegister = () => {
                                 />
                             </Button>
 
-                            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-
-                            <Tooltip title="왼쪽 정렬">
-                                <IconButton size="small" onClick={() => handleAlign('left')}>
-                                    <FormatAlignLeftIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="가운데 정렬">
-                                <IconButton size="small" onClick={() => handleAlign('center')}>
-                                    <FormatAlignCenterIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="오른쪽 정렬">
-                                <IconButton size="small" onClick={() => handleAlign('right')}>
-                                    <FormatAlignRightIcon />
-                                </IconButton>
-                            </Tooltip>
                         </Stack>
                         
                         {/* Attached File List */}
@@ -325,9 +407,11 @@ const FreeBoardRegister = () => {
                                 ))}
                             </List>
                         )}
-                         <Typography variant="caption" color="text.secondary" >
-                             ※ [내 동영상] 버튼을 누르면 업로드 후 에디터 내에서 바로 재생됩니다.
-                        </Typography>
+                        <Stack direction="column" spacing={0.5} sx={{ mt: 1 }}>
+                            <Typography variant="caption" color="text.secondary">
+                                ※ [내 동영상] 버튼을 누르면 업로드 후 에디터 내에서 바로 재생됩니다.
+                            </Typography>
+                        </Stack>
                     </Box>
 
                     {/* Toast UI Editor */}
@@ -401,6 +485,7 @@ const FreeBoardRegister = () => {
                                             } else {
                                                 callback(fileUrl, 'image');
                                             }
+                                            setFileDTOs(prev => [...prev, ...result]);
                                         }
                                     } catch (e) {
                                         console.error("Upload Error:", e);

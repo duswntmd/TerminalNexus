@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import JoinPage from "./pages/JoinPage";
-import LoginPage from "./pages/LoginPage";
+import JoinPage from "./pages/member/JoinPage";
+import LoginPage from "./pages/member/LoginPage";
 import CookiePage from "./pages/CookiePage";
-import UserPage from "./pages/UserPage";
+import UserPage from "./pages/member/UserPage";
 import MainPage from "./pages/MainPage";
 import GuidePage from "./pages/GuidePage";
 import FreeBoardList from "./pages/freeboard/FreeBoardList";
@@ -49,6 +49,14 @@ function App() {
               />
               <Route 
                 path="/freeboard/register" 
+                element={
+                  <ProtectedRoute>
+                    <FreeBoardRegister />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/freeboard/edit/:id" 
                 element={
                   <ProtectedRoute>
                     <FreeBoardRegister />

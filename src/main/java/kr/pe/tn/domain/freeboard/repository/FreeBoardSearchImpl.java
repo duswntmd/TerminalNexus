@@ -25,7 +25,7 @@ public class FreeBoardSearchImpl extends QuerydslRepositorySupport implements Fr
         QUserEntity user = QUserEntity.userEntity;
 
         JPQLQuery<FreeBoard> query = from(freeBoard);
-        query.leftJoin(freeBoard.user, user);
+        query.leftJoin(freeBoard.user, user).fetchJoin();
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(freeBoard.isDeleted.eq(false));

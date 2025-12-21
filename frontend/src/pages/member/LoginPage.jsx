@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;  // 일반 API용
+const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL;  // OAuth2 전용
 
 function LoginPage() {
 
@@ -63,7 +64,8 @@ function LoginPage() {
 
     // 소셜 로그인 이벤트
     const handleSocialLogin = (provider) => {
-    window.location.href = `${BACKEND_API_BASE_URL}/oauth2/authorization/${provider}`
+        // OAuth2는 브라우저 리다이렉트라서 절대 URL 필요!
+        window.location.href = `${OAUTH2_BASE_URL}/oauth2/authorization/${provider}`;
     };
 
     // 페이지

@@ -107,4 +107,8 @@ public class FreeBoard {
         }
         this.dislikeCount = this.dislikeCount + delta;
     }
+
+    public void updateModifiedDate() {
+        this.modDate = LocalDateTime.now();
+    }
 }

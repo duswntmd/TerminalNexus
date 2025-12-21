@@ -41,7 +41,7 @@ public class FreeBoardComment {
     private FreeBoardComment parent;
 
     @Builder.Default
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<FreeBoardComment> children = new ArrayList<>();
 
     @Builder.Default
@@ -60,5 +60,25 @@ public class FreeBoardComment {
 
     public void changeIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    // 대댓글 추가
+    public void addChild(FreeBoardComment child) {
+        this.children.add(child);
+        child.parent = this;
+    }
+
+    // 최상위 댓글인지 확인
+    public boolean isTopLevel() {
+        return this.parent == null;
+    }
+
+    // 대댓글인지 확인
+    public boolean isReply() {
+        return this.parent != null;
+    }
+
+    public void updateModifiedDate() {
+        this.modDate = LocalDateTime.now();
     }
 }

@@ -19,6 +19,7 @@ public class FreeBoardDTO {
         private String title;
         private String content;
         private List<UploadResultDTO> fileDTOs;
+        private List<String> deletedFileIds; // 삭제할 파일의 UUID 목록
     }
 
     @Data
@@ -36,6 +37,8 @@ public class FreeBoardDTO {
         private Long dislikeCount;
         private boolean isLiked;
         private boolean isDisliked;
+        private boolean canEdit; // 수정 권한 여부
+        private boolean canDelete; // 삭제 권한 여부
         private LocalDateTime regDate;
         private LocalDateTime modDate;
         private int commentCount;
@@ -59,6 +62,8 @@ public class FreeBoardDTO {
                     .dislikeCount(entity.getDislikeCount())
                     .isLiked(false) // Default
                     .isDisliked(false) // Default
+                    .canEdit(false) // Default, Service에서 설정
+                    .canDelete(false) // Default, Service에서 설정
                     .regDate(entity.getRegDate())
                     .modDate(entity.getModDate())
                     .fileDTOs(entity.getFiles().stream()
