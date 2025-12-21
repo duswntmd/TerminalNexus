@@ -21,11 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class FreeBoardService {
+
+    @Value("${org.zerock.upload.path}")
+    private String uploadPath;
 
     private final FreeBoardRepository freeBoardRepository;
     private final UserRepository userRepository;
@@ -102,6 +111,7 @@ public class FreeBoardService {
     }
 
     // 수정
+    @Transactional
     public Long modify(Long id, FreeBoardDTO.Request requestDTO) {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Board not found"));
@@ -136,21 +146,58 @@ public class FreeBoardService {
             });
         }
 
-        return freeBoard.getId();
+        // modDate 수동 업데이트
+        freeBoard.updateModifiedDate();
+
+        // 명시적 save()로 DB 반영
+        FreeBoard saved = freeBoardRepository.save(freeBoard);
+
+        return saved.getId();
     }
 
-    // 삭제 (Soft Delete)
+    // 삭제 (Hard Delete - 댓글/파일/좋아요 모두 cascade 삭제)
+    @Transactional
     public void remove(Long id) {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Board not found"));
+                .orElseThrow(() -> new NoSuchElementException("게시글을 찾을 수 없습니다."));
 
         // 본인 확인
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!freeBoard.getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("Only the writer can delete.");
+            throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");
         }
 
-        freeBoard.changeIsDeleted(true);
+        // Hard Delete: cascade로 인해 댓글, 파일, 좋아요, 싫어요 모두 자동 삭제
+        // 파일의 경우 물리적 파일도 삭제 필요
+        if (freeBoard.getFiles() != null && !freeBoard.getFiles().isEmpty()) {
+            freeBoard.getFiles().forEach(file -> {
+                try {
+                    String folderPath = file.getPath();
+                    String uuid = file.getUuid();
+                    String fileName = file.getOriginalName();
+
+                    Path filePath = Paths.get(uploadPath, folderPath, uuid + "_" + fileName);
+                    File targetFile = filePath.toFile();
+
+                    if (targetFile.exists()) {
+                        targetFile.delete();
+                        log.info("Deleted file: " + targetFile.getAbsolutePath());
+                    }
+
+                    // 썸네일이 있다면 삭제 (Optional)
+                    Path thumbnailPath = Paths.get(uploadPath, folderPath, "s_" + uuid + "_" + fileName);
+                    File thumbnailFile = thumbnailPath.toFile();
+                    if (thumbnailFile.exists()) {
+                        thumbnailFile.delete();
+                    }
+
+                } catch (Exception e) {
+                    log.error("Failed to delete file: " + file.getOriginalName(), e);
+                }
+            });
+        }
+
+        freeBoardRepository.delete(freeBoard);
     }
 
     // 목록

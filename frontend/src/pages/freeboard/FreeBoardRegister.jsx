@@ -154,6 +154,7 @@ const FreeBoardRegister = () => {
                  if (editorInstance) {
                     editorInstance.setMarkdown(editorInstance.getMarkdown() + shortcode);
                  }
+                 setFileDTOs(prev => [...prev, ...result]);
             } else {
                 throw new Error("No response data");
             }
@@ -484,6 +485,7 @@ const FreeBoardRegister = () => {
                                             } else {
                                                 callback(fileUrl, 'image');
                                             }
+                                            setFileDTOs(prev => [...prev, ...result]);
                                         }
                                     } catch (e) {
                                         console.error("Upload Error:", e);
