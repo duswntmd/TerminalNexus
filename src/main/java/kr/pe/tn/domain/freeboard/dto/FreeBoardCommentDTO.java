@@ -31,8 +31,14 @@ public class FreeBoardCommentDTO {
         private String writerNickname;
         private String writerUsername;
         private Long parentId;
+
+        @com.fasterxml.jackson.annotation.JsonProperty("isDeleted")
         private boolean isDeleted;
+
+        @com.fasterxml.jackson.annotation.JsonProperty("canEdit")
         private boolean canEdit; // 수정 권한
+
+        @com.fasterxml.jackson.annotation.JsonProperty("canDelete")
         private boolean canDelete; // 삭제 권한
         private LocalDateTime regDate;
         private LocalDateTime modDate;

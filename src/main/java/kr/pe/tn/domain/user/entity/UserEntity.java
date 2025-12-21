@@ -59,6 +59,26 @@ public class UserEntity {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
+    // 회원이 작성한 게시글 (cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<kr.pe.tn.domain.freeboard.entity.FreeBoard> freeBoards = new java.util.ArrayList<>();
+
+    // 회원이 작성한 댓글 (cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<kr.pe.tn.domain.freeboard.entity.FreeBoardComment> freeBoardComments = new java.util.ArrayList<>();
+
+    // 게시글 좋아요 (cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<kr.pe.tn.domain.freeboard.entity.FreeBoardLike> freeBoardLikes = new java.util.ArrayList<>();
+
+    // 게시글 싫어요 (cascade delete)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<kr.pe.tn.domain.freeboard.entity.FreeBoardDislike> freeBoardDislikes = new java.util.ArrayList<>();
+
     public void updateUser(UserRequestDTO dto) {
         this.email = dto.getEmail();
         this.nickname = dto.getNickname();

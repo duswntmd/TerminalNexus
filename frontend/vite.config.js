@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
+    proxy: {
       "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
@@ -26,8 +27,13 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+    },
   },
   define: {
     global: 'window',
+  },
+  // ✅ 프로덕션 빌드 시 console 및 debugger 자동 제거
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
   },
 });

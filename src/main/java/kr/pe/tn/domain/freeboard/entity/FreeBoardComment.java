@@ -41,7 +41,7 @@ public class FreeBoardComment {
     private FreeBoardComment parent;
 
     @Builder.Default
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<FreeBoardComment> children = new ArrayList<>();
 
     @Builder.Default
@@ -76,5 +76,9 @@ public class FreeBoardComment {
     // 대댓글인지 확인
     public boolean isReply() {
         return this.parent != null;
+    }
+
+    public void updateModifiedDate() {
+        this.modDate = LocalDateTime.now();
     }
 }

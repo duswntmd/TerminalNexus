@@ -152,8 +152,12 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
             throw new AccessDeniedException("본인 혹은 관리자만 삭제할 수 있습니다.");
         }
 
-        // 유저 제거
-        userRepository.deleteByUsername(dto.getUsername());
+        // 유저 조회 (cascade 삭제를 위해)
+        UserEntity user = userRepository.findByUsernameAndIsLock(dto.getUsername(), false)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 유저 제거 (cascade로 연관 데이터 모두 삭제)
+        userRepository.delete(user);
 
         // Refresh 토큰 제거
         jwtService.removeRefreshUser(dto.getUsername());
