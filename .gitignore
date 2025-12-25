@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### User Uploads ###
+upload/
+/upload/
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
