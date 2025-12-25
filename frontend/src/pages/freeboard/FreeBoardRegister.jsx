@@ -154,7 +154,7 @@ const FreeBoardRegister = () => {
                  if (editorInstance) {
                     editorInstance.setMarkdown(editorInstance.getMarkdown() + shortcode);
                  }
-                 setFileDTOs(prev => [...prev, ...result]);
+                 // ⚠️ 에디터 내 동영상은 본문 콘텐츠이므로 fileDTOs에 추가하지 않음
             } else {
                 throw new Error("No response data");
             }
@@ -409,7 +409,13 @@ const FreeBoardRegister = () => {
                         )}
                         <Stack direction="column" spacing={0.5} sx={{ mt: 1 }}>
                             <Typography variant="caption" color="text.secondary">
-                                ※ [내 동영상] 버튼을 누르면 업로드 후 에디터 내에서 바로 재생됩니다.
+                                💡 <strong>에디터 미디어 vs 파일 첨부</strong>
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                • <strong>YouTube/내 동영상</strong>: 본문에 직접 삽입 (재생 가능)
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                • <strong>파일 첨부</strong>: 다운로드 가능한 별도 첨부파일 (문서, 압축파일 등)
                             </Typography>
                         </Stack>
                     </Box>
@@ -485,7 +491,7 @@ const FreeBoardRegister = () => {
                                             } else {
                                                 callback(fileUrl, 'image');
                                             }
-                                            setFileDTOs(prev => [...prev, ...result]);
+                                            // ⚠️ 에디터 내 이미지는 본문 콘텐츠이므로 fileDTOs에 추가하지 않음
                                         }
                                     } catch (e) {
                                         console.error("Upload Error:", e);
