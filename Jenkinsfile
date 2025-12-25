@@ -54,6 +54,21 @@ pipeline {
                 echo '📂 Frontend 배포 중...'
                 sh "sudo mkdir -p ${NGINX_WEB_ROOT}"
                 sh "sudo cp -r frontend/dist/* ${NGINX_WEB_ROOT}/"
+                
+                echo '🔧 Nginx 업로드 크기 제한 설정 중...'
+                sh '''
+                    # Nginx 설정에 client_max_body_size 추가/수정
+                    if ! grep -q "client_max_body_size" /etc/nginx/nginx.conf; then
+                        sudo sed -i '/http {/a \\    client_max_body_size 1024M;' /etc/nginx/nginx.conf
+                        echo "✅ client_max_body_size 추가됨"
+                    else
+                        echo "✅ client_max_body_size 이미 존재함"
+                    fi
+                    
+                    # Nginx 설정 테스트 및 재시작
+                    sudo nginx -t && sudo systemctl reload nginx
+                    echo "✅ Nginx 재시작 완료"
+                '''
             }
         }
 
