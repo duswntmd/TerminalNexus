@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 
 // .env로 부터 백엔드 URL 받아오기
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_API_BASE_URL = ''; // Vite 프록시 사용
+
 
 const JoinPage = () => {
 
@@ -64,7 +65,7 @@ const JoinPage = () => {
         const checkUsername = async () => {
             setLoading(prev => ({ ...prev, username: true }));
             try {
-                const res = await fetch(`${BACKEND_API_BASE_URL}/user/exist`, {
+                const res = await fetch(`${BACKEND_API_BASE_URL}/api/user/exist`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username }),
@@ -100,7 +101,7 @@ const JoinPage = () => {
         const checkNickname = async () => {
             setLoading(prev => ({ ...prev, nickname: true }));
             try {
-                const res = await fetch(`${BACKEND_API_BASE_URL}/user/exist/nickname`, {
+                const res = await fetch(`${BACKEND_API_BASE_URL}/api/user/exist/nickname`, {
                    method: "POST",
                    headers: { "Content-Type": "application/json" },
                    body: JSON.stringify({ nickname }) 
@@ -143,7 +144,7 @@ const JoinPage = () => {
         setErrorMsg("");
 
         try {
-            const res = await fetch(`${BACKEND_API_BASE_URL}/user`, {
+            const res = await fetch(`${BACKEND_API_BASE_URL}/api/user`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

@@ -4,8 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;  // 일반 API용
-const OAUTH2_BASE_URL = import.meta.env.VITE_OAUTH2_BASE_URL;  // OAuth2 전용
+const BACKEND_API_BASE_URL = '';  // Vite 프록시 사용
+const OAUTH2_BASE_URL = 'http://localhost:8080';  // OAuth2는 절대 URL 필요
+
 
 function LoginPage() {
 

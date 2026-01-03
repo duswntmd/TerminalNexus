@@ -5,7 +5,8 @@
     "logout": "Log Out",
     "mypage": "My Page",
     "freeboard": "Free Board",
-    "guide": "Guide"
+    "guide": "Guide",
+    "admin_users": "User Management"
   },
   "main": {
     "hero_title": "Open the Future <1>Terminal Nexus</1>",

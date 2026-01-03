@@ -87,4 +87,18 @@ public class UserEntity {
         }
     }
 
+    /**
+     * 관리자 전용: 계정 잠금 상태 변경
+     */
+    public void updateLockStatus(Boolean isLock) {
+        this.isLock = isLock;
+    }
+
+    /**
+     * 관리자 전용: 권한 변경
+     */
+    public void updateRoleType(UserRoleType roleType) {
+        this.roleType = roleType;
+    }
+
 }

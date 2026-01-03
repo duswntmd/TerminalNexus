@@ -249,7 +249,118 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         UserEntity entity = userRepository.findByUsernameAndIsLock(username, false)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다: " + username));
 
-        return new UserResponseDTO(username, entity.getIsSocial(), entity.getNickname(), entity.getEmail());
+        return new UserResponseDTO(username, entity.getIsSocial(), entity.getNickname(), entity.getEmail(),
+                entity.getRoleType());
+    }
+
+    // ==================== 관리자 전용 기능 ====================
+
+    /**
+     * 관리자 권한 확인 헬퍼 메서드
+     */
+    private void checkAdminRole() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String sessionRole = context.getAuthentication().getAuthorities().iterator().next().getAuthority();
+
+        if (!sessionRole.equals("ROLE_" + UserRoleType.ADMIN.name())) {
+            throw new AccessDeniedException("관리자만 접근할 수 있습니다.");
+        }
+    }
+
+    /**
+     * 관리자 전용: 전체 회원 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<kr.pe.tn.domain.user.dto.AdminUserDTO> getAllUsers() {
+        checkAdminRole();
+
+        return userRepository.findAll().stream()
+                .map(kr.pe.tn.domain.user.dto.AdminUserDTO::new)
+                .toList();
+    }
+
+    /**
+     * 관리자 전용: 특정 회원 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public kr.pe.tn.domain.user.dto.AdminUserDTO getUserById(Long id) {
+        checkAdminRole();
+
+        UserEntity entity = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다. ID: " + id));
+
+        return new kr.pe.tn.domain.user.dto.AdminUserDTO(entity);
+    }
+
+    /**
+     * 관리자 전용: 회원 정보 수정
+     */
+    @Transactional
+    public Long updateUserByAdmin(kr.pe.tn.domain.user.dto.AdminUserUpdateDTO dto) {
+        checkAdminRole();
+
+        UserEntity entity = userRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다. ID: " + dto.getId()));
+
+        // 닉네임 중복 확인 (기존 닉네임과 다를 경우에만)
+        if (dto.getNickname() != null && !entity.getNickname().equals(dto.getNickname())) {
+            if (userRepository.existsByNickname(dto.getNickname())) {
+                throw new IllegalArgumentException("이미 존재하는 닉네임입니다: " + dto.getNickname());
+            }
+        }
+
+        // 회원 정보 업데이트
+        if (dto.getNickname() != null) {
+            UserRequestDTO updateDto = new UserRequestDTO();
+            updateDto.setNickname(dto.getNickname());
+            updateDto.setEmail(dto.getEmail());
+            entity.updateUser(updateDto);
+        }
+
+        // 비밀번호 재설정 (입력된 경우)
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            // 관리자는 현재 비밀번호 확인 없이 재설정 가능
+            UserRequestDTO updateDto = new UserRequestDTO();
+            updateDto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            updateDto.setNickname(entity.getNickname());
+            updateDto.setEmail(entity.getEmail());
+            entity.updateUser(updateDto);
+        }
+
+        // 잠금 상태 변경
+        if (dto.getIsLock() != null) {
+            entity.updateLockStatus(dto.getIsLock());
+        }
+
+        // 권한 변경
+        if (dto.getRoleType() != null) {
+            entity.updateRoleType(dto.getRoleType());
+        }
+
+        return userRepository.save(entity).getId();
+    }
+
+    /**
+     * 관리자 전용: 회원 삭제
+     */
+    @Transactional
+    public void deleteUserByAdmin(Long id) {
+        checkAdminRole();
+
+        UserEntity entity = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다. ID: " + id));
+
+        // 자기 자신은 삭제 불가
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (entity.getUsername().equals(currentUsername)) {
+            throw new IllegalArgumentException("자기 자신은 삭제할 수 없습니다.");
+        }
+
+        // Refresh 토큰 제거
+        jwtService.removeRefreshUser(entity.getUsername());
+
+        // 회원 삭제 (cascade로 연관 데이터 모두 삭제)
+        userRepository.delete(entity);
     }
 
 }

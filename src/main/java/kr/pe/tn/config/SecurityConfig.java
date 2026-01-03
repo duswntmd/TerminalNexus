@@ -76,7 +76,8 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 // 로컬 개발 환경과 배포 환경 모두 허용
-                configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://tnhub.kr"));
+                configuration.setAllowedOrigins(
+                                List.of("http://localhost:5173", "https://tnhub.kr", "https://www.tnhub.kr"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setAllowCredentials(true);
@@ -134,15 +135,15 @@ public class SecurityConfig {
                 http
                                 .authorizeHttpRequests((auth) -> auth
                                                 .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/fonts/**",
-                                                                "/user/loginForm", "/user/login", "/user/registerForm",
-                                                                "/user/register",
-                                                                "/api/message", "/oauth2/**", "/login/**", "/logout",
-                                                                "/jwt/**", "/user/exist/**", "/display", "/download",
+                                                                "/user/**", "/join/**", "/login/**", "/guide/**",
+                                                                "/freeboard/**", "/cookie/**",
+                                                                "/api/message", "/oauth2/**", "/logout",
+                                                                "/jwt/**", "/api/user/exist/**", "/display",
+                                                                "/download",
                                                                 "/upload/**")
                                                 .permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                                                .requestMatchers("/admin").hasRole("ADMIN")
-                                                .requestMatchers("/user/profile").hasRole("USER")
+                                                .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
                                                 .anyRequest().authenticated());
 
                 return http.build();
