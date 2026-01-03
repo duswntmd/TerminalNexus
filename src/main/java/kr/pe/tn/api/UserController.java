@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
@@ -45,7 +46,7 @@ public class UserController {
     }
 
     // 유저 정보
-    @GetMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResponseDTO userMeApi() {
         return userService.readUser();
     }

@@ -9,7 +9,7 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        // rewrite 제거 - /api 경로 그대로 유지
       },
       "/oauth2": {
         target: "http://localhost:8080",
@@ -23,10 +23,27 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
-      "/user": {
+      "/display": {
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+      "/download": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/upload": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/admin": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/freeboard": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      // /user는 프론트엔드 라우팅이므로 프록시 제거
     },
   },
   define: {

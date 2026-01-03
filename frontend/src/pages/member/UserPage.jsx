@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import "./UserPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_API_BASE_URL = ''; // Vite 프록시 사용
+
 
 function UserPage() {
     // 정보
@@ -26,7 +27,7 @@ function UserPage() {
     useEffect(() => {
         const getUserInfo = async () => {
             try {
-                const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/user`, {
+                const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/api/user`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
@@ -82,7 +83,7 @@ function UserPage() {
                 currentPassword: editForm.currentPassword 
             };
 
-            const res = await fetch(`${BACKEND_API_BASE_URL}/user`, {
+            const res = await fetch(`${BACKEND_API_BASE_URL}/api/user`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ function UserPage() {
 
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await fetch(`${BACKEND_API_BASE_URL}/user`, {
+            const res = await fetch(`${BACKEND_API_BASE_URL}/api/user`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

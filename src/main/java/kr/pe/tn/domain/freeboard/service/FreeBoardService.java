@@ -116,10 +116,14 @@ public class FreeBoardService {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Board not found"));
 
-        // 본인 확인
+        // 본인 또는 관리자 확인
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!freeBoard.getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("Only the writer can modify.");
+        boolean isOwner = freeBoard.getUser().getUsername().equals(username);
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isOwner && !isAdmin) {
+            throw new AccessDeniedException("작성자 또는 관리자만 수정할 수 있습니다.");
         }
 
         freeBoard.changeTitle(requestDTO.getTitle());
@@ -161,10 +165,14 @@ public class FreeBoardService {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("게시글을 찾을 수 없습니다."));
 
-        // 본인 확인
+        // 본인 또는 관리자 확인
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!freeBoard.getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");
+        boolean isOwner = freeBoard.getUser().getUsername().equals(username);
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isOwner && !isAdmin) {
+            throw new AccessDeniedException("작성자 또는 관리자만 삭제할 수 있습니다.");
         }
 
         // Hard Delete: cascade로 인해 댓글, 파일, 좋아요, 싫어요 모두 자동 삭제

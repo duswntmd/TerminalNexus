@@ -96,6 +96,23 @@
   background-color: #fff0f0;
 }
 
+/* Admin Link Style */
+.admin-link {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.admin-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  color: white !important;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-container {

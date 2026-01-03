@@ -5,7 +5,8 @@
     "logout": "로그아웃",
     "mypage": "마이페이지",
     "freeboard": "자유게시판",
-    "guide": "이용안내"
+    "guide": "이용안내",
+    "admin_users": "회원 관리"
   },
   "main": {
     "hero_title": "미래를 여는 <1>터미널 넥서스</1>",

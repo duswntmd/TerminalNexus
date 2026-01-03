@@ -9,6 +9,8 @@ import GuidePage from "./pages/GuidePage";
 import FreeBoardList from "./pages/freeboard/FreeBoardList";
 import FreeBoardRegister from "./pages/freeboard/FreeBoardRegister";
 import FreeBoardRead from "./pages/freeboard/FreeBoardRead";
+import AdminUserManagePage from "./pages/admin/AdminUserManagePage";
+
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -68,6 +70,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <FreeBoardRead />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/users" 
+                element={
+                  <ProtectedRoute>
+                    <AdminUserManagePage />
                   </ProtectedRoute>
                 } 
               />
