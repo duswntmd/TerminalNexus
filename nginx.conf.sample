@@ -37,12 +37,46 @@ server {
 
     # 2. Spring Boot Backend (API 프록시)
     # /api/ 로 시작하는 요청은 백엔드(8080 포트)로 보냅니다.
+    # ⚠️ 중요: proxy_pass에 trailing slash(/)를 붙이지 않아야 /api 경로가 유지됩니다.
     location /api/ {
-        proxy_pass http://localhost:8080/;
+        proxy_pass http://localhost:8080;
         
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 3. OAuth2 로그인 프록시
+    location /oauth2/ {
+        proxy_pass http://localhost:8080;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 4. 로그인/로그아웃 프록시
+    location ~ ^/(login|logout) {
+        proxy_pass http://localhost:8080;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 5. 파일 업로드/다운로드/표시 프록시
+    location ~ ^/(upload|download|display)/ {
+        proxy_pass http://localhost:8080;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 파일 업로드 크기 제한 (1GB)
+        client_max_body_size 1024M;
     }
 }

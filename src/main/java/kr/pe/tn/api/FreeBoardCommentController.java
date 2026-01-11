@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/freeboard/{boardId}/comments")
+@RequestMapping("/api/freeboard/{boardId}/comments")
 @RequiredArgsConstructor
 public class FreeBoardCommentController {
 
