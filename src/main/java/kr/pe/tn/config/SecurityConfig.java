@@ -140,7 +140,8 @@ public class SecurityConfig {
                                                                 "/api/message", "/oauth2/**", "/logout",
                                                                 "/jwt/**", "/api/user/exist/**", "/display",
                                                                 "/download",
-                                                                "/upload/**")
+                                                                "/upload/**",
+                                                                "/api/freeboard/**") // 게시판 API 추가
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정

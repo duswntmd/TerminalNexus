@@ -249,6 +249,54 @@ npm install
 2. 데이터베이스 생성 확인: `CREATE DATABASE tn;`
 3. 계정 권한 확인
 
+### 배포 환경에서 API 404/405 에러 (회원가입/로그인 불가)
+
+**증상 1**: `POST https://tnhub.kr/api/user/exist 404 (Not Found)`
+**증상 2**: `POST https://tnhub.kr/login 405 (Method Not Allowed)`
+
+**원인**:
+
+1. Nginx의 `proxy_pass` 설정에서 trailing slash로 인해 `/api` 경로가 제거됨
+2. `/login`, `/oauth2/` 등 백엔드 경로에 대한 프록시 설정 누락
+
+**해결 방법**:
+
+```bash
+# 옵션 1: 자동 스크립트 사용 (권장)
+# 로컬에서 스크립트 업로드
+scp fix-nginx-complete.sh nginx.conf.sample ubuntu@tnhub.kr:~/
+
+# 서버에서 실행
+ssh ubuntu@tnhub.kr
+chmod +x fix-nginx-complete.sh
+./fix-nginx-complete.sh
+
+# 옵션 2: 수동 수정
+# 1. Nginx 설정 파일 수정
+sudo nano /etc/nginx/sites-available/default
+
+# 2. 다음 location 블록들을 추가/수정 (nginx.conf.sample 참조)
+#    ✅ location /api/ { proxy_pass http://localhost:8080; }
+#    ✅ location /oauth2/ { proxy_pass http://localhost:8080; }
+#    ✅ location ~ ^/(login|logout) { proxy_pass http://localhost:8080; }
+#    ✅ location ~ ^/(upload|download|display)/ { ... }
+
+# 3. 설정 검증 및 재시작
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 4. 테스트
+curl -X POST https://tnhub.kr/api/user/exist \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test123"}'
+
+curl -X POST https://tnhub.kr/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"wjdxhdtkantlf"}'
+```
+
+**참고**: `nginx.conf.sample` 파일에 완전한 설정 예시가 포함되어 있습니다.
+
 ## 📞 문의
 
 - Email: contact@tn.pe.kr

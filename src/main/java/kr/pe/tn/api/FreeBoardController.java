@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/freeboard")
+@RequestMapping("/api/freeboard")
 @RequiredArgsConstructor
 public class FreeBoardController {
 
