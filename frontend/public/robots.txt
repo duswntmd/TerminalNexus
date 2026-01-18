@@ -1,0 +1,27 @@
+# robots.txt for tnhub.kr
+# TerminalNexus - 개발자를 위한 터미널 허브
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /join
+Disallow: /user/
+
+# 크롤 속도 제한 (초당 1회)
+Crawl-delay: 1
+
+# 사이트맵 위치
+Sitemap: https://tnhub.kr/sitemap.xml
+
+# 주요 검색엔진별 설정
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/

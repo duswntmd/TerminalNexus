@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { Container, Paper, Typography, Box, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import LooksOneIcon from '@mui/icons-material/LooksOne';
 import LooksTwoIcon from '@mui/icons-material/LooksTwo';
@@ -30,6 +31,13 @@ const GuidePage = () => {
     ];
 
     return (
+        <>
+        <Helmet>
+            <title>이용안내 - TerminalNexus | 서비스 사용 가이드</title>
+            <meta name="description" content="TerminalNexus 서비스 이용 방법을 안내합니다. 회원가입부터 터미널 사용까지 단계별로 알아보세요." />
+            <meta name="keywords" content="이용안내, 사용법, 가이드, 터미널 사용, 회원가입 방법" />
+            <link rel="canonical" href="https://tnhub.kr/guide" />
+        </Helmet>
         <Container maxWidth="md" sx={{ mt: 8, mb: 8 }}>
             <Paper elevation={3} sx={{ p: 5, borderRadius: 2 }}>
                 <Box display="flex" alignItems="center" gap={2} mb={3}>
@@ -69,6 +77,7 @@ const GuidePage = () => {
                 </Box>
             </Paper>
         </Container>
+        </>
     );
 };
 

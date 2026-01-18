@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import { 
     Container, 
     Typography, 
@@ -199,6 +200,13 @@ const JoinPage = () => {
     };
 
     return (
+        <>
+        <Helmet>
+            <title>회원가입 - TerminalNexus | 무료 계정 만들기</title>
+            <meta name="description" content="TerminalNexus에 가입하고 브라우저 기반 터미널과 개발자 커뮤니티를 경험하세요. 무료로 시작하세요." />
+            <meta name="keywords" content="회원가입, 가입, 계정 만들기, 무료 회원가입, 개발자 커뮤니티" />
+            <link rel="canonical" href="https://tnhub.kr/join" />
+        </Helmet>
         <Container maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
             <Paper elevation={3} sx={{ p: 4 }}>
                 <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
@@ -290,6 +298,7 @@ const JoinPage = () => {
                 </Box>
             </Paper>
         </Container>
+        </>
     );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { 
   Box, 
   Container, 
@@ -75,6 +76,30 @@ const MainPage = () => {
 
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#fafafa' }}>
+      
+      {/* SEO 메타 태그 */}
+      <Helmet>
+        <title>TerminalNexus - 개발자를 위한 터미널 허브 | 브라우저 기반 리눅스 터미널</title>
+        <meta name="description" content="TerminalNexus는 브라우저에서 바로 실행되는 리눅스 터미널 환경을 제공합니다. 개발자 커뮤니티, 코드 공유, 실시간 협업 기능을 한곳에서 경험하세요." />
+        <meta name="keywords" content="터미널, 리눅스, 개발자, 프로그래밍, 웹 터미널, 온라인 터미널, 개발자 커뮤니티, 코드 공유, Node.js, 브라우저 터미널" />
+        
+        {/* Open Graph (소셜 미디어 공유용) */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://tnhub.kr/" />
+        <meta property="og:title" content="TerminalNexus - 개발자를 위한 터미널 허브" />
+        <meta property="og:description" content="브라우저에서 바로 실행되는 리눅스 터미널과 개발자 커뮤니티" />
+        <meta property="og:site_name" content="TerminalNexus" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TerminalNexus - 개발자를 위한 터미널 허브" />
+        <meta name="twitter:description" content="브라우저에서 바로 실행되는 리눅스 터미널과 개발자 커뮤니티" />
+        
+        {/* 추가 SEO */}
+        <meta name="author" content="TerminalNexus" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://tnhub.kr/" />
+      </Helmet>
       
       {/* === SECTION 1: Hero Banner (Carousel) === */}
       <Box sx={{ 
