@@ -61,22 +61,31 @@ const Header = () => {
         </div>
         <nav className="nav">
           <ul>
+            {/* 공통 메뉴: 이용안내 - 항상 표시 */}
+            <li><Link to="/guide">{t('header.guide')}</Link></li>
+            <li><Link to="/fruit-ai">🍎 과일 AI</Link></li>
+            
+            {/* 조건부 메뉴: 로그인 상태에 따라 다르게 표시 */}
             {isLoggedIn ? (
               <>
-                <li><button onClick={handleLogout} className="logout-btn">{t('header.logout')}</button></li>
                 <li><Link to="/user">{t('header.mypage')}</Link></li>
+                <li><button onClick={handleLogout} className="logout-btn">{t('header.logout')}</button></li>
                 {isAdmin && (
                   <li><Link to="/admin/users" className="admin-link">👑 {t('header.admin_users')}</Link></li>
                 )}
               </>
             ) : (
               <>
+                <li><Link to="/join">{t('header.signup')}</Link></li>
                 <li><Link to="/login">{t('header.login')}</Link></li>
-                <li><Link to="/guide">{t('header.guide')}</Link></li>
               </>
             )}
-            <li><Link to="/join">{t('header.signup')}</Link></li>
+            
+            {/* 공통 메뉴: 채팅, 자유게시판 - 항상 표시 */}
+            <li><Link to="/chat">💬 채팅</Link></li>
             <li><Link to="/freeboard">{t('header.freeboard')}</Link></li>
+            
+            {/* 언어 전환 */}
             <li>
                 <div className="lang-switcher">
                     <button onClick={() => changeLanguage('ko')} className={i18n.language === 'ko' ? 'active' : ''}>KO</button>

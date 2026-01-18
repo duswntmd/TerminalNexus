@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 import JoinPage from "./pages/member/JoinPage";
 import LoginPage from "./pages/member/LoginPage";
@@ -10,6 +11,9 @@ import FreeBoardList from "./pages/freeboard/FreeBoardList";
 import FreeBoardRegister from "./pages/freeboard/FreeBoardRegister";
 import FreeBoardRead from "./pages/freeboard/FreeBoardRead";
 import AdminUserManagePage from "./pages/admin/AdminUserManagePage";
+import AdminPage from "./pages/AdminPage";
+import FruitAIPage from "./pages/FruitAIPage";
+import ChatPage from "./pages/ChatPage";
 
 
 import Header from "./components/Header";
@@ -22,8 +26,9 @@ import './App.css'
 function App() {
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <HelmetProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <div className="app-container">
           <Header />
           <main className="main-content">
@@ -32,6 +37,22 @@ function App() {
               <Route path="/join" element={<JoinPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/guide" element={<GuidePage />} />
+              <Route 
+                path="/fruit-ai" 
+                element={
+                  <ProtectedRoute>
+                    <FruitAIPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/chat" 
+                element={
+                  <ProtectedRoute>
+                    <ChatPage />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/cookie" element={<CookiePage />} />
               <Route 
                 path="/user" 
@@ -74,6 +95,14 @@ function App() {
                 } 
               />
               <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <AdminPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
                 path="/admin/users" 
                 element={
                   <ProtectedRoute>
@@ -87,6 +116,7 @@ function App() {
         </div>
       </BrowserRouter>
     </AuthProvider>
+    </HelmetProvider>
   )
 }
 

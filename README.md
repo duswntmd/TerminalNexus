@@ -1,311 +1,345 @@
-# TerminalNexus (TN)
+# 🚀 TerminalNexus (TN)
 
-차세대 클라우드 터미널 생태계 플랫폼
+**개발자를 위한 올인원 플랫폼** - 브라우저 기반 리눅스 터미널, AI 과일 추천, 실시간 채팅, 자유게시판
 
-## 📋 프로젝트 개요
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
+[![WebSocket](https://img.shields.io/badge/WebSocket-STOMP-red.svg)](https://stomp.github.io/)
 
-TN은 개발자와 엔지니어를 위한 직관적이고 강력한 클라우드 터미널 접속 관리 서비스입니다.
+🌐 **Live Demo**: [https://tnhub.kr](https://tnhub.kr)
+
+---
+
+## 📋 목차
+
+- [주요 기능](#-주요-기능)
+- [기술 스택](#-기술-스택)
+- [시작하기](#-시작하기)
+- [프로젝트 구조](#-프로젝트-구조)
+- [API 문서](#-api-문서)
+- [배포](#-배포)
+- [기여하기](#-기여하기)
+- [라이선스](#-라이선스)
+
+---
+
+## ✨ 주요 기능
+
+### 1. 🖥️ **브라우저 기반 리눅스 터미널**
+
+- 웹 브라우저에서 실제 리눅스 명령어 실행
+- 실시간 명령어 출력 및 인터랙티브 쉘
+- 파일 시스템 탐색 및 관리
+
+### 2. 🍎 **AI 과일 추천 시스템**
+
+- Google Gemini AI 기반 과일 정보 제공
+- RAG (Retrieval-Augmented Generation) 기술 활용
+- 과일별 영양 정보, 효능, 추천 레시피
+
+### 3. 💬 **실시간 채팅**
+
+- WebSocket (STOMP) 기반 실시간 통신
+- 전체 채팅, 익명 채팅, 귓속말 기능
+- 채팅 명령어 지원 (`/w`, `/whisper`, `/r`)
+- 온라인 사용자 목록 실시간 업데이트
+
+### 4. 📝 **자유게시판**
+
+- Toast UI Editor 기반 마크다운 에디터
+- 파일 첨부 및 이미지 업로드
+- 좋아요/싫어요 기능
+- 댓글 시스템
+- 검색 및 페이지네이션
+
+### 5. 🔐 **사용자 인증**
+
+- JWT 기반 인증 시스템
+- OAuth 2.0 (Google, Naver) 소셜 로그인
+- 역할 기반 접근 제어 (ROLE_USER, ROLE_ADMIN)
+
+---
 
 ## 🛠️ 기술 스택
 
 ### Backend
 
-- **Spring Boot** 3.x
-- **Spring Security** (JWT + OAuth2)
-- **Spring Data JPA**
-- **MySQL** 8.x
-- **Java** 17+
+- **Java 17**
+- **Spring Boot 3.4.1**
+  - Spring Security (JWT, OAuth 2.0)
+  - Spring Data JPA
+  - Spring WebSocket (STOMP)
+- **MySQL 8.0**
+- **QueryDSL** - 타입 세이프 쿼리
+- **Lombok** - 보일러플레이트 코드 감소
 
 ### Frontend
 
-- **React** 18.x
-- **Vite** 7.x
-- **Material-UI** (MUI)
-- **React Router** 6.x
-- **i18next** (다국어 지원)
+- **React 19**
+- **Material-UI (MUI)** - UI 컴포넌트 라이브러리
+- **React Router** - 클라이언트 사이드 라우팅
+- **SockJS + STOMP.js** - WebSocket 통신
+- **Toast UI Editor** - 마크다운 에디터
+- **Vite** - 빌드 도구
+
+### DevOps & Tools
+
+- **Nginx** - 리버스 프록시 및 정적 파일 서빙
+- **Jenkins** - CI/CD 파이프라인
+- **Git** - 버전 관리
+
+---
 
 ## 🚀 시작하기
 
-### 사전 요구사항
+### 📋 사전 요구사항
 
-- Java 17 이상
-- Node.js 18 이상
-- MySQL 8.0 이상
+- **Java 17** 이상
+- **Node.js 18** 이상
+- **MySQL 8.0** 이상
+- **Maven 3.8** 이상
 
-### 백엔드 실행
+### 📥 설치 및 실행
 
-```bash
-# 프로젝트 루트 디렉토리에서
-./mvnw spring-boot:run
-```
-
-또는 IntelliJ IDEA에서:
-
-1. `src/main/java/kr/pe/tn/TnApplication.java` 열기
-2. `main` 메서드 옆 ▶️ 버튼 클릭
-3. "Run 'TnApplication'" 선택
-
-### 프론트엔드 실행
+#### 1. 저장소 클론
 
 ```bash
-# frontend 디렉토리로 이동
-cd frontend
-
-# 의존성 설치 (최초 1회)
-npm install
-
-# 개발 서버 실행
-npm run dev
+git clone https://github.com/duswntmd/TerminalNexus.git
+cd TerminalNexus
 ```
 
-브라우저에서 `http://localhost:5173` 접속
+#### 2. 데이터베이스 설정
 
-## 👤 초기 관리자 계정
-
-애플리케이션 최초 실행 시 자동으로 생성됩니다:
-
-```
-아이디: admin
-비밀번호: wjdxhdtkantlf
+```sql
+CREATE DATABASE tn CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'tn_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON tn.* TO 'tn_user'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-> ⚠️ **보안 경고**: 운영 환경에서는 반드시 비밀번호를 변경하세요!
+#### 3. 환경 변수 설정
 
-환경변수로 커스터마이징 가능:
-
-```properties
-admin.init.username=${ADMIN_USERNAME:admin}
-admin.init.password=${ADMIN_PASSWORD:wjdxhdtkantlf}
-admin.init.nickname=${ADMIN_NICKNAME:관리자}
-admin.init.email=${ADMIN_EMAIL:admin@tnhub.kr}
-```
-
-## 📁 프로젝트 구조
-
-```
-TN/
-├── src/
-│   ├── main/
-│   │   ├── java/kr/pe/tn/
-│   │   │   ├── api/              # REST API Controllers
-│   │   │   ├── config/           # 설정 (Security, Admin 등)
-│   │   │   ├── domain/
-│   │   │   │   ├── user/         # 사용자 도메인
-│   │   │   │   └── freeboard/    # 게시판 도메인
-│   │   │   └── security/         # JWT, OAuth2 설정
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-└── frontend/
-    ├── src/
-    │   ├── components/       # 공통 컴포넌트
-    │   ├── pages/           # 페이지 컴포넌트
-    │   ├── locales/         # 다국어 번역 파일
-    │   └── context/         # React Context (인증 등)
-    └── vite.config.js
-```
-
-## 🔑 주요 기능
-
-### 사용자 기능
-
-- ✅ 회원가입 / 로그인 (자체 + OAuth2)
-- ✅ 마이페이지 (정보 수정 / 탈퇴)
-- ✅ 자유게시판 (CRUD, 좋아요/싫어요, 댓글, 파일 첨부)
-- ✅ 다국어 지원 (한국어/영어)
-
-### 관리자 기능
-
-- ✅ 초기 관리자 계정 자동 생성
-- ✅ 전체 회원 목록 조회
-- ✅ 회원 정보 수정 (닉네임, 이메일, 비밀번호, 권한, 잠금 상태)
-- ✅ 회원 삭제
-- ✅ 모든 게시글 수정/삭제 권한
-
-## 🔐 보안 설정
-
-### JWT 인증
-
-- Access Token: 30분 유효
-- Refresh Token: 7일 유효
-- HTTP-Only 쿠키로 안전하게 저장
-
-### OAuth2 지원
-
-- Google 로그인
-- Naver 로그인
-
-### 권한 계층
-
-```
-ADMIN > USER
-```
-
-관리자는 자동으로 USER 권한도 포함
-
-## 🌐 API 엔드포인트
-
-### 사용자 API
-
-```
-POST   /api/user              # 회원가입
-GET    /api/user              # 사용자 정보 조회
-PUT    /api/user              # 사용자 정보 수정
-DELETE /api/user              # 회원 탈퇴
-POST   /api/user/exist        # 아이디 중복 확인
-POST   /api/user/exist/nickname  # 닉네임 중복 확인
-```
-
-### 관리자 API
-
-```
-GET    /admin/users           # 전체 회원 목록
-GET    /admin/users/{id}      # 특정 회원 조회
-PUT    /admin/users/{id}      # 회원 정보 수정
-DELETE /admin/users/{id}      # 회원 삭제
-```
-
-### 게시판 API
-
-```
-GET    /freeboard             # 게시글 목록
-POST   /freeboard             # 게시글 작성
-GET    /freeboard/{id}        # 게시글 조회
-PUT    /freeboard/{id}        # 게시글 수정
-DELETE /freeboard/{id}        # 게시글 삭제
-POST   /freeboard/{id}/like   # 좋아요 토글
-POST   /freeboard/{id}/dislike # 싫어요 토글
-```
-
-## 🔧 환경 설정
-
-### application.properties 주요 설정
+`src/main/resources/application.properties` 파일 생성:
 
 ```properties
 # Database
 spring.datasource.url=jdbc:mysql://localhost:3306/tn
-spring.datasource.username=root
+spring.datasource.username=tn_user
 spring.datasource.password=your_password
 
 # JWT
-jwt.secret=your-secret-key
-jwt.access-token-validity=1800000
-jwt.refresh-token-validity=604800000
+jwt.secret=your-secret-key-min-256-bits
+jwt.expiration=86400000
 
-# OAuth2
-spring.security.oauth2.client.registration.google.client-id=your-client-id
-spring.security.oauth2.client.registration.google.client-secret=your-client-secret
+# Google Gemini API
+gemini.api.key=your-gemini-api-key
 
-# File Upload
-spring.servlet.multipart.max-file-size=1024MB
-spring.servlet.multipart.max-request-size=1024MB
+# OAuth 2.0
+spring.security.oauth2.client.registration.google.client-id=your-google-client-id
+spring.security.oauth2.client.registration.google.client-secret=your-google-client-secret
+spring.security.oauth2.client.registration.naver.client-id=your-naver-client-id
+spring.security.oauth2.client.registration.naver.client-secret=your-naver-client-secret
 ```
 
-## 📝 개발 가이드
-
-### 코드 스타일
-
-- **Backend**: Clean Code 원칙 (SOLID, DRY, KISS)
-- **Frontend**: 함수형 컴포넌트 + Hooks
-- **명명 규칙**:
-  - Java: camelCase (메서드), PascalCase (클래스)
-  - JavaScript: camelCase (변수/함수), PascalCase (컴포넌트)
-
-### Git 커밋 메시지
-
-```
-feat: 새로운 기능 추가
-fix: 버그 수정
-docs: 문서 수정
-style: 코드 포맷팅
-refactor: 코드 리팩토링
-test: 테스트 코드
-chore: 빌드 설정 등
-```
-
-## 🐛 트러블슈팅
-
-### 포트 충돌
+#### 4. 백엔드 실행
 
 ```bash
-# 8080 포트 사용 중인 프로세스 확인 (Windows)
-netstat -ano | findstr :8080
+# Maven으로 빌드 및 실행
+./mvnw clean install
+./mvnw spring-boot:run
 
-# 프로세스 종료
-taskkill /PID <PID> /F
+# 또는 JAR 파일로 실행
+java -jar target/tn-0.0.1-SNAPSHOT.jar
 ```
 
-### 프론트엔드 빌드 오류
+백엔드 서버: `http://localhost:8080`
+
+#### 5. 프론트엔드 실행
 
 ```bash
-# node_modules 삭제 후 재설치
-rm -rf node_modules package-lock.json
+cd frontend
 npm install
+npm run dev
 ```
 
-### 데이터베이스 연결 오류
-
-1. MySQL 서버 실행 확인
-2. 데이터베이스 생성 확인: `CREATE DATABASE tn;`
-3. 계정 권한 확인
-
-### 배포 환경에서 API 404/405 에러 (회원가입/로그인 불가)
-
-**증상 1**: `POST https://tnhub.kr/api/user/exist 404 (Not Found)`
-**증상 2**: `POST https://tnhub.kr/login 405 (Method Not Allowed)`
-
-**원인**:
-
-1. Nginx의 `proxy_pass` 설정에서 trailing slash로 인해 `/api` 경로가 제거됨
-2. `/login`, `/oauth2/` 등 백엔드 경로에 대한 프록시 설정 누락
-
-**해결 방법**:
-
-```bash
-# 옵션 1: 자동 스크립트 사용 (권장)
-# 로컬에서 스크립트 업로드
-scp fix-nginx-complete.sh nginx.conf.sample ubuntu@tnhub.kr:~/
-
-# 서버에서 실행
-ssh ubuntu@tnhub.kr
-chmod +x fix-nginx-complete.sh
-./fix-nginx-complete.sh
-
-# 옵션 2: 수동 수정
-# 1. Nginx 설정 파일 수정
-sudo nano /etc/nginx/sites-available/default
-
-# 2. 다음 location 블록들을 추가/수정 (nginx.conf.sample 참조)
-#    ✅ location /api/ { proxy_pass http://localhost:8080; }
-#    ✅ location /oauth2/ { proxy_pass http://localhost:8080; }
-#    ✅ location ~ ^/(login|logout) { proxy_pass http://localhost:8080; }
-#    ✅ location ~ ^/(upload|download|display)/ { ... }
-
-# 3. 설정 검증 및 재시작
-sudo nginx -t
-sudo systemctl reload nginx
-
-# 4. 테스트
-curl -X POST https://tnhub.kr/api/user/exist \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test123"}'
-
-curl -X POST https://tnhub.kr/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"wjdxhdtkantlf"}'
-```
-
-**참고**: `nginx.conf.sample` 파일에 완전한 설정 예시가 포함되어 있습니다.
-
-## 📞 문의
-
-- Email: contact@tn.pe.kr
-- GitHub Issues: [프로젝트 이슈 페이지]
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스를 따릅니다.
+프론트엔드 서버: `http://localhost:5173`
 
 ---
 
-**Made with ❤️ by TN Team**
+## 📁 프로젝트 구조
+
+```
+TerminalNexus/
+├── src/main/java/kr/pe/tn/
+│   ├── api/                    # REST API 컨트롤러
+│   │   ├── ChatController.java
+│   │   ├── FreeBoardController.java
+│   │   └── FruitController.java
+│   ├── config/                 # 설정 파일
+│   │   ├── SecurityConfig.java
+│   │   ├── WebSocketConfig.java
+│   │   └── CorsConfig.java
+│   ├── domain/                 # 도메인 모델
+│   │   ├── chat/              # 채팅 도메인
+│   │   ├── freeboard/         # 게시판 도메인
+│   │   ├── fruit/             # 과일 AI 도메인
+│   │   └── user/              # 사용자 도메인
+│   ├── handler/               # WebSocket 이벤트 핸들러
+│   └── TnApplication.java     # 메인 애플리케이션
+├── frontend/
+│   ├── src/
+│   │   ├── components/        # React 컴포넌트
+│   │   ├── pages/            # 페이지 컴포넌트
+│   │   ├── context/          # Context API
+│   │   └── App.jsx           # 메인 앱
+│   ├── public/               # 정적 파일
+│   └── package.json
+└── README.md
+```
+
+---
+
+## 📚 API 문서
+
+### 인증 API
+
+- `POST /user/loginForm` - 로그인
+- `POST /api/user` - 회원가입
+- `GET /api/user` - 현재 사용자 정보
+- `POST /logout` - 로그아웃
+
+### 게시판 API
+
+- `GET /api/freeboard` - 게시글 목록
+- `GET /api/freeboard/{id}` - 게시글 상세
+- `POST /api/freeboard` - 게시글 작성
+- `PUT /api/freeboard/{id}` - 게시글 수정
+- `DELETE /api/freeboard/{id}` - 게시글 삭제
+- `POST /api/freeboard/{id}/like` - 좋아요
+- `POST /api/freeboard/{id}/dislike` - 싫어요
+
+### 과일 AI API
+
+- `GET /api/fruits` - 과일 목록
+- `POST /api/fruits/ask` - AI에게 질문
+
+### 채팅 API
+
+- `GET /api/chat/rooms` - 채팅방 목록
+- `GET /api/chat/users` - 온라인 사용자 목록
+
+### WebSocket 엔드포인트
+
+- `/ws-chat` - WebSocket 연결
+- `/app/chat.sendMessage/{roomId}` - 메시지 전송
+- `/app/chat.addUser/{roomId}` - 사용자 입장
+- `/app/chat.whisper` - 귓속말 전송
+- `/topic/{roomId}` - 채팅방 구독
+- `/user/queue/whisper` - 귓속말 수신
+
+---
+
+## 🎨 채팅 명령어
+
+- `/w 유저이름 메시지` - 귓속말 보내기
+- `/whisper 유저이름 메시지` - 귓속말 보내기 (긴 버전)
+- `/r 메시지` - 마지막 귓속말 대상에게 답장
+
+---
+
+## 🌐 배포
+
+### 프로덕션 빌드
+
+#### 백엔드
+
+```bash
+./mvnw clean package -DskipTests
+java -jar target/tn-0.0.1-SNAPSHOT.jar
+```
+
+#### 프론트엔드
+
+```bash
+cd frontend
+npm run build
+```
+
+빌드된 파일은 `frontend/dist` 디렉토리에 생성됩니다.
+
+### Nginx 설정 예시
+
+```nginx
+server {
+    listen 80;
+    server_name tnhub.kr;
+
+    location / {
+        root /var/www/tn/frontend/dist;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /ws-chat {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+---
+
+## 🤝 기여하기
+
+기여를 환영합니다! 다음 단계를 따라주세요:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+
+---
+
+## 👨‍💻 개발자
+
+**duswntmd** - [GitHub](https://github.com/duswntmd)
+
+---
+
+## 🙏 감사의 말
+
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [React](https://reactjs.org/)
+- [Material-UI](https://mui.com/)
+- [Google Gemini AI](https://ai.google.dev/)
+- [Toast UI Editor](https://ui.toast.com/tui-editor)
+
+---
+
+## 📞 문의
+
+프로젝트에 대한 질문이나 제안사항이 있으시면 이슈를 생성해주세요.
+
+**Website**: [https://tnhub.kr](https://tnhub.kr)
+
+---
+
+<div align="center">
+  Made with ❤️ by duswntmd
+</div>

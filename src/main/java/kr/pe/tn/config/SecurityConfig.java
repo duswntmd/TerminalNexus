@@ -141,9 +141,12 @@ public class SecurityConfig {
                                                                 "/jwt/**", "/api/user/exist/**", "/display",
                                                                 "/download",
                                                                 "/upload/**",
-                                                                "/api/freeboard/**") // 게시판 API 추가
+                                                                "/api/freeboard/**", // 게시판 API 추가
+                                                                "/ws-chat/**") // WebSocket 엔드포인트
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                                                .requestMatchers("/api/fruits/**").authenticated() // 과일 AI API (로그인 필수)
+                                                .requestMatchers("/api/chat/**").authenticated() // 채팅 API (로그인 필수)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
                                                 .anyRequest().authenticated());
 

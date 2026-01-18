@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { Helmet } from 'react-helmet-async';
 import "./LoginPage.css";
 
 // .env로 부터 백엔드 URL 받아오기
@@ -71,6 +72,13 @@ function LoginPage() {
 
     // 페이지
     return (
+        <>
+        <Helmet>
+            <title>로그인 - TerminalNexus | 개발자 허브 접속</title>
+            <meta name="description" content="TerminalNexus에 로그인하고 터미널 환경과 개발자 커뮤니티를 이용하세요. Google, Naver 소셜 로그인 지원." />
+            <meta name="keywords" content="로그인, 접속, 소셜 로그인, Google 로그인, Naver 로그인" />
+            <link rel="canonical" href="https://tnhub.kr/login" />
+        </Helmet>
         <div className="login-page">
             <div className="login-container">
                 <h1>로그인</h1>
@@ -126,6 +134,7 @@ function LoginPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
 

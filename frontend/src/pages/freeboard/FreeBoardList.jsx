@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchWithAccess } from '../../util/fetchUtil';
+import { Helmet } from 'react-helmet-async';
 import { 
     Container, 
     Typography, 
@@ -85,6 +86,13 @@ const FreeBoardList = () => {
     };
 
     return (
+        <>
+        <Helmet>
+            <title>자유게시판 - TerminalNexus | 개발자 커뮤니티</title>
+            <meta name="description" content="TerminalNexus 개발자 커뮤니티 자유게시판. 기술 질문, 정보 공유, 프로젝트 협업 등 다양한 주제로 소통하세요." />
+            <meta name="keywords" content="개발자 커뮤니티, 자유게시판, 기술 질문, 코드 공유, 프로그래밍 포럼" />
+            <link rel="canonical" href="https://tnhub.kr/freeboard" />
+        </Helmet>
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h4" component="h1" fontWeight="bold">
@@ -204,6 +212,7 @@ const FreeBoardList = () => {
                 />
             </Box>
         </Container>
+        </>
     );
 };
 
