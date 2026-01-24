@@ -28,7 +28,11 @@ import GroupIcon from '@mui/icons-material/Group';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WhisperIcon from '@mui/icons-material/VolumeDown';
 
-const BACKEND_URL = 'http://localhost:8080';
+// 환경에 따라 자동으로 백엔드 URL 설정
+const BACKEND_URL = import.meta.env.VITE_API_URL || 
+    (window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080' 
+        : `${window.location.protocol}//${window.location.host}`);
 
 // 실시간 채팅 페이지 - 2026.01.18 업데이트
 
