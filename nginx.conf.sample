@@ -69,7 +69,9 @@ server {
 
     # 5. WebSocket 프록시 (채팅 기능)
     # wss:// (WebSocket Secure) 연결을 위한 설정
-    location /ws-chat {
+    # ⚠️ 중요: SockJS는 /ws-chat/info, /ws-chat/123/abc/websocket 등 하위 경로를 사용하므로
+    # trailing slash(/)를 반드시 포함해야 합니다.
+    location /ws-chat/ {
         proxy_pass http://localhost:8080;
         
         # WebSocket 업그레이드를 위한 헤더
