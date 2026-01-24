@@ -120,8 +120,11 @@ pipeline {
                             --add-host=host.docker.internal:host-gateway \
                             -e "UPLOAD_PATH=${CONTAINER_UPLOAD_DIR}" \
                             -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \
+                            -e "SPRING_DATASOURCE_USERNAME=tn" \
+                            -e "SPRING_DATASOURCE_PASSWORD=tn" \
                             -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
                             -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
+                            -e "GEMINI_API_KEY=dummy_key_for_now" \
                             ${DOCKER_IMAGE}
                         
                         # Remove unused images (dangling images)
