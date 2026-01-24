@@ -119,29 +119,48 @@ GRANT ALL PRIVILEGES ON tn.* TO 'tn_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-#### 3. 환경 변수 설정
+#### 3. 환경 변수 설정 (중요! 🔐)
 
-`src/main/resources/application.properties` 파일 생성:
+**⚠️ 보안 주의사항**: API 키와 비밀번호를 코드에 하드코딩하지 마세요!
 
-```properties
-# Database
-spring.datasource.url=jdbc:mysql://localhost:3306/tn
-spring.datasource.username=tn_user
-spring.datasource.password=your_password
+자세한 설정 방법은 [ENV_SETUP.md](ENV_SETUP.md) 파일을 참조하세요.
 
-# JWT
-jwt.secret=your-secret-key-min-256-bits
-jwt.expiration=86400000
+##### Windows (PowerShell)
 
-# Google Gemini API
-gemini.api.key=your-gemini-api-key
+```powershell
+# 필수: Gemini API Key
+$env:GEMINI_API_KEY="your_gemini_api_key_here"
 
-# OAuth 2.0
-spring.security.oauth2.client.registration.google.client-id=your-google-client-id
-spring.security.oauth2.client.registration.google.client-secret=your-google-client-secret
-spring.security.oauth2.client.registration.naver.client-id=your-naver-client-id
-spring.security.oauth2.client.registration.naver.client-secret=your-naver-client-secret
+# 선택사항: 데이터베이스 설정 (기본값 사용 시 생략 가능)
+$env:DB_USERNAME="tn_user"
+$env:DB_PASSWORD="your_password"
 ```
+
+##### Linux/Mac
+
+```bash
+# 필수: Gemini API Key
+export GEMINI_API_KEY="your_gemini_api_key_here"
+
+# 선택사항: 데이터베이스 설정
+export DB_USERNAME="tn_user"
+export DB_PASSWORD="your_password"
+```
+
+##### IntelliJ IDEA에서 설정
+
+1. **Run** → **Edit Configurations**
+2. **Environment variables** 섹션에 추가:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+3. **Apply** → **OK**
+
+**Gemini API 키 발급 방법**:
+
+1. [Google AI Studio](https://aistudio.google.com/app/apikey) 접속
+2. "Create API Key" 클릭
+3. 발급받은 키를 위 환경 변수로 설정
 
 #### 4. 백엔드 실행
 
