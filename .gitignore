@@ -45,3 +45,8 @@ frontend/.vite/
 .env
 .env.local
 .env.*.local
+set-env-prod.sh
+set-env-prod.ps1
+
+### IntelliJ Run Configurations (contains API keys) ###
+.idea/runConfigurations/
