@@ -124,7 +124,7 @@ pipeline {
                             -e "SPRING_DATASOURCE_PASSWORD=tn" \
                             -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
                             -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
-                            -e "GEMINI_API_KEY=dummy_key_for_now" \
+                            -e "GEMINI_API_KEY=AIzaSyA8qMohOVhS3IlkWxxsW4IPpreAYt_Kq7E" \
                             ${DOCKER_IMAGE}
                         
                         # Remove unused images (dangling images)

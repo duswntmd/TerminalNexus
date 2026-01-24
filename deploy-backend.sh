@@ -50,7 +50,7 @@ docker run -d \
     -e "SPRING_DATASOURCE_PASSWORD=tn" \
     -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
     -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
-    -e "GEMINI_API_KEY=dummy_key_for_now" \
+    -e "GEMINI_API_KEY=AIzaSyA8qMohOVhS3IlkWxxsW4IPpreAYt_Kq7E" \
     duswntmd/tn:1.0
 
 echo "✅ 컨테이너 실행 완료"
