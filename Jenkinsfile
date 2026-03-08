@@ -108,28 +108,34 @@ pipeline {
             steps {
                 script {
                     echo "🚀 컨테이너 재시작..."
-                    sh """
-                        docker stop ${CONTAINER_NAME} || true
-                        docker rm ${CONTAINER_NAME} || true
-                        docker ps --filter "publish=8080" -q | xargs -r docker stop || true
-                        
-                        docker run -d \
-                            -p 8080:8080 \
-                            -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \
-                            --name ${CONTAINER_NAME} \
-                            --add-host=host.docker.internal:host-gateway \
-                            -e "UPLOAD_PATH=${CONTAINER_UPLOAD_DIR}" \
-                            -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \
-                            -e "SPRING_DATASOURCE_USERNAME=tn" \
-                            -e "SPRING_DATASOURCE_PASSWORD=tn" \
-                            -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
-                            -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
-                            -e "GEMINI_API_KEY=AIzaSyA8qMohOVhS3IlkWxxsW4IPpreAYt_Kq7E" \
-                            ${DOCKER_IMAGE}
-                        
-                        # Remove unused images (dangling images)
-                        docker image prune -f
-                    """
+                    // ✅ 민감 정보는 Jenkins Credentials에서 주입 (소스코드에 값 없음)
+                    withCredentials([
+                        string(credentialsId: 'GEMINI_API_KEY',  variable: 'GEMINI_KEY'),
+                        string(credentialsId: 'ADMIN_PASSWORD',  variable: 'ADMIN_PASS')
+                    ]) {
+                        sh """
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+                            docker ps --filter "publish=8080" -q | xargs -r docker stop || true
+
+                            docker run -d \\
+                                -p 8080:8080 \\
+                                -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \\
+                                --name ${CONTAINER_NAME} \\
+                                --add-host=host.docker.internal:host-gateway \\
+                                -e "UPLOAD_PATH=${CONTAINER_UPLOAD_DIR}" \\
+                                -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \\
+                                -e "SPRING_DATASOURCE_USERNAME=tn" \\
+                                -e "SPRING_DATASOURCE_PASSWORD=tn" \\
+                                -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \\
+                                -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \\
+                                -e "ADMIN_PASSWORD=\${ADMIN_PASS}" \\
+                                -e "GEMINI_API_KEY=\${GEMINI_KEY}" \\
+                                ${DOCKER_IMAGE}
+
+                            docker image prune -f
+                        """
+                    }
                 }
             }
         }
