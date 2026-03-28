@@ -14,6 +14,9 @@ import AdminUserManagePage from "./pages/admin/AdminUserManagePage";
 import AdminPage from "./pages/AdminPage";
 import FruitAIPage from "./pages/FruitAIPage";
 import ChatPage from "./pages/ChatPage";
+import DonationPage from "./pages/donation/DonationPage";
+import DonationSuccessPage from "./pages/donation/DonationSuccessPage";
+import DonationHistoryPage from "./pages/donation/DonationHistoryPage";
 
 
 import Header from "./components/Header";
@@ -102,14 +105,17 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/admin/users" 
+              <Route path="/admin/users" 
                 element={
                   <ProtectedRoute>
                     <AdminUserManagePage />
                   </ProtectedRoute>
                 } 
               />
+              {/* 후원 */}
+              <Route path="/donation" element={<DonationPage />} />
+              <Route path="/donation/success" element={<DonationSuccessPage />} />
+              <Route path="/donation/history" element={<DonationHistoryPage />} />
             </Routes>
           </main>
           <Footer />

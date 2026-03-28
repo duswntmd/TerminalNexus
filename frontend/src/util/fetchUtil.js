@@ -56,7 +56,9 @@ export async function fetchWithAccess(url, options = {}) {
     }
 
     if (!response.ok) {
-        throw new Error(`HTTP 오류 : ${response.status}`);
+        const error = new Error(`HTTP 오류 : ${response.status}`);
+        error.response = response;
+        throw error;
     }
 
     return response;
