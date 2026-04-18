@@ -1,232 +1,210 @@
-# 🚀 운영 서버 배포 가이드
+# 🚀 배포 가이드
 
-## ⚠️ 배포 전 필수 체크리스트
+## 배포 전 체크리스트
 
-- [ ] 새로운 Gemini API 키 발급 완료
-- [ ] 운영 서버에 환경 변수 설정 완료
-- [ ] 로컬에서 테스트 완료
-- [ ] Git에 API 키가 커밋되지 않았는지 확인
-
----
-
-## 📋 1단계: 운영 서버 환경 변수 설정
-
-### Jenkins 서버에서 설정
-
-Jenkins가 실행되는 서버에 SSH로 접속한 후:
-
-```bash
-# 1. 시스템 환경 변수 파일 편집 (영구 설정)
-sudo nano /etc/environment
-
-# 2. 다음 내용 추가
-GEMINI_API_KEY="여기에_새로_발급받은_API_키_입력"
-
-# 3. 저장 후 시스템에 적용
-source /etc/environment
-
-# 4. 확인
-echo $GEMINI_API_KEY
-```
-
-### 또는 Jenkins에서 직접 설정
-
-1. Jenkins 대시보드 접속
-2. **Manage Jenkins** → **Configure System**
-3. **Global properties** → **Environment variables** 체크
-4. **Add** 클릭:
-   - Name: `GEMINI_API_KEY`
-   - Value: `여기에_새로_발급받은_API_키_입력`
-5. **Save**
-
-### 또는 Systemd Service 파일에 설정
-
-Spring Boot를 systemd 서비스로 실행하는 경우:
-
-```bash
-# 1. 서비스 파일 편집
-sudo nano /etc/systemd/system/tn.service
-
-# 2. [Service] 섹션에 추가
-[Service]
-Environment="GEMINI_API_KEY=여기에_새로_발급받은_API_키_입력"
-Environment="UPLOAD_PATH=/app/uploads"
-
-# 3. 서비스 재시작
-sudo systemctl daemon-reload
-sudo systemctl restart tn
-```
+- [ ] 모든 환경 변수 준비 완료 ([ENV_SETUP.md](ENV_SETUP.md) 참고)
+- [ ] 로컬 테스트 완료
+- [ ] `application.properties`에 하드코딩된 시크릿 없음
+- [ ] `.env` 파일이 Git에 포함되지 않음
 
 ---
 
-## 📋 2단계: 애플리케이션 빌드 및 배포
+## 1. Jenkins CI/CD 파이프라인 (권장)
 
-### 로컬에서 빌드
+### 사전 설정
 
-```bash
-# 1. 최신 코드 pull
-git pull origin main
+Jenkins에 다음 환경 변수를 **Credentials** 또는 **Global Properties**로 등록:
 
-# 2. 백엔드 빌드
-./mvnw clean package -DskipTests
+| 변수 | Jenkins 등록 방법 |
+|------|-------------------|
+| `GEMINI_API_KEY` | Secret text |
+| `ADMIN_PASSWORD` | Secret text |
+| `NAVER_CLIENT_ID` | Secret text |
+| `NAVER_CLIENT_SECRET` | Secret text |
+| `GOOGLE_CLIENT_ID` | Secret text |
+| `GOOGLE_CLIENT_SECRET` | Secret text |
+| `PORTONE_IMP_KEY` | Secret text |
+| `PORTONE_IMP_SECRET` | Secret text |
 
-# 3. 프론트엔드 빌드
-cd frontend
-npm install
-npm run build
-cd ..
-```
+> **Jenkins Global Properties 설정:**
+> Jenkins → Manage Jenkins → System → Global properties → Environment variables
 
-### 운영 서버로 전송
+### 배포 실행
 
-```bash
-# JAR 파일 전송
-scp target/tn-0.0.1-SNAPSHOT.jar user@tnhub.kr:/app/
-
-# 프론트엔드 빌드 파일 전송
-scp -r frontend/dist/* user@tnhub.kr:/var/www/tn/
-```
-
-### 또는 Jenkins CI/CD 사용
-
-Jenkins 파이프라인이 설정되어 있다면:
-
-1. GitHub에 코드 push
+1. `main` 브랜치에 push
 2. Jenkins가 자동으로 빌드 및 배포
-3. 환경 변수는 위에서 설정한 것을 자동으로 사용
+3. 파이프라인 순서: Git Clone → Frontend Build → Deploy Frontend → Backend Build → Docker Build → Run Container
 
 ---
 
-## 📋 3단계: 배포 후 확인
+## 2. 수동 배포
 
-### 1. 애플리케이션 로그 확인
+### Backend 빌드
 
 ```bash
-# Systemd 서비스 로그
-sudo journalctl -u tn -f
-
-# 또는 애플리케이션 로그 파일
-tail -f /var/log/tn/application.log
+./mvnw clean package -DskipTests
 ```
 
-### 2. Gemini API 테스트
-
-브라우저에서 접속:
-
-```
-https://tnhub.kr/fruit-ai
-```
-
-과일 관련 질문을 입력하고 AI 응답이 정상적으로 오는지 확인
-
-### 3. 에러 발생 시 체크사항
-
-#### 403 PERMISSION_DENIED 에러
-
-```
-원인: API 키가 잘못되었거나 환경 변수가 설정되지 않음
-해결:
-1. 환경 변수 확인: echo $GEMINI_API_KEY
-2. API 키 재발급: https://aistudio.google.com/app/apikey
-3. 서비스 재시작
-```
-
-#### API 키를 찾을 수 없다는 에러
-
-```
-원인: 환경 변수가 애플리케이션에 전달되지 않음
-해결:
-1. 서비스 파일에 Environment 설정 확인
-2. systemctl daemon-reload 실행
-3. 서비스 재시작
-```
-
----
-
-## 🔒 보안 체크리스트
-
-### 배포 전 확인사항
+### Frontend 빌드
 
 ```bash
-# 1. Git 히스토리에 API 키가 없는지 확인
-git log --all --full-history -p -- src/main/resources/application.properties | grep -i "AIza"
-
-# 2. 현재 코드에 하드코딩된 키가 없는지 확인
-grep -r "AIza" src/ --include="*.java" --include="*.properties"
-
-# 3. .gitignore 확인
-cat .gitignore | grep -E "(\.env|runConfigurations)"
+cd frontend
+npm install --legacy-peer-deps
+npm run build
+# dist/ 디렉토리 생성됨
 ```
 
-### 모두 깨끗하면 배포 진행!
-
----
-
-## 📊 배포 후 모니터링
-
-### 1. API 사용량 모니터링
-
-[Google AI Studio](https://aistudio.google.com/app/apikey)에서:
-
-- API 키 사용량 확인
-- 할당량 초과 여부 확인
-- 비정상적인 사용 패턴 감지
-
-### 2. 애플리케이션 로그 모니터링
+### Frontend 배포 (Nginx)
 
 ```bash
-# Gemini API 호출 로그 확인
-sudo journalctl -u tn | grep "Gemini API"
+sudo cp -r frontend/dist/* /var/www/html/
+sudo nginx -t && sudo systemctl reload nginx
+```
 
-# 에러 로그 확인
-sudo journalctl -u tn | grep "ERROR"
+### Backend 배포 (Docker)
+
+```bash
+# 기존 컨테이너 중지/제거
+docker stop tn_container || true
+docker rm tn_container || true
+
+# 새 이미지 빌드
+docker build --no-cache -t duswntmd/tn:1.0 .
+
+# 컨테이너 실행
+docker run -d \
+  -p 8080:8080 \
+  -v /home/ubuntu/uploads:/app/uploads \
+  --name tn_container \
+  --add-host=host.docker.internal:host-gateway \
+  -e "UPLOAD_PATH=/app/uploads" \
+  -e "SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \
+  -e "GEMINI_API_KEY=your_key" \
+  -e "ADMIN_PASSWORD=your_password" \
+  -e "NAVER_CLIENT_ID=your_id" \
+  -e "NAVER_CLIENT_SECRET=your_secret" \
+  -e "GOOGLE_CLIENT_ID=your_id" \
+  -e "GOOGLE_CLIENT_SECRET=your_secret" \
+  -e "OAUTH2_BASE_URL=https://tnhub.kr" \
+  -e "PORTONE_IMP_KEY=your_key" \
+  -e "PORTONE_IMP_SECRET=your_secret" \
+  duswntmd/tn:1.0
 ```
 
 ---
 
-## 🆘 긴급 상황 대응
+## 3. Nginx 설정
 
-### API 키가 다시 유출된 경우
+```nginx
+server {
+    listen 80;
+    server_name tnhub.kr www.tnhub.kr;
+    return 301 https://$server_name$request_uri;
+}
 
-1. **즉시 조치**:
+server {
+    listen 443 ssl;
+    server_name tnhub.kr www.tnhub.kr;
 
-   ```bash
-   # 1. Google AI Studio에서 해당 키 삭제
-   # 2. 새 키 발급
-   # 3. 운영 서버 환경 변수 업데이트
-   sudo nano /etc/environment
-   # 또는
-   sudo nano /etc/systemd/system/tn.service
+    ssl_certificate     /etc/letsencrypt/live/tnhub.kr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tnhub.kr/privkey.pem;
 
-   # 4. 서비스 재시작
-   sudo systemctl daemon-reload
-   sudo systemctl restart tn
-   ```
+    client_max_body_size 50M;
 
-2. **Git 히스토리 정리** (필요시):
-   ```bash
-   # BFG Repo-Cleaner 사용 권장
-   # 또는 새 저장소 생성
-   ```
+    # React SPA
+    location / {
+        root /var/www/html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # REST API
+    location /api {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket
+    location /ws-chat {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 3600s;
+    }
+
+    # Backend 경로 (로그인, OAuth2 등)
+    location ~ ^/(user|login|oauth2|logout|jwt|cookie|display|download|upload)(/|$) {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ---
 
-## ✅ 배포 완료 확인
+## 4. 배포 후 확인
 
-- [ ] https://tnhub.kr 접속 가능
-- [ ] 로그인/회원가입 정상 작동
-- [ ] 과일 AI 페이지에서 질문/답변 정상 작동
-- [ ] 채팅 기능 정상 작동
-- [ ] 자유게시판 정상 작동
-- [ ] 서버 로그에 에러 없음
+### 서비스 상태 확인
+
+```bash
+# Docker 컨테이너 상태
+docker ps
+
+# 컨테이너 로그
+docker logs -f tn_container
+
+# Nginx 상태
+sudo systemctl status nginx
+```
+
+### 기능 테스트
+
+- [ ] `https://tnhub.kr` 접속
+- [ ] 회원가입 / 로그인 (자체 + 소셜)
+- [ ] 과일 AI 질문/답변
+- [ ] 채팅 (전체/익명/귓속말)
+- [ ] 자유게시판 CRUD
+- [ ] 파일 업로드
+
+### 에러 발생 시
+
+```bash
+# 컨테이너 로그 확인
+docker logs tn_container --tail 100
+
+# 환경 변수 확인
+docker exec tn_container env | grep -E "GEMINI|ADMIN|NAVER|GOOGLE"
+
+# 컨테이너 재시작
+docker restart tn_container
+```
 
 ---
 
-## 📞 문제 발생 시
+## 5. SSL 인증서 갱신 (Let's Encrypt)
 
-1. 서버 로그 확인
-2. 환경 변수 설정 재확인
-3. API 키 유효성 확인
-4. 필요시 서비스 재시작
+```bash
+# 자동 갱신 테스트
+sudo certbot renew --dry-run
 
-**모든 설정이 완료되면 안전하게 배포할 수 있습니다!** 🚀
+# 수동 갱신
+sudo certbot renew
+sudo systemctl reload nginx
+```
+
+---
+
+## 🆘 긴급 대응
+
+### API 키 유출 시
+
+1. 해당 서비스에서 키 즉시 삭제/비활성화
+2. 새 키 발급
+3. Docker 환경 변수 업데이트 후 컨테이너 재시작
+4. Git 히스토리 정리 (BFG Repo-Cleaner 권장)

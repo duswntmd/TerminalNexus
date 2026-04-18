@@ -9,7 +9,6 @@ import {
     TextField,
     Button,
     Box,
-    Paper,
     List,
     ListItem,
     ListItemText,
@@ -20,49 +19,40 @@ import {
     Divider,
     IconButton,
     Badge,
-    Alert
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import PersonIcon from '@mui/icons-material/Person';
 import GroupIcon from '@mui/icons-material/Group';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WhisperIcon from '@mui/icons-material/VolumeDown';
 
-// 환경에 따라 자동으로 백엔드 URL 설정
-const BACKEND_URL = import.meta.env.VITE_API_URL || 
-    (window.location.hostname === 'localhost' 
-        ? 'http://localhost:8080' 
+const BACKEND_URL = import.meta.env.VITE_API_URL ||
+    (window.location.hostname === 'localhost'
+        ? 'http://localhost:8080'
         : `${window.location.protocol}//${window.location.host}`);
 
-// 실시간 채팅 페이지 - 2026.01.18 업데이트
-
 const ChatPage = () => {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const [stompClient, setStompClient] = useState(null);
     const [connected, setConnected] = useState(false);
-    const [currentTab, setCurrentTab] = useState(0); // 0: 전체, 1: 익명, 2: 1:1
+    const [currentTab, setCurrentTab] = useState(0);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [whisperTarget, setWhisperTarget] = useState('');
-    const [lastWhisperTarget, setLastWhisperTarget] = useState(''); // 마지막 귓속말 대상
+    const [lastWhisperTarget, setLastWhisperTarget] = useState('');
     const messagesEndRef = useRef(null);
-    const subscriptionRef = useRef(null); // 현재 구독 저장
+    const subscriptionRef = useRef(null);
+    // 익명 채팅: 내가 보낸 메시지 content를 추적하여 에코 중복 방지
+    const pendingAnonMessages = useRef(new Set());
 
-
-    // 자동 스크롤
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    useEffect(() => { scrollToBottom(); }, [messages]);
 
-    // WebSocket 연결
     useEffect(() => {
         if (!user) return;
-
         const socket = new SockJS(`${BACKEND_URL}/ws-chat`);
         const client = new Client({
             webSocketFactory: () => socket,
@@ -75,44 +65,24 @@ const ChatPage = () => {
         client.onConnect = () => {
             console.log('WebSocket 연결 성공!');
             setConnected(true);
-
-            // 현재 탭에 따라 구독
             subscribeToRoom(client, getRoomId());
-
-            // 귓속말 구독
             client.subscribe('/user/queue/whisper', (message) => {
                 const whisperMsg = JSON.parse(message.body);
                 setMessages(prev => [...prev, { ...whisperMsg, isWhisper: true }]);
             });
-
-            // 입장 메시지 전송
             client.publish({
                 destination: `/app/chat.addUser/${getRoomId()}`,
-                body: JSON.stringify({
-                    sender: user.nickname,
-                    type: 'JOIN'
-                })
+                body: JSON.stringify({ sender: user.nickname, type: 'JOIN' })
             });
-
-            // 온라인 사용자 목록 조회
             fetchOnlineUsers();
         };
 
-        client.onStompError = (frame) => {
-            console.error('STOMP 에러:', frame);
-        };
-
+        client.onStompError = (frame) => console.error('STOMP 에러:', frame);
         client.activate();
         setStompClient(client);
-
-        return () => {
-            if (client) {
-                client.deactivate();
-            }
-        };
+        return () => { if (client) client.deactivate(); };
     }, [user]);
 
-    // 탭 변경 시 재구독
     useEffect(() => {
         if (stompClient && connected) {
             setMessages([]);
@@ -129,39 +99,37 @@ const ChatPage = () => {
     };
 
     const subscribeToRoom = (client, roomId) => {
-        // 이전 구독 해제
-        if (subscriptionRef.current) {
-            subscriptionRef.current.unsubscribe();
-        }
-
-        // 새로운 구독
+        if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+        const isAnonRoom = roomId === 'anonymous'; // roomId로 익명 방 판별 (Jackson 직렬화 이슈 우회)
         const subscription = client.subscribe(`/topic/${roomId}`, (message) => {
             const receivedMessage = JSON.parse(message.body);
+
+            // 익명 채팅: pending Set에 있으면 내가 보낸 메시지 → isMine:true
+            if (isAnonRoom && receivedMessage.type === 'CHAT') {
+                if (pendingAnonMessages.current.has(receivedMessage.content)) {
+                    pendingAnonMessages.current.delete(receivedMessage.content);
+                    setMessages(prev => [...prev, { ...receivedMessage, isMine: true }]);
+                    return;
+                }
+            }
+
             setMessages(prev => [...prev, receivedMessage]);
-            
-            // 입장/퇴장 메시지일 때 온라인 사용자 목록 업데이트
             if (receivedMessage.type === 'JOIN' || receivedMessage.type === 'LEAVE') {
                 fetchOnlineUsers();
             }
         });
-
-        // 구독 저장
         subscriptionRef.current = subscription;
     };
+
+
 
     const fetchOnlineUsers = async () => {
         try {
             const token = localStorage.getItem('accessToken');
             const res = await fetch(`${BACKEND_URL}/api/chat/users`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-            
-            if (res.ok) {
-                const users = await res.json();
-                setOnlineUsers(users);
-            }
+            if (res.ok) setOnlineUsers(await res.json());
         } catch (error) {
             console.error('온라인 사용자 조회 실패:', error);
         }
@@ -169,101 +137,66 @@ const ChatPage = () => {
 
     const sendMessage = () => {
         if (!inputMessage.trim() || !stompClient || !connected) return;
-
-        // 명령어 처리
         const trimmedMessage = inputMessage.trim();
-        
-        // /w 또는 /whisper 명령어 처리
-        const whisperMatch = trimmedMessage.match(/^\/(w|whisper)\s+(\S+)\s+(.+)$/);
-        if (whisperMatch) {
-            const targetUser = whisperMatch[2];
-            const message = whisperMatch[3];
-            sendWhisperCommand(targetUser, message);
-            return;
-        }
 
-        // /r 명령어 처리 (마지막 귓속말 대상에게 답장)
+        const whisperMatch = trimmedMessage.match(/^\/(w|whisper)\s+(\S+)\s+(.+)$/);
+        if (whisperMatch) { sendWhisperCommand(whisperMatch[2], whisperMatch[3]); return; }
+
         const replyMatch = trimmedMessage.match(/^\/r\s+(.+)$/);
         if (replyMatch) {
             if (!lastWhisperTarget) {
-                setMessages(prev => [...prev, {
-                    type: 'CHAT',
-                    sender: '시스템',
-                    content: '❌ 답장할 대상이 없습니다. 먼저 귓속말을 보내세요.',
-                    timestamp: new Date()
-                }]);
+                setMessages(prev => [...prev, { type: 'CHAT', sender: '시스템', content: '❌ 답장할 대상이 없습니다. 먼저 귓속말을 보내세요.', timestamp: new Date() }]);
                 setInputMessage('');
                 return;
             }
-            const message = replyMatch[1];
-            sendWhisperCommand(lastWhisperTarget, message);
+            sendWhisperCommand(lastWhisperTarget, replyMatch[1]);
             return;
         }
 
-        // 일반 메시지 전송
-        const chatMessage = {
+        const messageBody = {
             sender: currentTab === 1 ? '익명' : user.nickname,
-            senderId: user.id,
+            senderId: user.username || user.nickname,
             content: inputMessage,
             type: 'CHAT',
             roomType: currentTab === 1 ? 'ANONYMOUS' : 'PUBLIC',
-            isAnonymous: currentTab === 1
+            isAnonymous: currentTab === 1,
         };
+
+        // 익명 채팅: 서버 에코가 오기 전에 pending Set에 등록 (isMine 판별용)
+        if (currentTab === 1) {
+            pendingAnonMessages.current.add(inputMessage);
+        }
+
 
         stompClient.publish({
             destination: `/app/chat.sendMessage/${getRoomId()}`,
-            body: JSON.stringify(chatMessage)
+            body: JSON.stringify(messageBody),
         });
-
         setInputMessage('');
     };
 
+
     const sendWhisperCommand = (targetUser, message) => {
         if (!onlineUsers.includes(targetUser)) {
-            setMessages(prev => [...prev, {
-                type: 'CHAT',
-                sender: '시스템',
-                content: `❌ "${targetUser}" 사용자를 찾을 수 없습니다.`,
-                timestamp: new Date()
-            }]);
+            setMessages(prev => [...prev, { type: 'CHAT', sender: '시스템', content: `❌ "${targetUser}" 사용자를 찾을 수 없습니다.`, timestamp: new Date() }]);
             setInputMessage('');
             return;
         }
-
-        const whisperMessage = {
-            sender: user.nickname,
-            senderId: user.id,
-            receiver: targetUser,
-            content: message,
-            type: 'WHISPER'
-        };
-
         stompClient.publish({
             destination: '/app/chat.whisper',
-            body: JSON.stringify(whisperMessage)
+            body: JSON.stringify({ sender: user.nickname, senderId: user.id, receiver: targetUser, content: message, type: 'WHISPER' })
         });
-
         setLastWhisperTarget(targetUser);
         setInputMessage('');
     };
 
     const sendWhisper = () => {
         if (!whisperTarget || !inputMessage.trim() || !stompClient) return;
-
-        const whisperMessage = {
-            sender: user.nickname,
-            senderId: user.id,
-            receiver: whisperTarget,
-            content: inputMessage,
-            type: 'WHISPER'
-        };
-
         stompClient.publish({
             destination: '/app/chat.whisper',
-            body: JSON.stringify(whisperMessage)
+            body: JSON.stringify({ sender: user.nickname, senderId: user.id, receiver: whisperTarget, content: inputMessage, type: 'WHISPER' })
         });
-
-        setLastWhisperTarget(whisperTarget); // 마지막 귓속말 대상 저장
+        setLastWhisperTarget(whisperTarget);
         setInputMessage('');
         setWhisperTarget('');
     };
@@ -271,32 +204,37 @@ const ChatPage = () => {
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            if (whisperTarget) {
-                sendWhisper();
-            } else {
-                sendMessage();
-            }
+            whisperTarget ? sendWhisper() : sendMessage();
         }
     };
 
     const formatTime = (timestamp) => {
         if (!timestamp) return '';
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        return new Date(timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     };
 
+    /* ── 메시지 렌더링 ── */
     const renderMessage = (msg, index) => {
-        const isMyMessage = msg.sender === user?.nickname;
+        // isMine 플래그 우선 → 없으면 nickname/sender 비교 (전체 채팅용)
+        const isMyMessage = msg.isMine === true
+            ? true
+            : msg.sender === user?.nickname;
         const isSystemMessage = msg.type === 'JOIN' || msg.type === 'LEAVE';
         const isWhisper = msg.isWhisper || msg.type === 'WHISPER';
+
 
         if (isSystemMessage) {
             return (
                 <Box key={index} textAlign="center" my={1}>
-                    <Chip 
+                    <Chip
                         label={`${msg.sender}님이 ${msg.type === 'JOIN' ? '입장' : '퇴장'}하셨습니다.`}
                         size="small"
-                        color={msg.type === 'JOIN' ? 'success' : 'default'}
+                        sx={{
+                            bgcolor: msg.type === 'JOIN' ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
+                            color: msg.type === 'JOIN' ? '#34d399' : '#71717a',
+                            border: msg.type === 'JOIN' ? '1px solid rgba(52,211,153,0.2)' : '1px solid rgba(255,255,255,0.07)',
+                            fontSize: '0.72rem',
+                        }}
                     />
                 </Box>
             );
@@ -312,207 +250,264 @@ const ChatPage = () => {
                 <Box maxWidth="70%">
                     {!isMyMessage && (
                         <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-                            <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>
+                            <Avatar sx={{
+                                width: 22, height: 22, fontSize: '0.68rem',
+                                bgcolor: 'rgba(255,255,255,0.08)', color: '#a1a1aa',
+                            }}>
                                 {msg.sender[0]}
                             </Avatar>
-                            <Typography variant="caption" fontWeight="bold">
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa' }}>
                                 {msg.sender}
                             </Typography>
                             {isWhisper && (
-                                <Chip 
-                                    label="🔒 귓속말" 
-                                    size="small" 
-                                    color="secondary" 
-                                    sx={{ 
-                                        height: 18,
-                                        fontWeight: 'bold',
-                                        fontSize: '0.65rem'
-                                    }} 
-                                />
+                                <Chip label="🔒 귓속말" size="small" sx={{
+                                    height: 16, bgcolor: 'rgba(168,85,247,0.1)', color: '#c084fc',
+                                    border: '1px solid rgba(168,85,247,0.2)', fontSize: '0.6rem', fontWeight: 700,
+                                }} />
                             )}
                         </Box>
                     )}
                     {isMyMessage && isWhisper && (
                         <Box display="flex" alignItems="center" gap={0.5} mb={0.5} justifyContent="flex-end">
-                            <Chip 
-                                label={`🔒 ${msg.receiver}님에게 귓속말`}
-                                size="small" 
-                                color="secondary" 
-                                sx={{ 
-                                    height: 18,
-                                    fontWeight: 'bold',
-                                    fontSize: '0.65rem'
-                                }} 
-                            />
+                            <Chip label={`🔒 ${msg.receiver}님에게 귓속말`} size="small" sx={{
+                                height: 16, bgcolor: 'rgba(168,85,247,0.1)', color: '#c084fc',
+                                border: '1px solid rgba(168,85,247,0.2)', fontSize: '0.6rem', fontWeight: 700,
+                            }} />
                         </Box>
                     )}
-                    <Paper
-                        elevation={isWhisper ? 4 : 1}
+                    <Box
                         sx={{
-                            p: 1.5,
-                            bgcolor: isMyMessage 
-                                ? (isWhisper ? '#9c27b0' : 'primary.main')
-                                : (isWhisper ? '#f3e5f5' : 'grey.100'),
-                            color: isMyMessage ? 'white' : 'text.primary',
-                            borderRadius: 2,
-                            border: isWhisper ? '2px solid #9c27b0' : 'none'
+                            px: 1.8, py: 1.2,
+                            borderRadius: isMyMessage ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                            bgcolor: isMyMessage
+                                ? (isWhisper ? 'rgba(147,51,234,0.3)' : 'rgba(99,102,241,0.22)')
+                                : (isWhisper ? 'rgba(168,85,247,0.08)' : 'rgba(255,255,255,0.05)'),
+                            border: isWhisper
+                                ? '1px solid rgba(168,85,247,0.25)'
+                                : isMyMessage
+                                    ? '1px solid rgba(99,102,241,0.3)'
+                                    : '1px solid rgba(255,255,255,0.06)',
                         }}
                     >
-                        <Typography variant="body1">{msg.content}</Typography>
-                        <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mt: 0.5 }}>
+                        <Typography sx={{ color: '#e4e4e7', fontSize: '0.88rem', lineHeight: 1.5 }}>
+                            {msg.content}
+                        </Typography>
+                        <Typography sx={{ color: '#52525b', fontSize: '0.68rem', display: 'block', mt: 0.5, textAlign: isMyMessage ? 'right' : 'left' }}>
                             {formatTime(msg.timestamp)}
                         </Typography>
-                    </Paper>
+                    </Box>
                 </Box>
             </Box>
         );
     };
 
+    /* ── 로딩 상태 ── */
+    if (authLoading || !user) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#000' }}>
+                <Box sx={{
+                    width: 32, height: 32,
+                    border: '3px solid rgba(255,255,255,0.08)',
+                    borderTop: '3px solid #818cf8',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </Box>
+        );
+    }
+
     return (
         <>
             <Helmet>
                 <title>채팅 - TerminalNexus | 실시간 채팅</title>
-                <meta name="description" content="TerminalNexus 실시간 채팅. 전체 채팅, 익명 채팅, 1:1 채팅, 귓속말 기능 제공" />
+                <meta name="description" content="TerminalNexus 실시간 채팅. 전체 채팅, 익명 채팅, 귓속말 기능 제공" />
             </Helmet>
 
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Box display="flex" gap={2} height="calc(100vh - 150px)">
-                    {/* 왼쪽: 채팅 영역 */}
-                    <Paper elevation={3} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        {/* 헤더 */}
-                        <Box p={2} borderBottom="1px solid #e0e0e0">
-                            <Typography variant="h5" fontWeight="bold">
-                                💬 채팅
-                            </Typography>
-                            <Chip 
-                                label={connected ? '연결됨' : '연결 중...'} 
-                                color={connected ? 'success' : 'default'}
-                                size="small"
-                                sx={{ mt: 1 }}
-                            />
-                        </Box>
+            <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', pt: { xs: 10, md: 12 }, pb: 4, px: { xs: 1, md: 2 } }}>
+                <Container maxWidth="lg">
+                    <Box display="flex" gap={2} height="calc(100vh - 140px)">
 
-                        {/* 탭 */}
-                        <Tabs value={currentTab} onChange={(e, v) => setCurrentTab(v)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tab icon={<GroupIcon />} label="전체 채팅" />
-                            <Tab icon={<VisibilityOffIcon />} label="익명 채팅" />
-                        </Tabs>
-
-                        {/* 메시지 영역 */}
-                        <Box flex={1} overflow="auto" p={2} bgcolor="#fafafa">
-                            {messages.map((msg, index) => renderMessage(msg, index))}
-                            <div ref={messagesEndRef} />
-                        </Box>
-
-                        {/* 입력 영역 */}
-                        <Box p={2} borderTop="1px solid #e0e0e0" bgcolor="#f9f9f9">
-                            {whisperTarget && (
-                                <Box mb={1.5}>
-                                    <Chip
-                                        label={`💬 ${whisperTarget}님에게 귓속말`}
-                                        onDelete={() => setWhisperTarget('')}
-                                        color="secondary"
-                                        size="small"
-                                        sx={{ fontWeight: 'bold' }}
-                                    />
-                                </Box>
-                            )}
-                            <Box display="flex" gap={1.5} alignItems="center">
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    maxRows={3}
-                                    placeholder={whisperTarget ? `${whisperTarget}님에게 귓속말을 입력하세요...` : "메시지를 입력하세요... (Enter: 전송, Shift+Enter: 줄바꿈)"}
-                                    value={inputMessage}
-                                    onChange={(e) => setInputMessage(e.target.value)}
-                                    onKeyPress={handleKeyPress}
-                                    disabled={!connected}
-                                    variant="outlined"
+                        {/* ── 왼쪽: 채팅 영역 ── */}
+                        <Box
+                            sx={{
+                                flex: 1, display: 'flex', flexDirection: 'column',
+                                borderRadius: '20px',
+                                border: '1px solid rgba(255,255,255,0.07)',
+                                bgcolor: 'rgba(255,255,255,0.02)',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            {/* 헤더 */}
+                            <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#f4f4f5' }}>
+                                    💬 채팅
+                                </Typography>
+                                <Chip
+                                    label={connected ? '● 연결됨' : '○ 연결 중...'}
+                                    size="small"
                                     sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: 3,
-                                            bgcolor: 'white',
-                                            '&:hover': {
-                                                '& > fieldset': {
-                                                    borderColor: 'primary.main'
-                                                }
-                                            }
-                                        }
+                                        bgcolor: connected ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.05)',
+                                        color: connected ? '#34d399' : '#71717a',
+                                        border: connected ? '1px solid rgba(52,211,153,0.25)' : '1px solid rgba(255,255,255,0.08)',
+                                        fontSize: '0.7rem', fontWeight: 600,
                                     }}
                                 />
-                                <Button
-                                    variant="contained"
-                                    onClick={whisperTarget ? sendWhisper : sendMessage}
-                                    disabled={!connected || !inputMessage.trim()}
-                                    sx={{
-                                        minWidth: 100,
-                                        height: 56,
-                                        borderRadius: 3,
-                                        fontWeight: 'bold',
-                                        fontSize: '1rem',
-                                        boxShadow: 3,
-                                        '&:hover': {
-                                            boxShadow: 6,
-                                            transform: 'translateY(-2px)',
-                                            transition: 'all 0.2s'
-                                        },
-                                        '&:disabled': {
-                                            bgcolor: 'grey.300'
-                                        }
-                                    }}
-                                >
-                                    <SendIcon sx={{ mr: 0.5 }} />
-                                    전송
-                                </Button>
                             </Box>
-                        </Box>
-                    </Paper>
 
-                    {/* 오른쪽: 온라인 사용자 */}
-                    <Paper elevation={3} sx={{ width: 250, p: 2 }}>
-                        <Typography variant="h6" fontWeight="bold" mb={2}>
-                            👥 온라인 ({onlineUsers.length})
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <List dense>
-                            {onlineUsers.map((username, index) => (
-                                <ListItem
-                                    key={index}
-                                    secondaryAction={
-                                        username !== user.nickname && (
-                                            <IconButton
-                                                edge="end"
-                                                size="small"
-                                                onClick={() => setWhisperTarget(username)}
-                                                title="귓속말"
-                                            >
-                                                <WhisperIcon fontSize="small" />
-                                            </IconButton>
-                                        )
-                                    }
-                                >
-                                    <Badge
-                                        color="success"
-                                        variant="dot"
-                                        overlap="circular"
-                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                    >
-                                        <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
-                                            {username[0]}
-                                        </Avatar>
-                                    </Badge>
-                                    <ListItemText
-                                        primary={username}
-                                        primaryTypographyProps={{
-                                            fontWeight: username === user.nickname ? 'bold' : 'normal'
+                            {/* 탭 */}
+                            <Tabs
+                                value={currentTab}
+                                onChange={(e, v) => setCurrentTab(v)}
+                                sx={{
+                                    borderBottom: '1px solid rgba(255,255,255,0.06)',
+                                    '& .MuiTab-root': { color: '#71717a', textTransform: 'none', fontWeight: 500, fontSize: '0.85rem', minHeight: 48 },
+                                    '& .Mui-selected': { color: '#818cf8 !important' },
+                                    '& .MuiTabs-indicator': { bgcolor: '#818cf8' },
+                                }}
+                            >
+                                <Tab icon={<GroupIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="전체 채팅" />
+                                <Tab icon={<VisibilityOffIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="익명 채팅" />
+                            </Tabs>
+
+                            {/* 메시지 영역 */}
+                            <Box flex={1} overflow="auto" p={2.5} sx={{
+                                '&::-webkit-scrollbar': { width: 4 },
+                                '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+                                '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2 },
+                            }}>
+                                {messages.map((msg, index) => renderMessage(msg, index))}
+                                <div ref={messagesEndRef} />
+                            </Box>
+
+                            {/* 입력 영역 */}
+                            <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: 'rgba(0,0,0,0.2)' }}>
+                                {whisperTarget && (
+                                    <Box mb={1.5}>
+                                        <Chip
+                                            label={`💬 ${whisperTarget}님에게 귓속말`}
+                                            onDelete={() => setWhisperTarget('')}
+                                            size="small"
+                                            sx={{
+                                                bgcolor: 'rgba(168,85,247,0.1)', color: '#c084fc',
+                                                border: '1px solid rgba(168,85,247,0.25)', fontWeight: 600,
+                                                '& .MuiChip-deleteIcon': { color: '#c084fc', '&:hover': { color: '#a855f7' } },
+                                            }}
+                                        />
+                                    </Box>
+                                )}
+                                <Box display="flex" gap={1.5} alignItems="center">
+                                    <TextField
+                                        fullWidth multiline maxRows={3}
+                                        placeholder={whisperTarget ? `${whisperTarget}님에게 귓속말...` : '메시지를 입력하세요... (Enter: 전송, Shift+Enter: 줄바꿈)'}
+                                        value={inputMessage}
+                                        onChange={(e) => setInputMessage(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        disabled={!connected}
+                                        variant="outlined"
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '12px', color: '#f4f4f5',
+                                                '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
+                                                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.18)' },
+                                                '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+                                            },
+                                            '& .MuiInputBase-input::placeholder': { color: '#52525b', opacity: 1 },
                                         }}
                                     />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Paper>
-                </Box>
-            </Container>
+                                    <Button
+                                        variant="contained"
+                                        onClick={whisperTarget ? sendWhisper : sendMessage}
+                                        disabled={!connected || !inputMessage.trim()}
+                                        sx={{
+                                            minWidth: 90, height: 56, borderRadius: '12px',
+                                            fontWeight: 700, fontSize: '0.88rem', textTransform: 'none',
+                                            bgcolor: whisperTarget ? '#9333ea' : '#818cf8', color: '#fff', boxShadow: 'none',
+                                            '&:hover:not(:disabled)': { bgcolor: whisperTarget ? '#7c3aed' : '#6366f1', transform: 'translateY(-1px)' },
+                                            '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.05)', color: '#3f3f46' },
+                                            transition: 'all 0.2s',
+                                        }}
+                                    >
+                                        <SendIcon sx={{ fontSize: '1.1rem', mr: 0.5 }} />
+                                        전송
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        {/* ── 오른쪽: 온라인 사용자 ── */}
+                        <Box
+                            sx={{
+                                width: 220, display: { xs: 'none', md: 'flex' }, flexDirection: 'column',
+                                borderRadius: '20px',
+                                border: '1px solid rgba(255,255,255,0.07)',
+                                bgcolor: 'rgba(255,255,255,0.02)',
+                                p: 2.5, overflow: 'hidden',
+                            }}
+                        >
+                            <Typography sx={{ color: '#52525b', fontSize: '0.7rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', mb: 1.5 }}>
+                                Online
+                            </Typography>
+                            <Chip
+                                label={`${onlineUsers.length}명 접속 중`}
+                                size="small"
+                                sx={{ mb: 2, alignSelf: 'flex-start', bgcolor: 'rgba(52,211,153,0.08)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)', fontSize: '0.72rem' }}
+                            />
+                            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+                            <Box flex={1} overflow="auto" sx={{
+                                '&::-webkit-scrollbar': { width: 3 },
+                                '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 2 },
+                            }}>
+                                <List dense disablePadding>
+                                    {onlineUsers.map((username, index) => (
+                                        <ListItem
+                                            key={index}
+                                            sx={{ px: 0.5, py: 0.8, borderRadius: '8px', '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }}
+                                            secondaryAction={
+                                                username !== user.nickname && (
+                                                    <IconButton
+                                                        edge="end" size="small"
+                                                        onClick={() => setWhisperTarget(username)}
+                                                        title="귓속말"
+                                                        sx={{ color: '#3f3f46', '&:hover': { color: '#c084fc', bgcolor: 'rgba(168,85,247,0.08)' } }}
+                                                    >
+                                                        <WhisperIcon sx={{ fontSize: '0.9rem' }} />
+                                                    </IconButton>
+                                                )
+                                            }
+                                        >
+                                            <Badge
+                                                color="success" variant="dot" overlap="circular"
+                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                                sx={{ '& .MuiBadge-badge': { bgcolor: '#34d399', width: 8, height: 8, boxShadow: '0 0 5px #34d399' } }}
+                                            >
+                                                <Avatar sx={{
+                                                    width: 28, height: 28, mr: 1.2,
+                                                    bgcolor: username === user.nickname ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.06)',
+                                                    color: username === user.nickname ? '#818cf8' : '#71717a',
+                                                    fontSize: '0.72rem', fontWeight: 700, border: username === user.nickname ? '1px solid rgba(129,140,248,0.3)' : 'none',
+                                                }}>
+                                                    {username[0]}
+                                                </Avatar>
+                                            </Badge>
+                                            <ListItemText
+                                                primary={username}
+                                                primaryTypographyProps={{
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: username === user.nickname ? 700 : 400,
+                                                    color: username === user.nickname ? '#818cf8' : '#a1a1aa',
+                                                    noWrap: true,
+                                                }}
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </Box>
+                        </Box>
+
+                    </Box>
+                </Container>
+            </Box>
         </>
     );
 };
