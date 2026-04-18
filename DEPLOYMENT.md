@@ -208,3 +208,15 @@ sudo systemctl reload nginx
 2. 새 키 발급
 3. Docker 환경 변수 업데이트 후 컨테이너 재시작
 4. Git 히스토리 정리 (BFG Repo-Cleaner 권장)
+
+---
+
+## 6. 트러블슈팅
+
+배포 중 발생한 이슈 및 해결 사례는 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)를 참고하세요.
+
+주요 사례:
+- Jenkins 빌드 실패 (Swap 메모리 소진)
+- Nginx 502 Bad Gateway (WebSocket 설정)
+- WebSocket SecurityError (WS/WSS 프로토콜)
+- Nginx 404/405 라우팅 실패
