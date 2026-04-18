@@ -1,676 +1,764 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
-  Grid, 
-  Paper, 
+import { useTranslation } from 'react-i18next';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
   Stack,
-  IconButton,
-  Card,
-  CardContent,
-  Avatar,
-  LinearProgress,
-  Chip
+  Chip,
+  Paper,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import CodeIcon from '@mui/icons-material/Code';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import SecurityIcon from '@mui/icons-material/Security';
-
+import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
+import CasinoIcon from '@mui/icons-material/Casino';
 import TerminalHero from '../components/TerminalHero';
 
-// --- Assets & Data ---
-const bannerData = [
-    {
-        id: 1,
-        title: "개발자를 위한 최고의 놀이터",
-        desc: "코드를 작성하고, 공유하고, 함께 성장하세요",
-        bgColor: '#0a192f',
-        imgUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-        id: 2,
-        title:  "지식 공유의 새로운 방법",
-        desc: "당신의 경험이 누군가에게는 정답입니다",
-        bgColor: '#1e3a5f',
-        imgUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-        id: 3,
-        title: "함께 만드는 미래",
-        desc: "오픈소스, 스터디, 프로젝트. 동료들과 함께 성장하세요",
-        bgColor: '#2d1b69',
-        imgUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
-    }
-];
+/* ──────────────────────────────────────────────
+   로또 볼 색상 정의
+────────────────────────────────────────────── */
+const LOTTO_COLORS = ['#f9ca24', '#6ab04c', '#e84393', '#0652DD', '#9b59b6'];
+const getBallColor = (n) => {
+  if (n <= 10) return LOTTO_COLORS[0];
+  if (n <= 20) return LOTTO_COLORS[1];
+  if (n <= 30) return LOTTO_COLORS[2];
+  if (n <= 40) return LOTTO_COLORS[3];
+  return LOTTO_COLORS[4];
+};
 
-const MainPage = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  
-  // --- Carousel Logic ---
-  const [currentSlide, setCurrentSlide] = useState(0);
+/* ──────────────────────────────────────────────
+   결과 표시용 로또볼
+────────────────────────────────────────────── */
+const LottoBall = ({ number, visible, size = 54 }) => {
+  const color = getBallColor(number);
+  return (
+    <Box
+      sx={{
+        width: { xs: 42, sm: 48, md: size },
+        height: { xs: 42, sm: 48, md: size },
+        borderRadius: '50%',
+        background: `
+          radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, transparent 50%),
+          radial-gradient(circle at 68% 72%, rgba(0,0,0,0.18) 0%, transparent 45%),
+          radial-gradient(circle, ${color} 60%, ${color}cc 100%)
+        `,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: `0 6px 20px ${color}66, inset 0 -4px 10px rgba(0,0,0,0.22)`,
+        border: `2px solid ${color}aa`,
+        flexShrink: 0,
+        transform: visible ? 'scale(1) translateY(0)' : 'scale(0) translateY(-30px)',
+        opacity: visible ? 1 : 0,
+        transition: 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.38s ease',
+      }}
+    >
+      <Typography
+        sx={{
+          fontWeight: 900,
+          fontSize: { xs: '0.8rem', sm: '0.9rem', md: `${size * 0.32}px` },
+          color: '#fff',
+          textShadow: '0 1px 5px rgba(0,0,0,0.5)',
+          userSelect: 'none',
+          lineHeight: 1,
+        }}
+      >
+        {number}
+      </Typography>
+    </Box>
+  );
+};
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % bannerData.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
+/* ──────────────────────────────────────────────
+   추첨 기계 CSS keyframes
+────────────────────────────────────────────── */
+const MACHINE_STYLES = `
+  @keyframes lb0 {
+    0%   { transform: translate(-28px,  18px) scale(0.88); }
+    12%  { transform: translate( 32px, -24px) scale(1.05); }
+    27%  { transform: translate(  8px,  35px) scale(0.92); }
+    41%  { transform: translate(-40px,  -8px) scale(1.08); }
+    56%  { transform: translate( 22px,  28px) scale(0.95); }
+    70%  { transform: translate(-12px, -38px) scale(1.04); }
+    85%  { transform: translate( 38px,   4px) scale(0.9); }
+    100% { transform: translate(-28px,  18px) scale(0.88); }
+  }
+  @keyframes lb1 {
+    0%   { transform: translate( 30px, -20px) scale(1.02); }
+    15%  { transform: translate(-15px,  36px) scale(0.87); }
+    30%  { transform: translate( 40px,  10px) scale(1.1); }
+    48%  { transform: translate( -8px, -35px) scale(0.93); }
+    62%  { transform: translate(-34px,  22px) scale(1.06); }
+    78%  { transform: translate( 18px,  -6px) scale(0.9); }
+    90%  { transform: translate( -5px,  30px) scale(1.03); }
+    100% { transform: translate( 30px, -20px) scale(1.02); }
+  }
+  @keyframes lb2 {
+    0%   { transform: translate(  5px,  32px) scale(0.91); }
+    18%  { transform: translate(-38px, -10px) scale(1.07); }
+    34%  { transform: translate( 25px,  -30px) scale(0.89); }
+    50%  { transform: translate( 15px,  40px) scale(1.04); }
+    65%  { transform: translate(-22px,   8px) scale(0.93); }
+    82%  { transform: translate( 35px,  -18px) scale(1.09); }
+    100% { transform: translate(  5px,  32px) scale(0.91); }
+  }
+  @keyframes lb3 {
+    0%   { transform: translate(-35px, -12px) scale(1.06); }
+    20%  { transform: translate( 20px,  38px) scale(0.88); }
+    38%  { transform: translate(-10px, -28px) scale(1.1); }
+    55%  { transform: translate( 38px,  15px) scale(0.9); }
+    72%  { transform: translate( -5px,  -40px) scale(1.03); }
+    88%  { transform: translate(-30px,  25px) scale(0.92); }
+    100% { transform: translate(-35px, -12px) scale(1.06); }
+  }
+  @keyframes lb4 {
+    0%   { transform: translate( 22px,  30px) scale(0.9); }
+    14%  { transform: translate(-32px,  -5px) scale(1.08); }
+    28%  { transform: translate( 10px, -35px) scale(0.87); }
+    45%  { transform: translate( 40px,  20px) scale(1.05); }
+    60%  { transform: translate(-18px,  35px) scale(0.92); }
+    75%  { transform: translate( 28px, -22px) scale(1.07); }
+    90%  { transform: translate( -8px,   5px) scale(0.95); }
+    100% { transform: translate( 22px,  30px) scale(0.9); }
+  }
+  @keyframes lb5 {
+    0%   { transform: translate(-15px, -38px) scale(1.04); }
+    16%  { transform: translate( 35px,  12px) scale(0.89); }
+    32%  { transform: translate( -5px,  40px) scale(1.06); }
+    48%  { transform: translate(-40px, -20px) scale(0.91); }
+    64%  { transform: translate( 18px,  -8px) scale(1.09); }
+    80%  { transform: translate( 25px,  32px) scale(0.88); }
+    94%  { transform: translate(-28px,  10px) scale(1.03); }
+    100% { transform: translate(-15px, -38px) scale(1.04); }
+  }
+  @keyframes lb6 {
+    0%   { transform: translate( 38px,  -8px) scale(0.92); }
+    13%  { transform: translate( -8px,  35px) scale(1.07); }
+    29%  { transform: translate(-35px, -25px) scale(0.88); }
+    44%  { transform: translate( 12px,  40px) scale(1.04); }
+    59%  { transform: translate( 30px, -32px) scale(0.9); }
+    74%  { transform: translate(-20px,  15px) scale(1.08); }
+    89%  { transform: translate(  5px, -15px) scale(0.95); }
+    100% { transform: translate( 38px,  -8px) scale(0.92); }
+  }
+  @keyframes lb7 {
+    0%   { transform: translate(-20px,  25px) scale(1.05); }
+    17%  { transform: translate( 28px, -30px) scale(0.87); }
+    33%  { transform: translate(-38px,   8px) scale(1.09); }
+    50%  { transform: translate( 15px,  38px) scale(0.91); }
+    66%  { transform: translate( 35px, -15px) scale(1.03); }
+    82%  { transform: translate(-12px, -40px) scale(0.89); }
+    97%  { transform: translate( 22px,  18px) scale(1.06); }
+    100% { transform: translate(-20px,  25px) scale(1.05); }
+  }
+  @keyframes tube-shake {
+    0%,100% { transform: rotate(0deg) scaleX(1); }
+    15%  { transform: rotate(-1.5deg) scaleX(0.985); }
+    30%  { transform: rotate(1deg) scaleX(1.01); }
+    45%  { transform: rotate(-0.8deg) scaleX(0.995); }
+    70%  { transform: rotate(1.2deg) scaleX(1.005); }
+  }
+`;
 
-  const handlePrev = () => {
-      setCurrentSlide((prev) => (prev === 0 ? bannerData.length - 1 : prev - 1));
-  };
-  const handleNext = () => {
-      setCurrentSlide((prev) => (prev + 1) % bannerData.length);
+/* ──────────────────────────────────────────────
+   내부 공 컴포넌트
+────────────────────────────────────────────── */
+const MachineBall = ({ color, delay, animName, size = 38 }) => (
+  <Box
+    sx={{
+      position: 'absolute',
+      width: size, height: size,
+      borderRadius: '50%',
+      background: `
+        radial-gradient(circle at 33% 30%, rgba(255,255,255,0.6) 0%, transparent 48%),
+        radial-gradient(circle, ${color} 55%, ${color}bb 100%)
+      `,
+      boxShadow: `0 4px 14px ${color}77, inset 0 -3px 7px rgba(0,0,0,0.25)`,
+      border: `1.5px solid ${color}cc`,
+      animation: `${animName} ${(2.6 + delay * 0.38).toFixed(2)}s ${delay * 0.17}s ease-in-out infinite`,
+    }}
+  />
+);
+
+/* ──────────────────────────────────────────────
+   로또 추첨 기계
+────────────────────────────────────────────── */
+const LottoMachine = ({ isDrawing }) => {
+  const balls = [
+    { color: '#f9ca24', animName: 'lb0' },
+    { color: '#6ab04c', animName: 'lb1' },
+    { color: '#e84393', animName: 'lb2' },
+    { color: '#0652DD', animName: 'lb3' },
+    { color: '#9b59b6', animName: 'lb4' },
+    { color: '#f9ca24', animName: 'lb5' },
+    { color: '#e84393', animName: 'lb6' },
+    { color: '#0652DD', animName: 'lb7' },
+  ];
+
+  return (
+    <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <style>{MACHINE_STYLES}</style>
+
+      {/* 드럼 통 */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: { xs: 160, sm: 190, md: 220 },
+          height: { xs: 160, sm: 190, md: 220 },
+          borderRadius: '50%',
+          background: isDrawing
+            ? 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.01) 60%), rgba(10,10,14,0.92)'
+            : 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.01) 60%), rgba(10,10,14,0.85)',
+          border: isDrawing
+            ? '2px solid rgba(249,202,36,0.55)'
+            : '2px solid rgba(255,255,255,0.08)',
+          boxShadow: isDrawing
+            ? '0 0 40px rgba(249,202,36,0.18), inset 0 0 50px rgba(0,0,0,0.5)'
+            : '0 8px 40px rgba(0,0,0,0.6), inset 0 0 50px rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
+          animation: isDrawing ? 'tube-shake 1.6s ease-in-out infinite' : 'none',
+          transition: 'border-color 0.5s, box-shadow 0.5s',
+        }}
+      >
+        {/* 유리 반사 */}
+        <Box sx={{
+          position: 'absolute', top: '10%', left: '15%',
+          width: '30%', height: '22%',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 70%)',
+          borderRadius: '50%', pointerEvents: 'none',
+        }} />
+
+        {/* 공들 */}
+        {balls.map((b, i) => (
+          <MachineBall
+            key={i}
+            color={b.color}
+            delay={i}
+            animName={isDrawing ? b.animName : b.animName}
+            size={isDrawing ? 38 : 34}
+          />
+        ))}
+
+        {/* 중앙 텍스트 */}
+        {!isDrawing && (
+          <Typography sx={{
+            position: 'absolute', color: 'rgba(255,255,255,0.15)',
+            fontSize: '0.65rem', fontWeight: 700, letterSpacing: 2,
+            textTransform: 'uppercase', zIndex: 10,
+          }}>
+            LOTTO
+          </Typography>
+        )}
+        {isDrawing && (
+          <Typography sx={{
+            position: 'absolute', color: 'rgba(249,202,36,0.6)',
+            fontSize: '0.6rem', fontWeight: 800, letterSpacing: 3,
+            textTransform: 'uppercase', zIndex: 10,
+            animation: 'none',
+          }}>
+            추첨 중
+          </Typography>
+        )}
+      </Box>
+
+      {/* 배출구 */}
+      <Box sx={{
+        width: { xs: 28, sm: 34, md: 40 },
+        height: { xs: 18, sm: 22, md: 26 },
+        background: 'linear-gradient(180deg, rgba(30,30,40,0.95) 0%, rgba(15,15,20,0.98) 100%)',
+        border: isDrawing ? '1.5px solid rgba(249,202,36,0.4)' : '1.5px solid rgba(255,255,255,0.06)',
+        borderTop: 'none',
+        borderRadius: '0 0 10px 10px',
+        boxShadow: isDrawing ? '0 6px 20px rgba(249,202,36,0.12)' : '0 6px 16px rgba(0,0,0,0.5)',
+        transition: 'border-color 0.5s, box-shadow 0.5s',
+      }} />
+    </Box>
+  );
+};
+
+/* ──────────────────────────────────────────────
+   로또 섹션 전체
+────────────────────────────────────────────── */
+const LottoSection = () => {
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [numbers, setNumbers] = useState([]);
+  const [bonus, setBonus] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  const draw = () => {
+    if (isDrawing) return;
+    setNumbers([]);
+    setBonus(null);
+    setVisibleCount(0);
+    setIsDrawing(true);
+
+    setTimeout(() => {
+      const pool = Array.from({ length: 45 }, (_, i) => i + 1);
+      const shuffled = pool.sort(() => Math.random() - 0.5);
+      const picked = shuffled.slice(0, 6).sort((a, b) => a - b);
+      const bonusBall = shuffled[6];
+
+      setNumbers(picked);
+      setBonus(bonusBall);
+      setIsDrawing(false);
+
+      // 공 순차 등장
+      picked.forEach((_, i) => {
+        setTimeout(() => setVisibleCount(i + 1), i * 180);
+      });
+    }, 2800);
   };
 
   return (
-    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#fafafa' }}>
-      
-      {/* SEO 메타 태그 */}
-      <Helmet>
-        <title>TerminalNexus - 개발자를 위한 터미널 허브 | 브라우저 기반 리눅스 터미널</title>
-        <meta name="description" content="TerminalNexus는 브라우저에서 바로 실행되는 리눅스 터미널 환경을 제공합니다. 개발자 커뮤니티, 코드 공유, 실시간 협업 기능을 한곳에서 경험하세요." />
-        <meta name="keywords" content="터미널, 리눅스, 개발자, 프로그래밍, 웹 터미널, 온라인 터미널, 개발자 커뮤니티, 코드 공유, Node.js, 브라우저 터미널" />
-        
-        {/* Open Graph (소셜 미디어 공유용) */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://tnhub.kr/" />
-        <meta property="og:title" content="TerminalNexus - 개발자를 위한 터미널 허브" />
-        <meta property="og:description" content="브라우저에서 바로 실행되는 리눅스 터미널과 개발자 커뮤니티" />
-        <meta property="og:site_name" content="TerminalNexus" />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="TerminalNexus - 개발자를 위한 터미널 허브" />
-        <meta name="twitter:description" content="브라우저에서 바로 실행되는 리눅스 터미널과 개발자 커뮤니티" />
-        
-        {/* 추가 SEO */}
-        <meta name="author" content="TerminalNexus" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://tnhub.kr/" />
-      </Helmet>
-      
-      {/* === SECTION 1: Hero Banner (Carousel) === */}
-      <Box sx={{ 
-          position: 'relative', 
-          width: '100%', 
-          height: { xs: '500px', md: '650px' },
-          overflow: 'hidden',
-          bgcolor: '#000'
-      }}>
-          {bannerData.map((slide, index) => (
+    <Box
+      sx={{
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#000',
+        overflow: 'hidden',
+        scrollSnapAlign: 'start',
+        scrollSnapStop: 'always',
+        position: 'relative',
+        px: { xs: 2, md: 0 },
+      }}
+    >
+      <Container maxWidth="xl" sx={{ width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: 'center',
+            gap: { xs: 6, md: 8 },
+          }}
+        >
+          {/* 왼쪽: 설명 */}
+          <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '40%' } }}>
+            <Chip
+              label="🎰 Lucky Draw"
+              sx={{
+                mb: 2.5, bgcolor: 'rgba(249,202,36,0.08)', color: '#f9ca24',
+                border: '1px solid rgba(249,202,36,0.22)', fontWeight: 700, fontSize: '0.76rem',
+              }}
+            />
+            <Typography
+              variant="h3" fontWeight={800}
+              sx={{
+                mb: 2, letterSpacing: '-1.5px', lineHeight: 1.15,
+                fontSize: { xs: '1.8rem', md: '2.4rem' },
+              }}
+            >
+              <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                오늘의 행운 번호를
+              </span>
+              <br />
+              <span style={{ background: 'linear-gradient(135deg,#f9ca24,#f39c12)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                뽑아보세요
+              </span>
+            </Typography>
+            <Typography sx={{ color: '#71717a', fontSize: '0.9rem', lineHeight: 1.7, mb: 4, maxWidth: 360 }}>
+              순수 난수 기반 로또 번호 생성기입니다.
+              단순한 행운의 유희로 즐겨보세요.
+            </Typography>
+
+            <Button
+              variant="contained"
+              onClick={draw}
+              disabled={isDrawing}
+              startIcon={<CasinoIcon />}
+              sx={{
+                px: 4, py: 1.6, borderRadius: '12px',
+                bgcolor: isDrawing ? 'rgba(249,202,36,0.15)' : '#f9ca24',
+                color: isDrawing ? '#f9ca24' : '#000',
+                fontWeight: 800, fontSize: '0.95rem', textTransform: 'none',
+                boxShadow: isDrawing ? 'none' : '0 0 24px rgba(249,202,36,0.3)',
+                '&:hover:not(:disabled)': { bgcolor: '#f5bc00', transform: 'translateY(-2px)', boxShadow: '0 0 36px rgba(249,202,36,0.4)' },
+                '&.Mui-disabled': { color: '#f9ca24' },
+                transition: 'all 0.25s',
+              }}
+            >
+              {isDrawing ? '추첨 중...' : numbers.length > 0 ? '다시 추첨' : '추첨하기'}
+            </Button>
+          </Box>
+
+          {/* 오른쪽: 기계 + 결과 */}
+          <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+
+            {/* ── 상단 카드: 기계 + 볼 행 (고정 크기) ── */}
+            <Box
+              sx={{
+                borderRadius: '18px',
+                p: '1px',
+                background: isDrawing
+                  ? 'linear-gradient(145deg, rgba(249,202,36,0.4) 0%, rgba(249,202,36,0.1) 50%, rgba(255,255,255,0.04) 100%)'
+                  : 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
+                boxShadow: isDrawing
+                  ? '0 0 40px rgba(249,202,36,0.12), 0 0 0 1px rgba(249,202,36,0.1)'
+                  : '0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03)',
+                transition: 'all 0.5s',
+              }}
+            >
               <Box
-                  key={slide.id}
-                  sx={{
-                      position: 'absolute',
-                      top: 0, 
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      opacity: index === currentSlide ? 1 : 0,
-                      transition: 'opacity 1s ease-in-out',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                  }}
+                sx={{
+                  borderRadius: '17px',
+                  bgcolor: '#0a0a0c',
+                  p: { xs: 2, md: 2.5 },
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1.5,
+                }}
               >
-                  <Box sx={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      backgroundImage: `url(${slide.imgUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      filter: 'brightness(0.35)'
-                  }} />
-                  
-                  <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
-                      <Typography 
-                        variant="h1" 
-                        fontWeight="900" 
-                        sx={{ 
-                          mb: 3, 
-                          color: 'white',
-                          fontSize: { xs: '2.5rem', md: '4rem' },
-                          textShadow: '0 4px 20px rgba(0,0,0,0.8)',
-                          letterSpacing: '-2px'
-                        }}
-                      >
-                          {slide.title}
-                      </Typography>
-                      <Typography 
-                        variant="h5" 
-                        sx={{ 
-                          mb: 5, 
-                          color: 'rgba(255,255,255,0.9)',
-                          fontSize: { xs: '1rem', md: '1.5rem' },
-                          fontWeight: 400,
-                          maxWidth: 600,
-                          mx: 'auto'
-                        }}
-                      >
-                          {slide.desc}
-                      </Typography>
-                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-                        <Button 
-                          variant="contained" 
-                          size="large" 
-                          onClick={() => navigate('/join')}
-                          sx={{ 
-                            px: 5, 
-                            py: 2, 
-                            fontSize: '1.1rem', 
-                            borderRadius: 2, 
-                            fontWeight: 'bold',
-                            bgcolor: 'primary.main',
-                            '&:hover': { bgcolor: 'primary.dark', transform: 'scale(1.02)' },
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                            무료로 시작하기
-                        </Button>
-                        <Button 
-                          variant="outlined" 
-                          size="large" 
-                          onClick={() => navigate('/guide')}
-                          sx={{ 
-                            px: 5, 
-                            py: 2, 
-                            fontSize: '1.1rem', 
-                            borderRadius: 2, 
-                            fontWeight: 'bold',
-                            color: 'white',
-                            borderColor: 'rgba(255,255,255,0.5)',
-                            '&:hover': { 
-                              borderColor: 'white', 
-                              bgcolor: 'rgba(255,255,255,0.1)',
-                              transform: 'scale(1.02)' 
-                            },
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                            더 알아보기
-                        </Button>
-                      </Stack>
-                  </Container>
-              </Box>
-          ))}
-          
-          {/* Navigation Arrows */}
-          <IconButton 
-            onClick={handlePrev}
-            sx={{ 
-              position: 'absolute', 
-              top: '50%', 
-              left: { xs: 10, md: 30 }, 
-              transform: 'translateY(-50%)', 
-              color: 'white', 
-              zIndex: 3, 
-              bgcolor: 'rgba(0,0,0,0.4)', 
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
-            }}
-          >
-              <ArrowBackIosNewIcon />
-          </IconButton>
-          <IconButton 
-            onClick={handleNext}
-            sx={{ 
-              position: 'absolute', 
-              top: '50%', 
-              right: { xs: 10, md: 30 }, 
-              transform: 'translateY(-50%)', 
-              color: 'white', 
-              zIndex: 3, 
-              bgcolor: 'rgba(0,0,0,0.4)', 
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
-            }}
-          >
-              <ArrowForwardIosIcon />
-          </IconButton>
-          
-          {/* Slide Indicators */}
-          <Stack 
-            direction="row" 
-            spacing={1.5} 
-            sx={{ 
-              position: 'absolute', 
-              bottom: 40, 
-              left: '50%', 
-              transform: 'translateX(-50%)', 
-              zIndex: 3 
-            }}
-          >
-              {bannerData.map((_, idx) => (
-                  <Box 
-                    key={idx}
-                    onClick={() => setCurrentSlide(idx)}
-                    sx={{
-                        width: idx === currentSlide ? 32 : 10,
-                        height: 10,
-                        borderRadius: 5,
-                        bgcolor: idx === currentSlide ? 'primary.main' : 'rgba(255,255,255,0.4)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s'
-                    }}
-                  />
-              ))}
-          </Stack>
-      </Box>
+                <LottoMachine isDrawing={isDrawing} />
 
-      {/* === SECTION 2: Interactive Terminal === */}
-      <Box sx={{ 
-          py: { xs: 8, md: 15 },
-          bgcolor: '#fff',
-          borderBottom: '1px solid #e0e0e0'
-      }}>
-          <Container maxWidth="xl">
-              <Grid container spacing={6} alignItems="center">
-                  <Grid item xs={12} md={5}>
-                      <Box sx={{ pr: { md: 4 } }}>
-                          <Chip 
-                            icon={<CodeIcon />} 
-                            label="LIVE DEMO" 
-                            color="primary" 
-                            sx={{ mb: 3, fontWeight: 'bold' }}
-                          />
-                          <Typography 
-                            variant="h2" 
-                            fontWeight="900" 
-                            gutterBottom
-                            sx={{ 
-                              fontSize: { xs: '2rem', md: '3rem' },
-                              lineHeight: 1.2,
-                              letterSpacing: '-1px'
-                            }}
-                          >
-                              브라우저에서 바로
-                              <br/>실행되는 터미널
-                          </Typography>
-                          <Typography 
-                            variant="h6" 
-                            color="text.secondary" 
-                            paragraph
-                            sx={{ 
-                              mb: 4,
-                              lineHeight: 1.7,
-                              fontSize: '1.1rem'
-                            }}
-                          >
-                              복잡한 설치 과정 없이 웹에서 바로 리눅스 명령어를 실행하고 
-                              결과를 확인할 수 있습니다. 교육, 테스트, 프로토타이핑에 완벽합니다.
-                          </Typography>
-                          <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
-                             <Chip 
-                               icon={<AutoFixHighIcon />} 
-                               label="Node.js 20 지원" 
-                               variant="outlined" 
-                               sx={{ fontWeight: 500 }}
-                             />
-                             <Chip 
-                               icon={<SecurityIcon />} 
-                               label="샌드박스 보안" 
-                               variant="outlined" 
-                               color="success"
-                               sx={{ fontWeight: 500 }}
-                             />
-                          </Stack>
-                      </Box>
-                  </Grid>
-                  <Grid item xs={12} md={7}>
-                      <Box sx={{ 
-                        boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
-                        borderRadius: 3,
-                        overflow: 'hidden'
-                      }}>
-                          <TerminalHero />
-                      </Box>
-                  </Grid>
-              </Grid>
-          </Container>
-      </Box>
+                {/* ── 볼 한 줄: 6개 번호 + '+' + 보너스 ── */}
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={{ xs: 0.5, md: 0.7 }}
+                  justifyContent="center"
+                  sx={{ width: '100%' }}
+                >
+                  {numbers.length > 0
+                    ? numbers.map((n, i) => (
+                        <LottoBall key={i} number={n} visible={i < visibleCount} size={42} />
+                      ))
+                    : Array.from({ length: 6 }).map((_, i) => (
+                        <Box key={i} sx={{
+                          width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 },
+                          borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.04)',
+                          border: '2px dashed rgba(255,255,255,0.08)', flexShrink: 0,
+                        }} />
+                      ))
+                  }
 
-      {/* === SECTION 3: Features Grid (Bento Style) === */}
-      <Box sx={{ py: { xs: 8, md: 15 }, bgcolor: '#fafafa' }}>
-        <Container maxWidth="xl">
-           {/* Section Header */}
-           <Box sx={{ textAlign: 'center', mb: 10 }}>
-              <Typography 
-                variant="h2" 
-                fontWeight="900" 
-                gutterBottom 
-                sx={{ 
+                  {/* + 구분자 */}
+                  <Typography sx={{
+                    color: '#3f3f46', fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' },
+                    flexShrink: 0, px: 0.3,
+                    opacity: visibleCount >= 6 ? 1 : 0.15, transition: 'opacity 0.4s',
+                  }}>+</Typography>
+
+                  {/* 보너스 볼 */}
+                  {bonus && visibleCount >= 6 ? (
+                    <Box sx={{
+                      width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 }, borderRadius: '50%',
+                      background: `radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, transparent 50%), radial-gradient(circle, ${getBallColor(bonus)} 60%, ${getBallColor(bonus)}cc 100%)`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: `0 4px 14px ${getBallColor(bonus)}55`,
+                      border: `2px solid ${getBallColor(bonus)}99`, flexShrink: 0,
+                      transform: 'scale(1)', opacity: 1,
+                      transition: 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.38s ease',
+                    }}>
+                      <Typography sx={{ fontWeight: 900, fontSize: { xs: '0.72rem', md: '0.82rem' }, color: '#fff', textShadow: '0 1px 5px rgba(0,0,0,0.5)' }}>
+                        {bonus}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Box sx={{
+                      width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 },
+                      borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.04)',
+                      border: '2px dashed rgba(255,255,255,0.08)', flexShrink: 0,
+                    }} />
+                  )}
+                </Stack>              </Box>
+            </Box>
+
+            {/* ── 하단 요약 카드 — 항상 노출 ── */}
+            <Box
+              sx={{
+                p: { xs: 1.8, md: 2.2 },
+                borderRadius: '14px',
+                background: numbers.length > 0 && visibleCount >= 6
+                  ? 'linear-gradient(135deg, rgba(249,202,36,0.06) 0%, rgba(0,0,0,0) 100%)'
+                  : 'rgba(255,255,255,0.015)',
+                border: numbers.length > 0 && visibleCount >= 6
+                  ? '1px solid rgba(249,202,36,0.18)'
+                  : '1px solid rgba(255,255,255,0.06)',
+                transition: 'background 0.6s, border-color 0.6s',
+              }}
+            >
+              {numbers.length === 0 || visibleCount < 6 ? (
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <Typography sx={{ fontSize: '1.1rem' }}>
+                    {isDrawing ? '🎲' : '🎰'}
+                  </Typography>
+                  <Box>
+                    <Typography sx={{ color: '#a1a1aa', fontSize: '0.75rem', fontWeight: 600, mb: 0.2 }}>
+                      {isDrawing ? '운명의 번호를 선택하는 중...' : '오늘의 행운을 시험해보세요'}
+                    </Typography>
+                    <Typography sx={{ color: '#52525b', fontSize: '0.68rem' }}>
+                      {isDrawing ? '잠시만 기다려주세요 ✨' : '추첨하기 버튼을 눌러 번호를 뽑아보세요'}
+                    </Typography>
+                  </Box>
+                </Stack>
+              ) : (
+                <>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+                    <Typography sx={{ fontSize: '1rem' }}>🍀</Typography>
+                    <Typography sx={{ color: '#f9ca24', fontSize: '0.78rem', fontWeight: 800, letterSpacing: 0.3 }}>
+                      이번 주 행운의 번호
+                    </Typography>
+                    <Box sx={{ flex: 1 }} />
+                    <Chip
+                      label="Lucky"
+                      size="small"
+                      sx={{
+                        height: 18, fontSize: '0.6rem', fontWeight: 700,
+                        bgcolor: 'rgba(249,202,36,0.1)', color: '#f9ca24',
+                        border: '1px solid rgba(249,202,36,0.2)',
+                      }}
+                    />
+                  </Stack>
+                  <Typography sx={{ color: '#d4d4d8', fontSize: '0.88rem', fontWeight: 700, mb: 0.6, letterSpacing: 0.5 }}>
+                    {numbers.join('  ·  ')}
+                    <span style={{ color: '#52525b', margin: '0 8px', fontWeight: 400 }}>+</span>
+                    <span style={{ color: '#f9ca24' }}>{bonus}</span>
+                  </Typography>
+                  <Typography sx={{ color: '#52525b', fontSize: '0.68rem', lineHeight: 1.6 }}>
+                    이 번호로 이번 주 행운이 찾아오길 바랍니다 ✨
+                    <br />
+                    <span style={{ color: '#3f3f46' }}>* 본 번호는 순수 재미용이며 실제 당첨을 보장하지 않습니다.</span>
+                  </Typography>
+                </>
+              )}
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
+
+
+
+
+
+/* ──────────────────────────────────────────────
+   메인 페이지
+────────────────────────────────────────────── */
+const MainPage = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        height: '100dvh',
+        bgcolor: '#000',
+        color: '#fff',
+        overflowX: 'hidden',
+        overflowY: 'scroll',
+        scrollSnapType: 'y mandatory',
+        scrollBehavior: 'smooth',
+        /* 스크롤바 숨기기 */
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}
+    >
+      <Helmet>
+        <title>TerminalNexus | 코드 하나로 연결되는 터미널 스페이스</title>
+        <meta
+          name="description"
+          content="브라우저에서 즉시 실행되는 완벽한 리눅스 터미널 환경. 클라우드 인프라와 개발자 커뮤니티가 결합된 새로운 차원의 플랫폼."
+        />
+      </Helmet>
+
+      {/* ── HERO 섹션 — 첫 번째 스냅 ── */}
+      <Box
+        sx={{
+          position: 'relative',
+          height: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          scrollSnapAlign: 'start',
+          scrollSnapStop: 'always',
+        }}
+      >
+        {/* 배경 글로우 */}
+        <Box
+          sx={{
+            position: 'absolute', top: '15%', left: '40%',
+            width: '60vw', height: '60vw', maxWidth: 800, maxHeight: 800,
+            background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
+            zIndex: 0, pointerEvents: 'none',
+          }}
+        />
+
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'flex-start', md: 'center' },
+              gap: { xs: 5, md: 6 },
+            }}
+          >
+            {/* 왼쪽 텍스트 */}
+            <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '42%' } }}>
+              <Chip
+                label={t('main.badge')}
+                variant="outlined"
+                sx={{
+                  color: '#a855f7',
+                  borderColor: 'rgba(168,85,247,0.3)',
+                  mb: { xs: 3, md: 4 },
+                  fontWeight: 600,
+                  bgcolor: 'rgba(168,85,247,0.05)',
+                  fontSize: { xs: '0.75rem', md: '0.8rem' },
+                }}
+              />
+
+              <Typography
+                variant="h1"
+                fontWeight={800}
+                sx={{
+                  mb: 3,
+                  fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.4rem', lg: '4rem' },
                   letterSpacing: '-2px',
-                  fontSize: { xs: '2rem', md: '3.5rem' }
+                  lineHeight: 1.15,
                 }}
               >
-                모든 것이 하나로
+                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>코드 하나로</span>
+                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>연결되는 무한한</span>
+                <span style={{ background: 'linear-gradient(135deg,#818cf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>터미널 스페이스</span>
               </Typography>
-              <Typography 
-                variant="h5" 
-                color="text.secondary" 
-                sx={{ 
-                  maxWidth: 700, 
-                  mx: 'auto',
-                  fontWeight: 400,
-                  lineHeight: 1.6
+
+              <Typography
+                sx={{
+                  mb: 5, color: '#a1a1aa',
+                  fontSize: { xs: '0.95rem', md: '1.05rem' },
+                  lineHeight: 1.75, whiteSpace: 'pre-line',
                 }}
               >
-                복잡한 워크플로우를 하나의 플랫폼에서.
-                <br/>TerminalNexus가 제공하는 강력한 도구들을 확인하세요.
+                {t('main.hero_desc')}
               </Typography>
-           </Box>
 
-           {/* Feature Grid - 균형잡힌 레이아웃 */}
-           <Grid container spacing={2.5}>
-               
-               {/* Row 1 */}
-               <Grid item xs={12} md={8}>
-                   <Paper 
-                     elevation={0}
-                     sx={{ 
-                         height: '100%',
-                         minHeight: 420,
-                         bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                         borderRadius: 4,
-                         p: 5,
-                         color: 'white',
-                         display: 'flex',
-                         flexDirection: 'column',
-                         justifyContent: 'space-between',
-                         position: 'relative',
-                         overflow: 'hidden',
-                         transition: 'transform 0.3s',
-                         '&:hover': { transform: 'translateY(-8px)' },
-                         boxShadow: '0 10px 40px rgba(102,126,234,0.3)'
-                     }}
-                   >
-                      <Box sx={{ position: 'relative', zIndex: 2 }}>
-                          <TrendingUpIcon sx={{ fontSize: 48, mb: 2, opacity: 0.9 }} />
-                          <Typography variant="h3" fontWeight="bold" gutterBottom>
-                              실시간 분석
-                          </Typography>
-                          <Typography variant="h6" sx={{ opacity: 0.9, maxWidth: '70%', lineHeight: 1.6 }}>
-                              사용자 행동을 실시간으로 추적하고 인사이트를 얻으세요.
-                              데이터 기반 의사결정으로 성장을 가속화합니다.
-                          </Typography>
-                      </Box>
-                      <Box sx={{ 
-                        position: 'absolute',
-                        right: -50,
-                        bottom: -50,
-                        width: 300,
-                        height: 300,
-                        borderRadius: '50%',
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                        filter: 'blur(60px)'
-                      }} />
-                   </Paper>
-               </Grid>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <Button
+                  variant="contained" size="large"
+                  onClick={() => navigate('/join')}
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{
+                    px: { xs: 3, md: 4 }, py: 1.5,
+                    fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 700,
+                    borderRadius: '12px', bgcolor: '#fff', color: '#000',
+                    textTransform: 'none',
+                    boxShadow: '0 0 20px rgba(255,255,255,0.18)',
+                    '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-2px)' },
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {t('main.start_free')}
+                </Button>
+                <Button
+                  variant="outlined" size="large"
+                  onClick={() => navigate('/guide')}
+                  endIcon={<KeyboardCommandKeyIcon />}
+                  sx={{
+                    px: { xs: 3, md: 4 }, py: 1.5,
+                    fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500,
+                    borderRadius: '12px', color: '#fff',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    textTransform: 'none',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.45)',
+                      bgcolor: 'rgba(255,255,255,0.07)',
+                      transform: 'translateY(-2px)',
+                    },
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {t('main.view_docs')}
+                </Button>
+              </Stack>
 
-               <Grid item xs={12} md={4}>
-                   <Paper 
-                     elevation={0}
-                     sx={{ 
-                         height: '100%',
-                         minHeight: 420,
-                         bgcolor: '#1a1a2e',
-                         color: 'white',
-                         borderRadius: 4,
-                         p: 5,
-                         display: 'flex',
-                         flexDirection: 'column',
-                         justifyContent: 'space-between',
-                         transition: 'transform 0.3s',
-                         '&:hover': { transform: 'translateY(-8px)' },
-                         boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
-                     }}
-                   >
-                       <Box>
-                           <SecurityIcon sx={{ fontSize: 52, color: '#00d4aa', mb: 2 }} />
-                           <Typography variant="h4" fontWeight="bold" gutterBottom>
-                               엔터프라이즈 보안
-                           </Typography>
-                           <Typography variant="body1" sx={{ opacity: 0.8, lineHeight: 1.7, mb: 3 }}>
-                               군사급 암호화와 24/7 보안 모니터링.
-                               <br/>당신의 데이터는 언제나 안전합니다.
-                           </Typography>
-                       </Box>
-                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                           <Chip 
-                             label="ISO 27001" 
-                             size="small"
-                             sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }} 
-                           />
-                           <Chip 
-                             label="SOC 2 Type II" 
-                             size="small"
-                             sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }} 
-                           />
-                           <Chip 
-                             label="GDPR" 
-                             size="small"
-                             sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }} 
-                           />
-                       </Stack>
-                   </Paper>
-               </Grid>
+              <Stack
+                direction="row"
+                spacing={{ xs: 3, md: 4 }}
+                mt={{ xs: 5, md: 6 }}
+                divider={<Box sx={{ width: '1px', bgcolor: 'rgba(255,255,255,0.08)', alignSelf: 'stretch' }} />}
+              >
+                {[
+                  { label: '활성 터미널', value: '1,200+' },
+                  { label: '개발자', value: '5K+' },
+                  { label: '가동률', value: '99.9%' },
+                ].map((stat) => (
+                  <Box key={stat.label}>
+                    <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: { xs: '1.1rem', md: '1.3rem' }, lineHeight: 1 }}>
+                      {stat.value}
+                    </Typography>
+                    <Typography sx={{ color: '#52525b', fontSize: '0.75rem', mt: 0.5 }}>
+                      {stat.label}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
 
-               {/* Row 2 */}
-               <Grid item xs={12} md={6}>
-                   <Paper 
-                     elevation={0}
-                     sx={{ 
-                         height: '100%',
-                         minHeight: 400,
-                         bgcolor: '#f0f4ff',
-                         borderRadius: 4,
-                         p: 5,
-                         display: 'flex',
-                         flexDirection: 'column',
-                         transition: 'transform 0.3s',
-                         '&:hover': { transform: 'translateY(-8px)' },
-                         border: '2px solid #e0e7ff',
-                         boxShadow: '0 4px 20px rgba(99,102,241,0.1)'
-                     }}
-                   >
-                       <CodeIcon sx={{ fontSize: 48, color: '#4f46e5', mb: 2 }} />
-                       <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: '#1e293b' }}>
-                           Developer API
-                       </Typography>
-                       <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
-                           단 몇 줄의 코드로 모든 기능을 연동하세요.
-                       </Typography>
-                       <Box sx={{ 
-                           bgcolor: '#1e293b',
-                           p: 3,
-                           borderRadius: 2,
-                           fontFamily: 'Consolas, Monaco, monospace',
-                           fontSize: '0.875rem',
-                           color: '#e2e8f0',
-                           lineHeight: 1.6,
-                           flexGrow: 1,
-                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.2)'
-                       }}>
-                           <span style={{color:'#f472b6'}}>import</span> TN <span style={{color:'#f472b6'}}>from</span> <span style={{color:'#a5f3fc'}}>'@tn/sdk'</span>;<br/><br/>
-                           <span style={{color:'#fbbf24'}}>const</span> client = <span style={{color:'#f472b6'}}>new</span> TN.<span style={{color:'#60a5fa'}}>Client</span>();<br/>
-                           <span style={{color:'#f472b6'}}>await</span> client.<span style={{color:'#60a5fa'}}>connect</span>();<br/><br/>
-                           <span style={{color:'#6b7280'}}>// 완료! 🎉</span>
-                       </Box>
-                   </Paper>
-               </Grid>
+            {/* 오른쪽 CLI 터미널 */}
+            <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' }, minWidth: 0 }}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  borderRadius: '18px',
+                  p: '1px',
+                  background: 'linear-gradient(145deg, rgba(99,102,241,0.35) 0%, rgba(168,85,247,0.15) 50%, rgba(255,255,255,0.04) 100%)',
+                  boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03)',
+                }}
+              >
+                <Box
+                  sx={{
+                    borderRadius: '17px',
+                    overflow: 'hidden',
+                    bgcolor: '#0a0a0c',
+                    minHeight: { xs: 280, sm: 340, md: 400 },
+                  }}
+                >
+                  <TerminalHero />
+                </Box>
+              </Box>
 
-               <Grid item xs={12} md={6}>
-                   <Paper 
-                     elevation={0}
-                     sx={{ 
-                         height: '100%',
-                         minHeight: 400,
-                         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                         borderRadius: 4,
-                         p: 5,
-                         display: 'flex',
-                         alignItems: 'center',
-                         justifyContent: 'space-between',
-                         flexWrap: 'wrap',
-                         gap: 3,
-                         transition: 'transform 0.3s',
-                         '&:hover': { transform: 'translateY(-8px)' },
-                         boxShadow: '0 10px 40px rgba(245,87,108,0.3)'
-                     }}
-                   >
-                       <Box sx={{ maxWidth: { xs: '100%', md: '100%' }, textAlign: 'center', width: '100%' }}>
-                            <RocketLaunchIcon sx={{ fontSize: 56, color: 'white', mb: 2 }} />
-                            <Typography variant="h2" fontWeight="900" sx={{ color: 'white', mb: 1 }}>
-                                10,000+
-                            </Typography>
-                            <Typography variant="h5" fontWeight="600" sx={{ color: 'rgba(255,255,255,0.95)', mb: 2 }}>
-                                활발한 개발자 커뮤니티
-                            </Typography>
-                            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.85)', mb: 3 }}>
-                                질문하고, 답변하고, 함께 성장하세요
-                            </Typography>
-                            
-                            {/* Avatar Group */}
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, gap: -1 }}>
-                               {[11,12,13,14,15].map((num) => (
-                                   <Avatar 
-                                    key={num}
-                                    sx={{ 
-                                        width: 56,
-                                        height: 56,
-                                        border: '3px solid white',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                                    }}
-                                    src={`https://i.pravatar.cc/150?img=${num}`}
-                                   />
-                               ))}
-                            </Box>
-                            
-                            <Button 
-                                variant="contained"
-                                size="large"
-                                onClick={() => navigate('/freeboard')}
-                                sx={{ 
-                                    bgcolor: 'white',
-                                    color: '#f5576c',
-                                    fontWeight: 'bold',
-                                    borderRadius: 50,
-                                    px: 5,
-                                    py: 1.5,
-                                    '&:hover': { bgcolor: '#fff5f7', transform: 'scale(1.05)' },
-                                    boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                커뮤니티 입장하기
-                            </Button>
-                       </Box>
-                   </Paper>
-               </Grid>
-           </Grid>
-
+              {!isMobile && (
+                <Stack direction="row" spacing={1.5} mt={2} justifyContent="flex-end">
+                  {['$ tn ssh prod-1', '실시간 연결', '암호화 보호'].map((label) => (
+                    <Chip
+                      key={label}
+                      label={label}
+                      size="small"
+                      sx={{
+                        bgcolor: 'rgba(255,255,255,0.04)',
+                        color: '#71717a',
+                        border: '1px solid rgba(255,255,255,0.07)',
+                        fontFamily: label.startsWith('$') ? 'monospace' : 'inherit',
+                        fontSize: '0.7rem',
+                      }}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          </Box>
         </Container>
       </Box>
 
-      {/* === SECTION 4: CTA (Call to Action) === */}
-      <Box sx={{ 
-        py: { xs: 10, md: 15 }, 
-        bgcolor: '#0f172a',
-        color: 'white',
-        textAlign: 'center'
-      }}>
-          <Container maxWidth="md">
-              <Typography 
-                variant="h2" 
-                fontWeight="900" 
-                gutterBottom
-                sx={{ 
-                  fontSize: { xs: '2rem', md: '3.5rem' },
-                  letterSpacing: '-1px',
-                  mb: 3
-                }}
-              >
-                  무엇을 기다리고 계신가요?
-              </Typography>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  mb: 6, 
-                  opacity: 0.8,
-                  fontWeight: 400,
-                  lineHeight: 1.6
-                }}
-              >
-                  지금 바로 TerminalNexus를 시작하고<br/>
-                  개발의 새로운 경험을 느껴보세요.
-                  <br/>신용카드는 필요하지 않습니다.
-              </Typography>
-              <Stack 
-                direction={{ xs: 'column', sm: 'row' }} 
-                spacing={2} 
-                justifyContent="center"
-              >
-                <Button 
-                    variant="contained"
-                    size="large"
-                    onClick={() => navigate('/join')}
-                    sx={{ 
-                      px: 7,
-                      py: 2.5,
-                      fontSize: '1.2rem',
-                      fontWeight: 'bold',
-                      borderRadius: 2,
-                      bgcolor: 'primary.main',
-                      boxShadow: '0 8px 30px rgba(25,118,210,0.4)',
-                      '&:hover': { 
-                        bgcolor: 'primary.dark',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 12px 40px rgba(25,118,210,0.5)'
-                      },
-                      transition: 'all 0.3s'
-                    }}
-                >
-                    무료로 시작하기
-                </Button>
-                <Button 
-                    variant="outlined"
-                    size="large"
-                    onClick={() => navigate('/guide')}
-                    sx={{ 
-                      px: 7,
-                      py: 2.5,
-                      fontSize: '1.2rem',
-                      fontWeight: 'bold',
-                      borderRadius: 2,
-                      color: 'white',
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      '&:hover': {
-                        borderColor: 'white',
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                        transform: 'translateY(-2px)'
-                      },
-                      transition: 'all 0.3s'
-                    }}
-                >
-                    더 알아보기
-                </Button>
-              </Stack>
-          </Container>
-      </Box>
+      {/* ── 로또 섹션 — 두 번째 스냅 ── */}
+      <LottoSection />
 
     </Box>
   );

@@ -35,8 +35,11 @@ const AdminPage = () => {
     });
 
     useEffect(() => {
+        // user가 로드된 후에만 권한 체크 (loading 완료 후)
+        if (user === null) return; // 아직 로드 중이면 대기
+
         // 관리자 권한 체크
-        if (!user || user.role !== 'ROLE_ADMIN') {
+        if (user.role !== 'ROLE_ADMIN') {
             alert('관리자 권한이 필요합니다.');
             navigate('/');
             return;
@@ -60,7 +63,22 @@ const AdminPage = () => {
         }
     };
 
-    if (!user || user.role !== 'ROLE_ADMIN') {
+    // user 정보가 아직 로드되지 않은 경우 로딩 표시 (빈 화면 방지)
+    if (user === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                <div style={{
+                    width: '32px', height: '32px',
+                    border: '3px solid #e0e0e0', borderTop: '3px solid #1a1a1a',
+                    borderRadius: '50%', animation: 'spin 0.8s linear infinite'
+                }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </div>
+        );
+    }
+
+    // 관리자가 아니면 null 반환 (navigate 처리됨)
+    if (user.role !== 'ROLE_ADMIN') {
         return null;
     }
 

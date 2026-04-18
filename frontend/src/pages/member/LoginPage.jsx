@@ -2,140 +2,255 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Helmet } from 'react-helmet-async';
-import "./LoginPage.css";
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+  Divider,
+  Alert,
+} from '@mui/material';
 
-// .env로 부터 백엔드 URL 받아오기
-const BACKEND_API_BASE_URL = '';  // Vite 프록시 사용
-const OAUTH2_BASE_URL = 'http://localhost:8080';  // OAuth2는 절대 URL 필요
+const BACKEND_API_BASE_URL = '';
+const OAUTH2_BASE_URL = 'http://localhost:8080';
 
+/* ── 공통 다크 인풋 스타일 ── */
+const darkInput = {
+  '& .MuiOutlinedInput-root': {
+    bgcolor: 'rgba(255,255,255,0.04)',
+    borderRadius: '10px',
+    color: '#f4f4f5',
+    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
+    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+  },
+  '& .MuiInputLabel-root': { color: '#71717a' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
+};
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || new URLSearchParams(location.search).get('redirect') || "/";
 
-    const navigate = useNavigate();
-    const { login } = useAuth();
-    const location = useLocation();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-    // Redirect path logic
-    const from = location.state?.from?.pathname || new URLSearchParams(location.search).get('redirect') || "/";
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!username || !password) {
+      setError("아이디와 비밀번호를 입력하세요.");
+      return;
+    }
+    try {
+      const res = await fetch(`${BACKEND_API_BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "로그인 실패");
+      }
+      const data = await res.json();
+      login(data.accessToken, data.refreshToken);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err.message || "아이디 또는 비밀번호가 틀렸습니다.");
+    }
+  };
 
-    // 자체 로그인시 username/password 변수
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+  const handleSocialLogin = (provider) => {
+    window.location.href = `${OAUTH2_BASE_URL}/oauth2/authorization/${provider}`;
+  };
 
-    // 자체 로그인 이벤트
-    const handleLogin = async (e) => {
+  return (
+    <>
+      <Helmet>
+        <title>로그인 - TerminalNexus</title>
+        <meta name="description" content="TerminalNexus에 로그인하고 터미널 환경과 개발자 커뮤니티를 이용하세요." />
+        <link rel="canonical" href="https://tnhub.kr/login" />
+      </Helmet>
 
-        e.preventDefault();
-        setError("");
+      <Box
+        sx={{
+          minHeight: '100vh',
+          bgcolor: '#000',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* 배경 글로우 */}
+        <Box sx={{
+          position: 'absolute', top: '30%', left: '50%',
+          transform: 'translateX(-50%)',
+          width: '60vw', height: '60vw', maxWidth: 700, maxHeight: 700,
+          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }} />
 
-        if (username === "" || password === "") {
-            setError("아이디와 비밀번호를 입력하세요.");
-            return;
-        }
+        <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1, py: 8 }}>
+          {/* 로고 */}
+          <Box textAlign="center" mb={5}>
+            <Typography
+              onClick={() => navigate('/')}
+              sx={{
+                fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px',
+                color: '#fff', cursor: 'pointer', mb: 1,
+                '&:hover': { color: '#a5b4fc' },
+                transition: 'color 0.2s',
+              }}
+            >
+              TN
+            </Typography>
+            <Typography
+              variant="h4" fontWeight={800}
+              sx={{
+                color: '#f4f4f5', letterSpacing: '-1.5px', mb: 1,
+                fontSize: { xs: '1.8rem', md: '2rem' },
+              }}
+            >
+              다시 오셨군요
+            </Typography>
+            <Typography sx={{ color: '#71717a', fontSize: '0.9rem' }}>
+              계속하려면 로그인하세요
+            </Typography>
+          </Box>
 
-        // API 요청
-        try {
-            const res = await fetch(`${BACKEND_API_BASE_URL}/login`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json",},
-                credentials: "include",
-                body: JSON.stringify({ username, password }),
-            });
+          {/* 폼 */}
+          <Box
+            component="form"
+            onSubmit={handleLogin}
+            sx={{
+              p: { xs: 3, md: 4 },
+              borderRadius: '20px',
+              border: '1px solid rgba(255,255,255,0.07)',
+              bgcolor: 'rgba(255,255,255,0.02)',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            <Stack spacing={2.5}>
+              <TextField
+                fullWidth
+                label="아이디"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                autoFocus
+                sx={darkInput}
+              />
+              <TextField
+                fullWidth
+                label="비밀번호"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                sx={darkInput}
+              />
 
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                console.error("Login failed:", res.status, errorData);
-                throw new Error(errorData.message || "로그인 실패");
-            }
+              {error && (
+                <Alert
+                  severity="error"
+                  sx={{
+                    bgcolor: 'rgba(239,68,68,0.1)',
+                    color: '#fca5a5',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    '& .MuiAlert-icon': { color: '#f87171' },
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
 
-            const data = await res.json();
-            
-            // Context를 통해 로그인 상태 업데이트
-            login(data.accessToken, data.refreshToken);
-            
-            // 로그인 성공 후 메인 페이지로 이동
-            navigate(from, { replace: true });
-            
-        } catch (err) {
-            console.error("Login error:", err);
-            setError(err.message || "아이디 또는 비밀번호가 틀렸습니다.");
-        }
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{
+                  py: 1.6, borderRadius: '10px',
+                  bgcolor: '#fff', color: '#000', fontWeight: 700,
+                  fontSize: '0.95rem', textTransform: 'none',
+                  boxShadow: '0 0 20px rgba(255,255,255,0.1)',
+                  '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-1px)' },
+                  transition: 'all 0.2s',
+                }}
+              >
+                계속
+              </Button>
+            </Stack>
 
-    };
+            <Box textAlign="center" mt={3}>
+              <Typography component="span" sx={{ color: '#52525b', fontSize: '0.85rem' }}>
+                계정이 없으신가요?{' '}
+              </Typography>
+              <Typography
+                component="span"
+                onClick={() => navigate('/join')}
+                sx={{
+                  color: '#818cf8', fontSize: '0.85rem', fontWeight: 600,
+                  cursor: 'pointer',
+                  '&:hover': { color: '#a5b4fc' },
+                }}
+              >
+                회원가입
+              </Typography>
+            </Box>
+          </Box>
 
-    // 소셜 로그인 이벤트
-    const handleSocialLogin = (provider) => {
-        // OAuth2는 브라우저 리다이렉트라서 절대 URL 필요!
-        window.location.href = `${OAUTH2_BASE_URL}/oauth2/authorization/${provider}`;
-    };
+          {/* 구분선 */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 3 }}>
+            <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
+            <Typography sx={{ color: '#3f3f46', fontSize: '0.75rem' }}>또는</Typography>
+            <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
+          </Box>
 
-    // 페이지
-    return (
-        <>
-        <Helmet>
-            <title>로그인 - TerminalNexus | 개발자 허브 접속</title>
-            <meta name="description" content="TerminalNexus에 로그인하고 터미널 환경과 개발자 커뮤니티를 이용하세요. Google, Naver 소셜 로그인 지원." />
-            <meta name="keywords" content="로그인, 접속, 소셜 로그인, Google 로그인, Naver 로그인" />
-            <link rel="canonical" href="https://tnhub.kr/login" />
-        </Helmet>
-        <div className="login-page">
-            <div className="login-container">
-                <h1>로그인</h1>
-
-                <form onSubmit={handleLogin} className="login-form">
-                    <div className="form-group">
-                        <label>아이디</label>
-                        <input
-                            type="text"
-                            placeholder="아이디"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>비밀번호</label>
-                        <input
-                            type="password"
-                            placeholder="비밀번호"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    {error && <p className="error-message">{error}</p>}
-
-                    <button type="submit" className="login-btn">계속</button>
-                    
-                    <div className="signup-link" style={{ marginTop: '15px', textAlign: 'center' }}>
-                        <span style={{ color: '#666' }}>계정이 없으신가요? </span>
-                        <a href="/join" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold', cursor: 'pointer' }} onClick={(e) => {
-                            e.preventDefault();
-                            navigate('/join');
-                        }}>회원가입</a>
-                    </div>
-                </form>
-
-                <div className="divider">
-                    <span>또는</span>
-                </div>
-
-                {/* 소셜 로그인 버튼 */}
-                <div className="social-login">
-                    <button onClick={() => handleSocialLogin("google")} className="social-btn google">
-                        Google로 계속하기
-                    </button>
-                    <button onClick={() => handleSocialLogin("naver")} className="social-btn naver">
-                        Naver로 계속하기
-                    </button>
-                </div>
-            </div>
-        </div>
-        </>
-    );
+          {/* 소셜 로그인 */}
+          <Stack spacing={2}>
+            <Button
+              fullWidth variant="outlined"
+              onClick={() => handleSocialLogin("google")}
+              sx={{
+                py: 1.5, borderRadius: '10px',
+                borderColor: 'rgba(255,255,255,0.1)',
+                color: '#e4e4e7', textTransform: 'none',
+                bgcolor: 'rgba(255,255,255,0.03)',
+                fontWeight: 500,
+                '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.06)' },
+              }}
+            >
+              <Box component="span" mr={1.5} sx={{ fontSize: '1.1rem' }}>🔵</Box>
+              Google로 계속하기
+            </Button>
+            <Button
+              fullWidth variant="outlined"
+              onClick={() => handleSocialLogin("naver")}
+              sx={{
+                py: 1.5, borderRadius: '10px',
+                borderColor: 'rgba(255,255,255,0.1)',
+                color: '#e4e4e7', textTransform: 'none',
+                bgcolor: 'rgba(255,255,255,0.03)',
+                fontWeight: 500,
+                '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.06)' },
+              }}
+            >
+              <Box component="span" mr={1.5} sx={{ fontSize: '1.1rem' }}>🟢</Box>
+              Naver로 계속하기
+            </Button>
+          </Stack>
+        </Container>
+      </Box>
+    </>
+  );
 }
 
 export default LoginPage;

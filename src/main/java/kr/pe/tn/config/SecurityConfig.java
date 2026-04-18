@@ -145,6 +145,10 @@ public class SecurityConfig {
                                                                 "/ws-chat/**") // WebSocket 엔드포인트
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/donation/public").permitAll() // 후원
+                                                                                                                     // 현황
+                                                                                                                     // 공개
+                                                .requestMatchers("/api/donation/**").authenticated() // 후원 API (로그인 필수)
                                                 .requestMatchers("/api/fruits/**").authenticated() // 과일 AI API (로그인 필수)
                                                 .requestMatchers("/api/chat/**").authenticated() // 채팅 API (로그인 필수)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
