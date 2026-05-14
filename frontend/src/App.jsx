@@ -14,9 +14,11 @@ import AdminUserManagePage from "./pages/admin/AdminUserManagePage";
 import AdminPage from "./pages/AdminPage";
 import FruitAIPage from "./pages/FruitAIPage";
 import ChatPage from "./pages/ChatPage";
+import ForgePage from "./pages/forge/ForgePage";
 import DonationPage from "./pages/donation/DonationPage";
 import DonationSuccessPage from "./pages/donation/DonationSuccessPage";
 import DonationHistoryPage from "./pages/donation/DonationHistoryPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 
 import Header from "./components/Header";
@@ -134,10 +136,21 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          {/* 강화 게임 */}
+          <Route
+            path="/forge"
+            element={
+              <ProtectedRoute>
+                <ForgePage />
+              </ProtectedRoute>
+            }
+          />
           {/* 후원 */}
           <Route path="/donation" element={<DonationPage />} />
           <Route path="/donation/success" element={<DonationSuccessPage />} />
           <Route path="/donation/history" element={<DonationHistoryPage />} />
+          {/* 404 캐치올 — 모든 미등록 경로 */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
       <Footer />

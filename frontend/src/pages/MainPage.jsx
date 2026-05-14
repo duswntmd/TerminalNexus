@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
@@ -651,40 +651,47 @@ const MainPage = () => {
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <Button
                   variant="contained" size="large"
-                  onClick={() => navigate('/join')}
-                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate('/terminal')}
+                  startIcon={<KeyboardCommandKeyIcon />}
                   sx={{
-                    px: { xs: 3, md: 4 }, py: 1.5,
-                    fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 700,
-                    borderRadius: '12px', bgcolor: '#fff', color: '#000',
+                    px: { xs: 3, md: 4 }, py: 1.8,
+                    fontSize: { xs: '1rem', md: '1.1rem' }, fontWeight: 800,
+                    borderRadius: '16px', 
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    color: '#fff',
                     textTransform: 'none',
-                    boxShadow: '0 0 20px rgba(255,255,255,0.18)',
-                    '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-2px)' },
-                    transition: 'all 0.2s',
+                    boxShadow: '0 10px 30px rgba(99,102,241,0.3)',
+                    '&:hover': { 
+                      background: 'linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)',
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 15px 40px rgba(99,102,241,0.45)',
+                    },
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }}
                 >
-                  {t('main.start_free')}
+                  터미널 입장하기
                 </Button>
                 <Button
                   variant="outlined" size="large"
-                  onClick={() => navigate('/guide')}
-                  endIcon={<KeyboardCommandKeyIcon />}
+                  onClick={() => navigate('/forge')}
+                  startIcon={<CasinoIcon />}
                   sx={{
-                    px: { xs: 3, md: 4 }, py: 1.5,
-                    fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500,
-                    borderRadius: '12px', color: '#fff',
-                    borderColor: 'rgba(255,255,255,0.2)',
+                    px: { xs: 3, md: 4 }, py: 1.8,
+                    fontSize: { xs: '1rem', md: '1.1rem' }, fontWeight: 700,
+                    borderRadius: '16px', color: '#fff',
+                    borderColor: 'rgba(255,255,255,0.15)',
                     bgcolor: 'rgba(255,255,255,0.03)',
+                    backdropFilter: 'blur(10px)',
                     textTransform: 'none',
                     '&:hover': {
-                      borderColor: 'rgba(255,255,255,0.45)',
-                      bgcolor: 'rgba(255,255,255,0.07)',
-                      transform: 'translateY(-2px)',
+                      borderColor: 'rgba(255,255,255,0.4)',
+                      bgcolor: 'rgba(255,255,255,0.08)',
+                      transform: 'translateY(-4px)',
                     },
-                    transition: 'all 0.2s',
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }}
                 >
-                  {t('main.view_docs')}
+                  강화의 성소 (FORGE)
                 </Button>
               </Stack>
 

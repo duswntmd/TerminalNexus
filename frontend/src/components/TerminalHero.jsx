@@ -96,6 +96,8 @@ const TerminalHero = () => {
           "Available commands:",
           "  /help     - Show this help message",
           "  ls        - List available commands",
+          "  /forge    - Go to RPG Forge Game",
+          "  /chat     - Open Anonymous Chat",
           "  /login    - Go to login page",
           "  /join     - Go to sign up page",
           "  freeboard - Go to community board",
@@ -108,12 +110,22 @@ const TerminalHero = () => {
           "COMMANDS:",
           "  /help",
           "  ls",
+          "  /forge",
+          "  /chat",
           "  /login",
           "  /join",
           "  freeboard",
           "  /guide",
           "  clear"
         ];
+        break;
+      case '/forge':
+        output = ["Entering Forge Sanctuary..."];
+        setTimeout(() => navigate('/forge'), 800);
+        break;
+      case '/chat':
+        output = ["Connecting to Anonymous Chat..."];
+        setTimeout(() => navigate('/chat'), 800);
         break;
       case 'freeboard':
         output = ["Redirecting to Free Board..."];
