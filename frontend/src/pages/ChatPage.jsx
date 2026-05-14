@@ -40,6 +40,7 @@ const ChatPage = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [whisperTarget, setWhisperTarget] = useState('');
     const [lastWhisperTarget, setLastWhisperTarget] = useState('');
+    const [historyLoading, setHistoryLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const subscriptionRef = useRef(null);
     // 익명 채팅: 내가 보낸 메시지 content를 추적하여 에코 중복 방지
@@ -119,9 +120,45 @@ const ChatPage = () => {
             }
         });
         subscriptionRef.current = subscription;
+
+        // 채팅방 구독 후 히스토리 로드
+        fetchChatHistory(roomId);
     };
 
 
+
+
+    /**
+     * 채팅 히스토리 로드
+     * - 서버에서 최근 100건(시간순)을 받아 messages 초기값으로 설정
+     * - 이후 도착하는 WebSocket 메시지와 자연스럽게 이어짐
+     */
+    const fetchChatHistory = async (roomId) => {
+        setHistoryLoading(true);
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${BACKEND_URL}/api/chat/history/${roomId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const history = await res.json();
+                /**
+                 * isOwner: 서버에서 senderId를 비교한 결과(boolean)
+                 * - 익명 채팅: 서버만 알고 있는 senderId로 비교 → 프론트에는 boolean만 전달
+                 * - 전체 채팅: 동일하게 isOwner 사용 (일관성)
+                 */
+                const enriched = history.map(msg => ({
+                    ...msg,
+                    isMine: msg.isOwner === true,
+                }));
+                setMessages(enriched);
+            }
+        } catch (error) {
+            console.error('채팅 히스토리 조회 실패:', error);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
 
     const fetchOnlineUsers = async () => {
         try {
@@ -215,10 +252,15 @@ const ChatPage = () => {
 
     /* ── 메시지 렌더링 ── */
     const renderMessage = (msg, index) => {
-        // isMine 플래그 우선 → 없으면 nickname/sender 비교 (전체 채팅용)
+        /**
+         * isMine 판별 우선순위:
+         * 1. isMine 플래그(WebSocket 실시간 메시지 및 히스토리 모두)
+         * 2. isOwner (서버에서 senderId 비교 결과 — 주로 히스토리용)
+         * 3. sender 비교 (전체 채팅 실시간 폴백립)
+         */
         const isMyMessage = msg.isMine === true
-            ? true
-            : msg.sender === user?.nickname;
+            || msg.isOwner === true
+            || (!msg.isAnonymous && msg.sender === user?.nickname);
         const isSystemMessage = msg.type === 'JOIN' || msg.type === 'LEAVE';
         const isWhisper = msg.isWhisper || msg.type === 'WHISPER';
 
@@ -376,6 +418,21 @@ const ChatPage = () => {
                                 '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
                                 '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2 },
                             }}>
+                                {/* 히스토리 로딩 스피너 */}
+                                {historyLoading && (
+                                    <Box display="flex" justifyContent="center" alignItems="center" py={3} gap={1}>
+                                        <Box sx={{
+                                            width: 16, height: 16,
+                                            border: '2px solid rgba(255,255,255,0.08)',
+                                            borderTop: '2px solid #818cf8',
+                                            borderRadius: '50%',
+                                            animation: 'spin 0.8s linear infinite',
+                                        }} />
+                                        <Typography sx={{ color: '#52525b', fontSize: '0.72rem' }}>이전 메시지 불러오는 중...</Typography>
+                                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                                    </Box>
+                                )}
+                                {/* 히스토리/실시간 메시지 렌더링 */}
                                 {messages.map((msg, index) => renderMessage(msg, index))}
                                 <div ref={messagesEndRef} />
                             </Box>
@@ -445,64 +502,92 @@ const ChatPage = () => {
                                 p: 2.5, overflow: 'hidden',
                             }}
                         >
-                            <Typography sx={{ color: '#52525b', fontSize: '0.7rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', mb: 1.5 }}>
-                                Online
-                            </Typography>
-                            <Chip
-                                label={`${onlineUsers.length}명 접속 중`}
-                                size="small"
-                                sx={{ mb: 2, alignSelf: 'flex-start', bgcolor: 'rgba(52,211,153,0.08)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)', fontSize: '0.72rem' }}
-                            />
-                            <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
-                            <Box flex={1} overflow="auto" sx={{
-                                '&::-webkit-scrollbar': { width: 3 },
-                                '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 2 },
-                            }}>
-                                <List dense disablePadding>
-                                    {onlineUsers.map((username, index) => (
-                                        <ListItem
-                                            key={index}
-                                            sx={{ px: 0.5, py: 0.8, borderRadius: '8px', '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }}
-                                            secondaryAction={
-                                                username !== user.nickname && (
-                                                    <IconButton
-                                                        edge="end" size="small"
-                                                        onClick={() => setWhisperTarget(username)}
-                                                        title="귓속말"
-                                                        sx={{ color: '#3f3f46', '&:hover': { color: '#c084fc', bgcolor: 'rgba(168,85,247,0.08)' } }}
+                            {/* 익명 채팅: 참여자 수만 표시, 전체 채팅: 실제 사용자 목록 표시 */}
+                            {currentTab === 1 ? (
+                                /* ── 익명 채팅 사이드바: 신원 비공개 ── */
+                                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" flex={1} gap={2}>
+                                    <Box
+                                        sx={{
+                                            width: 56, height: 56, borderRadius: '50%',
+                                            bgcolor: 'rgba(99,102,241,0.08)',
+                                            border: '1px solid rgba(99,102,241,0.2)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        }}
+                                    >
+                                        <VisibilityOffIcon sx={{ color: '#6366f1', fontSize: '1.6rem' }} />
+                                    </Box>
+                                    <Typography sx={{ color: '#52525b', fontSize: '0.72rem', fontWeight: 600, textAlign: 'center', lineHeight: 1.6 }}>
+                                        익명 채팅 중<br />신원이 공개되지 않습니다
+                                    </Typography>
+                                    <Chip
+                                        label={`${onlineUsers.length}명 참여 중`}
+                                        size="small"
+                                        sx={{ bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', fontSize: '0.72rem' }}
+                                    />
+                                </Box>
+                            ) : (
+                                /* ── 전체 채팅 사이드바: 실제 사용자 목록 ── */
+                                <>
+                                    <Typography sx={{ color: '#52525b', fontSize: '0.7rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', mb: 1.5 }}>
+                                        Online
+                                    </Typography>
+                                    <Chip
+                                        label={`${onlineUsers.length}명 접속 중`}
+                                        size="small"
+                                        sx={{ mb: 2, alignSelf: 'flex-start', bgcolor: 'rgba(52,211,153,0.08)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)', fontSize: '0.72rem' }}
+                                    />
+                                    <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+                                    <Box flex={1} overflow="auto" sx={{
+                                        '&::-webkit-scrollbar': { width: 3 },
+                                        '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 2 },
+                                    }}>
+                                        <List dense disablePadding>
+                                            {onlineUsers.map((username, index) => (
+                                                <ListItem
+                                                    key={index}
+                                                    sx={{ px: 0.5, py: 0.8, borderRadius: '8px', '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }}
+                                                    secondaryAction={
+                                                        username !== user.nickname && (
+                                                            <IconButton
+                                                                edge="end" size="small"
+                                                                onClick={() => setWhisperTarget(username)}
+                                                                title="귓속말"
+                                                                sx={{ color: '#3f3f46', '&:hover': { color: '#c084fc', bgcolor: 'rgba(168,85,247,0.08)' } }}
+                                                            >
+                                                                <WhisperIcon sx={{ fontSize: '0.9rem' }} />
+                                                            </IconButton>
+                                                        )
+                                                    }
+                                                >
+                                                    <Badge
+                                                        color="success" variant="dot" overlap="circular"
+                                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                                        sx={{ '& .MuiBadge-badge': { bgcolor: '#34d399', width: 8, height: 8, boxShadow: '0 0 5px #34d399' } }}
                                                     >
-                                                        <WhisperIcon sx={{ fontSize: '0.9rem' }} />
-                                                    </IconButton>
-                                                )
-                                            }
-                                        >
-                                            <Badge
-                                                color="success" variant="dot" overlap="circular"
-                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                                sx={{ '& .MuiBadge-badge': { bgcolor: '#34d399', width: 8, height: 8, boxShadow: '0 0 5px #34d399' } }}
-                                            >
-                                                <Avatar sx={{
-                                                    width: 28, height: 28, mr: 1.2,
-                                                    bgcolor: username === user.nickname ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.06)',
-                                                    color: username === user.nickname ? '#818cf8' : '#71717a',
-                                                    fontSize: '0.72rem', fontWeight: 700, border: username === user.nickname ? '1px solid rgba(129,140,248,0.3)' : 'none',
-                                                }}>
-                                                    {username[0]}
-                                                </Avatar>
-                                            </Badge>
-                                            <ListItemText
-                                                primary={username}
-                                                primaryTypographyProps={{
-                                                    fontSize: '0.8rem',
-                                                    fontWeight: username === user.nickname ? 700 : 400,
-                                                    color: username === user.nickname ? '#818cf8' : '#a1a1aa',
-                                                    noWrap: true,
-                                                }}
-                                            />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Box>
+                                                        <Avatar sx={{
+                                                            width: 28, height: 28, mr: 1.2,
+                                                            bgcolor: username === user.nickname ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.06)',
+                                                            color: username === user.nickname ? '#818cf8' : '#71717a',
+                                                            fontSize: '0.72rem', fontWeight: 700, border: username === user.nickname ? '1px solid rgba(129,140,248,0.3)' : 'none',
+                                                        }}>
+                                                            {username[0]}
+                                                        </Avatar>
+                                                    </Badge>
+                                                    <ListItemText
+                                                        primary={username}
+                                                        primaryTypographyProps={{
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: username === user.nickname ? 700 : 400,
+                                                            color: username === user.nickname ? '#818cf8' : '#a1a1aa',
+                                                            noWrap: true,
+                                                        }}
+                                                    />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Box>
+                                </>
+                            )}
                         </Box>
 
                     </Box>

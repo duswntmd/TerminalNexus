@@ -1,0 +1,118 @@
+.wd-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 20px; gap: 10px; position: relative; text-align: center;
+  transition: box-shadow 0.4s, border-color 0.4s;
+}
+.wd-svg-wrap {
+  position: relative; z-index: 2; transition: filter 0.4s;
+  display: flex; align-items: center; justify-content: center;
+}
+.wd-svg-wrap svg { transition: filter 0.4s; }
+.wd-empty, .wd-destroyed {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.wd-empty-icon, .wd-destroyed-icon { font-size: 2.8rem; }
+.wd-empty-text  { color: #52525b; font-size: 0.9rem; }
+.wd-destroyed-text { color: #ef4444; font-weight: 700; }
+.wd-destroyed-sub  { color: #52525b; font-size: 0.78rem; }
+.wd-grade-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+
+.wd-weapon-art { position: relative; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px; }
+
+.wd-emoji { font-size: 3.8rem; position: relative; z-index: 2; line-height: 1; transition: filter 0.4s; }
+
+/* 일반: 심플 */
+.wd-emoji-일반 { opacity: 0.8; }
+
+/* 희귀: 파란 펄스 */
+.wd-emoji-희귀 { animation: wd-rare-pulse 2s ease-in-out infinite; }
+@keyframes wd-rare-pulse {
+  0%,100% { filter: drop-shadow(0 0 8px #60a5fa); }
+  50%      { filter: drop-shadow(0 0 20px #60a5fa) brightness(1.2); }
+}
+
+/* 영웅: 보라 마법진 회전 */
+.wd-magic-circle {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(192,132,252,0.4);
+  animation: wd-spin 4s linear infinite;
+  pointer-events: none;
+}
+.wd-magic-circle::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 50%;
+  border: 1px dashed rgba(192,132,252,0.3);
+  animation: wd-spin-rev 3s linear infinite;
+}
+.wd-emoji-영웅 { animation: wd-epic-float 3s ease-in-out infinite; }
+@keyframes wd-epic-float {
+  0%,100% { transform: translateY(0); filter: drop-shadow(0 0 14px #c084fc); }
+  50%      { transform: translateY(-6px); filter: drop-shadow(0 0 24px #c084fc); }
+}
+
+/* 전설: 불꽃 오라 */
+.wd-flame-aura {
+  position: absolute; inset: -10px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(251,146,60,0.3) 0%, transparent 70%);
+  animation: wd-flame 1.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes wd-flame {
+  from { transform: scale(0.9); opacity: 0.6; }
+  to   { transform: scale(1.1); opacity: 1; }
+}
+.wd-emoji-전설 { animation: wd-legend-shake 0.1s ease-in-out infinite alternate; }
+@keyframes wd-legend-shake {
+  from { transform: rotate(-1deg); filter: drop-shadow(0 0 18px #fb923c); }
+  to   { transform: rotate(1deg);  filter: drop-shadow(0 0 30px #f59e0b); }
+}
+
+/* 신화: 황금 링 */
+.wd-myth-ring {
+  position: absolute; inset: -14px; border-radius: 50%;
+  border: 3px solid transparent;
+  background: conic-gradient(#f59e0b, #fbbf24, #f59e0b, #fb923c, #f59e0b) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  animation: wd-spin 2s linear infinite;
+  pointer-events: none;
+}
+.wd-emoji-신화 {
+  animation: wd-myth-glow 1s ease-in-out infinite alternate;
+}
+@keyframes wd-myth-glow {
+  from { filter: drop-shadow(0 0 20px #f59e0b) brightness(1.1); transform: scale(1); }
+  to   { filter: drop-shadow(0 0 40px #fbbf24) brightness(1.4); transform: scale(1.08); }
+}
+
+@keyframes wd-spin     { to { transform: rotate(360deg); } }
+@keyframes wd-spin-rev { to { transform: rotate(-360deg); } }
+
+.wd-name {
+  font-size: 1.0rem; font-weight: 700;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
+}
+.wd-level-badge {
+  font-size: 0.72rem; color: #000; padding: 2px 8px;
+  border-radius: 20px; font-weight: 800;
+}
+.wd-atk { font-size: 0.82rem; color: #a1a1aa; }
+.wd-atk strong { color: #f4f4f5; }
+.wd-bar-wrap { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; max-width: 280px; }
+.wd-pip { width: 10px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.08); transition: background 0.3s; }
+.wd-progress { font-size: 0.7rem; color: #52525b; }
+
+/* 결과 애니메이션 */
+.wd-wrap.success { animation: wd-success 0.5s ease; }
+.wd-wrap.fail, .wd-wrap.down { animation: wd-shake 0.5s ease; }
+.wd-wrap.destroy { animation: wd-shake 0.7s ease; }
+.wd-wrap.enhancing .wd-emoji { animation: wd-enhance-spin 0.6s ease-in-out infinite alternate !important; }
+@keyframes wd-enhance-spin {
+  from { transform: scale(0.95) rotate(-3deg); }
+  to   { transform: scale(1.05) rotate(3deg); }
+}
+@keyframes wd-success { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+@keyframes wd-shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+}

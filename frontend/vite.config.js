@@ -18,6 +18,11 @@ export default defineConfig({
       "/login": {
         target: "http://localhost:8080",
         changeOrigin: true,
+        bypass: function(req, res, proxyOptions) {
+          if (req.headers.accept.indexOf('html') !== -1) {
+            return '/index.html';
+          }
+        }
       },
       "/logout": {
         target: "http://localhost:8080",

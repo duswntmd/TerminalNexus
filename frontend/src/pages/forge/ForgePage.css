@@ -1,0 +1,896 @@
+/* ================================================
+   FORGE — 강화 게임 스타일
+   ================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+
+/* ── Root ── */
+.forge-root {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 20% 10%, #1a0a2e 0%, #0a0a14 50%, #000510 100%);
+  color: #e4e4e7;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 90px 20px 40px;
+}
+
+/* 배경 별 효과 */
+.forge-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.1)  0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 15%, rgba(255,255,255,0.1)  0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.13) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 파티클 ── */
+.forge-particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+  animation: forge-particle-fly 1.2s ease-out forwards;
+}
+
+@keyframes forge-particle-fly {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx, 60px), var(--dy, -80px)) scale(0.2); }
+}
+
+/* ── 헤더 ── */
+.forge-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 12px;
+}
+
+.forge-title-wrap {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.forge-logo {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 12px rgba(251,191,36,0.6));
+  animation: forge-logo-pulse 3s ease-in-out infinite;
+}
+
+@keyframes forge-logo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(251,191,36,0.5)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(251,191,36,0.9)); }
+}
+
+.forge-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 40%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  line-height: 1;
+}
+
+.forge-subtitle {
+  font-size: 0.78rem;
+  color: #52525b;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+.forge-currency-icon { font-size: 1.2rem; }
+.forge-currency-val  { font-size: 1rem; font-weight: 700; color: #f4f4f5; font-family: 'Inter', sans-serif; }
+
+/* ── Body 레이아웃 ── */
+.forge-body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 360px 1fr 220px;
+  gap: 20px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.forge-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.forge-sidebar {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15, 15, 20, 0.7);
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  
+  /* 스크롤 시 따라오는 효과 (Sticky) */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 110px;
+  z-index: 10;
+  align-self: start;
+  height: fit-content;
+}
+
+@media (max-width: 1200px) {
+  .forge-body {
+    grid-template-columns: 340px 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .forge-sidebar {
+    grid-column: 1 / -1;
+    position: relative !important;
+    top: 0 !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .forge-sidebar .forge-currency {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 900px) {
+  .forge-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .forge-title-wrap {
+    grid-column: 1;
+  }
+  .forge-body {
+    grid-template-columns: 1fr;
+  }
+  .forge-left {
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .forge-root {
+    padding: 70px 12px 30px;
+  }
+  .forge-title {
+    font-size: 2.2rem;
+  }
+  .forge-item-card {
+    padding: 20px 12px;
+  }
+  .forge-sidebar .forge-hof-btn {
+    flex: 1 1 45%;
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+  .forge-stats, .forge-log-wrap {
+    padding: 16px;
+  }
+}
+
+/* ── 아이템 카드 ── */
+.forge-item-card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 32px 20px;
+  text-align: center;
+  overflow: hidden;
+  transition: border-color 0.4s, box-shadow 0.4s;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.forge-item-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+/* 성공 이펙트 */
+.forge-item-card.success {
+  border-color: rgba(251,191,36,0.5);
+  box-shadow: 0 0 40px rgba(251,191,36,0.2), inset 0 0 40px rgba(251,191,36,0.05);
+  animation: forge-success-flash 0.6s ease;
+}
+
+@keyframes forge-success-flash {
+  0%   { box-shadow: 0 0 0 rgba(251,191,36,0); }
+  40%  { box-shadow: 0 0 80px rgba(251,191,36,0.5), inset 0 0 60px rgba(251,191,36,0.15); }
+  100% { box-shadow: 0 0 40px rgba(251,191,36,0.2), inset 0 0 40px rgba(251,191,36,0.05); }
+}
+
+/* 실패/하락 이펙트 */
+.forge-item-card.fail,
+.forge-item-card.down {
+  border-color: rgba(239,68,68,0.4);
+  box-shadow: 0 0 30px rgba(239,68,68,0.1);
+  animation: forge-fail-shake 0.5s ease;
+}
+
+@keyframes forge-fail-shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-8px); }
+  40%     { transform: translateX(8px); }
+  60%     { transform: translateX(-5px); }
+  80%     { transform: translateX(5px); }
+}
+
+/* 파괴 이펙트 */
+.forge-item-card.destroy {
+  border-color: rgba(239,68,68,0.7);
+  box-shadow: 0 0 60px rgba(239,68,68,0.25);
+  animation: forge-destroy-shake 0.7s ease;
+}
+
+@keyframes forge-destroy-shake {
+  0%,100% { transform: translate(0,0) rotate(0); }
+  20%     { transform: translate(-10px, 4px) rotate(-2deg); }
+  40%     { transform: translate(10px, -4px) rotate(2deg); }
+  60%     { transform: translate(-6px, 2px) rotate(-1deg); }
+  80%     { transform: translate(6px, -2px) rotate(1deg); }
+}
+
+/* 강화 중 펄스 */
+.forge-item-card.enhancing {
+  animation: forge-enhancing-pulse 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes forge-enhancing-pulse {
+  from { box-shadow: 0 0 20px rgba(129,140,248,0.1); border-color: rgba(129,140,248,0.2); }
+  to   { box-shadow: 0 0 50px rgba(129,140,248,0.35); border-color: rgba(129,140,248,0.5); }
+}
+
+.forge-item-grade {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.forge-item-emoji {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 16px rgba(255,255,255,0.2));
+  transition: filter 0.4s;
+  line-height: 1;
+}
+
+.forge-item-card.success .forge-item-emoji {
+  filter: drop-shadow(0 0 24px rgba(251,191,36,0.7));
+}
+
+.forge-item-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.forge-item-level {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+}
+
+.forge-item-atk {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+.forge-prob-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(0,0,0,0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.forge-item-atk strong { color: #f4f4f5; }
+
+/* 레벨 게이지 */
+.forge-level-bar-wrap {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 280px;
+}
+
+.forge-level-pip {
+  width: 10px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  transition: background 0.3s;
+}
+
+.forge-level-pip.filled {
+  box-shadow: 0 0 6px currentColor;
+}
+
+.forge-level-text {
+  font-size: 0.72rem;
+  color: #52525b;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 파괴 */
+.forge-destroyed, .forge-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.forge-destroyed-emoji, .forge-empty-icon { font-size: 3rem; }
+.forge-destroyed-text { font-size: 1.1rem; font-weight: 700; color: #ef4444; }
+.forge-destroyed-sub  { font-size: 0.8rem; color: #52525b; }
+.forge-empty-text     { font-size: 0.9rem; color: #52525b; }
+
+/* ── 정보 박스 ── */
+.forge-info-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.forge-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.83rem;
+  color: #a1a1aa;
+}
+
+.forge-rate {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.forge-max-banner {
+  background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.08));
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  font-weight: 700;
+  color: #fbbf24;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── 보호권 버튼 ── */
+.forge-shield-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(96,165,250,0.25);
+  background: rgba(96,165,250,0.06);
+  color: #93c5fd;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.forge-shield-btn:hover  { background: rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.4); }
+.forge-shield-btn.active { background: rgba(96,165,250,0.18); border-color: #60a5fa; color: #dbeafe; }
+
+/* ── 강화 버튼 ── */
+.forge-enhance-btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  border: 2px solid rgba(251,191,36,0.3);
+  background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.06));
+  color: #fbbf24;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.forge-enhance-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(251,191,36,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.forge-enhance-btn:hover:not(:disabled)::before { opacity: 1; }
+.forge-enhance-btn:hover:not(:disabled) {
+  border-color: rgba(251,191,36,0.6);
+  box-shadow: 0 0 30px rgba(251,191,36,0.25);
+  transform: translateY(-2px);
+}
+
+.forge-enhance-btn:active:not(:disabled) { transform: translateY(0); }
+
+.forge-enhance-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.forge-enhance-btn.success {
+  border-color: rgba(251,191,36,0.7);
+  box-shadow: 0 0 30px rgba(251,191,36,0.3);
+}
+
+.forge-enhance-btn.fail,
+.forge-enhance-btn.down   { border-color: rgba(239,68,68,0.4); }
+.forge-enhance-btn.destroy { border-color: rgba(239,68,68,0.7); }
+
+.forge-btn-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.forge-next-level {
+  font-size: 0.78rem;
+  color: #a16207;
+  background: rgba(0,0,0,0.3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.forge-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(251,191,36,0.2);
+  border-top-color: #fbbf24;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 상점 버튼 ── */
+.forge-shop-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: #71717a;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.forge-shop-btn:hover { background: rgba(255,255,255,0.06); color: #a1a1aa; }
+
+/* ── 상점 패널 ── */
+.forge-shop {
+  background: rgba(10,10,20,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: forge-slide-down 0.2s ease;
+}
+
+@keyframes forge-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.forge-shop-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #52525b;
+  margin-top: 4px;
+}
+
+.forge-shop-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 4px 0;
+}
+
+.forge-shop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  transition: background 0.15s;
+}
+
+.forge-shop-item:hover { background: rgba(255,255,255,0.04); }
+.forge-shop-emoji {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+.forge-shop-emoji svg {
+  width: 32px;
+  height: 42px;
+}
+.forge-shop-info   { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.forge-shop-name   { font-size: 0.83rem; font-weight: 600; color: #d4d4d8; }
+.forge-shop-atk    { font-size: 0.72rem; color: #52525b; }
+
+.forge-shop-buy {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(251,191,36,0.25);
+  background: rgba(251,191,36,0.08);
+  color: #fbbf24;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.forge-shop-buy:hover:not(:disabled) { background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.4); }
+.forge-shop-buy:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── 왼쪽 레이아웃 ── */
+.forge-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── 오른쪽 레이아웃 ── */
+.forge-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 통계 ── */
+.forge-stats {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.forge-stats-title, .forge-log-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #52525b;
+  margin-bottom: 10px;
+}
+
+.forge-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: #a1a1aa;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.forge-stat-row:last-child { border-bottom: none; }
+
+/* ── 로그 ── */
+.forge-log-wrap {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px 18px;
+  flex: 1;
+}
+
+.forge-log {
+  height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.forge-log::-webkit-scrollbar       { width: 3px; }
+.forge-log::-webkit-scrollbar-track  { background: transparent; }
+.forge-log::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+.forge-log-empty {
+  font-size: 0.8rem;
+  color: #3f3f46;
+  text-align: center;
+  margin-top: 80px;
+}
+
+.forge-log-row {
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1.4;
+  animation: forge-log-in 0.2s ease;
+}
+
+@keyframes forge-log-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.forge-log-success { color: #4ade80; background: rgba(74,222,128,0.06); }
+.forge-log-fail    { color: #f87171; background: rgba(248,113,113,0.06); }
+.forge-log-down    { color: #fbbf24; background: rgba(251,191,36,0.06); }
+.forge-log-destroy { color: #ef4444; background: rgba(239,68,68,0.1);   font-weight: 700; }
+.forge-log-buy     { color: #60a5fa; background: rgba(96,165,250,0.06); }
+.forge-log-shield  { color: #c084fc; background: rgba(192,132,252,0.07); }
+.forge-log-error   { color: #f87171; }
+
+/* ── 등급 안내 ── */
+.forge-grade-guide {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.forge-grade-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.83rem;
+  padding: 4px 0;
+}
+
+/* ── 출석 버튼 ── */
+.forge-attend-btn {
+  padding: 6px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; border: 1px solid rgba(74,222,128,0.35);
+  background: rgba(74,222,128,0.08); color: #4ade80;
+  transition: all 0.2s; font-family: 'Noto Sans KR', sans-serif;
+}
+.forge-attend-btn:hover:not(:disabled) { background: rgba(74,222,128,0.15); }
+.forge-attend-btn.done { opacity: 0.4; cursor: not-allowed; }
+.forge-attend-btn.pulse { animation: forge-attend-pulse 1.5s ease-in-out infinite; }
+@keyframes forge-attend-pulse {
+  0%,100% { box-shadow: 0 0 0 rgba(74,222,128,0); }
+  50%      { box-shadow: 0 0 12px rgba(74,222,128,0.5); }
+}
+
+/* ── 명예의전당 버튼 ── */
+.forge-hof-btn {
+  padding: 6px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; border: 1px solid rgba(251,191,36,0.3);
+  background: rgba(251,191,36,0.07); color: #fbbf24;
+  transition: all 0.2s; font-family: 'Noto Sans KR', sans-serif;
+}
+.forge-hof-btn:hover { background: rgba(251,191,36,0.14); }
+
+/* ── 출석 토스트 ── */
+.forge-attend-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,20,10,0.95); border: 1px solid rgba(74,222,128,0.4);
+  color: #4ade80; padding: 12px 24px; border-radius: 14px; font-size: 0.88rem; font-weight: 600;
+  z-index: 9999; backdrop-filter: blur(10px);
+  animation: forge-toast-in 0.3s ease, forge-toast-out 0.3s ease 3.6s forwards;
+  white-space: nowrap;
+}
+@keyframes forge-toast-in  { from { opacity:0; transform: translateX(-50%) translateY(16px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+@keyframes forge-toast-out { to   { opacity:0; transform: translateX(-50%) translateY(16px); } }
+
+/* ── 업적 팝업 ── */
+.forge-achiev-popup {
+  position: fixed; bottom: 90px; right: 28px;
+  background: rgba(10,10,25,0.97); border: 1px solid rgba(251,191,36,0.5);
+  border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+  z-index: 9999; max-width: 300px; backdrop-filter: blur(12px);
+  animation: forge-achiev-in 0.4s cubic-bezier(0.175,0.885,0.32,1.275), forge-toast-out 0.3s ease 3.1s forwards;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(251,191,36,0.15);
+}
+@keyframes forge-achiev-in { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
+.forge-achiev-icon  { font-size: 2.2rem; flex-shrink: 0; }
+.forge-achiev-title { font-size: 0.65rem; color: #fbbf24; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.forge-achiev-name  { font-size: 0.9rem; font-weight: 700; color: #f4f4f5; }
+.forge-achiev-desc  { font-size: 0.75rem; color: #71717a; }
+
+/* ── 모달 오버레이 ── */
+.forge-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px); z-index: 9998;
+  display: flex; align-items: center; justify-content: center;
+  animation: forge-overlay-in 0.2s ease;
+}
+@keyframes forge-overlay-in { from { opacity:0; } to { opacity:1; } }
+
+.forge-modal {
+  background: rgba(8,8,20,0.99); border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 20px; padding: 28px; width: 480px; max-width: 95vw; max-height: 80vh;
+  display: flex; flex-direction: column; gap: 16px; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  animation: forge-modal-in 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes forge-modal-in { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
+
+.forge-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 1.1rem; font-weight: 700; color: #fbbf24;
+}
+.forge-modal-close {
+  background: rgba(255,255,255,0.06); border: none; color: #71717a;
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.9rem;
+  transition: all 0.15s;
+}
+.forge-modal-close:hover { background: rgba(255,255,255,0.12); color: #f4f4f5; }
+
+.forge-hof-my {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.15);
+  border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; color: #a1a1aa;
+}
+.forge-hof-list { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.forge-hof-list::-webkit-scrollbar { width: 3px; }
+.forge-hof-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+.forge-hof-empty { text-align: center; color: #3f3f46; padding: 20px; font-size: 0.85rem; }
+
+.forge-hof-row {
+  display: grid; grid-template-columns: 36px 1fr 1fr 48px;
+  align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.85rem; transition: background 0.15s;
+}
+.forge-hof-row.rank-top { background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.15); }
+.forge-hof-row:hover { background: rgba(255,255,255,0.04); }
+.forge-hof-rank   { text-align: center; }
+.forge-hof-nick   { font-weight: 600; color: #d4d4d8; }
+.forge-hof-weapon { font-size: 0.78rem; text-align: center; }
+.forge-hof-level  { text-align: right; font-weight: 800; font-family: 'Cinzel', serif; }
+
+/* ── 판매 버튼 ── */
+.forge-sell-btn {
+  background: rgba(74,222,128,0.1) !important;
+  border-color: rgba(74,222,128,0.3) !important;
+  color: #4ade80 !important;
+}
+.forge-sell-btn:hover { background: rgba(74,222,128,0.2) !important; }
+.forge-sell-item { border-color: rgba(74,222,128,0.15); background: rgba(74,222,128,0.03); }
+
+/* ── 도감 모달 ── */
+.forge-codex-modal { width: 680px; max-width: 96vw; }
+
+.forge-codex-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 65vh;
+  padding: 4px 2px;
+}
+.forge-codex-grid::-webkit-scrollbar { width: 3px; }
+.forge-codex-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+
+.forge-codex-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 6px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  text-align: center; transition: transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+}
+.forge-codex-card.unlocked:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+.forge-codex-card.locked {
+  filter: grayscale(1); opacity: 0.35;
+}
+.forge-codex-emoji {
+  font-size: 1.6rem; line-height: 1;
+  transition: filter 0.3s;
+}
+.forge-codex-card.locked .forge-codex-emoji {
+  filter: blur(2px) brightness(0.3) !important;
+}
+.forge-codex-level { font-size: 0.75rem; font-weight: 800; font-family: 'Cinzel', serif; }
+.forge-codex-name  { font-size: 0.6rem; color: #52525b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.forge-codex-grade { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; }
+.forge-codex-card.unlocked { cursor: pointer; }
+.forge-codex-card.unlocked:hover { transform: translateY(-3px) scale(1.04); }
+
+/* 도감 카드 내 SVG 크기 */
+.forge-codex-emoji svg { width: 40px !important; height: 50px !important; }
+.forge-codex-card.locked .forge-codex-emoji svg {
+  filter: brightness(0.15) blur(1px) !important;
+}
+
+/* ── 도감 상세보기 패널 ── */
+.forge-codex-detail {
+  display: flex; align-items: center; gap: 20px;
+  padding: 16px; border-radius: 14px; margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  animation: forge-modal-in 0.25s ease;
+}
+.forge-codex-detail-close {
+  position: absolute; top: 8px; left: 8px;
+  font-size: 0.75rem; color: #52525b; cursor: pointer;
+  padding: 4px 8px; border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.forge-codex-detail-close:hover { color: #a1a1aa; background: rgba(255,255,255,0.06); }
+.forge-codex-detail { position: relative; padding-top: 28px; }
+.forge-codex-detail-info { display: flex; flex-direction: column; gap: 6px; }
+
+/* ── 초기화 모달 ── */
+.forge-reset-modal { max-width: 400px; gap: 20px; }
+.forge-reset-confirm-btn {
+  width: 100%; padding: 14px; border-radius: 12px;
+  border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.1);
+  color: #f87171; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; font-family: 'Noto Sans KR', sans-serif;
+}
+.forge-reset-confirm-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.6); }
+.forge-reset-cancel-btn {
+  width: 100%; padding: 10px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+  color: #71717a; font-size: 0.85rem; cursor: pointer;
+  transition: all 0.15s; font-family: 'Noto Sans KR', sans-serif;
+}
+.forge-reset-cancel-btn:hover { background: rgba(255,255,255,0.06); color: #a1a1aa; }
