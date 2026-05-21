@@ -19,6 +19,8 @@ import DonationPage from "./pages/donation/DonationPage";
 import DonationSuccessPage from "./pages/donation/DonationSuccessPage";
 import DonationHistoryPage from "./pages/donation/DonationHistoryPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import TypeRacerPage from "./pages/play/TypeRacerPage";
+import HackerModePage from "./pages/play/HackerModePage";
 
 
 import Header from "./components/Header";
@@ -149,6 +151,8 @@ const AppContent = () => {
           <Route path="/donation" element={<DonationPage />} />
           <Route path="/donation/success" element={<DonationSuccessPage />} />
           <Route path="/donation/history" element={<DonationHistoryPage />} />
+          <Route path="/play/typeracer" element={<TypeRacerPage />} />
+          <Route path="/play/hackermode" element={<HackerModePage />} />
           {/* 404 캐치올 — 모든 미등록 경로 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

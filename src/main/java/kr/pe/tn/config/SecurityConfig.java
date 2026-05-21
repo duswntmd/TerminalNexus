@@ -150,8 +150,14 @@ public class SecurityConfig {
                                                                                                                      // 공개
                                                 .requestMatchers("/api/donation/**").authenticated() // 후원 API (로그인 필수)
                                                 .requestMatchers("/api/fruits/**").authenticated() // 과일 AI API (로그인 필수)
-                                                .requestMatchers(HttpMethod.GET, "/api/forge/leaderboard").permitAll() // 강화 랭킹 공개
+                                                .requestMatchers(HttpMethod.GET, "/api/forge/leaderboard").permitAll() // 강화
+                                                                                                                       // 랭킹
+                                                                                                                       // 공개
                                                 .requestMatchers("/api/forge/**").authenticated() // 강화 게임 API (로그인 필수)
+                                                .requestMatchers(HttpMethod.GET, "/api/typeracer/leaderboard")
+                                                .permitAll() // 타자 게임 리더보드 공개
+                                                .requestMatchers("/api/typeracer/**").authenticated() // 타자 게임 API (로그인
+                                                                                                      // 필수)
                                                 .requestMatchers("/api/chat/**").authenticated() // 채팅 API (로그인 필수)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
                                                 .anyRequest().authenticated());

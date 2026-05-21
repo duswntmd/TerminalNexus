@@ -910,14 +910,28 @@ const ForgePage = () => {
         </div>
       )}
       {/* ── 사냥터 모달 ── */}
-      {showHunting && (
-        <HuntingGround 
-          totalAtk={Math.floor(calcAtk(equip?.baseAtk || 5, equip?.level || 0)) + (equip?.potentialAtkBonus || 0)} 
-          onReward={(amount) => setGold(g => g + amount)} 
-          pushLog={pushLog}
-          onClose={() => setShowHunting(false)} 
-        />
-      )}
+      {showHunting && (() => {
+        // 잠재 옵션에서 치명타 확률 / 치명타 피해 / 방어율 무시 수치 파싱
+        let critChance = 0, critDmg = 0, armorPen = 0;
+        (equip?.potentialOptions || []).forEach(opt => {
+          const match = opt.match(/(\d+)%/);
+          const val = match ? parseInt(match[1]) : 0;
+          if (opt.startsWith('치명타 확률'))    critChance += val;
+          else if (opt.startsWith('치명타 피해')) critDmg    += val;
+          else if (opt.startsWith('방어율 무시')) armorPen   += val;
+        });
+        return (
+          <HuntingGround
+            totalAtk={Math.floor(calcAtk(equip?.baseAtk || 5, equip?.level || 0)) + (equip?.potentialAtkBonus || 0)}
+            critChance={critChance}
+            critDmg={critDmg}
+            armorPen={armorPen}
+            onReward={(amount) => setGold(g => g + amount)}
+            pushLog={pushLog}
+            onClose={() => setShowHunting(false)}
+          />
+        );
+      })()}
     </>
   );
 };

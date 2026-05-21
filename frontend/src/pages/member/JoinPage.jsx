@@ -178,16 +178,25 @@ const JoinPage = () => {
         <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1, py: 8 }}>
           {/* 헤더 */}
           <Box textAlign="center" mb={4}>
-            <Typography
+            <Box
               onClick={() => navigate('/')}
               sx={{
-                fontSize: '1.4rem', fontWeight: 900, color: '#fff',
-                cursor: 'pointer', mb: 1, letterSpacing: '-0.5px',
-                '&:hover': { color: '#a5b4fc' }, transition: 'color 0.2s',
+                display: 'inline-flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                mb: 1.5,
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'scale(1.05)' },
               }}
             >
-              TN
-            </Typography>
+              <Box
+                component="img"
+                src="/favicon-192.png"
+                alt="TerminalNexus Logo"
+                sx={{ height: 36, width: 'auto', borderRadius: '6px' }}
+              />
+            </Box>
             <Typography
               variant="h4" fontWeight={800}
               sx={{ color: '#f4f4f5', letterSpacing: '-1.5px', mb: 1, fontSize: { xs: '1.8rem', md: '2rem' } }}
