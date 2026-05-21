@@ -1,13 +1,77 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TerminalNexus</title>
+
+    <!-- ─── 파비콘 (구글 검색결과 아이콘) ───────────────────── -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="icon" type="image/png" sizes="32x32"  href="/favicon-32.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-192.png" />
+
+    <!-- ─── 기본 SEO 메타태그 ─────────────────────────────────── -->
+    <title>TerminalNexus | 터미널 컨셉에 온갖 기능을 다 때려박은 개발자 종합 놀이터</title>
+    <meta name="description"
+      content="진짜 리눅스보다 더 재밌다! 터미널 테마 속에 미니게임, 강화 시뮬레이터, 각종 개발용 유틸리티까지 재미있고 신박한 온갖 기능들을 짬뽕해 놓은 개발자 전용 토이 스페이스." />
+    <meta name="keywords"
+      content="개발자 놀이터, 터미널 넥서스, TerminalNexus, 미니게임, 큐브 강화 시뮬레이터, 토이 프로젝트, 웹 장난감, 개발자 감성, 터미널 테마, 종합 기능 짬뽕" />
+    <meta name="author" content="TerminalNexus" />
+    <link rel="canonical" href="https://tnhub.kr/" />
+
+    <!-- ─── Open Graph (카카오·슬랙·페이스북 공유 미리보기) ──── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://tnhub.kr/" />
+    <meta property="og:site_name"   content="TerminalNexus" />
+    <meta property="og:title"       content="TerminalNexus | 터미널 컨셉에 온갖 기능을 다 때려박은 개발자 종합 놀이터" />
+    <meta property="og:description" content="진짜 리눅스보다 더 재밌다! 미니게임부터 강화 시뮬레이터까지 온갖 기능을 다 때려박은 개발자 놀이터." />
+    <meta property="og:image"       content="https://tnhub.kr/og-image.png" />
+    <meta property="og:locale"      content="ko_KR" />
+
+    <!-- ─── Twitter / X 카드 ──────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="TerminalNexus | 터미널 컨셉에 온갖 기능을 다 때려박은 개발자 종합 놀이터" />
+    <meta name="twitter:description" content="진짜 리눅스보다 더 재밌다! 미니게임부터 강화 시뮬레이터까지 온갖 기능을 다 때려박은 개발자 놀이터." />
+    <meta name="twitter:image"       content="https://tnhub.kr/og-image.png" />
+
+    <!-- ─── Schema.org 구조화 데이터 (구글 검색결과 사이트명 표시) -->
+    <!-- 이 부분이 구글에 "이 사이트 이름은 TerminalNexus 입니다" 를 알려줌 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TerminalNexus",
+      "alternateName": "터미널 넥서스",
+      "url": "https://tnhub.kr/",
+      "description": "진짜 리눅스보다 더 재밌다! 터미널 테마 속에 미니게임, 강화 시뮬레이터까지 온갖 기능을 짬뽕한 개발자 종합 놀이터.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://tnhub.kr/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- ─── Organization 구조화 데이터 (로고 이미지 → 구글에 전달) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "TerminalNexus",
+      "url": "https://tnhub.kr/",
+      "logo": "https://tnhub.kr/favicon-192.png"
+    }
+    </script>
+
+    <!-- ─── 구글 Search Console 인증 (발급받은 코드로 교체) ──── -->
+    <!-- <meta name="google-site-verification" content="여기에_인증코드_입력" /> -->
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+

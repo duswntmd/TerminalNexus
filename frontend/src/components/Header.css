@@ -49,12 +49,20 @@
 }
 
 .logo a {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #1a1a1a; /* Dark text for logo */
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  font-family: 'Inter', system-ui, sans-serif;
-  letter-spacing: -0.5px;
+}
+
+.logo-img {
+  height: 36px;
+  width: auto;
+  border-radius: 6px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
 }
 
 .nav ul {

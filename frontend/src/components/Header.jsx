@@ -57,7 +57,9 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="logo">
-          <Link to="/">TN</Link>
+          <Link to="/">
+            <img src="/favicon-192.png" alt="TerminalNexus Logo" className="logo-img" />
+          </Link>
         </div>
         <nav className="nav">
           <ul>
@@ -84,6 +86,8 @@ const Header = () => {
             {/* 공통 메뉴: 채팅, 강화, 자유게시판 - 항상 표시 */}
             <li><Link to="/chat">💬 채팅</Link></li>
             <li><Link to="/forge">⚒️ 강화</Link></li>
+            <li><Link to="/play/typeracer">{t('header.typeracer')}</Link></li>
+            <li><Link to="/play/hackermode">{t('header.hackermode')}</Link></li>
             <li><Link to="/freeboard">{t('header.freeboard')}</Link></li>
             
             {/* 언어 전환 */}

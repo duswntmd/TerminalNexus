@@ -633,9 +633,9 @@ const MainPage = () => {
                   lineHeight: 1.15,
                 }}
               >
-                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>코드 하나로</span>
-                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>연결되는 무한한</span>
-                <span style={{ background: 'linear-gradient(135deg,#818cf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>터미널 스페이스</span>
+                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>터미널 컨셉에</span>
+                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>온갖 기능을 때려박은</span>
+                <span style={{ background: 'linear-gradient(135deg,#818cf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>개발자 종합 놀이터</span>
               </Typography>
 
               <Typography
@@ -702,9 +702,9 @@ const MainPage = () => {
                 divider={<Box sx={{ width: '1px', bgcolor: 'rgba(255,255,255,0.08)', alignSelf: 'stretch' }} />}
               >
                 {[
-                  { label: '활성 터미널', value: '1,200+' },
-                  { label: '개발자', value: '5K+' },
-                  { label: '가동률', value: '99.9%' },
+                  { label: t('main.stat_1_label'), value: t('main.stat_1_val') },
+                  { label: t('main.stat_2_label'), value: t('main.stat_2_val') },
+                  { label: t('main.stat_3_label'), value: t('main.stat_3_val') },
                 ].map((stat) => (
                   <Box key={stat.label}>
                     <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: { xs: '1.1rem', md: '1.3rem' }, lineHeight: 1 }}>

@@ -101,17 +101,25 @@ function LoginPage() {
         <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1, py: 8 }}>
           {/* 로고 */}
           <Box textAlign="center" mb={5}>
-            <Typography
+            <Box
               onClick={() => navigate('/')}
               sx={{
-                fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px',
-                color: '#fff', cursor: 'pointer', mb: 1,
-                '&:hover': { color: '#a5b4fc' },
-                transition: 'color 0.2s',
+                display: 'inline-flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                mb: 1.5,
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'scale(1.05)' },
               }}
             >
-              TN
-            </Typography>
+              <Box
+                component="img"
+                src="/favicon-192.png"
+                alt="TerminalNexus Logo"
+                sx={{ height: 36, width: 'auto', borderRadius: '6px' }}
+              />
+            </Box>
             <Typography
               variant="h4" fontWeight={800}
               sx={{

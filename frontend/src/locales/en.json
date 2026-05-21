@@ -6,11 +6,19 @@
     "mypage": "My Page",
     "freeboard": "Free Board",
     "guide": "Guide",
-    "admin_users": "User Management"
+    "admin_users": "User Management",
+    "typeracer": "⌨️ TypeRacer",
+    "hackermode": "📟 Hacker Mode"
   },
   "main": {
-    "badge": "TerminalNexus v2.0 is Live",
-    "hero_desc": "Experience a perfect Linux environment right in your browser without local setup.\nStart instantly in your private sandbox for build, test, and deployment.",
+    "badge": "👾 Developer's Toy Sandbox",
+    "hero_desc": "It's not a real Linux terminal, but it's way more fun!\nForge RPG, Fruit AI, chat, and mini-games\nare packed into one terminal-themed sandbox for bored developers.",
+    "stat_1_label": "🍎 Fruit AI Sweetness",
+    "stat_1_val": "100%",
+    "stat_2_label": "⚔️ Max Upgrade Tier",
+    "stat_2_val": "LEGEND",
+    "stat_3_label": "💬 Live Anonymous Chat",
+    "stat_3_val": "24/7",
     "start_free": "Start for Free",
     "view_docs": "View Docs",
     "cta_title": "From Idea to Code.\nStart Right Now.",

@@ -6,11 +6,19 @@
     "mypage": "마이페이지",
     "freeboard": "자유게시판",
     "guide": "이용안내",
-    "admin_users": "회원 관리"
+    "admin_users": "회원 관리",
+    "typeracer": "⌨️ 타자 게임",
+    "hackermode": "📟 해커 모드"
   },
   "main": {
-    "badge": "TerminalNexus v2.0 is Live",
-    "hero_desc": "복잡한 로컬 세팅 없이 브라우저에서 완벽한 리눅스 환경을 제공합니다.\n빌드, 테스트, 배포 프라이빗 샌드박스에서 즉시 시작하세요.",
+    "badge": "👾 개발자 전용 짬뽕 장난감 상자",
+    "hero_desc": "진짜 리눅스 터미널은 아니지만 훨씬 더 재밌습니다!\n강화의 성소(FORGE), 과일 AI, 실시간 채팅, 미니게임 등\n심심한 개발자들을 위한 온갖 짬뽕 기능들이 한곳에 준비되어 있습니다.",
+    "stat_1_label": "🍎 과일 AI 당도",
+    "stat_1_val": "100%",
+    "stat_2_label": "⚔️ 강화 최고 등급",
+    "stat_2_val": "LEGEND",
+    "stat_3_label": "💬 실시간 익명 채팅",
+    "stat_3_val": "24시간",
     "start_free": "무료로 시작하기",
     "view_docs": "문서 보기",
     "cta_title": "아이디어를 코드로.\n지금 바로 시작하세요.",
