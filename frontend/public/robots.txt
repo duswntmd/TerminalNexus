@@ -25,3 +25,8 @@ User-agent: Bingbot
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+
+User-agent: Yeti
+Allow: /
+Disallow: /admin/
+Disallow: /api/
