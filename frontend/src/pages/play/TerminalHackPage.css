@@ -1,0 +1,298 @@
+/* TerminalHackPage.css */
+
+.terminal-hack-wrapper {
+  background-color: #050a05;
+  color: #1aff1a;
+  font-family: "Courier New", Courier, monospace;
+  min-height: 85vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  text-shadow: 0 0 4px rgba(26, 255, 26, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* CRT 스캔라인 효과 */
+.terminal-hack-wrapper::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 4px, 3px 100%;
+  z-index: 99;
+  pointer-events: none;
+}
+
+/* CRT 모니터 불빛 잔상 효과 */
+.crt-screen {
+  width: 100%;
+  max-width: 1000px;
+  background-color: #070f07;
+  border: 4px solid #1a5c1a;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 25px rgba(26, 255, 26, 0.25);
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+/* CRT 화면 지지직 거리는 글리치 및 스크롤 감성 */
+.crt-screen-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 헤더 & 정보 영역 */
+.hack-header {
+  border-bottom: 2px solid #1a5c1a;
+  padding-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hack-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.hack-attempts {
+  font-size: 1.1rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.attempt-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #1aff1a;
+  box-shadow: 0 0 6px #1aff1a;
+}
+
+.attempt-indicator.spent {
+  background-color: #1a5c1a;
+  box-shadow: none;
+}
+
+/* 난이도 셀렉터 */
+.difficulty-selector {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.diff-btn {
+  background: transparent;
+  border: 1px solid #1aff1a;
+  color: #1aff1a;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.diff-btn:hover {
+  background-color: rgba(26, 255, 26, 0.15);
+  box-shadow: 0 0 10px rgba(26, 255, 26, 0.3);
+}
+
+.diff-btn.active {
+  background-color: #1aff1a;
+  color: #050a05;
+  font-weight: bold;
+  box-shadow: 0 0 12px #1aff1a;
+}
+
+/* 메인 게임 콘텐트 그리드 */
+.hack-body {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 25px;
+  min-height: 420px;
+}
+
+@media (max-width: 768px) {
+  .hack-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 단어 매트릭스 그리드 */
+.word-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+@media (max-width: 500px) {
+  .word-matrix {
+    grid-template-columns: 1fr;
+  }
+}
+
+.matrix-row {
+  display: flex;
+  white-space: pre;
+}
+
+.hex-address {
+  color: #1a5c1a;
+  margin-right: 12px;
+}
+
+.char-span {
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.char-span:hover {
+  background-color: #1aff1a;
+  color: #050a05;
+}
+
+.char-span.highlighted {
+  background-color: #1aff1a;
+  color: #050a05;
+}
+
+/* 우측 콘솔 로그 */
+.console-log {
+  border-left: 2px dashed #1a5c1a;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.95rem;
+  overflow-y: auto;
+  max-height: 420px;
+  box-sizing: border-box;
+}
+
+.log-entry {
+  animation: logFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes logFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.log-entry.dud {
+  color: #ff9900;
+  text-shadow: 0 0 4px rgba(255, 153, 0, 0.4);
+}
+
+.log-entry.replenish {
+  color: #00ffff;
+  text-shadow: 0 0 4px rgba(0, 255, 255, 0.4);
+}
+
+.log-entry.error {
+  color: #ff3333;
+  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+}
+
+.log-entry.success {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* 락아웃 및 성공 화면 오버레이 */
+.game-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+  border: 2px dashed #1aff1a;
+  border-radius: 8px;
+  background-color: rgba(7, 15, 7, 0.95);
+  margin-top: 10px;
+}
+
+.overlay-title {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+.overlay-title.success {
+  color: #1aff1a;
+}
+
+.overlay-title.denied {
+  color: #ff3333;
+  text-shadow: 0 0 8px rgba(255, 51, 51, 0.6);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.reset-btn {
+  background-color: transparent;
+  border: 2px solid #1aff1a;
+  color: #1aff1a;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: inherit;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.reset-btn:hover {
+  background-color: #1aff1a;
+  color: #050a05;
+  box-shadow: 0 0 15px #1aff1a;
+}
+
+.reset-btn.denied-btn {
+  border-color: #ff3333;
+  color: #ff3333;
+  text-shadow: 0 0 4px rgba(255, 51, 51, 0.5);
+}
+
+.reset-btn.denied-btn:hover {
+  background-color: #ff3333;
+  color: #ffffff;
+  box-shadow: 0 0 15px #ff3333;
+}
+
+/* 하단 도움말 안내 */
+.hack-footer {
+  margin-top: 20px;
+  border-top: 1px solid #1a5c1a;
+  padding-top: 15px;
+  font-size: 0.85rem;
+  color: #1a8c1a;
+  text-align: center;
+  width: 100%;
+}
