@@ -11,6 +11,7 @@ const Header = () => {
   const { isLoggedIn, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // 모바일 메뉴 토글 상태
 
   // 사용자 정보 가져오기
   useEffect(() => {
@@ -47,48 +48,67 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     setIsAdmin(false);
+    setIsMenuOpen(false);
   };
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    setIsMenuOpen(false);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
     <header className="header">
       <div className="header-container">
         <div className="logo">
-          <Link to="/">
+          <Link to="/" onClick={closeMenu}>
             <img src="/favicon-192.png" alt="TerminalNexus Logo" className="logo-img" />
           </Link>
         </div>
-        <nav className="nav">
+
+        {/* 모바일 햄버거 토글 버튼 */}
+        <button
+          className={`menu-toggle-btn ${isMenuOpen ? 'open' : ''}`}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle navigation"
+        >
+          <span className="hamburger-bar"></span>
+          <span className="hamburger-bar"></span>
+          <span className="hamburger-bar"></span>
+        </button>
+
+        <nav className={`nav ${isMenuOpen ? 'open' : ''}`}>
           <ul>
             {/* 공통 메뉴: 이용안내 - 항상 표시 */}
-            <li><Link to="/guide">{t('header.guide')}</Link></li>
-            <li><Link to="/fruit-ai">🍎 과일 AI</Link></li>
+            <li><Link to="/guide" onClick={closeMenu}>{t('header.guide')}</Link></li>
+            <li><Link to="/fruit-ai" onClick={closeMenu}>🍎 과일 AI</Link></li>
             
             {/* 조건부 메뉴: 로그인 상태에 따라 다르게 표시 */}
             {isLoggedIn ? (
               <>
-                <li><Link to="/user">{t('header.mypage')}</Link></li>
+                <li><Link to="/user" onClick={closeMenu}>{t('header.mypage')}</Link></li>
                 <li><button onClick={handleLogout} className="logout-btn">{t('header.logout')}</button></li>
                 {isAdmin && (
-                  <li><Link to="/admin/users" className="admin-link">👑 {t('header.admin_users')}</Link></li>
+                  <li><Link to="/admin/users" onClick={closeMenu} className="admin-link">👑 {t('header.admin_users')}</Link></li>
                 )}
               </>
             ) : (
               <>
-                <li><Link to="/join">{t('header.signup')}</Link></li>
-                <li><Link to="/login">{t('header.login')}</Link></li>
+                <li><Link to="/join" onClick={closeMenu}>{t('header.signup')}</Link></li>
+                <li><Link to="/login" onClick={closeMenu}>{t('header.login')}</Link></li>
               </>
             )}
             
             {/* 공통 메뉴: 채팅, 강화, 자유게시판 - 항상 표시 */}
-            <li><Link to="/chat">💬 채팅</Link></li>
-            <li><Link to="/forge">⚒️ 강화</Link></li>
-            <li><Link to="/play/typeracer">{t('header.typeracer')}</Link></li>
-            <li><Link to="/play/hackermode">{t('header.hackermode')}</Link></li>
-            <li><Link to="/freeboard">{t('header.freeboard')}</Link></li>
+            <li><Link to="/chat" onClick={closeMenu}>💬 채팅</Link></li>
+            <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
+            <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
+            <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>
+            <li><Link to="/play/terminalhack" onClick={closeMenu}>{t('header.terminalhack')}</Link></li>
+            <li><Link to="/freeboard" onClick={closeMenu}>{t('header.freeboard')}</Link></li>
             
             {/* 언어 전환 */}
             <li>
