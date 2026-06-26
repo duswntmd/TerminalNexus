@@ -543,8 +543,658 @@ const LottoSection = () => {
 
 
 /* ──────────────────────────────────────────────
-   메인 페이지
-────────────────────────────────────────────── */
+   날씨 기상 코드 정보 매퍼
+   ────────────────────────────────────────────── */
+const getWeatherDetails = (code) => {
+  switch (code) {
+    case 0:
+      return { text: '맑음', icon: '☀️', color: '#f39c12' };
+    case 1:
+      return { text: '대체로 맑음', icon: '🌤️', color: '#f1c40f' };
+    case 2:
+      return { text: '구름 조금', icon: '⛅', color: '#bdc3c7' };
+    case 3:
+      return { text: '흐림', icon: '☁️', color: '#95a5a6' };
+    case 45:
+    case 48:
+      return { text: '안개', icon: '🌫️', color: '#7f8c8d' };
+    case 51:
+    case 53:
+    case 55:
+      return { text: '이슬비', icon: '🌦️', color: '#3498db' };
+    case 61:
+    case 63:
+    case 65:
+      return { text: '비', icon: '🌧️', color: '#2980b9' };
+    case 71:
+    case 73:
+    case 75:
+    case 77:
+      return { text: '눈', icon: '❄️', color: '#ecf0f1' };
+    case 80:
+    case 81:
+    case 82:
+      return { text: '소나기', icon: '🌧️', color: '#2980b9' };
+    case 95:
+    case 96:
+    case 99:
+      return { text: '뇌우', icon: '⚡', color: '#f39c12' };
+    default:
+      return { text: '맑음', icon: '☀️', color: '#f39c12' };
+  }
+};
+
+/* ──────────────────────────────────────────────
+   날씨 섹션 (구글 다크모드 날씨 스타일 클론)
+   ────────────────────────────────────────────── */
+const WeatherSection = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [locationName, setLocationName] = useState('위치 정보 확인 중...');
+  const [weatherData, setWeatherData] = useState(null);
+  const [activeTab, setActiveTab] = useState('temp'); // 'temp' | 'precip' | 'wind'
+
+  // 단계별 실시간 로딩 진행 상태
+  const [loadingStep, setLoadingStep] = useState(1);
+  const [loadingStatus, setLoadingStatus] = useState('GPS 위치 권한 확인 중...');
+  const [loadingSubText, setLoadingSubText] = useState('더 정밀한 지역 날씨를 제공하기 위해 브라우저의 위치 권한 허용 팝업을 확인해 주세요.');
+  const [gpsCountdown, setGpsCountdown] = useState(5);
+
+  const fetchWeather = async (lat = 37.5665, lon = 126.9780, isFallback = false, showLoading = true) => {
+    if (showLoading) setLoading(true);
+    setError(null);
+    try {
+      if (showLoading) {
+        setLoadingStep(3);
+        setLoadingStatus('지역 구역 주소 분석 중...');
+        setLoadingSubText('위도 및 경도 좌표를 기반으로 한글 행정구역 명칭(시/구/동)을 분석하고 있습니다.');
+      }
+
+      if (!isFallback) {
+        try {
+          const geoRes = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ko`
+          );
+          if (geoRes.ok) {
+            const geoData = await geoRes.json();
+            const principal = geoData.principalSubdivision || '';
+            const city = geoData.city || '';
+            const locality = geoData.locality || '';
+            let locName = '';
+            if (locality) {
+              locName = `${city} ${locality}`.trim();
+            } else if (city) {
+              locName = city;
+            } else {
+              locName = principal || '현재 위치';
+            }
+            setLocationName(locName || '현재 위치');
+          }
+        } catch (e) {
+          console.error('Reverse geocoding failed', e);
+        }
+      } else {
+        setLocationName('서울특별시 중구 (기본값)');
+      }
+
+      if (showLoading) {
+        setLoadingStep(4);
+        setLoadingStatus('실시간 기상 데이터 수신 중...');
+        setLoadingSubText('기상청 관측 및 Open-Meteo 인공위성 서버로부터 온도, 풍속, 예보 데이터를 빌드 중입니다.');
+      }
+
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+      const weatherRes = await fetch(weatherUrl);
+      if (!weatherRes.ok) throw new Error('날씨 정보를 가져오는 데 실패했습니다.');
+      const wData = await weatherRes.json();
+
+      setWeatherData(wData);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || '날씨 정보를 불러오는 과정에서 오류가 발생했습니다.');
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
+  const fetchIpLocation = async () => {
+    try {
+      const res = await fetch('https://freeipapi.com/api/json');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.latitude && data.longitude) {
+          return { lat: data.latitude, lon: data.longitude };
+        }
+      }
+    } catch (e) {
+      console.error('IP Geolocation failed', e);
+    }
+    return null;
+  };
+
+  const getPosition = async () => {
+    setLoading(true);
+    setLoadingStep(1);
+    setLoadingStatus('GPS 위치 권한 확인 중...');
+    setLoadingSubText('정밀한 지역 날씨 정보를 위해 브라우저 상단/좌측의 위치 권한 허용 팝업을 확인해 주세요.');
+    setGpsCountdown(5);
+
+    let countdownVal = 5;
+    let timerCleared = false;
+
+    const timer = setInterval(() => {
+      countdownVal -= 1;
+      if (countdownVal <= 0) {
+        clearInterval(timer);
+        timerCleared = true;
+        triggerIpFallback('GPS 응답 제한시간(5초) 초과');
+      } else {
+        setGpsCountdown(countdownVal);
+      }
+    }, 1000);
+
+    const triggerIpFallback = async (reason) => {
+      if (timerCleared) return;
+      clearInterval(timer);
+      timerCleared = true;
+
+      console.warn(`GPS Geolocation bypassed: ${reason}. IP fallback starting.`);
+      setLoadingStep(2);
+      setLoadingStatus('네트워크 IP 위치 검색 중...');
+      setLoadingSubText('GPS 승인이 거부되었거나 시간 초과되었습니다. 네트워크 IP 주소 기반으로 위치를 검색합니다.');
+
+      const ipPos = await fetchIpLocation();
+      let currentLat = 37.5665;
+      let currentLon = 126.9780;
+      let isFallback = true;
+
+      if (ipPos) {
+        currentLat = ipPos.lat;
+        currentLon = ipPos.lon;
+        isFallback = false;
+      }
+      await fetchWeather(currentLat, currentLon, isFallback, true);
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          if (timerCleared) return;
+          clearInterval(timer);
+          timerCleared = true;
+
+          const { latitude, longitude } = position.coords;
+          setLoadingStep(2);
+          setLoadingStatus('기기 GPS 위치 좌표 분석 중...');
+          setLoadingSubText('GPS 위경도 좌표 획득에 성공했습니다. 날씨 데이터 매핑을 준비합니다.');
+          await fetchWeather(latitude, longitude, false, true);
+        },
+        async (err) => {
+          triggerIpFallback(err.message || '사용자가 GPS 권한 거절');
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      triggerIpFallback('브라우저 Geolocation 기능 미지원');
+    }
+  };
+
+  useEffect(() => {
+    getPosition();
+  }, []);
+
+  if (error && !weatherData) {
+    return (
+      <Box sx={{
+        height: '100dvh', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', bgcolor: '#000',
+        scrollSnapAlign: 'start', scrollSnapStop: 'always',
+      }}>
+        <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>
+        <Button variant="outlined" onClick={getPosition} sx={{ color: '#fff', borderColor: '#fff' }}>다시 시도</Button>
+      </Box>
+    );
+  }
+
+  if (loading || !weatherData) {
+    // 진행바 퍼센트 계산
+    const progressPercent = loadingStep * 25;
+
+    return (
+      <Box sx={{
+        height: '100dvh', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', bgcolor: '#000',
+        scrollSnapAlign: 'start', scrollSnapStop: 'always',
+      }}>
+        <Box sx={{
+          width: '100%',
+          maxWidth: 1400,
+          p: { xs: 3, md: 5 },
+          borderRadius: '20px',
+          bgcolor: 'rgba(30,31,34,0.95)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '450px'
+        }}>
+          {/* 뒤에 번지는 은은한 그라데이션 백그라운드 글로우 */}
+          <Box sx={{
+            position: 'absolute',
+            width: '180px',
+            height: '180px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
+            top: '20%',
+            filter: 'blur(20px)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+
+          {/* 날씨 로딩 스피너 및 정보 안내 */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2.5, mb: 4, zIndex: 2, width: '100%' }}>
+            {/* 회전 + 맥박 글로우 효과가 추가된 이모지 */}
+            <Box className="loading-weather-icon-premium" sx={{ 
+              fontSize: '4.2rem', 
+              animation: 'spin-slow 8s linear infinite, pulse-glow 2.5s ease-in-out infinite', 
+              userSelect: 'none',
+              mb: 1
+            }}>
+              🌤️
+            </Box>
+
+            {/* 단계별 상태 헤드라인 (key가 바뀔 때 페이드인 적용) */}
+            <Typography 
+              key={loadingStep}
+              variant="h6" 
+              sx={{ 
+                color: '#fff', 
+                fontWeight: 700, 
+                letterSpacing: '-0.5px', 
+                textAlign: 'center',
+                animation: 'fade-in-up 0.5s ease-out forwards',
+                fontSize: { xs: '1.1rem', md: '1.25rem' }
+              }}
+            >
+              {loadingStatus}
+            </Typography>
+
+            {/* 단계별 상세 안내 텍스트 */}
+            <Typography 
+              key={`sub-${loadingStep}`}
+              sx={{ 
+                color: '#a1a1aa', 
+                fontSize: '0.88rem', 
+                textAlign: 'center', 
+                maxWidth: '480px', 
+                lineHeight: 1.6,
+                minHeight: '45px', // 높이 고정으로 텍스트 변경 시 레이아웃 튀는 것 방지
+                animation: 'fade-in-up 0.6s ease-out forwards'
+              }}
+            >
+              {loadingSubText}
+            </Typography>
+
+            {/* 1단계 GPS 권한 대기 시에만 노출되는 카운트다운 타이머 */}
+            {loadingStep === 1 && (
+              <Typography 
+                sx={{ 
+                  color: '#fb923c', 
+                  fontSize: '0.85rem', 
+                  fontWeight: 600,
+                  animation: 'pulse-blink 1.2s infinite ease-in-out',
+                  mt: -1
+                }}
+              >
+                (대기 시간 단축을 위해 권한을 허용해 주세요. {gpsCountdown}초 후 자동 IP 탐색 전환)
+              </Typography>
+            )}
+
+            {/* 스텝 인디케이터 도트 */}
+            <Stack direction="row" spacing={1.5} sx={{ mt: 1.5, mb: 0.5 }}>
+              {[1, 2, 3, 4].map((stepNum) => {
+                const isActive = stepNum <= loadingStep;
+                const isCurrent = stepNum === loadingStep;
+                return (
+                  <Box 
+                    key={stepNum} 
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      bgcolor: isCurrent ? '#a855f7' : isActive ? 'rgba(168,85,247,0.5)' : 'rgba(255,255,255,0.1)',
+                      boxShadow: isCurrent ? '0 0 10px #a855f7' : 'none',
+                      transition: 'all 0.4s ease',
+                      transform: isCurrent ? 'scale(1.3)' : 'scale(1)'
+                    }}
+                  />
+                );
+              })}
+            </Stack>
+
+            {/* 인터랙티브 프로그레스 바 */}
+            <Box className="loading-bar-container" sx={{ 
+              width: '260px', 
+              height: '6px', 
+              bgcolor: 'rgba(255,255,255,0.06)', 
+              borderRadius: '3px', 
+              overflow: 'hidden', 
+              mt: 1.5,
+              position: 'relative'
+            }}>
+              <Box className="loading-bar-fill-premium" sx={{
+                width: `${progressPercent}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg, #f39c12 0%, #a855f7 50%, #6366f1 100%)',
+                borderRadius: '3px',
+                transition: 'width 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 0 8px rgba(168,85,247,0.6)'
+              }} />
+            </Box>
+          </Box>
+
+          {/* 배경 스켈레톤 레이아웃 힌트 (배경감 조성) */}
+          <Stack spacing={2.5} sx={{ width: '100%', opacity: 0.15, pointerEvents: 'none' }}>
+            <Box sx={{ width: 150, height: 28, bgcolor: 'rgba(255,255,255,0.06)', borderRadius: '4px' }} />
+            <Box sx={{ width: '100%', height: 180, bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '12px' }} />
+          </Stack>
+
+          <style>{`
+            @keyframes spin-slow {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+            @keyframes pulse-glow {
+              0% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(243, 156, 18, 0.3)); }
+              50% { transform: scale(1.08); filter: drop-shadow(0 0 28px rgba(243, 156, 18, 0.65)); }
+              100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(243, 156, 18, 0.3)); }
+            }
+            @keyframes fade-in-up {
+              0% { opacity: 0; transform: translateY(10px); }
+              100% { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes pulse-blink {
+              0% { opacity: 0.4; }
+              50% { opacity: 1; }
+              100% { opacity: 0.4; }
+            }
+          `}</style>
+        </Box>
+      </Box>
+    );
+  }
+
+  const current = weatherData.current;
+  const weatherDetails = getWeatherDetails(current.weather_code);
+
+  const hourly = weatherData.hourly;
+  const hourlyPoints = [];
+  for (let i = 0; i < 24; i += 3) {
+    if (hourly.temperature_2m[i] !== undefined) {
+      hourlyPoints.push({
+        time: `${(i + 9) % 24 === 0 ? '오전' : (i + 9) % 24 < 12 ? '오전' : '오후'} ${(i + 9) % 12 === 0 ? 12 : (i + 9) % 12}시`,
+        temp: Math.round(hourly.temperature_2m[i]),
+        precip: Math.round(hourly.precipitation_probability[i]),
+        wind: Math.round(hourly.wind_speed_10m[i]),
+        code: hourly.weather_code[i]
+      });
+    }
+  }
+
+  const chartValues = hourlyPoints.map(p => {
+    if (activeTab === 'temp') return p.temp;
+    if (activeTab === 'precip') return p.precip;
+    return p.wind;
+  });
+
+  const valMin = Math.min(...chartValues);
+  const valMax = Math.max(...chartValues);
+  const valDiff = valMax - valMin === 0 ? 1 : valMax - valMin;
+
+  const width = 1200;
+  const height = 100;
+  const paddingX = 40;
+  const paddingY = 20;
+  const chartWidth = width - paddingX * 2;
+  const chartHeight = height - paddingY * 2;
+
+  const svgPoints = hourlyPoints.map((p, i) => {
+    const val = activeTab === 'temp' ? p.temp : activeTab === 'precip' ? p.precip : p.wind;
+    const x = paddingX + (i / (hourlyPoints.length - 1)) * chartWidth;
+    const y = height - paddingY - ((val - valMin) / valDiff) * chartHeight;
+    return { x, y, val };
+  });
+
+  let linePath = '';
+  let areaPath = '';
+  if (svgPoints.length > 0) {
+    linePath = `M ${svgPoints[0].x} ${svgPoints[0].y} ` + svgPoints.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
+    areaPath = `${linePath} L ${svgPoints[svgPoints.length - 1].x} ${height} L ${svgPoints[0].x} ${height} Z`;
+  }
+
+  const daily = weatherData.daily;
+  const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+  const todayIndex = new Date().getDay();
+
+  const dailyForecast = [];
+  for (let i = 0; i < 7; i++) {
+    const dayName = i === 0 ? '오늘' : daysOfWeek[(todayIndex + i) % 7];
+    dailyForecast.push({
+      day: dayName,
+      max: Math.round(daily.temperature_2m_max[i]),
+      min: Math.round(daily.temperature_2m_min[i]),
+      code: daily.weather_code[i]
+    });
+  }
+
+  const getThemeColors = () => {
+    if (activeTab === 'temp') return { stroke: '#f39c12', fill: 'rgba(243, 156, 18, 0.15)' };
+    if (activeTab === 'precip') return { stroke: '#3498db', fill: 'rgba(52, 152, 219, 0.15)' };
+    return { stroke: '#2ecc71', fill: 'rgba(46, 204, 113, 0.15)' };
+  };
+  const themeColors = getThemeColors();
+
+  return (
+    <Box
+      sx={{
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#000',
+        overflow: 'hidden',
+        scrollSnapAlign: 'start',
+        scrollSnapStop: 'always',
+        position: 'relative',
+        px: { xs: 2, md: 0 },
+      }}
+    >
+      <Container maxWidth="xl" sx={{ width: '100%', maxWidth: '1400px !important' }}>
+        <Box
+          sx={{
+            borderRadius: '20px',
+            background: 'linear-gradient(145deg, rgba(30,31,34,0.95) 0%, rgba(20,20,22,0.98) 100%)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+            p: { xs: 2.5, sm: 4 },
+            color: '#e3e3e3',
+          }}
+        >
+          {/* 상단 1: 위치 및 정확한 위치 사용 */}
+          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+            <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              📍 {locationName}
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={getPosition}
+              sx={{
+                borderRadius: '20px',
+                borderColor: 'rgba(255,255,255,0.15)',
+                color: '#aaa',
+                fontSize: '0.75rem',
+                textTransform: 'none',
+                px: 2,
+                '&:hover': { borderColor: 'rgba(255,255,255,0.4)', color: '#fff', bgcolor: 'rgba(255,255,255,0.03)' }
+              }}
+            >
+              정확한 위치 사용
+            </Button>
+          </Stack>
+
+          {/* 상단 2: 메인 날씨 정보 카드 */}
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, gap: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={2.5}>
+              <Typography sx={{ fontSize: '4rem', fontWeight: 300, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontSize: '4.5rem', marginRight: '8px' }}>{weatherDetails.icon}</span>
+                {Math.round(current?.temperature_2m ?? 0)}
+                <span style={{ fontSize: '1.8rem', fontWeight: 400, marginLeft: '2px', color: '#888' }}>°C</span>
+              </Typography>
+              <Box sx={{ borderLeft: '1px solid rgba(255,255,255,0.15)', pl: 2.5 }}>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>강수확률: {hourlyPoints[0]?.precip ?? 0}%</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>습도: {current?.relative_humidity_2m ?? 0}%</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa' }}>풍속: {current?.wind_speed_10m ?? 0} m/s</Typography>
+              </Box>
+            </Stack>
+
+            <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
+              <Typography sx={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', mb: 0.5, letterSpacing: '-0.5px' }}>
+                날씨
+              </Typography>
+              <Typography sx={{ fontSize: '0.9rem', color: '#888', mb: 0.5 }}>
+                {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })} 오후 {new Date().getHours()}:00
+              </Typography>
+              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: weatherDetails.color }}>
+                {weatherDetails.text}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* 탭 전환 영역 */}
+          <Stack direction="row" spacing={1} mb={2.5} sx={{ borderBottom: '1px solid rgba(255,255,255,0.08)', pb: 1 }}>
+            {[
+              { id: 'temp', label: '기온' },
+              { id: 'precip', label: '강수확률' },
+              { id: 'wind', label: '바람' }
+            ].map(tab => (
+              <Button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                sx={{
+                  color: activeTab === tab.id ? '#fff' : '#777',
+                  fontWeight: activeTab === tab.id ? 700 : 500,
+                  fontSize: '0.9rem',
+                  px: 2,
+                  py: 0.5,
+                  minWidth: 'auto',
+                  position: 'relative',
+                  textTransform: 'none',
+                  '&::after': activeTab === tab.id ? {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: -9,
+                    left: 0,
+                    width: '100%',
+                    height: '2px',
+                    bgcolor: themeColors.stroke,
+                  } : {},
+                  '&:hover': { color: '#fff', bgcolor: 'transparent' }
+                }}
+              >
+                {tab.label}
+              </Button>
+            ))}
+          </Stack>
+
+          {/* 시간별 차트 영역 */}
+          <Box sx={{ position: 'relative', mb: 4, bgcolor: 'rgba(255,255,255,0.01)', borderRadius: '12px', p: 1.5 }}>
+            <Box sx={{ width: '100%', overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none' }}>
+              <Box sx={{ minWidth: 1200, position: 'relative', height: 160 }}>
+                <svg width="100%" height={height} style={{ overflow: 'visible', position: 'absolute', top: 20, left: 0 }}>
+                  <defs>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={themeColors.stroke} stopOpacity={0.25} />
+                      <stop offset="100%" stopColor={themeColors.stroke} stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <path d={areaPath} fill="url(#chartGrad)" />
+                  <path d={linePath} fill="none" stroke={themeColors.stroke} strokeWidth="2.5" />
+                  {svgPoints.map((p, i) => (
+                    <g key={i}>
+                      <circle cx={p.x} cy={p.y} r="4" fill="#fff" stroke={themeColors.stroke} strokeWidth="2" />
+                      <text
+                        x={p.x}
+                        y={p.y - 10}
+                        textAnchor="middle"
+                        fill="#fff"
+                        style={{ fontSize: '0.8rem', fontWeight: 700 }}
+                      >
+                        {p.val}{activeTab === 'temp' ? '°' : activeTab === 'precip' ? '%' : 'm/s'}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+
+                <Stack direction="row" justifyContent="space-between" sx={{ position: 'absolute', bottom: 5, width: '100%', px: `${paddingX}px` }}>
+                  {hourlyPoints.map((p, i) => (
+                    <Box key={i} sx={{ textAlign: 'center', width: 45, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#888', marginBottom: '4px' }}>{p.time}</span>
+                      <span style={{ fontSize: '1.1rem' }}>{getWeatherDetails(p.code).icon}</span>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* 주간 예보 */}
+          <Box sx={{ width: '100%', overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none' }}>
+            <Stack direction="row" spacing={1.5} sx={{ minWidth: 1200, pb: 0.5 }}>
+              {dailyForecast.map((d, i) => {
+                const det = getWeatherDetails(d.code);
+                return (
+                  <Box
+                    key={i}
+                    sx={{
+                      flex: '1 0 0',
+                      bgcolor: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.04)',
+                      borderRadius: '12px',
+                      p: 1.5,
+                      textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 0.8,
+                      minWidth: 70,
+                      transition: 'transform 0.2s',
+                      '&:hover': { transform: 'translateY(-2px)', bgcolor: 'rgba(255,255,255,0.04)' }
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: i === 0 ? '#fff' : '#aaa' }}>
+                      {d.day}
+                    </Typography>
+                    <Typography sx={{ fontSize: '1.7rem', lineHeight: 1 }}>{det.icon}</Typography>
+                    <Typography sx={{ fontSize: '0.72rem', color: '#777', fontWeight: 500 }}>{det.text}</Typography>
+                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, mt: 0.5 }}>
+                      {d.max}° <span style={{ color: '#555', fontWeight: 400 }}>{d.min}°</span>
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
 const MainPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -576,7 +1226,10 @@ const MainPage = () => {
         />
       </Helmet>
 
-      {/* ── HERO 섹션 — 첫 번째 스냅 ── */}
+      {/* ── 날씨 섹션 — 첫 번째 스냅 ── */}
+      <WeatherSection />
+
+      {/* ── HERO 섹션 — 두 번째 스냅 ── */}
       <Box
         sx={{
           position: 'relative',

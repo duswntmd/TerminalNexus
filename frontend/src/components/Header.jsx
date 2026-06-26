@@ -12,6 +12,7 @@ const Header = () => {
   const { t, i18n } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 모바일 메뉴 토글 상태
+  const [activeDropdown, setActiveDropdown] = useState(null); // 모바일용: 현재 열려있는 카테고리 ('about', 'community', 'play')
 
   // 사용자 정보 가져오기
   useEffect(() => {
@@ -48,16 +49,25 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     setIsAdmin(false);
-    setIsMenuOpen(false);
+    closeMenu();
   };
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setIsMenuOpen(false);
+    closeMenu();
   };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+    setActiveDropdown(null);
+  };
+
+  const toggleDropdown = (category) => {
+    if (activeDropdown === category) {
+      setActiveDropdown(null);
+    } else {
+      setActiveDropdown(category);
+    }
   };
 
   return (
@@ -81,44 +91,82 @@ const Header = () => {
         </button>
 
         <nav className={`nav ${isMenuOpen ? 'open' : ''}`}>
-          <ul>
-            {/* 공통 메뉴: 이용안내 - 항상 표시 */}
-            <li><Link to="/guide" onClick={closeMenu}>{t('header.guide')}</Link></li>
-            <li><Link to="/fruit-ai" onClick={closeMenu}>🍎 과일 AI</Link></li>
-            
-            {/* 조건부 메뉴: 로그인 상태에 따라 다르게 표시 */}
-            {isLoggedIn ? (
-              <>
-                <li><Link to="/user" onClick={closeMenu}>{t('header.mypage')}</Link></li>
-                <li><button onClick={handleLogout} className="logout-btn">{t('header.logout')}</button></li>
-                {isAdmin && (
-                  <li><Link to="/admin/users" onClick={closeMenu} className="admin-link">👑 {t('header.admin_users')}</Link></li>
-                )}
-              </>
-            ) : (
-              <>
-                <li><Link to="/join" onClick={closeMenu}>{t('header.signup')}</Link></li>
-                <li><Link to="/login" onClick={closeMenu}>{t('header.login')}</Link></li>
-              </>
-            )}
-            
-            {/* 공통 메뉴: 채팅, 강화, 자유게시판 - 항상 표시 */}
-            <li><Link to="/chat" onClick={closeMenu}>💬 채팅</Link></li>
-            <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
-            <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
-            <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>
-            <li><Link to="/play/terminalhack" onClick={closeMenu}>{t('header.terminalhack')}</Link></li>
-            <li><Link to="/freeboard" onClick={closeMenu}>{t('header.freeboard')}</Link></li>
-            
-            {/* 언어 전환 */}
-            <li>
-                <div className="lang-switcher">
-                    <button onClick={() => changeLanguage('ko')} className={i18n.language === 'ko' ? 'active' : ''}>KO</button>
-                    <span>|</span>
-                    <button onClick={() => changeLanguage('en')} className={i18n.language === 'en' ? 'active' : ''}>EN</button>
-                </div>
+          {/* GNB 메인 메뉴 (카테고리 그룹화) */}
+          <ul className="nav-menu">
+            {/* 1. 소개 카테고리 */}
+            <li className={`nav-item dropdown ${activeDropdown === 'about' ? 'active' : ''}`}>
+              <button 
+                className="dropdown-toggle" 
+                onClick={() => toggleDropdown('about')}
+                type="button"
+              >
+                {t('header.about')} <span className="arrow"></span>
+              </button>
+              <ul className="dropdown-menu">
+                <li><Link to="/guide" onClick={closeMenu}>{t('header.guide')}</Link></li>
+                <li><Link to="/fruit-ai" onClick={closeMenu}>🍎 과일 AI</Link></li>
+              </ul>
+            </li>
+
+            {/* 2. 커뮤니티 카테고리 */}
+            <li className={`nav-item dropdown ${activeDropdown === 'community' ? 'active' : ''}`}>
+              <button 
+                className="dropdown-toggle" 
+                onClick={() => toggleDropdown('community')}
+                type="button"
+              >
+                {t('header.community')} <span className="arrow"></span>
+              </button>
+              <ul className="dropdown-menu">
+                <li><Link to="/chat" onClick={closeMenu}>💬 채팅</Link></li>
+                <li><Link to="/freeboard" onClick={closeMenu}>{t('header.freeboard')}</Link></li>
+              </ul>
+            </li>
+
+            {/* 3. 게임/체험 카테고리 */}
+            <li className={`nav-item dropdown ${activeDropdown === 'play' ? 'active' : ''}`}>
+              <button 
+                className="dropdown-toggle" 
+                onClick={() => toggleDropdown('play')}
+                type="button"
+              >
+                {t('header.play')} <span className="arrow"></span>
+              </button>
+              <ul className="dropdown-menu">
+                <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
+                <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
+                <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>
+                <li><Link to="/play/terminalhack" onClick={closeMenu}>{t('header.terminalhack')}</Link></li>
+              </ul>
             </li>
           </ul>
+
+          {/* 우측 계정 및 설정 영역 */}
+          <div className="header-right">
+            <ul className="auth-menu">
+              {isLoggedIn ? (
+                <>
+                  {isAdmin && (
+                    <li><Link to="/admin/users" onClick={closeMenu} className="admin-link">👑 {t('header.admin_users')}</Link></li>
+                  )}
+                  <li><Link to="/user" onClick={closeMenu} className="mypage-link">{t('header.mypage')}</Link></li>
+                  <li><button onClick={handleLogout} className="logout-btn">{t('header.logout')}</button></li>
+                </>
+              ) : (
+                <>
+                  <li><Link to="/login" onClick={closeMenu} className="login-link">{t('header.login')}</Link></li>
+                  <li><Link to="/join" onClick={closeMenu} className="signup-link">{t('header.signup')}</Link></li>
+                </>
+              )}
+            </ul>
+
+            {/* 언어 전환 */}
+            <div className="lang-switcher">
+              <button onClick={() => changeLanguage('ko')} className={i18n.language === 'ko' ? 'active' : ''}>KO</button>
+              <span>|</span>
+              <button onClick={() => changeLanguage('en')} className={i18n.language === 'en' ? 'active' : ''}>EN</button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
