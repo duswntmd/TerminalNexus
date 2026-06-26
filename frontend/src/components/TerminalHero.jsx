@@ -80,10 +80,6 @@ const TerminalHero = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-    // Auto focus input when typing done
-    if (!isTyping) {
-        document.getElementById('terminal-input').focus();
-    }
   }, [history, isTyping]);
 
   const handleCommand = (cmd) => {

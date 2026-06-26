@@ -9,7 +9,10 @@
     "admin_users": "User Management",
     "typeracer": "⌨️ TypeRacer",
     "hackermode": "📟 Hacker Mode",
-    "terminalhack": "🔐 Terminal Hack"
+    "terminalhack": "🔐 Terminal Hack",
+    "about": "About",
+    "community": "Community",
+    "play": "Play"
   },
   "main": {
     "badge": "👾 Developer's Toy Sandbox",
