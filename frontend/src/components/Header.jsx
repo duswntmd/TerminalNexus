@@ -133,6 +133,7 @@ const Header = () => {
                 {t('header.play')} <span className="arrow"></span>
               </button>
               <ul className="dropdown-menu">
+                <li><Link to="/play/stock" onClick={closeMenu}>📈 주식</Link></li>
                 <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
                 <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
                 <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>

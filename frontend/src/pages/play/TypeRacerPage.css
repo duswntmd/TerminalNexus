@@ -333,6 +333,11 @@
   background: rgba(0, 255, 102, 0.05);
 }
 
+.leaderboard-row.current-user-row {
+  background: rgba(0, 255, 102, 0.15);
+  border-left: 3px solid #00ff66;
+}
+
 .rank-col {
   width: 40px;
   text-align: center;

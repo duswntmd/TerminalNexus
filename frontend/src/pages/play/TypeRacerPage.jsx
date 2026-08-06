@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { fetchWithAccess } from "../../util/fetchUtil";
 import "./TypeRacerPage.css";
 
 // 무작위 CLI 쉘 명령어 풀
@@ -46,18 +47,59 @@ const TypeRacerPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [myBest, setMyBest] = useState(null);
+  const [myHistory, setMyHistory] = useState([]);
 
   // Refs
   const inputRef = useRef(null);
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
+  const correctCharsRef = useRef(0);
+  const totalTypedRef = useRef(0);
+  const inputValueRef = useRef("");
+  const currentTextRef = useRef("");
 
   // 초기 텍스트 및 리더보드 세팅
   useEffect(() => {
     selectRandomText();
     fetchLeaderboard();
+    if (isLoggedIn) {
+      fetchMyBest();
+      fetchMyHistory();
+    } else {
+      setMyBest(null);
+      setMyHistory([]);
+    }
     return () => clearInterval(timerRef.current);
-  }, []);
+  }, [isLoggedIn]);
+
+  // 개인 최고 기록 가져오기
+  const fetchMyBest = async () => {
+    try {
+      const response = await fetchWithAccess("/api/typeracer/my-best");
+      if (response.status === 200) {
+        const data = await response.json();
+        setMyBest(data);
+      } else if (response.status === 204) {
+        setMyBest(null);
+      }
+    } catch (error) {
+      console.error("개인 최고 기록 조회 실패:", error);
+    }
+  };
+
+  // 최근 타자 전적 가져오기
+  const fetchMyHistory = async () => {
+    try {
+      const response = await fetchWithAccess("/api/typeracer/history");
+      if (response.ok) {
+        const data = await response.json();
+        setMyHistory(data);
+      }
+    } catch (error) {
+      console.error("최근 전적 조회 실패:", error);
+    }
+  };
 
   // 리더보드 가져오기
   const fetchLeaderboard = async () => {
@@ -75,8 +117,11 @@ const TypeRacerPage = () => {
   // 무작위 명령어 선정
   const selectRandomText = () => {
     const randomIndex = Math.floor(Math.random() * COMMANDS_POOL.length);
-    setCurrentText(COMMANDS_POOL[randomIndex]);
+    const text = COMMANDS_POOL[randomIndex];
+    setCurrentText(text);
+    currentTextRef.current = text;
     setInputValue("");
+    inputValueRef.current = "";
   };
 
   // 입력 처리 핸들러
@@ -91,6 +136,7 @@ const TypeRacerPage = () => {
     }
 
     setInputValue(value);
+    inputValueRef.current = value;
 
     // 타이핑한 글자 수 및 정확한 글자 수 계산
     let currentCorrect = 0;
@@ -103,10 +149,13 @@ const TypeRacerPage = () => {
     // 통계치 업데이트
     const newTotalTyped = totalTyped + (value.length > inputValue.length ? 1 : 0);
     setTotalTyped(newTotalTyped);
+    totalTypedRef.current = newTotalTyped;
     
     // 문장이 정확히 일치하여 완수한 경우 다음 문장으로 교체
     if (value === currentText) {
-      setCorrectChars((prev) => prev + currentText.length);
+      const nextCorrectChars = correctChars + currentText.length;
+      setCorrectChars(nextCorrectChars);
+      correctCharsRef.current = nextCorrectChars;
       selectRandomText();
     }
   };
@@ -146,13 +195,14 @@ const TypeRacerPage = () => {
     setIsFinished(true);
     setIsStarted(false);
     
-    // 최종 성적 산출
+    // 최종 성적 산출 (Stale 클로저 문제를 해결하기 위해 ref 활용)
     const elapsedMinutes = 1.0; // 60초 완주
-    const currentCorrectTotal = correctChars + (inputValue.split("").filter((char, idx) => char === currentText[idx]).length);
+    const currentInputValue = inputValueRef.current;
+    const currentCorrectTotal = correctCharsRef.current + (currentInputValue.split("").filter((char, idx) => char === currentTextRef.current[idx]).length);
     const finalWpm = Math.round((currentCorrectTotal / 5) / elapsedMinutes) || 0;
     setWpm(finalWpm);
 
-    const finalAccuracy = totalTyped > 0 ? Math.round((currentCorrectTotal / totalTyped) * 100) : 100;
+    const finalAccuracy = totalTypedRef.current > 0 ? Math.round((currentCorrectTotal / totalTypedRef.current) * 100) : 100;
     setAccuracy(Math.min(100, finalAccuracy));
   };
 
@@ -168,6 +218,12 @@ const TypeRacerPage = () => {
     setAccuracy(100);
     setSubmitMessage("");
     setHasSubmitted(false);
+    
+    // Refs 초기화
+    correctCharsRef.current = 0;
+    totalTypedRef.current = 0;
+    inputValueRef.current = "";
+    
     selectRandomText();
     setTimeout(() => {
       if (inputRef.current) inputRef.current.focus();
@@ -180,33 +236,35 @@ const TypeRacerPage = () => {
     setIsSubmitting(true);
     setSubmitMessage("");
 
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setSubmitMessage("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      const response = await fetch("/api/typeracer/score", {
+      const response = await fetchWithAccess("/api/typeracer/score", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ wpm, accuracy })
       });
 
-      if (response.ok) {
-        setSubmitMessage("랭킹 등록에 성공했습니다!");
-        setHasSubmitted(true);
-        fetchLeaderboard(); // 리더보드 갱신
-      } else {
-        const errText = await response.text();
-        setSubmitMessage(`등록 실패: ${errText || "오류가 발생했습니다."}`);
-      }
+      const successText = await response.text();
+      setSubmitMessage(successText || "랭킹 등록에 성공했습니다!");
+      setHasSubmitted(true);
+      fetchLeaderboard(); // 리더보드 갱신
+      fetchMyBest();      // 개인 최고 기록 갱신
+      fetchMyHistory();   // 최근 전적 갱신
     } catch (error) {
-      setSubmitMessage("서버 통신 오류가 발생했습니다.");
+      console.error(error);
+      let errMsg = "서버 통신 오류가 발생했습니다.";
+      if (error.response) {
+        try {
+          const errText = await error.response.text();
+          errMsg = errText || errMsg;
+          if (errMsg.startsWith("{")) {
+            const errObj = JSON.parse(errMsg);
+            errMsg = errObj.error || errObj.message || errMsg;
+          }
+        } catch (_) {}
+      }
+      setSubmitMessage(`등록 실패: ${errMsg}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -258,6 +316,14 @@ const TypeRacerPage = () => {
                   <span className="dashboard-label">Accuracy</span>
                   <span className="dashboard-value">{accuracy}%</span>
                 </div>
+                {isLoggedIn && (
+                  <div className="dashboard-item">
+                    <span className="dashboard-label">My Best</span>
+                    <span className="dashboard-value" style={{ color: "#ffcc00", textShadow: "0 0 8px rgba(255, 204, 0, 0.5)" }}>
+                      {myBest ? `${myBest.wpm} WPM` : "-"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* 텍스트 타이핑 매치 영역 */}
@@ -298,11 +364,19 @@ const TypeRacerPage = () => {
                   <span className="dashboard-label">최종 정확도</span>
                   <span className="result-stat">{accuracy}%</span>
                 </div>
+                {isLoggedIn && (
+                  <div className="dashboard-item">
+                    <span className="dashboard-label" style={{ color: "#ffcc00" }}>내 최고 기록</span>
+                    <span className="result-stat" style={{ color: "#ffcc00", textShadow: "0 0 10px rgba(255, 204, 0, 0.5)" }}>
+                      {myBest ? `${myBest.wpm} WPM` : "-"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {submitMessage && (
                 <div style={{
-                  color: submitMessage.includes("성공") ? "#00ff66" : "#ff3366",
+                  color: submitMessage.includes("성공") || submitMessage.includes("경신") || submitMessage.includes("축하") ? "#00ff66" : "#ff3366",
                   margin: "15px 0",
                   fontWeight: "bold"
                 }}>
@@ -340,41 +414,90 @@ const TypeRacerPage = () => {
         </div>
 
         {/* 우측 리더보드 패널 */}
-        <div className="typeracer-leaderboard">
-          <h2 className="leaderboard-title">🏆 실시간 Top 10 리더보드</h2>
-          
-          {leaderboard.length > 0 ? (
-            <table className="leaderboard-table">
-              <thead>
-                <tr>
-                  <th className="rank-col">Rank</th>
-                  <th>User</th>
-                  <th style={{ textAlign: "right" }}>WPM</th>
-                  <th style={{ textAlign: "right" }}>Accuracy</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((item, idx) => (
-                  <tr key={idx} className="leaderboard-row">
-                    <td className={`rank-col rank-${item.rank}`}>
-                      {item.rank}
-                    </td>
-                    <td className="nickname-col" title={item.nickname}>
-                      {item.nickname}
-                    </td>
-                    <td className="wpm-col" style={{ textAlign: "right" }}>
-                      {item.wpm}
-                    </td>
-                    <td className="accuracy-col" style={{ textAlign: "right" }}>
-                      {item.accuracy}%
-                    </td>
+        <div className="typeracer-leaderboard" style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+          <div>
+            <h2 className="leaderboard-title">🏆 실시간 Top 10 리더보드</h2>
+            
+            {leaderboard.length > 0 ? (
+              <table className="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th className="rank-col">Rank</th>
+                    <th>User</th>
+                    <th style={{ textAlign: "right" }}>WPM</th>
+                    <th style={{ textAlign: "right" }}>Accuracy</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="empty-leaderboard">
-              현재 기록된 랭킹 정보가 없습니다.<br />첫 번째 랭커에 도전해보세요!
+                </thead>
+                <tbody>
+                  {leaderboard.map((item, idx) => {
+                    const isCurrentUser = user && user.nickname === item.nickname;
+                    return (
+                      <tr key={idx} className={`leaderboard-row ${isCurrentUser ? "current-user-row" : ""}`}>
+                        <td className={`rank-col rank-${item.rank}`}>
+                          {item.rank === 1 ? "🥇" : item.rank === 2 ? "🥈" : item.rank === 3 ? "🥉" : item.rank}
+                        </td>
+                        <td className="nickname-col" title={item.nickname} style={{ fontWeight: isCurrentUser ? "bold" : "normal", color: isCurrentUser ? "#00ff66" : "inherit" }}>
+                          {item.nickname} {isCurrentUser && " (나)"}
+                        </td>
+                        <td className="wpm-col" style={{ textAlign: "right", fontWeight: isCurrentUser ? "bold" : "normal" }}>
+                          {item.wpm}
+                        </td>
+                        <td className="accuracy-col" style={{ textAlign: "right", fontWeight: isCurrentUser ? "bold" : "normal" }}>
+                          {item.accuracy}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div className="empty-leaderboard">
+                현재 기록된 랭킹 정보가 없습니다.<br />첫 번째 랭커에 도전해보세요!
+              </div>
+            )}
+          </div>
+
+          {/* 나의 최근 5게임 전적 */}
+          {isLoggedIn && (
+            <div style={{ borderTop: "1px dashed rgba(0, 255, 102, 0.2)", paddingTop: "20px" }}>
+              <h2 className="leaderboard-title" style={{ fontSize: "1.3rem", color: "#ffcc00", borderBottom: "none", paddingBottom: "0", display: "flex", alignItems: "center", gap: "10px" }}>
+                📊 나의 최근 5게임 전적
+              </h2>
+              {myHistory.length > 0 ? (
+                <table className="leaderboard-table" style={{ fontSize: "0.85rem" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ color: "#ffcc00", borderBottom: "1px solid rgba(255, 204, 0, 0.2)" }}>날짜</th>
+                      <th style={{ textAlign: "right", color: "#ffcc00", borderBottom: "1px solid rgba(255, 204, 0, 0.2)" }}>WPM</th>
+                      <th style={{ textAlign: "right", color: "#ffcc00", borderBottom: "1px solid rgba(255, 204, 0, 0.2)" }}>정확도</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {myHistory.map((item, idx) => {
+                      let dateStr = "-";
+                      if (item.updatedDate) {
+                        const date = new Date(item.updatedDate);
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        dateStr = `${month}-${day} ${hours}:${minutes}`;
+                      }
+                      return (
+                        <tr key={idx} className="leaderboard-row">
+                          <td style={{ color: "#8892b0" }}>{dateStr}</td>
+                          <td style={{ textAlign: "right", fontWeight: "bold", color: "#00ff66" }}>{item.wpm}</td>
+                          <td style={{ textAlign: "right", color: "#ffffff" }}>{item.accuracy}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="empty-leaderboard" style={{ fontSize: "0.85rem", padding: "15px 0" }}>
+                  아직 플레이한 기록이 없습니다.<br />게임 완료 후 점수를 등록해 보세요!
+                </div>
+              )}
             </div>
           )}
         </div>

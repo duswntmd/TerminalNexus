@@ -281,9 +281,6 @@ const LottoMachine = ({ isDrawing }) => {
   );
 };
 
-/* ──────────────────────────────────────────────
-   로또 섹션 전체
-────────────────────────────────────────────── */
 const LottoSection = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [numbers, setNumbers] = useState([]);
@@ -317,7 +314,7 @@ const LottoSection = () => {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: 'calc(100dvh - 64px)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -363,35 +360,37 @@ const LottoSection = () => {
                 뽑아보세요
               </span>
             </Typography>
-            <Typography sx={{ color: '#71717a', fontSize: '0.9rem', lineHeight: 1.7, mb: 4, maxWidth: 360 }}>
+            <Typography sx={{ color: '#71717a', fontSize: '0.9rem', lineHeight: 1.7, mb: 3, maxWidth: 360 }}>
               순수 난수 기반 로또 번호 생성기입니다.
               단순한 행운의 유희로 즐겨보세요.
             </Typography>
 
-            <Button
-              variant="contained"
-              onClick={draw}
-              disabled={isDrawing}
-              startIcon={<CasinoIcon />}
-              sx={{
-                px: 4, py: 1.6, borderRadius: '12px',
-                bgcolor: isDrawing ? 'rgba(249,202,36,0.15)' : '#f9ca24',
-                color: isDrawing ? '#f9ca24' : '#000',
-                fontWeight: 800, fontSize: '0.95rem', textTransform: 'none',
-                boxShadow: isDrawing ? 'none' : '0 0 24px rgba(249,202,36,0.3)',
-                '&:hover:not(:disabled)': { bgcolor: '#f5bc00', transform: 'translateY(-2px)', boxShadow: '0 0 36px rgba(249,202,36,0.4)' },
-                '&.Mui-disabled': { color: '#f9ca24' },
-                transition: 'all 0.25s',
-              }}
-            >
-              {isDrawing ? '추첨 중...' : numbers.length > 0 ? '다시 추첨' : '추첨하기'}
-            </Button>
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <Button
+                variant="contained"
+                onClick={draw}
+                disabled={isDrawing}
+                startIcon={<CasinoIcon />}
+                sx={{
+                  px: 3, py: 1.6, borderRadius: '12px',
+                  bgcolor: isDrawing ? 'rgba(249,202,36,0.15)' : '#f9ca24',
+                  color: isDrawing ? '#f9ca24' : '#000',
+                  fontWeight: 800, fontSize: '0.95rem', textTransform: 'none',
+                  boxShadow: isDrawing ? 'none' : '0 0 24px rgba(249,202,36,0.3)',
+                  '&:hover:not(:disabled)': { bgcolor: '#f5bc00', transform: 'translateY(-2px)', boxShadow: '0 0 36px rgba(249,202,36,0.4)' },
+                  '&.Mui-disabled': { color: '#f9ca24' },
+                  transition: 'all 0.25s',
+                }}
+              >
+                {isDrawing ? '추첨 중...' : numbers.length > 0 ? '다시 추첨' : '추첨하기'}
+              </Button>
+            </Stack>
           </Box>
 
           {/* 오른쪽: 기계 + 결과 */}
           <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
 
-            {/* ── 상단 카드: 기계 + 볼 행 (고정 크기) ── */}
+            {/* ── 상단 카드: 기계 + 볼 행 ── */}
             <Box
               sx={{
                 borderRadius: '18px',
@@ -468,7 +467,8 @@ const LottoSection = () => {
                       border: '2px dashed rgba(255,255,255,0.08)', flexShrink: 0,
                     }} />
                   )}
-                </Stack>              </Box>
+                </Stack>
+              </Box>
             </Box>
 
             {/* ── 하단 요약 카드 — 항상 노출 ── */}
@@ -533,6 +533,7 @@ const LottoSection = () => {
           </Box>
         </Box>
       </Container>
+
     </Box>
   );
 };
@@ -762,7 +763,7 @@ const WeatherSection = () => {
 
     return (
       <Box sx={{
-        height: '100dvh', display: 'flex', flexDirection: 'column',
+        height: 'calc(100dvh - 64px)', display: 'flex', flexDirection: 'column',
         justifyContent: 'center', alignItems: 'center', bgcolor: '#000',
         scrollSnapAlign: 'start', scrollSnapStop: 'always',
       }}>
@@ -1000,7 +1001,7 @@ const WeatherSection = () => {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: 'calc(100dvh - 64px)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -1195,6 +1196,167 @@ const WeatherSection = () => {
   );
 };
 
+/* ──────────────────────────────────────────────
+   주식 시뮬레이터 섹션
+────────────────────────────────────────────── */
+const StockSection = () => {
+  const navigate = useNavigate();
+  const [stockList, setStockList] = useState([]);
+
+  useEffect(() => {
+    const fetchTopStocks = async () => {
+      try {
+        const res = await fetch('/api/stock/prices');
+        if (res.ok) {
+          const data = await res.json();
+          setStockList(data.slice(0, 3));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchTopStocks();
+    const interval = setInterval(fetchTopStocks, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Box
+      sx={{
+        height: 'calc(100dvh - 64px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#08090d',
+        overflow: 'hidden',
+        scrollSnapAlign: 'start',
+        scrollSnapStop: 'always',
+        position: 'relative',
+        px: { xs: 2, md: 0 },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute', top: '20%', left: '30%',
+          width: '50vw', height: '50vw', maxWidth: 700, maxHeight: 700,
+          background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: 'center',
+            gap: { xs: 5, md: 8 },
+          }}
+        >
+          <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '45%' } }}>
+            <Chip
+              label="📈 REALTIME TRADING ENGINE HTS v2.0"
+              sx={{
+                mb: 2.5, bgcolor: 'rgba(56,189,248,0.08)', color: '#38bdf8',
+                border: '1px solid rgba(56,189,248,0.25)', fontWeight: 800, fontSize: '0.78rem',
+              }}
+            />
+            <Typography
+              variant="h2" fontWeight={800}
+              sx={{
+                mb: 2, letterSpacing: '-1.5px', lineHeight: 1.15,
+                fontSize: { xs: '2.0rem', md: '2.8rem' },
+              }}
+            >
+              <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>
+                실시간 가상 주식
+              </span>
+              <span style={{ background: 'linear-gradient(135deg,#38bdf8,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>
+                모의 거래소 (HTS)
+              </span>
+            </Typography>
+            <Typography sx={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.7, mb: 4, maxWidth: 420 }}>
+              실시간 10호가창, 캔들 봉차트, 지정가 예약 매매, 공매도 및 레버리지까지!
+              현실 증권사 거래소 수준의 압도적 모의 주식을 경험해보세요.
+            </Typography>
+
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/play/stock')}
+                sx={{
+                  px: 4, py: 1.8, borderRadius: '14px',
+                  background: 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)',
+                  color: '#fff', fontWeight: 800, fontSize: '1.05rem', textTransform: 'none',
+                  boxShadow: '0 8px 24px rgba(56,189,248,0.3)',
+                  '&:hover': { background: 'linear-gradient(135deg, #0284c7 0%, #4f46e5 100%)', transform: 'translateY(-2px)' },
+                  transition: 'all 0.25s',
+                }}
+              >
+                📈 주식 거래소 HTS 입장하기
+              </Button>
+            </Stack>
+          </Box>
+
+          <Box sx={{ flex: 1, minWidth: 0, width: { xs: '100%', md: 'auto' } }}>
+            <Box
+              sx={{
+                background: 'rgba(15, 17, 26, 0.9)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '20px',
+                p: { xs: 2.5, md: 3.5 },
+                boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+              }}
+            >
+              <Typography sx={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.9rem', mb: 2 }}>
+                ⚡ 실시간 종목 시세 파동
+              </Typography>
+
+              <Stack spacing={1.5}>
+                {stockList.length > 0 ? stockList.map(stock => {
+                  const isUp = stock.changeAmount >= 0;
+                  return (
+                    <Box
+                      key={stock.ticker}
+                      sx={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        p: 2, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.04)'
+                      }}
+                    >
+                      <Box>
+                        <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: '#fff' }}>
+                          {stock.name} ({stock.ticker})
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#64748b' }}>
+                          가상 시세 시뮬레이터
+                        </Typography>
+                      </Box>
+                      <Box sx={{ textAlign: 'right' }}>
+                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace', fontSize: '1.1rem', color: isUp ? '#ef4444' : '#3b82f6' }}>
+                          {stock.currentPrice.toLocaleString()}원
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: isUp ? '#ef4444' : '#3b82f6' }}>
+                          {isUp ? '▲' : '▼'} {Math.abs(stock.changeRate)}%
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                }) : (
+                  <Typography sx={{ color: '#64748b', py: 4, textAlign: 'center' }}>
+                    시세 수신 중...
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
 const MainPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -1205,14 +1367,13 @@ const MainPage = () => {
     <Box
       sx={{
         width: '100%',
-        height: '100dvh',
+        height: 'calc(100dvh - 64px)',
         bgcolor: '#000',
         color: '#fff',
         overflowX: 'hidden',
         overflowY: 'scroll',
         scrollSnapType: 'y mandatory',
         scrollBehavior: 'smooth',
-        /* 스크롤바 숨기기 */
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
@@ -1226,153 +1387,59 @@ const MainPage = () => {
         />
       </Helmet>
 
-      {/* ── 날씨 섹션 — 첫 번째 스냅 ── */}
+      {/* ── 1번 섹션: 주식 시뮬레이터 ── */}
+      <StockSection />
+
+      {/* ── 2번 섹션: 로또 추첨기 ── */}
+      <LottoSection />
+
+      {/* ── 3번 섹션: 날씨 정보 ── */}
       <WeatherSection />
 
-      {/* ── HERO 섹션 — 두 번째 스냅 ── */}
+      {/* ── 4번 섹션: CLI 터미널 단독 섹션 ── */}
       <Box
         sx={{
           position: 'relative',
-          height: '100dvh',
+          height: 'calc(100dvh - 64px)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
+          alignItems: 'center',
           overflow: 'hidden',
           scrollSnapAlign: 'start',
           scrollSnapStop: 'always',
+          px: { xs: 2, md: 4 },
         }}
       >
         {/* 배경 글로우 */}
         <Box
           sx={{
-            position: 'absolute', top: '15%', left: '40%',
+            position: 'absolute', top: '20%', left: '30%',
             width: '60vw', height: '60vw', maxWidth: 800, maxHeight: 800,
-            background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
             zIndex: 0, pointerEvents: 'none',
           }}
         />
 
-        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Box
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              alignItems: { xs: 'flex-start', md: 'center' },
-              gap: { xs: 5, md: 6 },
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
             }}
           >
-            {/* 왼쪽 텍스트 */}
-            <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '42%' } }}>
-              <Chip
-                label={t('main.badge')}
-                variant="outlined"
-                sx={{
-                  color: '#a855f7',
-                  borderColor: 'rgba(168,85,247,0.3)',
-                  mb: { xs: 3, md: 4 },
-                  fontWeight: 600,
-                  bgcolor: 'rgba(168,85,247,0.05)',
-                  fontSize: { xs: '0.75rem', md: '0.8rem' },
-                }}
-              />
+            <Chip
+              label="💻 INTERACTIVE CLI TERMINAL"
+              sx={{
+                mb: 3, bgcolor: 'rgba(99,102,241,0.1)', color: '#818cf8',
+                border: '1px solid rgba(99,102,241,0.25)', fontWeight: 800, fontSize: '0.8rem',
+              }}
+            />
 
-              <Typography
-                variant="h1"
-                fontWeight={800}
-                sx={{
-                  mb: 3,
-                  fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.4rem', lg: '4rem' },
-                  letterSpacing: '-2px',
-                  lineHeight: 1.15,
-                }}
-              >
-                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>터미널 컨셉에</span>
-                <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>온갖 기능을 때려박은</span>
-                <span style={{ background: 'linear-gradient(135deg,#818cf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>개발자 종합 놀이터</span>
-              </Typography>
-
-              <Typography
-                sx={{
-                  mb: 5, color: '#a1a1aa',
-                  fontSize: { xs: '0.95rem', md: '1.05rem' },
-                  lineHeight: 1.75, whiteSpace: 'pre-line',
-                }}
-              >
-                {t('main.hero_desc')}
-              </Typography>
-
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <Button
-                  variant="contained" size="large"
-                  onClick={() => navigate('/terminal')}
-                  startIcon={<KeyboardCommandKeyIcon />}
-                  sx={{
-                    px: { xs: 3, md: 4 }, py: 1.8,
-                    fontSize: { xs: '1rem', md: '1.1rem' }, fontWeight: 800,
-                    borderRadius: '16px', 
-                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                    color: '#fff',
-                    textTransform: 'none',
-                    boxShadow: '0 10px 30px rgba(99,102,241,0.3)',
-                    '&:hover': { 
-                      background: 'linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)',
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 15px 40px rgba(99,102,241,0.45)',
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  }}
-                >
-                  터미널 입장하기
-                </Button>
-                <Button
-                  variant="outlined" size="large"
-                  onClick={() => navigate('/forge')}
-                  startIcon={<CasinoIcon />}
-                  sx={{
-                    px: { xs: 3, md: 4 }, py: 1.8,
-                    fontSize: { xs: '1rem', md: '1.1rem' }, fontWeight: 700,
-                    borderRadius: '16px', color: '#fff',
-                    borderColor: 'rgba(255,255,255,0.15)',
-                    bgcolor: 'rgba(255,255,255,0.03)',
-                    backdropFilter: 'blur(10px)',
-                    textTransform: 'none',
-                    '&:hover': {
-                      borderColor: 'rgba(255,255,255,0.4)',
-                      bgcolor: 'rgba(255,255,255,0.08)',
-                      transform: 'translateY(-4px)',
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  }}
-                >
-                  강화의 성소 (FORGE)
-                </Button>
-              </Stack>
-
-              <Stack
-                direction="row"
-                spacing={{ xs: 3, md: 4 }}
-                mt={{ xs: 5, md: 6 }}
-                divider={<Box sx={{ width: '1px', bgcolor: 'rgba(255,255,255,0.08)', alignSelf: 'stretch' }} />}
-              >
-                {[
-                  { label: t('main.stat_1_label'), value: t('main.stat_1_val') },
-                  { label: t('main.stat_2_label'), value: t('main.stat_2_val') },
-                  { label: t('main.stat_3_label'), value: t('main.stat_3_val') },
-                ].map((stat) => (
-                  <Box key={stat.label}>
-                    <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: { xs: '1.1rem', md: '1.3rem' }, lineHeight: 1 }}>
-                      {stat.value}
-                    </Typography>
-                    <Typography sx={{ color: '#52525b', fontSize: '0.75rem', mt: 0.5 }}>
-                      {stat.label}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
-
-            {/* 오른쪽 CLI 터미널 */}
-            <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' }, minWidth: 0 }}>
+            {/* CLI 터미널 단독 대형 뷰 */}
+            <Box sx={{ width: '100%', maxWidth: 960 }}>
               <Box
                 sx={{
                   position: 'relative',
@@ -1387,39 +1454,16 @@ const MainPage = () => {
                     borderRadius: '17px',
                     overflow: 'hidden',
                     bgcolor: '#0a0a0c',
-                    minHeight: { xs: 280, sm: 340, md: 400 },
+                    minHeight: { xs: 320, sm: 400, md: 460 },
                   }}
                 >
                   <TerminalHero />
                 </Box>
               </Box>
-
-              {!isMobile && (
-                <Stack direction="row" spacing={1.5} mt={2} justifyContent="flex-end">
-                  {['$ tn ssh prod-1', '실시간 연결', '암호화 보호'].map((label) => (
-                    <Chip
-                      key={label}
-                      label={label}
-                      size="small"
-                      sx={{
-                        bgcolor: 'rgba(255,255,255,0.04)',
-                        color: '#71717a',
-                        border: '1px solid rgba(255,255,255,0.07)',
-                        fontFamily: label.startsWith('$') ? 'monospace' : 'inherit',
-                        fontSize: '0.7rem',
-                      }}
-                    />
-                  ))}
-                </Stack>
-              )}
             </Box>
           </Box>
         </Container>
       </Box>
-
-      {/* ── 로또 섹션 — 두 번째 스냅 ── */}
-      <LottoSection />
-
     </Box>
   );
 };

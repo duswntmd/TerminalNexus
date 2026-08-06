@@ -55,4 +55,42 @@ public class TypeRacerController {
         List<TypeRacerResponseDTO> leaderboard = typeRacerRecordService.getTop10Leaderboard();
         return ResponseEntity.ok(leaderboard);
     }
+
+    /**
+     * 로그인된 유저의 개인 최고 기록 조회 API (로그인 필수)
+     */
+    @GetMapping("/my-best")
+    public ResponseEntity<TypeRacerResponseDTO> getMyBest(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserEntity user = userRepository.findByUsernameAndIsLock(principal.getName(), false)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 비활성화된 사용자입니다."));
+
+        TypeRacerResponseDTO myBest = typeRacerRecordService.getMyBestRecord(user);
+
+        if (myBest == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(myBest);
+    }
+
+    /**
+     * 로그인된 유저의 최근 5개 타자 기록 조회 API (로그인 필수)
+     */
+    @GetMapping("/history")
+    public ResponseEntity<List<TypeRacerResponseDTO>> getMyHistory(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserEntity user = userRepository.findByUsernameAndIsLock(principal.getName(), false)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 비활성화된 사용자입니다."));
+
+        List<TypeRacerResponseDTO> history = typeRacerRecordService.getMyHistory(user, 5);
+
+        return ResponseEntity.ok(history);
+    }
 }
