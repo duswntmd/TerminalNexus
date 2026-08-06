@@ -156,8 +156,9 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/forge/**").authenticated() // 강화 게임 API (로그인 필수)
                                                 .requestMatchers(HttpMethod.GET, "/api/typeracer/leaderboard")
                                                 .permitAll() // 타자 게임 리더보드 공개
-                                                .requestMatchers("/api/typeracer/**").authenticated() // 타자 게임 API (로그인
-                                                                                                      // 필수)
+                                                .requestMatchers("/api/typeracer/**").authenticated() // 타자 게임 API (로그인 필수)
+                                                .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/history/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll() // 주식 공개 API
+                                                .requestMatchers("/api/stock/**").authenticated() // 주식 매매 API (로그인 필수)
                                                 .requestMatchers("/api/chat/**").authenticated() // 채팅 API (로그인 필수)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
                                                 .anyRequest().authenticated());

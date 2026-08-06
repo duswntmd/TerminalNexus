@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
-import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import {
     Container,
@@ -54,10 +53,15 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (!user) return;
-        const socket = new SockJS(`${BACKEND_URL}/ws-chat`);
+
+        // SockJS 대신 순수 WebSocket 사용 (sockjs-client의 unload 경고 제거)
+        const wsUrl = BACKEND_URL
+            .replace(/^http:/, 'ws:')
+            .replace(/^https:/, 'wss:');
+
         const client = new Client({
-            webSocketFactory: () => socket,
-            debug: (str) => console.log(str),
+            brokerURL: `${wsUrl}/ws-chat`,
+            debug: () => {},  // 콘솔 디버그 로그 비활성화
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
