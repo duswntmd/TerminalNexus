@@ -58,4 +58,34 @@ public class TypeRacerRecordEntity {
         this.nickname = nickname;
         this.updatedDate = LocalDateTime.now();
     }
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public Integer getWpm() { return wpm; }
+    public Double getAccuracy() { return accuracy; }
+    public String getNickname() { return nickname; }
+    public LocalDateTime getUpdatedDate() { return updatedDate; }
+
+    public static TypeRacerRecordEntityBuilder builder() { return new TypeRacerRecordEntityBuilder(); }
+
+    public static class TypeRacerRecordEntityBuilder {
+        private UserEntity user;
+        private Integer wpm;
+        private Double accuracy;
+        private String nickname;
+
+        public TypeRacerRecordEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public TypeRacerRecordEntityBuilder wpm(Integer wpm) { this.wpm = wpm; return this; }
+        public TypeRacerRecordEntityBuilder accuracy(Double accuracy) { this.accuracy = accuracy; return this; }
+        public TypeRacerRecordEntityBuilder nickname(String nickname) { this.nickname = nickname; return this; }
+
+        public TypeRacerRecordEntity build() {
+            TypeRacerRecordEntity e = new TypeRacerRecordEntity();
+            e.user = this.user;
+            e.wpm = this.wpm;
+            e.accuracy = this.accuracy;
+            e.nickname = this.nickname;
+            return e;
+        }
+    }
 }

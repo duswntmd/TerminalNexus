@@ -18,12 +18,12 @@ import java.util.List;
  * - GET /api/fruits : 모든 과일 목록 조회
  * - POST /api/fruits : 과일 정보 추가 (관리자용)
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/fruits")
 @RequiredArgsConstructor
 public class FruitController {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FruitController.class);
     private final FruitRAGService fruitRAGService;
 
     /**

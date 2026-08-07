@@ -58,4 +58,41 @@ public class StockHoldingEntity {
     public void reducePosition(long qty) {
         this.quantity -= qty;
     }
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public String getTicker() { return ticker; }
+    public StockOrderEntity.PositionType getPositionType() { return positionType; }
+    public Integer getLeverage() { return leverage; }
+    public Long getQuantity() { return quantity; }
+    public Long getAvgPrice() { return avgPrice; }
+
+    public static StockHoldingEntityBuilder builder() { return new StockHoldingEntityBuilder(); }
+
+    public static class StockHoldingEntityBuilder {
+        private UserEntity user;
+        private String ticker;
+        private StockOrderEntity.PositionType positionType;
+        private Integer leverage;
+        private Long quantity;
+        private Long avgPrice;
+
+        public StockHoldingEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public StockHoldingEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
+        public StockHoldingEntityBuilder positionType(StockOrderEntity.PositionType positionType) { this.positionType = positionType; return this; }
+        public StockHoldingEntityBuilder leverage(Integer leverage) { this.leverage = leverage; return this; }
+        public StockHoldingEntityBuilder quantity(Long quantity) { this.quantity = quantity; return this; }
+        public StockHoldingEntityBuilder avgPrice(Long avgPrice) { this.avgPrice = avgPrice; return this; }
+
+        public StockHoldingEntity build() {
+            StockHoldingEntity h = new StockHoldingEntity();
+            h.user = this.user;
+            h.ticker = this.ticker;
+            h.positionType = this.positionType;
+            h.leverage = this.leverage != null ? this.leverage : 1;
+            h.quantity = this.quantity;
+            h.avgPrice = this.avgPrice;
+            return h;
+        }
+    }
 }

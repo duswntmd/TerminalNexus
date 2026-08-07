@@ -81,4 +81,43 @@ public class FreeBoardComment {
     public void updateModifiedDate() {
         this.modDate = LocalDateTime.now();
     }
+
+    public Long getId() { return id; }
+    public String getComment() { return comment; }
+    public FreeBoard getFreeBoard() { return freeBoard; }
+    public UserEntity getUser() { return user; }
+    public FreeBoardComment getParent() { return parent; }
+    public List<FreeBoardComment> getChildren() { return children; }
+    public Boolean getIsDeleted() { return isDeleted; }
+    public LocalDateTime getRegDate() { return regDate; }
+    public LocalDateTime getModDate() { return modDate; }
+
+    public static FreeBoardCommentBuilder builder() { return new FreeBoardCommentBuilder(); }
+
+    public static class FreeBoardCommentBuilder {
+        private String comment;
+        private FreeBoard freeBoard;
+        private UserEntity user;
+        private FreeBoardComment parent;
+        private List<FreeBoardComment> children = new ArrayList<>();
+        private Boolean isDeleted = false;
+
+        public FreeBoardCommentBuilder comment(String comment) { this.comment = comment; return this; }
+        public FreeBoardCommentBuilder freeBoard(FreeBoard freeBoard) { this.freeBoard = freeBoard; return this; }
+        public FreeBoardCommentBuilder user(UserEntity user) { this.user = user; return this; }
+        public FreeBoardCommentBuilder parent(FreeBoardComment parent) { this.parent = parent; return this; }
+        public FreeBoardCommentBuilder children(List<FreeBoardComment> children) { this.children = children; return this; }
+        public FreeBoardCommentBuilder isDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; return this; }
+
+        public FreeBoardComment build() {
+            FreeBoardComment c = new FreeBoardComment();
+            c.comment = this.comment;
+            c.freeBoard = this.freeBoard;
+            c.user = this.user;
+            c.parent = this.parent;
+            c.children = this.children != null ? this.children : new ArrayList<>();
+            c.isDeleted = this.isDeleted != null ? this.isDeleted : false;
+            return c;
+        }
+    }
 }

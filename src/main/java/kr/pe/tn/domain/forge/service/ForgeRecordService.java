@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ForgeRecordService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ForgeRecordService.class);
     private final ForgeRecordRepository forgeRecordRepository;
 
     /**

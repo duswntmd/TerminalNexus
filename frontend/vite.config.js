@@ -11,6 +11,11 @@ export default defineConfig({
         changeOrigin: true,
         // rewrite 제거 - /api 경로 그대로 유지
       },
+      "/ws-chat": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        ws: true,
+      },
       "/oauth2": {
         target: "http://localhost:8080",
         changeOrigin: true,

@@ -15,11 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * 초기 관리자 계정 자동 생성 설정
  * 애플리케이션 시작 시 관리자 계정이 없으면 자동으로 생성합니다.
  */
-@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class AdminInitializer {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AdminInitializer.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 

@@ -56,4 +56,56 @@ public class StockEntity {
     public void closeDailyPrice() {
         this.previousClose = this.currentPrice;
     }
+
+    public String getTicker() { return ticker; }
+    public String getName() { return name; }
+    public Long getCurrentPrice() { return currentPrice; }
+    public Long getPreviousClose() { return previousClose; }
+    public Double getVolatility() { return volatility; }
+    public Long getMarketCap() { return marketCap; }
+    public Double getPer() { return per; }
+    public Double getPbr() { return pbr; }
+    public String getTheme() { return theme; }
+    public String getDescription() { return description; }
+
+    public static StockEntityBuilder builder() { return new StockEntityBuilder(); }
+
+    public static class StockEntityBuilder {
+        private String ticker;
+        private String name;
+        private Long currentPrice;
+        private Long previousClose;
+        private Double volatility;
+        private Long marketCap;
+        private Double per;
+        private Double pbr;
+        private String theme;
+        private String description;
+
+        public StockEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
+        public StockEntityBuilder name(String name) { this.name = name; return this; }
+        public StockEntityBuilder currentPrice(Long currentPrice) { this.currentPrice = currentPrice; return this; }
+        public StockEntityBuilder previousClose(Long previousClose) { this.previousClose = previousClose; return this; }
+        public StockEntityBuilder volatility(Double volatility) { this.volatility = volatility; return this; }
+        public StockEntityBuilder marketCap(Long marketCap) { this.marketCap = marketCap; return this; }
+        public StockEntityBuilder per(Double per) { this.per = per; return this; }
+        public StockEntityBuilder pbr(Double pbr) { this.pbr = pbr; return this; }
+        public StockEntityBuilder theme(String theme) { this.theme = theme; return this; }
+        public StockEntityBuilder description(String description) { this.description = description; return this; }
+
+        public StockEntity build() {
+            StockEntity s = new StockEntity();
+            s.ticker = this.ticker;
+            s.name = this.name;
+            s.currentPrice = this.currentPrice;
+            s.previousClose = this.previousClose;
+            s.volatility = this.volatility;
+            s.marketCap = this.marketCap;
+            s.per = this.per;
+            s.pbr = this.pbr;
+            s.theme = this.theme;
+            s.description = this.description;
+            return s;
+        }
+    }
 }

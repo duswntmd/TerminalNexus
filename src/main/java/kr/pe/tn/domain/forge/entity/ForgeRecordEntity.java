@@ -59,6 +59,16 @@ public class ForgeRecordEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Long getId() { return id; }
+    public String getUsername() { return username; }
+    public String getNickname() { return nickname; }
+    public int getMaxLevel() { return maxLevel; }
+    public String getWeaponName() { return weaponName; }
+    public String getGrade() { return grade; }
+    public int getTotalTries() { return totalTries; }
+    public int getTotalSuccess() { return totalSuccess; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+
     @Column(name = "potential_grade", length = 20)
     private String potentialGrade;
 
@@ -67,6 +77,10 @@ public class ForgeRecordEntity {
 
     @Column(name = "potential_atk_bonus")
     private Integer potentialAtkBonus;
+
+    public String getPotentialGrade() { return potentialGrade; }
+    public String getPotentialOptions() { return potentialOptions; }
+    public Integer getPotentialAtkBonus() { return potentialAtkBonus; }
 
     /** 기록 갱신 */
     public void update(int maxLevel, String weaponName, String grade,
@@ -81,5 +95,48 @@ public class ForgeRecordEntity {
         this.potentialGrade = potentialGrade;
         this.potentialOptions = potentialOptions;
         this.potentialAtkBonus = potentialAtkBonus;
+    }
+
+    public static ForgeRecordEntityBuilder builder() {
+        return new ForgeRecordEntityBuilder();
+    }
+
+    public static class ForgeRecordEntityBuilder {
+        private String username;
+        private String nickname;
+        private int maxLevel;
+        private String weaponName;
+        private String grade;
+        private int totalTries;
+        private int totalSuccess;
+        private String potentialGrade;
+        private String potentialOptions;
+        private Integer potentialAtkBonus;
+
+        public ForgeRecordEntityBuilder username(String username) { this.username = username; return this; }
+        public ForgeRecordEntityBuilder nickname(String nickname) { this.nickname = nickname; return this; }
+        public ForgeRecordEntityBuilder maxLevel(int maxLevel) { this.maxLevel = maxLevel; return this; }
+        public ForgeRecordEntityBuilder weaponName(String weaponName) { this.weaponName = weaponName; return this; }
+        public ForgeRecordEntityBuilder grade(String grade) { this.grade = grade; return this; }
+        public ForgeRecordEntityBuilder totalTries(int totalTries) { this.totalTries = totalTries; return this; }
+        public ForgeRecordEntityBuilder totalSuccess(int totalSuccess) { this.totalSuccess = totalSuccess; return this; }
+        public ForgeRecordEntityBuilder potentialGrade(String potentialGrade) { this.potentialGrade = potentialGrade; return this; }
+        public ForgeRecordEntityBuilder potentialOptions(String potentialOptions) { this.potentialOptions = potentialOptions; return this; }
+        public ForgeRecordEntityBuilder potentialAtkBonus(Integer potentialAtkBonus) { this.potentialAtkBonus = potentialAtkBonus; return this; }
+
+        public ForgeRecordEntity build() {
+            ForgeRecordEntity e = new ForgeRecordEntity();
+            e.username = this.username;
+            e.nickname = this.nickname;
+            e.maxLevel = this.maxLevel;
+            e.weaponName = this.weaponName;
+            e.grade = this.grade;
+            e.totalTries = this.totalTries;
+            e.totalSuccess = this.totalSuccess;
+            e.potentialGrade = this.potentialGrade;
+            e.potentialOptions = this.potentialOptions;
+            e.potentialAtkBonus = this.potentialAtkBonus;
+            return e;
+        }
     }
 }

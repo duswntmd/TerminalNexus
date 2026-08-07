@@ -15,11 +15,11 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
  * WebSocket 이벤트 리스너
  * 사용자 연결/해제 이벤트 처리
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WebSocketEventListener.class);
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
 

@@ -10,33 +10,74 @@ import lombok.*;
 @Entity
 @Table(name = "fruits")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Fruit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 50)
-    private String name; // 과일 이름 (예: 사과, 바나나)
+    private String name;
 
     @Column(nullable = false, length = 100)
-    private String englishName; // 영어 이름 (예: Apple, Banana)
+    private String englishName;
 
     @Column(columnDefinition = "TEXT")
-    private String benefits; // 효능 (예: 비타민C 풍부, 항산화 효과)
+    private String benefits;
 
     @Column(columnDefinition = "TEXT")
-    private String nutrients; // 영양소 (예: 비타민A, 비타민C, 칼륨)
+    private String nutrients;
 
     @Column(columnDefinition = "TEXT")
-    private String description; // 상세 설명
+    private String description;
 
     @Column(length = 100)
-    private String season; // 제철 시기 (예: 가을, 여름)
+    private String season;
 
     @Column(length = 50)
-    private String origin; // 원산지 (예: 한국, 열대 지방)
+    private String origin;
+
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getEnglishName() { return englishName; }
+    public String getBenefits() { return benefits; }
+    public String getNutrients() { return nutrients; }
+    public String getDescription() { return description; }
+    public String getSeason() { return season; }
+    public String getOrigin() { return origin; }
+
+    public static FruitBuilder builder() {
+        return new FruitBuilder();
+    }
+
+    public static class FruitBuilder {
+        private String name;
+        private String englishName;
+        private String benefits;
+        private String nutrients;
+        private String description;
+        private String season;
+        private String origin;
+
+        public FruitBuilder name(String name) { this.name = name; return this; }
+        public FruitBuilder englishName(String englishName) { this.englishName = englishName; return this; }
+        public FruitBuilder benefits(String benefits) { this.benefits = benefits; return this; }
+        public FruitBuilder nutrients(String nutrients) { this.nutrients = nutrients; return this; }
+        public FruitBuilder description(String description) { this.description = description; return this; }
+        public FruitBuilder season(String season) { this.season = season; return this; }
+        public FruitBuilder origin(String origin) { this.origin = origin; return this; }
+
+        public Fruit build() {
+            Fruit f = new Fruit();
+            f.name = this.name;
+            f.englishName = this.englishName;
+            f.benefits = this.benefits;
+            f.nutrients = this.nutrients;
+            f.description = this.description;
+            f.season = this.season;
+            f.origin = this.origin;
+            return f;
+        }
+    }
 }

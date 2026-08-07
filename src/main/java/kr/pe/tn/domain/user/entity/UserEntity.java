@@ -59,6 +59,18 @@ public class UserEntity {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
+    public Long getId() { return id; }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public Boolean getIsLock() { return isLock; }
+    public Boolean getIsSocial() { return isSocial; }
+    public SocialProviderType getSocialProviderType() { return socialProviderType; }
+    public UserRoleType getRoleType() { return roleType; }
+    public String getNickname() { return nickname; }
+    public String getEmail() { return email; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public LocalDateTime getUpdatedDate() { return updatedDate; }
+
     // 회원이 작성한 게시글 (cascade delete)
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -101,4 +113,38 @@ public class UserEntity {
         this.roleType = roleType;
     }
 
+    public static UserEntityBuilder builder() { return new UserEntityBuilder(); }
+
+    public static class UserEntityBuilder {
+        private String username;
+        private String password;
+        private Boolean isLock = false;
+        private Boolean isSocial = false;
+        private SocialProviderType socialProviderType;
+        private UserRoleType roleType = UserRoleType.USER;
+        private String nickname;
+        private String email;
+
+        public UserEntityBuilder username(String username) { this.username = username; return this; }
+        public UserEntityBuilder password(String password) { this.password = password; return this; }
+        public UserEntityBuilder isLock(Boolean isLock) { this.isLock = isLock; return this; }
+        public UserEntityBuilder isSocial(Boolean isSocial) { this.isSocial = isSocial; return this; }
+        public UserEntityBuilder socialProviderType(SocialProviderType socialProviderType) { this.socialProviderType = socialProviderType; return this; }
+        public UserEntityBuilder roleType(UserRoleType roleType) { this.roleType = roleType; return this; }
+        public UserEntityBuilder nickname(String nickname) { this.nickname = nickname; return this; }
+        public UserEntityBuilder email(String email) { this.email = email; return this; }
+
+        public UserEntity build() {
+            UserEntity u = new UserEntity();
+            u.username = this.username;
+            u.password = this.password;
+            u.isLock = this.isLock != null ? this.isLock : false;
+            u.isSocial = this.isSocial != null ? this.isSocial : false;
+            u.socialProviderType = this.socialProviderType;
+            u.roleType = this.roleType != null ? this.roleType : UserRoleType.USER;
+            u.nickname = this.nickname;
+            u.email = this.email;
+            return u;
+        }
+    }
 }

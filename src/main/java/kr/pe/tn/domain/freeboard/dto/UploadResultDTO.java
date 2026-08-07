@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class UploadResultDTO implements Serializable {
 
@@ -19,6 +18,14 @@ public class UploadResultDTO implements Serializable {
         this.uuid = uuid;
         this.folderPath = folderPath;
         this.type = type;
+    }
+
+    public UploadResultDTO(String fileName, String uuid, String folderPath, String type, String youtubeUrl) {
+        this.fileName = fileName;
+        this.uuid = uuid;
+        this.folderPath = folderPath;
+        this.type = type;
+        this.youtubeUrl = youtubeUrl;
     }
 
     private String fileName;
@@ -44,4 +51,15 @@ public class UploadResultDTO implements Serializable {
         }
         return "";
     }
+
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+    public String getUuid() { return uuid; }
+    public void setUuid(String uuid) { this.uuid = uuid; }
+    public String getFolderPath() { return folderPath; }
+    public void setFolderPath(String folderPath) { this.folderPath = folderPath; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getYoutubeUrl() { return youtubeUrl; }
+    public void setYoutubeUrl(String youtubeUrl) { this.youtubeUrl = youtubeUrl; }
 }

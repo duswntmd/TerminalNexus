@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
  * 3. 검색된 정보를 Gemini AI에 컨텍스트로 제공
  * 4. Gemini AI가 컨텍스트 기반으로 답변 생성 (Generation)
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FruitRAGService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FruitRAGService.class);
     private final FruitRepository fruitRepository;
     private final ObjectMapper objectMapper;
 

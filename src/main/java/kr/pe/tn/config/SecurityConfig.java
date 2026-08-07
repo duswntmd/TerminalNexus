@@ -139,28 +139,22 @@ public class SecurityConfig {
                                                                 "/freeboard/**", "/cookie/**",
                                                                 "/api/message", "/oauth2/**", "/logout",
                                                                 "/jwt/**", "/api/user/exist/**", "/display",
-                                                                "/download",
-                                                                "/upload/**",
-                                                                "/api/freeboard/**", // 게시판 API 추가
-                                                                "/ws-chat/**") // WebSocket 엔드포인트
+                                                                "/download", "/upload/**", "/api/freeboard/**",
+                                                                "/ws-chat/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/donation/public").permitAll() // 후원
-                                                                                                                     // 현황
-                                                                                                                     // 공개
-                                                .requestMatchers("/api/donation/**").authenticated() // 후원 API (로그인 필수)
-                                                .requestMatchers("/api/fruits/**").authenticated() // 과일 AI API (로그인 필수)
-                                                .requestMatchers(HttpMethod.GET, "/api/forge/leaderboard").permitAll() // 강화
-                                                                                                                       // 랭킹
-                                                                                                                       // 공개
-                                                .requestMatchers("/api/forge/**").authenticated() // 강화 게임 API (로그인 필수)
-                                                .requestMatchers(HttpMethod.GET, "/api/typeracer/leaderboard")
-                                                .permitAll() // 타자 게임 리더보드 공개
-                                                .requestMatchers("/api/typeracer/**").authenticated() // 타자 게임 API (로그인 필수)
-                                                .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/history/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll() // 주식 공개 API
-                                                .requestMatchers("/api/stock/**").authenticated() // 주식 매매 API (로그인 필수)
-                                                .requestMatchers("/api/chat/**").authenticated() // 채팅 API (로그인 필수)
-                                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 경로 설정
+                                                .requestMatchers(HttpMethod.GET, "/api/donation/public").permitAll()
+                                                .requestMatchers("/api/donation/**").authenticated()
+                                                .requestMatchers("/api/fruits/**").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/forge/leaderboard").permitAll()
+                                                .requestMatchers("/api/forge/**").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/typeracer/leaderboard").permitAll()
+                                                .requestMatchers("/api/typeracer/**").authenticated()
+                                                .requestMatchers("/api/janggi/**").authenticated() // 실시간 온라인 장기 API (로그인 필수!)
+                                                .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/history/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
+                                                .requestMatchers("/api/stock/**").authenticated()
+                                                .requestMatchers("/api/chat/**").authenticated()
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated());
 
                 return http.build();

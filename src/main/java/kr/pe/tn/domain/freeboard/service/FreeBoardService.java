@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 @Slf4j
 public class FreeBoardService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FreeBoardService.class);
+
     @Value("${org.zerock.upload.path}")
     private String uploadPath;
 

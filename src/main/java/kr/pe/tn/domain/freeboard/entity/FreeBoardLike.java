@@ -27,4 +27,24 @@ public class FreeBoardLike {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    public Long getId() { return id; }
+    public FreeBoard getFreeBoard() { return freeBoard; }
+    public UserEntity getUser() { return user; }
+
+    public static FreeBoardLikeBuilder builder() { return new FreeBoardLikeBuilder(); }
+
+    public static class FreeBoardLikeBuilder {
+        private FreeBoard freeBoard;
+        private UserEntity user;
+
+        public FreeBoardLikeBuilder freeBoard(FreeBoard freeBoard) { this.freeBoard = freeBoard; return this; }
+        public FreeBoardLikeBuilder user(UserEntity user) { this.user = user; return this; }
+
+        public FreeBoardLike build() {
+            FreeBoardLike l = new FreeBoardLike();
+            l.freeBoard = this.freeBoard;
+            l.user = this.user;
+            return l;
+        }
+    }
 }

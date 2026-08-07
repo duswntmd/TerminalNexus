@@ -21,11 +21,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StockService.class);
     private final StockRepository stockRepository;
     private final StockPriceHistoryRepository historyRepository;
     private final StockWalletRepository walletRepository;
@@ -46,6 +46,10 @@ public class StockService {
         private int direction; // 1: 상승, -1: 하락, 0: 횡보
         private int remainingTicks;
         private double bias;
+
+        public int getDirection() { return direction; }
+        public int getRemainingTicks() { return remainingTicks; }
+        public double getBias() { return bias; }
 
         public StockTrendState(int direction, int remainingTicks, double bias) {
             this.direction = direction;
@@ -100,6 +104,46 @@ public class StockService {
                         .build());
             }
         }
+    }
+
+    /**
+     * 전체 종목 시세 목록 반환 (API 컨트롤러용)
+     */
+    @Transactional(readOnly = true)
+    public List<StockDTO.StockItemResponse> getAllStocks() {
+        return stockRepository.findAll().stream()
+                .map(stock -> buildStockResponse(stock, isCircuitBreaker(stock.getTicker())))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isCircuitBreaker(String ticker) {
+        LocalDateTime expiry = circuitBreakerMap.get(ticker);
+        return expiry != null && LocalDateTime.now().isBefore(expiry);
+    }
+
+    private StockDTO.StockItemResponse buildStockResponse(StockEntity stock, boolean isCB) {
+        long prev = stock.getPreviousClose();
+        long cur = stock.getCurrentPrice();
+        long diff = cur - prev;
+        double rate = prev == 0 ? 0 : ((double) diff / prev) * 100;
+        rate = Math.round(rate * 100.0) / 100.0;
+
+        StockTrendState trend = trendStateMap.get(stock.getTicker());
+        String trendStr = trend == null ? "SIDEWAYS" : (trend.getDirection() > 0 ? "BULL" : (trend.getDirection() < 0 ? "BEAR" : "SIDEWAYS"));
+
+        return StockDTO.StockItemResponse.builder()
+                .ticker(stock.getTicker())
+                .name(stock.getName())
+                .currentPrice(cur)
+                .previousClose(prev)
+                .volatility(stock.getVolatility())
+                .changeRate(rate)
+                .changeAmount(diff)
+                .isUpperLimit(cur >= Math.round(prev * 1.30))
+                .isLowerLimit(cur <= Math.round(prev * 0.70))
+                .isCircuitBreaker(isCB)
+                .currentTrend(trendStr)
+                .build();
     }
 
     /**
@@ -526,46 +570,8 @@ public class StockService {
         }
     }
 
-    private StockDTO.StockItemResponse buildStockResponse(StockEntity stock, boolean isCB) {
-        long prevClose = stock.getPreviousClose();
-        long current = stock.getCurrentPrice();
-        long changeAmount = current - prevClose;
-        double changeRate = ((double) changeAmount / prevClose) * 100;
-
-        boolean isUpper = current >= Math.round(prevClose * 1.30);
-        boolean isLower = current <= Math.round(prevClose * 0.70);
-
-        StockTrendState trend = trendStateMap.get(stock.getTicker());
-        String trendStr = trend != null ? (trend.getDirection() > 0 ? "BULL" : (trend.getDirection() < 0 ? "BEAR" : "SIDEWAYS")) : "SIDEWAYS";
-
-        return StockDTO.StockItemResponse.builder()
-                .ticker(stock.getTicker())
-                .name(stock.getName())
-                .currentPrice(current)
-                .previousClose(prevClose)
-                .volatility(stock.getVolatility())
-                .changeAmount(changeAmount)
-                .changeRate(Math.round(changeRate * 100.0) / 100.0)
-                .isUpperLimit(isUpper)
-                .isLowerLimit(isLower)
-                .isCircuitBreaker(isCB)
-                .currentTrend(trendStr)
-                .build();
-    }
-
     public List<StockDTO.StockNewsResponse> getRecentNews() {
         return new ArrayList<>(recentNewsList);
-    }
-
-    @Transactional(readOnly = true)
-    public List<StockDTO.StockItemResponse> getAllStocks() {
-        LocalDateTime now = LocalDateTime.now();
-        return stockRepository.findAll().stream()
-                .map(stock -> {
-                    boolean isCB = circuitBreakerMap.containsKey(stock.getTicker()) && now.isBefore(circuitBreakerMap.get(stock.getTicker()));
-                    return buildStockResponse(stock, isCB);
-                })
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

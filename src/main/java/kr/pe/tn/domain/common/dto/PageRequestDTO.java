@@ -27,4 +27,13 @@ public class PageRequestDTO {
     public Pageable getPageable(String... props) {
         return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
     }
+
+    public int getPage() { return page; }
+    public void setPage(int page) { this.page = page; }
+    public int getSize() { return size; }
+    public void setSize(int size) { this.size = size; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getKeyword() { return keyword; }
+    public void setKeyword(String keyword) { this.keyword = keyword; }
 }

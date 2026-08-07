@@ -35,4 +35,25 @@ public class StockWalletEntity {
     public void withdraw(long amount) {
         this.cash -= amount;
     }
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public Long getCash() { return cash; }
+
+    public static StockWalletEntityBuilder builder() { return new StockWalletEntityBuilder(); }
+
+    public static class StockWalletEntityBuilder {
+        private UserEntity user;
+        private Long cash;
+
+        public StockWalletEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public StockWalletEntityBuilder cash(Long cash) { this.cash = cash; return this; }
+
+        public StockWalletEntity build() {
+            StockWalletEntity w = new StockWalletEntity();
+            w.user = this.user;
+            w.cash = this.cash != null ? this.cash : 1_000_000L;
+            return w;
+        }
+    }
 }

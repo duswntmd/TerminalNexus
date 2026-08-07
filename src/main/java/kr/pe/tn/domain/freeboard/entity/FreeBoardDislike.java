@@ -27,4 +27,24 @@ public class FreeBoardDislike {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    public Long getId() { return id; }
+    public FreeBoard getFreeBoard() { return freeBoard; }
+    public UserEntity getUser() { return user; }
+
+    public static FreeBoardDislikeBuilder builder() { return new FreeBoardDislikeBuilder(); }
+
+    public static class FreeBoardDislikeBuilder {
+        private FreeBoard freeBoard;
+        private UserEntity user;
+
+        public FreeBoardDislikeBuilder freeBoard(FreeBoard freeBoard) { this.freeBoard = freeBoard; return this; }
+        public FreeBoardDislikeBuilder user(UserEntity user) { this.user = user; return this; }
+
+        public FreeBoardDislike build() {
+            FreeBoardDislike d = new FreeBoardDislike();
+            d.freeBoard = this.freeBoard;
+            d.user = this.user;
+            return d;
+        }
+    }
 }
