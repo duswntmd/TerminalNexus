@@ -35,11 +35,11 @@ import java.util.Set;
  * - GET /api/chat/users            : 온라인 사용자 목록
  * - GET /api/chat/rooms            : 채팅방 목록
  */
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ChatController.class);
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 

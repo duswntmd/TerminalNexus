@@ -49,4 +49,38 @@ public class StockTradeEntity {
     public enum TradeType {
         BUY, SELL
     }
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public String getTicker() { return ticker; }
+    public TradeType getTradeType() { return tradeType; }
+    public Long getQuantity() { return quantity; }
+    public Long getPrice() { return price; }
+    public LocalDateTime getTradedAt() { return tradedAt; }
+
+    public static StockTradeEntityBuilder builder() { return new StockTradeEntityBuilder(); }
+
+    public static class StockTradeEntityBuilder {
+        private UserEntity user;
+        private String ticker;
+        private TradeType tradeType;
+        private Long quantity;
+        private Long price;
+
+        public StockTradeEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public StockTradeEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
+        public StockTradeEntityBuilder tradeType(TradeType tradeType) { this.tradeType = tradeType; return this; }
+        public StockTradeEntityBuilder quantity(Long quantity) { this.quantity = quantity; return this; }
+        public StockTradeEntityBuilder price(Long price) { this.price = price; return this; }
+
+        public StockTradeEntity build() {
+            StockTradeEntity t = new StockTradeEntity();
+            t.user = this.user;
+            t.ticker = this.ticker;
+            t.tradeType = this.tradeType;
+            t.quantity = this.quantity;
+            t.price = this.price;
+            return t;
+        }
+    }
 }

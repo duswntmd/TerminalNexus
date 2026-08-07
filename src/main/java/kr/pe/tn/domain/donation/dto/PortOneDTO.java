@@ -19,11 +19,19 @@ public class PortOneDTO {
         private String message;
         private TokenData response;
 
+        public int getCode() { return code; }
+        public String getMessage() { return message; }
+        public TokenData getResponse() { return response; }
+
         @Getter
         public static class TokenData {
             private String access_token;
             private long now;
             private long expired_at;
+
+            public String getAccess_token() { return access_token; }
+            public long getNow() { return now; }
+            public long getExpired_at() { return expired_at; }
         }
     }
 
@@ -36,6 +44,10 @@ public class PortOneDTO {
         private int code;
         private String message;
         private PaymentData response;
+
+        public int getCode() { return code; }
+        public String getMessage() { return message; }
+        public PaymentData getResponse() { return response; }
 
         @Getter
         public static class PaymentData {
@@ -50,6 +62,18 @@ public class PortOneDTO {
             private String buyer_email; // 구매자 이메일
             private String currency; // 통화 (KRW)
             private String apply_num; // 카드 승인 번호
+
+            public String getImp_uid() { return imp_uid; }
+            public String getMerchant_uid() { return merchant_uid; }
+            public String getPay_method() { return pay_method; }
+            public String getPg_provider() { return pg_provider; }
+            public String getPg_tid() { return pg_tid; }
+            public int getAmount() { return amount; }
+            public String getStatus() { return status; }
+            public String getBuyer_name() { return buyer_name; }
+            public String getBuyer_email() { return buyer_email; }
+            public String getCurrency() { return currency; }
+            public String getApply_num() { return apply_num; }
         }
     }
 }

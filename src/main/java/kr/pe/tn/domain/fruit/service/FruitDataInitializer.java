@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
  * 애플리케이션 시작 시 과일 초기 데이터를 자동으로 추가
  * RAG 시스템 테스트를 위한 샘플 데이터 제공
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FruitDataInitializer implements CommandLineRunner {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FruitDataInitializer.class);
     private final FruitRepository fruitRepository;
 
     @Override

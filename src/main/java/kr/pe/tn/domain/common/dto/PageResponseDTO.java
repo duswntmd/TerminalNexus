@@ -44,4 +44,36 @@ public class PageResponseDTO<E> {
         this.pageList = IntStream.rangeClosed(this.start, this.end).boxed().collect(Collectors.toList());
         this.totalPage = last;
     }
+
+    public static <E> PageResponseDTOBuilder<E> withAll() {
+        return new PageResponseDTOBuilder<E>();
+    }
+
+    public static class PageResponseDTOBuilder<E> {
+        private List<E> dtoList;
+        private int total;
+        private PageRequestDTO pageRequestDTO;
+
+        public PageResponseDTOBuilder<E> dtoList(List<E> dtoList) { this.dtoList = dtoList; return this; }
+        public PageResponseDTOBuilder<E> total(int total) { this.total = total; return this; }
+        public PageResponseDTOBuilder<E> pageRequestDTO(PageRequestDTO pageRequestDTO) { this.pageRequestDTO = pageRequestDTO; return this; }
+
+        public PageResponseDTO<E> build() {
+            return new PageResponseDTO<E>(dtoList, total, pageRequestDTO);
+        }
+    }
+
+    public List<E> getDtoList() { return dtoList; }
+    public void setDtoList(List<E> dtoList) { this.dtoList = dtoList; }
+    public int getTotalPage() { return totalPage; }
+    public void setTotalPage(int totalPage) { this.totalPage = totalPage; }
+    public int getPage() { return page; }
+    public void setPage(int page) { this.page = page; }
+    public int getSize() { return size; }
+    public void setSize(int size) { this.size = size; }
+    public int getStart() { return start; }
+    public int getEnd() { return end; }
+    public boolean isPrev() { return prev; }
+    public boolean isNext() { return next; }
+    public List<Integer> getPageList() { return pageList; }
 }

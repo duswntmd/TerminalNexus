@@ -34,4 +34,26 @@ public class StockPriceHistoryEntity {
     @CreatedDate
     @Column(name = "recorded_at", updatable = false)
     private LocalDateTime recordedAt;
+
+    public Long getId() { return id; }
+    public String getTicker() { return ticker; }
+    public Long getPrice() { return price; }
+    public LocalDateTime getRecordedAt() { return recordedAt; }
+
+    public static StockPriceHistoryEntityBuilder builder() { return new StockPriceHistoryEntityBuilder(); }
+
+    public static class StockPriceHistoryEntityBuilder {
+        private String ticker;
+        private Long price;
+
+        public StockPriceHistoryEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
+        public StockPriceHistoryEntityBuilder price(Long price) { this.price = price; return this; }
+
+        public StockPriceHistoryEntity build() {
+            StockPriceHistoryEntity h = new StockPriceHistoryEntity();
+            h.ticker = this.ticker;
+            h.price = this.price;
+            return h;
+        }
+    }
 }

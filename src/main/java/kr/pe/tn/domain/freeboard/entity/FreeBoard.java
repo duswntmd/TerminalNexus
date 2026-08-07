@@ -111,4 +111,57 @@ public class FreeBoard {
     public void updateModifiedDate() {
         this.modDate = LocalDateTime.now();
     }
+
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getContent() { return content; }
+    public UserEntity getUser() { return user; }
+    public Long getViewCount() { return viewCount; }
+    public Boolean getIsDeleted() { return isDeleted; }
+    public LocalDateTime getRegDate() { return regDate; }
+    public LocalDateTime getModDate() { return modDate; }
+    public Long getLikeCount() { return likeCount; }
+    public Long getDislikeCount() { return dislikeCount; }
+    public List<FreeBoardComment> getComments() { return comments; }
+    public List<FreeBoardFile> getFiles() { return files; }
+    public List<FreeBoardLike> getLikes() { return likes; }
+    public List<FreeBoardDislike> getDislikes() { return dislikes; }
+
+    public static FreeBoardBuilder builder() { return new FreeBoardBuilder(); }
+
+    public static class FreeBoardBuilder {
+        private String title;
+        private String content;
+        private UserEntity user;
+        private Long viewCount = 0L;
+        private Boolean isDeleted = false;
+        private Long likeCount = 0L;
+        private Long dislikeCount = 0L;
+        private List<FreeBoardComment> comments = new ArrayList<>();
+        private List<FreeBoardFile> files = new ArrayList<>();
+
+        public FreeBoardBuilder title(String title) { this.title = title; return this; }
+        public FreeBoardBuilder content(String content) { this.content = content; return this; }
+        public FreeBoardBuilder user(UserEntity user) { this.user = user; return this; }
+        public FreeBoardBuilder viewCount(Long viewCount) { this.viewCount = viewCount; return this; }
+        public FreeBoardBuilder isDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; return this; }
+        public FreeBoardBuilder likeCount(Long likeCount) { this.likeCount = likeCount; return this; }
+        public FreeBoardBuilder dislikeCount(Long dislikeCount) { this.dislikeCount = dislikeCount; return this; }
+        public FreeBoardBuilder comments(List<FreeBoardComment> comments) { this.comments = comments; return this; }
+        public FreeBoardBuilder files(List<FreeBoardFile> files) { this.files = files; return this; }
+
+        public FreeBoard build() {
+            FreeBoard f = new FreeBoard();
+            f.title = this.title;
+            f.content = this.content;
+            f.user = this.user;
+            f.viewCount = this.viewCount != null ? this.viewCount : 0L;
+            f.isDeleted = this.isDeleted != null ? this.isDeleted : false;
+            f.likeCount = this.likeCount != null ? this.likeCount : 0L;
+            f.dislikeCount = this.dislikeCount != null ? this.dislikeCount : 0L;
+            f.comments = this.comments != null ? this.comments : new ArrayList<>();
+            f.files = this.files != null ? this.files : new ArrayList<>();
+            return f;
+        }
+    }
 }

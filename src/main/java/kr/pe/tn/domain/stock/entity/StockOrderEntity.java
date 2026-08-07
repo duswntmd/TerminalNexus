@@ -93,4 +93,55 @@ public class StockOrderEntity {
     public void cancel() {
         this.orderStatus = OrderStatus.CANCELLED;
     }
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public String getTicker() { return ticker; }
+    public StockTradeEntity.TradeType getTradeType() { return tradeType; }
+    public PositionType getPositionType() { return positionType; }
+    public OrderType getOrderType() { return orderType; }
+    public Integer getLeverage() { return leverage; }
+    public Long getTargetPrice() { return targetPrice; }
+    public Long getQuantity() { return quantity; }
+    public OrderStatus getOrderStatus() { return orderStatus; }
+    public LocalDateTime getFilledAt() { return filledAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public static StockOrderEntityBuilder builder() { return new StockOrderEntityBuilder(); }
+
+    public static class StockOrderEntityBuilder {
+        private UserEntity user;
+        private String ticker;
+        private StockTradeEntity.TradeType tradeType;
+        private PositionType positionType;
+        private OrderType orderType;
+        private Integer leverage;
+        private Long targetPrice;
+        private Long quantity;
+        private OrderStatus orderStatus = OrderStatus.PENDING;
+
+        public StockOrderEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public StockOrderEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
+        public StockOrderEntityBuilder tradeType(StockTradeEntity.TradeType tradeType) { this.tradeType = tradeType; return this; }
+        public StockOrderEntityBuilder positionType(PositionType positionType) { this.positionType = positionType; return this; }
+        public StockOrderEntityBuilder orderType(OrderType orderType) { this.orderType = orderType; return this; }
+        public StockOrderEntityBuilder leverage(Integer leverage) { this.leverage = leverage; return this; }
+        public StockOrderEntityBuilder targetPrice(Long targetPrice) { this.targetPrice = targetPrice; return this; }
+        public StockOrderEntityBuilder quantity(Long quantity) { this.quantity = quantity; return this; }
+        public StockOrderEntityBuilder orderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus; return this; }
+
+        public StockOrderEntity build() {
+            StockOrderEntity o = new StockOrderEntity();
+            o.user = this.user;
+            o.ticker = this.ticker;
+            o.tradeType = this.tradeType;
+            o.positionType = this.positionType;
+            o.orderType = this.orderType;
+            o.leverage = this.leverage != null ? this.leverage : 1;
+            o.targetPrice = this.targetPrice;
+            o.quantity = this.quantity;
+            o.orderStatus = this.orderStatus != null ? this.orderStatus : OrderStatus.PENDING;
+            return o;
+        }
+    }
 }

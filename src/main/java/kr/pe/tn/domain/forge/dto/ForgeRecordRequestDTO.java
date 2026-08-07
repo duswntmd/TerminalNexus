@@ -19,4 +19,13 @@ public class ForgeRecordRequestDTO {
     private String potentialGrade;
     private java.util.List<String> potentialOptions;
     private Integer potentialAtkBonus;
+
+    public int getMaxLevel() { return maxLevel; }
+    public String getWeaponName() { return weaponName; }
+    public String getGrade() { return grade; }
+    public int getTotalTries() { return totalTries; }
+    public int getTotalSuccess() { return totalSuccess; }
+    public String getPotentialGrade() { return potentialGrade; }
+    public java.util.List<String> getPotentialOptions() { return potentialOptions; }
+    public Integer getPotentialAtkBonus() { return potentialAtkBonus; }
 }

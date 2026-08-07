@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class DonationService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DonationService.class);
     @Value("${portone.imp_key}")
     private String impKey;
 

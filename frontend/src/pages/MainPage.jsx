@@ -314,7 +314,8 @@ const LottoSection = () => {
   return (
     <Box
       sx={{
-        height: 'calc(100dvh - 64px)',
+        minHeight: 'calc(100dvh - 64px)',
+        height: { xs: 'auto', md: 'calc(100dvh - 64px)' },
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -324,10 +325,11 @@ const LottoSection = () => {
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
         position: 'relative',
-        px: { xs: 2, md: 0 },
+        py: { xs: 6, md: 0 },
+        px: { xs: 2.5, md: 4 },
       }}
     >
-      <Container maxWidth="xl" sx={{ width: '100%' }}>
+      <Container maxWidth="xl" sx={{ width: '100%', maxWidth: '1400px !important' }}>
         <Box
           sx={{
             display: 'flex',
@@ -1001,7 +1003,8 @@ const WeatherSection = () => {
   return (
     <Box
       sx={{
-        height: 'calc(100dvh - 64px)',
+        minHeight: 'calc(100dvh - 64px)',
+        height: { xs: 'auto', md: 'calc(100dvh - 64px)' },
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -1011,7 +1014,8 @@ const WeatherSection = () => {
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
         position: 'relative',
-        px: { xs: 2, md: 0 },
+        py: { xs: 6, md: 0 },
+        px: { xs: 2.5, md: 4 },
       }}
     >
       <Container maxWidth="xl" sx={{ width: '100%', maxWidth: '1400px !important' }}>
@@ -1201,6 +1205,7 @@ const WeatherSection = () => {
 ────────────────────────────────────────────── */
 const StockSection = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [stockList, setStockList] = useState([]);
 
   useEffect(() => {
@@ -1223,7 +1228,8 @@ const StockSection = () => {
   return (
     <Box
       sx={{
-        height: 'calc(100dvh - 64px)',
+        minHeight: 'calc(100dvh - 64px)',
+        height: { xs: 'auto', md: 'calc(100dvh - 64px)' },
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -1233,7 +1239,8 @@ const StockSection = () => {
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
         position: 'relative',
-        px: { xs: 2, md: 0 },
+        py: { xs: 6, md: 0 },
+        px: { xs: 2.5, md: 4 },
       }}
     >
       <Box
@@ -1245,40 +1252,39 @@ const StockSection = () => {
         }}
       />
 
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, maxWidth: '1400px !important' }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
             alignItems: 'center',
-            gap: { xs: 5, md: 8 },
+            gap: { xs: 4, md: 8 },
           }}
         >
           <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '45%' } }}>
             <Chip
-              label="📈 REALTIME TRADING ENGINE HTS v2.0"
+              label={t('main.stock_badge')}
               sx={{
                 mb: 2.5, bgcolor: 'rgba(56,189,248,0.08)', color: '#38bdf8',
-                border: '1px solid rgba(56,189,248,0.25)', fontWeight: 800, fontSize: '0.78rem',
+                border: '1px solid rgba(56,189,248,0.25)', fontWeight: 800, fontSize: { xs: '0.72rem', md: '0.78rem' },
               }}
             />
             <Typography
               variant="h2" fontWeight={800}
               sx={{
                 mb: 2, letterSpacing: '-1.5px', lineHeight: 1.15,
-                fontSize: { xs: '2.0rem', md: '2.8rem' },
+                fontSize: { xs: '1.8rem', sm: '2.4rem', md: '2.8rem' },
               }}
             >
               <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>
-                실시간 가상 주식
+                {t('main.stock_title_1')}
               </span>
               <span style={{ background: 'linear-gradient(135deg,#38bdf8,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block' }}>
-                모의 거래소 (HTS)
+                {t('main.stock_title_2')}
               </span>
             </Typography>
-            <Typography sx={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.7, mb: 4, maxWidth: 420 }}>
-              실시간 10호가창, 캔들 봉차트, 지정가 예약 매매, 공매도 및 레버리지까지!
-              현실 증권사 거래소 수준의 압도적 모의 주식을 경험해보세요.
+            <Typography sx={{ color: '#94a3b8', fontSize: { xs: '0.88rem', md: '0.95rem' }, lineHeight: 1.7, mb: 4, maxWidth: 420 }}>
+              {t('main.stock_desc')}
             </Typography>
 
             <Stack direction="row" spacing={2}>
@@ -1286,15 +1292,15 @@ const StockSection = () => {
                 variant="contained"
                 onClick={() => navigate('/play/stock')}
                 sx={{
-                  px: 4, py: 1.8, borderRadius: '14px',
+                  px: { xs: 3, md: 4 }, py: 1.8, borderRadius: '14px',
                   background: 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)',
-                  color: '#fff', fontWeight: 800, fontSize: '1.05rem', textTransform: 'none',
+                  color: '#fff', fontWeight: 800, fontSize: { xs: '0.95rem', md: '1.05rem' }, textTransform: 'none',
                   boxShadow: '0 8px 24px rgba(56,189,248,0.3)',
                   '&:hover': { background: 'linear-gradient(135deg, #0284c7 0%, #4f46e5 100%)', transform: 'translateY(-2px)' },
                   transition: 'all 0.25s',
                 }}
               >
-                📈 주식 거래소 HTS 입장하기
+                {t('main.stock_btn')}
               </Button>
             </Stack>
           </Box>
@@ -1305,12 +1311,12 @@ const StockSection = () => {
                 background: 'rgba(15, 17, 26, 0.9)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '20px',
-                p: { xs: 2.5, md: 3.5 },
+                p: { xs: 2, sm: 3, md: 3.5 },
                 boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
               }}
             >
               <Typography sx={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.9rem', mb: 2 }}>
-                ⚡ 실시간 종목 시세 파동
+                {t('main.stock_card_title')}
               </Typography>
 
               <Stack spacing={1.5}>
@@ -1321,23 +1327,23 @@ const StockSection = () => {
                       key={stock.ticker}
                       sx={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        p: 2, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.02)',
+                        p: { xs: 1.5, sm: 2 }, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.02)',
                         border: '1px solid rgba(255,255,255,0.04)'
                       }}
                     >
                       <Box>
-                        <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: '#fff' }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: { xs: '0.85rem', sm: '0.95rem' }, color: '#fff' }}>
                           {stock.name} ({stock.ticker})
                         </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#64748b' }}>
-                          가상 시세 시뮬레이터
+                        <Typography sx={{ fontSize: '0.72rem', color: '#64748b' }}>
+                          {t('main.stock_card_sub')}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
-                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace', fontSize: '1.1rem', color: isUp ? '#ef4444' : '#3b82f6' }}>
+                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace', fontSize: { xs: '0.95rem', sm: '1.1rem' }, color: isUp ? '#ef4444' : '#3b82f6' }}>
                           {stock.currentPrice.toLocaleString()}원
                         </Typography>
-                        <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: isUp ? '#ef4444' : '#3b82f6' }}>
+                        <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: isUp ? '#ef4444' : '#3b82f6' }}>
                           {isUp ? '▲' : '▼'} {Math.abs(stock.changeRate)}%
                         </Typography>
                       </Box>
@@ -1345,7 +1351,7 @@ const StockSection = () => {
                   );
                 }) : (
                   <Typography sx={{ color: '#64748b', py: 4, textAlign: 'center' }}>
-                    시세 수신 중...
+                    {t('main.stock_receiving')}
                   </Typography>
                 )}
               </Stack>
@@ -1400,7 +1406,8 @@ const MainPage = () => {
       <Box
         sx={{
           position: 'relative',
-          height: 'calc(100dvh - 64px)',
+          minHeight: 'calc(100dvh - 64px)',
+          height: { xs: 'auto', md: 'calc(100dvh - 64px)' },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -1408,7 +1415,8 @@ const MainPage = () => {
           overflow: 'hidden',
           scrollSnapAlign: 'start',
           scrollSnapStop: 'always',
-          px: { xs: 2, md: 4 },
+          py: { xs: 6, md: 0 },
+          px: { xs: 2.5, md: 4 },
         }}
       >
         {/* 배경 글로우 */}
@@ -1421,7 +1429,7 @@ const MainPage = () => {
           }}
         />
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1400px !important' }}>
           <Box
             sx={{
               display: 'flex',
@@ -1431,10 +1439,10 @@ const MainPage = () => {
             }}
           >
             <Chip
-              label="💻 INTERACTIVE CLI TERMINAL"
+              label={t('main.cli_badge')}
               sx={{
                 mb: 3, bgcolor: 'rgba(99,102,241,0.1)', color: '#818cf8',
-                border: '1px solid rgba(99,102,241,0.25)', fontWeight: 800, fontSize: '0.8rem',
+                border: '1px solid rgba(99,102,241,0.25)', fontWeight: 800, fontSize: { xs: '0.75rem', md: '0.8rem' },
               }}
             />
 

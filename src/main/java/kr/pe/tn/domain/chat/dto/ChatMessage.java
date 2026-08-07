@@ -44,6 +44,27 @@ public class ChatMessage {
     private LocalDateTime timestamp; // 전송 시간
     private boolean isAnonymous; // 익명 여부
 
+    public MessageType getType() { return type; }
+    public void setType(MessageType type) { this.type = type; }
+    public RoomType getRoomType() { return roomType; }
+    public void setRoomType(RoomType roomType) { this.roomType = roomType; }
+    public String getRoomId() { return roomId; }
+    public void setRoomId(String roomId) { this.roomId = roomId; }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+    public String getSender() { return sender; }
+    public void setSender(String sender) { this.sender = sender; }
+    public String getSenderId() { return senderId; }
+    public void setSenderId(String senderId) { this.senderId = senderId; }
+    public String getReceiver() { return receiver; }
+    public void setReceiver(String receiver) { this.receiver = receiver; }
+    public String getReceiverId() { return receiverId; }
+    public void setReceiverId(String receiverId) { this.receiverId = receiverId; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public boolean isAnonymous() { return isAnonymous; }
+    public void setAnonymous(boolean anonymous) { isAnonymous = anonymous; }
+
     /**
      * 익명 메시지 생성
      */
@@ -106,9 +127,6 @@ public class ChatMessage {
                 .build();
     }
 
-    /**
-     * 퇴장 메시지 생성
-     */
     public static ChatMessage createLeave(String sender, String roomId) {
         return ChatMessage.builder()
                 .type(MessageType.LEAVE)
@@ -116,5 +134,48 @@ public class ChatMessage {
                 .roomId(roomId)
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    public static ChatMessageBuilder builder() {
+        return new ChatMessageBuilder();
+    }
+
+    public static class ChatMessageBuilder {
+        private MessageType type;
+        private RoomType roomType;
+        private String roomId;
+        private String content;
+        private String sender;
+        private String senderId;
+        private String receiver;
+        private String receiverId;
+        private LocalDateTime timestamp;
+        private boolean isAnonymous;
+
+        public ChatMessageBuilder type(MessageType type) { this.type = type; return this; }
+        public ChatMessageBuilder roomType(RoomType roomType) { this.roomType = roomType; return this; }
+        public ChatMessageBuilder roomId(String roomId) { this.roomId = roomId; return this; }
+        public ChatMessageBuilder content(String content) { this.content = content; return this; }
+        public ChatMessageBuilder sender(String sender) { this.sender = sender; return this; }
+        public ChatMessageBuilder senderId(String senderId) { this.senderId = senderId; return this; }
+        public ChatMessageBuilder receiver(String receiver) { this.receiver = receiver; return this; }
+        public ChatMessageBuilder receiverId(String receiverId) { this.receiverId = receiverId; return this; }
+        public ChatMessageBuilder timestamp(LocalDateTime timestamp) { this.timestamp = timestamp; return this; }
+        public ChatMessageBuilder isAnonymous(boolean isAnonymous) { this.isAnonymous = isAnonymous; return this; }
+
+        public ChatMessage build() {
+            ChatMessage msg = new ChatMessage();
+            msg.setType(type);
+            msg.setRoomType(roomType);
+            msg.setRoomId(roomId);
+            msg.setContent(content);
+            msg.setSender(sender);
+            msg.setSenderId(senderId);
+            msg.setReceiver(receiver);
+            msg.setReceiverId(receiverId);
+            msg.setTimestamp(timestamp);
+            msg.setAnonymous(isAnonymous);
+            return msg;
+        }
     }
 }

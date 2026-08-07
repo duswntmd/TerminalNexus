@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "donation")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Donation {
 
@@ -50,7 +49,6 @@ public class Donation {
     /** 결제 상태 */
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @Builder.Default
     private DonationStatus status = DonationStatus.READY;
 
     /** 후원자 (로그인 유저) */
@@ -90,5 +88,43 @@ public class Donation {
      */
     public void fail() {
         this.status = DonationStatus.FAILED;
+    }
+
+    public Long getId() { return id; }
+    public String getImpUid() { return impUid; }
+    public String getMerchantUid() { return merchantUid; }
+    public Integer getAmount() { return amount; }
+    public String getPayMethod() { return payMethod; }
+    public String getPgProvider() { return pgProvider; }
+    public DonationStatus getStatus() { return status; }
+    public UserEntity getUser() { return user; }
+    public String getMessage() { return message; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public LocalDateTime getPaidDate() { return paidDate; }
+
+    public static DonationBuilder builder() { return new DonationBuilder(); }
+
+    public static class DonationBuilder {
+        private String merchantUid;
+        private Integer amount;
+        private String message;
+        private UserEntity user;
+        private DonationStatus status = DonationStatus.READY;
+
+        public DonationBuilder merchantUid(String merchantUid) { this.merchantUid = merchantUid; return this; }
+        public DonationBuilder amount(Integer amount) { this.amount = amount; return this; }
+        public DonationBuilder message(String message) { this.message = message; return this; }
+        public DonationBuilder user(UserEntity user) { this.user = user; return this; }
+        public DonationBuilder status(DonationStatus status) { this.status = status; return this; }
+
+        public Donation build() {
+            Donation d = new Donation();
+            d.merchantUid = this.merchantUid;
+            d.amount = this.amount;
+            d.message = this.message;
+            d.user = this.user;
+            d.status = this.status != null ? this.status : DonationStatus.READY;
+            return d;
+        }
     }
 }

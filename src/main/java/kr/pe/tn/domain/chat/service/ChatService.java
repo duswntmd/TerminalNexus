@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
  * - @Async로 비동기 저장 → WebSocket 응답 지연 없음
  * - 히스토리 조회: 최신 100건 역순(시간순) 반환
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ChatService.class);
     private final ChatMessageRepository chatMessageRepository;
 
     // ──────────────────────────────────────────────

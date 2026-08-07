@@ -134,6 +134,8 @@ const Header = () => {
               </button>
               <ul className="dropdown-menu">
                 <li><Link to="/play/stock" onClick={closeMenu}>📈 주식</Link></li>
+                <li><Link to="/play/janggi" onClick={closeMenu}>🩵 AI/오프라인 장기</Link></li>
+                <li><Link to="/play/janggi-online" onClick={closeMenu}>🌐 실시간 온라인 장기</Link></li>
                 <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
                 <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
                 <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>

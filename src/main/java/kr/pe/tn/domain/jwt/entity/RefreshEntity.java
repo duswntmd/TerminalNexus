@@ -33,4 +33,25 @@ public class RefreshEntity {
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
+    public Long getId() { return id; }
+    public String getUsername() { return username; }
+    public String getRefresh() { return refresh; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+
+    public static RefreshEntityBuilder builder() { return new RefreshEntityBuilder(); }
+
+    public static class RefreshEntityBuilder {
+        private String username;
+        private String refresh;
+
+        public RefreshEntityBuilder username(String username) { this.username = username; return this; }
+        public RefreshEntityBuilder refresh(String refresh) { this.refresh = refresh; return this; }
+
+        public RefreshEntity build() {
+            RefreshEntity r = new RefreshEntity();
+            r.username = this.username;
+            r.refresh = this.refresh;
+            return r;
+        }
+    }
 }

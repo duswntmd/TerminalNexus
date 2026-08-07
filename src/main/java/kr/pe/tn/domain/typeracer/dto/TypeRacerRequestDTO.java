@@ -22,4 +22,9 @@ public class TypeRacerRequestDTO {
     @Min(value = 0, message = "정확도는 0% 이상이어야 합니다.")
     @Max(value = 100, message = "정확도는 100% 이하여야 합니다.")
     private Double accuracy;
+
+    public Integer getWpm() { return wpm; }
+    public void setWpm(Integer wpm) { this.wpm = wpm; }
+    public Double getAccuracy() { return accuracy; }
+    public void setAccuracy(Double accuracy) { this.accuracy = accuracy; }
 }

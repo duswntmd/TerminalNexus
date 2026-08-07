@@ -21,6 +21,17 @@ public class ChatRoom {
     private Set<String> participants; // 참여자 목록 (닉네임)
     private int userCount; // 현재 인원
 
+    public String getRoomId() { return roomId; }
+    public void setRoomId(String roomId) { this.roomId = roomId; }
+    public String getRoomName() { return roomName; }
+    public void setRoomName(String roomName) { this.roomName = roomName; }
+    public ChatMessage.RoomType getRoomType() { return roomType; }
+    public void setRoomType(ChatMessage.RoomType roomType) { this.roomType = roomType; }
+    public Set<String> getParticipants() { return participants; }
+    public void setParticipants(Set<String> participants) { this.participants = participants; }
+    public int getUserCount() { return userCount; }
+    public void setUserCount(int userCount) { this.userCount = userCount; }
+
     /**
      * 전체 채팅방 생성
      */
@@ -85,13 +96,38 @@ public class ChatRoom {
         userCount = participants.size();
     }
 
-    /**
-     * 사용자 제거
-     */
     public void removeUser(String username) {
         if (participants != null) {
             participants.remove(username);
             userCount = participants.size();
+        }
+    }
+
+    public static ChatRoomBuilder builder() {
+        return new ChatRoomBuilder();
+    }
+
+    public static class ChatRoomBuilder {
+        private String roomId;
+        private String roomName;
+        private ChatMessage.RoomType roomType;
+        private Set<String> participants;
+        private int userCount;
+
+        public ChatRoomBuilder roomId(String roomId) { this.roomId = roomId; return this; }
+        public ChatRoomBuilder roomName(String roomName) { this.roomName = roomName; return this; }
+        public ChatRoomBuilder roomType(ChatMessage.RoomType roomType) { this.roomType = roomType; return this; }
+        public ChatRoomBuilder participants(Set<String> participants) { this.participants = participants; return this; }
+        public ChatRoomBuilder userCount(int userCount) { this.userCount = userCount; return this; }
+
+        public ChatRoom build() {
+            ChatRoom room = new ChatRoom();
+            room.setRoomId(roomId);
+            room.setRoomName(roomName);
+            room.setRoomType(roomType);
+            room.setParticipants(participants);
+            room.setUserCount(userCount);
+            return room;
         }
     }
 }

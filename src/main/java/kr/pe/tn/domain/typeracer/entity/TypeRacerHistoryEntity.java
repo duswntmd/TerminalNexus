@@ -37,4 +37,30 @@ public class TypeRacerHistoryEntity {
     @CreatedDate
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
+
+    public Long getId() { return id; }
+    public UserEntity getUser() { return user; }
+    public Integer getWpm() { return wpm; }
+    public Double getAccuracy() { return accuracy; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+
+    public static TypeRacerHistoryEntityBuilder builder() { return new TypeRacerHistoryEntityBuilder(); }
+
+    public static class TypeRacerHistoryEntityBuilder {
+        private UserEntity user;
+        private Integer wpm;
+        private Double accuracy;
+
+        public TypeRacerHistoryEntityBuilder user(UserEntity user) { this.user = user; return this; }
+        public TypeRacerHistoryEntityBuilder wpm(Integer wpm) { this.wpm = wpm; return this; }
+        public TypeRacerHistoryEntityBuilder accuracy(Double accuracy) { this.accuracy = accuracy; return this; }
+
+        public TypeRacerHistoryEntity build() {
+            TypeRacerHistoryEntity h = new TypeRacerHistoryEntity();
+            h.user = this.user;
+            h.wpm = this.wpm;
+            h.accuracy = this.accuracy;
+            return h;
+        }
+    }
 }
