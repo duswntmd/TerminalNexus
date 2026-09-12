@@ -139,8 +139,8 @@ public class SecurityConfig {
                                                                 "/freeboard/**", "/cookie/**",
                                                                 "/api/message", "/oauth2/**", "/logout",
                                                                 "/jwt/**", "/api/user/exist/**",
-                                                                "/display", "/download", "/upload/**",
-                                                                "/uploadAjax",  // 파일 업로드 엔드포인트 명시적 허용
+                                                                "/api/display", "/api/download", "/api/upload/**",
+                                                                "/api/uploadAjax", "/api/removeFile", // 파일 업로드/다운로드 엔드포인트
                                                                 "/api/freeboard/**",
                                                                 "/ws-chat/**")
                                                 .permitAll()
