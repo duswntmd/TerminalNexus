@@ -138,8 +138,10 @@ public class SecurityConfig {
                                                                 "/user/**", "/join/**", "/login/**", "/guide/**",
                                                                 "/freeboard/**", "/cookie/**",
                                                                 "/api/message", "/oauth2/**", "/logout",
-                                                                "/jwt/**", "/api/user/exist/**", "/display",
-                                                                "/download", "/upload/**", "/api/freeboard/**",
+                                                                "/jwt/**", "/api/user/exist/**",
+                                                                "/display", "/download", "/upload/**",
+                                                                "/uploadAjax",  // 파일 업로드 엔드포인트 명시적 허용
+                                                                "/api/freeboard/**",
                                                                 "/ws-chat/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
