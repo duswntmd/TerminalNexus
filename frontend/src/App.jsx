@@ -160,6 +160,7 @@ const AppContent = () => {
           <Route path="/play/typeracer" element={<TypeRacerPage />} />
           <Route path="/play/hackermode" element={<HackerModePage />} />
           <Route path="/play/terminalhack" element={<TerminalHackPage />} />
+          <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
           <Route path="/play/janggi-online" element={
             <ProtectedRoute>
