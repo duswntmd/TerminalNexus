@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api")
 public class UploadController {
 
     @Value("${org.zerock.upload.path}") // application.properties check needed
