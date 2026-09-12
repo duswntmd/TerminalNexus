@@ -122,6 +122,7 @@ pipeline {
                                 -p 8080:8080 \\
                                 -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \\
                                 --name ${CONTAINER_NAME} \\
+                                --add-host=host.docker.internal:host-gateway \\
                                 -e "UPLOAD_PATH=${CONTAINER_UPLOAD_DIR}" \\
                                 -e "SPRING_DATASOURCE_URL=jdbc:mysql://duswntmd.ddns.net:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \\
                                 -e "SPRING_DATASOURCE_USERNAME=tn" \\
