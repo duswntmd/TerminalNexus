@@ -72,7 +72,7 @@ pipeline {
                 
                 echo '📁 업로드 디렉토리 생성 중...'
                 sh "sudo mkdir -p ${HOST_UPLOAD_DIR}"
-                sh "sudo chmod 777 ${HOST_UPLOAD_DIR}"
+                sh "sudo chmod 755 ${HOST_UPLOAD_DIR}"
                 echo "✅ 업로드 디렉토리 준비 완료: ${HOST_UPLOAD_DIR}"
             }
         }
@@ -111,7 +111,10 @@ pipeline {
                     // ✅ 민감 정보는 Jenkins Credentials에서 주입 (소스코드에 값 없음)
                     withCredentials([
                         string(credentialsId: 'GEMINI_API_KEY',  variable: 'GEMINI_KEY'),
-                        string(credentialsId: 'ADMIN_PASSWORD',  variable: 'ADMIN_PASS')
+                        string(credentialsId: 'ADMIN_PASSWORD',  variable: 'ADMIN_PASS'),
+                        string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASS'),
+                        string(credentialsId: 'NAVER_CLIENT_SECRET', variable: 'NAVER_SECRET'),
+                        string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_SECRET')
                     ]) {
                         sh """
                             docker stop ${CONTAINER_NAME} || true
@@ -122,15 +125,18 @@ pipeline {
                                 -p 8080:8080 \\
                                 -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \\
                                 --name ${CONTAINER_NAME} \\
+                                --restart unless-stopped \\
                                 --add-host=host.docker.internal:host-gateway \\
                                 -e "UPLOAD_PATH=${CONTAINER_UPLOAD_DIR}" \\
-                                -e "SPRING_DATASOURCE_URL=jdbc:mysql://duswntmd.ddns.net:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \\
+                                -e "SPRING_DATASOURCE_URL=jdbc:mysql://192.168.0.6:3306/tn?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC" \\
                                 -e "SPRING_DATASOURCE_USERNAME=tn" \\
-                                -e "SPRING_DATASOURCE_PASSWORD=tn" \\
+                                -e "SPRING_DATASOURCE_PASSWORD=\${DB_PASS}" \\
                                 -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \\
                                 -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \\
                                 -e "ADMIN_PASSWORD=\${ADMIN_PASS}" \\
                                 -e "GEMINI_API_KEY=\${GEMINI_KEY}" \\
+                                -e "NAVER_CLIENT_SECRET=\${NAVER_SECRET}" \\
+                                -e "GOOGLE_CLIENT_SECRET=\${GOOGLE_SECRET}" \\
                                 ${DOCKER_IMAGE}
 
                             docker image prune -f

@@ -50,3 +50,10 @@ set-env-prod.ps1
 
 ### IntelliJ Run Configurations (contains API keys) ###
 .idea/runConfigurations/
+
+### Local artifacts ###
+*.bak
+backend.log
+curl_result.txt
+p_payments*.json
+
