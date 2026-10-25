@@ -17,6 +17,19 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://tnhub.kr/lotto</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/play/stock</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/play/janggi</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://tnhub.kr/privacy</loc>
     <priority>0.5</priority>
   </url>

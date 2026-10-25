@@ -104,7 +104,8 @@ const Header = () => {
               </button>
               <ul className="dropdown-menu">
                 <li><Link to="/guide" onClick={closeMenu}>{t('header.guide')}</Link></li>
-                <li><Link to="/fruit-ai" onClick={closeMenu}>🍎 과일 AI</Link></li>
+                <li><Link to="/fruit-ai" onClick={closeMenu}>{t('header.fruitai')}</Link></li>
+                <li><Link to="/lotto" onClick={closeMenu}>{t('header.lotto')}</Link></li>
               </ul>
             </li>
 
@@ -118,7 +119,7 @@ const Header = () => {
                 {t('header.community')} <span className="arrow"></span>
               </button>
               <ul className="dropdown-menu">
-                <li><Link to="/chat" onClick={closeMenu}>💬 채팅</Link></li>
+                <li><Link to="/chat" onClick={closeMenu}>{t('header.chat')}</Link></li>
                 <li><Link to="/freeboard" onClick={closeMenu}>{t('header.freeboard')}</Link></li>
               </ul>
             </li>
@@ -133,9 +134,9 @@ const Header = () => {
                 {t('header.play')} <span className="arrow"></span>
               </button>
               <ul className="dropdown-menu">
-                <li><Link to="/play/stock" onClick={closeMenu}>📈 주식</Link></li>
-                <li><Link to="/play/janggi" onClick={closeMenu}>♟️ 장기</Link></li>
-                <li><Link to="/forge" onClick={closeMenu}>⚒️ 강화</Link></li>
+                <li><Link to="/play/stock" onClick={closeMenu}>{t('header.stock')}</Link></li>
+                <li><Link to="/play/janggi" onClick={closeMenu}>{t('header.janggi')}</Link></li>
+                <li><Link to="/forge" onClick={closeMenu}>{t('header.forge')}</Link></li>
                 <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
                 <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>
                 <li><Link to="/play/terminalhack" onClick={closeMenu}>{t('header.terminalhack')}</Link></li>

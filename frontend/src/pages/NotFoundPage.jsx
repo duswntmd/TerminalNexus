@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './NotFoundPage.css';
 
 const GLITCH_CHARS = '!@#$%^&*?/\\<>[]{}|~0123456789ABCDEF';
@@ -12,6 +13,7 @@ const glitch = (str) =>
   ).join('');
 
 const NotFoundPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [displayText, setDisplayText] = useState('404');
@@ -43,7 +45,7 @@ const NotFoundPage = () => {
   return (
     <>
       <Helmet>
-        <title>404 — 페이지를 찾을 수 없음 | TerminalNexus</title>
+        <title>{`404 — ${t('notfound.title')} | TerminalNexus`}</title>
       </Helmet>
 
       <div className="nf-root">
@@ -69,7 +71,7 @@ const NotFoundPage = () => {
             <div className="nf-terminal-body">
               <p><span className="nf-prompt">$</span> <span className="nf-cmd">navigate</span> <span className="nf-arg">"{location.pathname}"</span></p>
               <p className="nf-error">Error: No static resource found at this path.</p>
-              <p className="nf-hint">{'>'} 요청한 페이지가 존재하지 않거나 이동되었습니다.</p>
+              <p className="nf-hint">{'>'} {t('notfound.hint')}</p>
               <p className="nf-blink">_</p>
             </div>
           </div>
@@ -77,20 +79,20 @@ const NotFoundPage = () => {
           {/* 버튼 그룹 */}
           <div className="nf-actions">
             <button className="nf-btn nf-btn-primary" onClick={() => navigate('/')}>
-              <span className="nf-btn-icon">⌂</span> 홈으로 돌아가기
+              <span className="nf-btn-icon">⌂</span> {t('notfound.home')}
             </button>
             <button className="nf-btn nf-btn-secondary" onClick={() => navigate(-1)}>
-              <span className="nf-btn-icon">←</span> 이전 페이지
+              <span className="nf-btn-icon">←</span> {t('notfound.back')}
             </button>
           </div>
 
           {/* 빠른 링크 */}
           <div className="nf-links">
-            <span className="nf-links-label">빠른 이동:</span>
+            <span className="nf-links-label">{t('notfound.quick')}:</span>
             {[
-              { path: '/chat', label: '💬 채팅' },
+              { path: '/chat', label: t('header.chat') },
               { path: '/forge', label: '⚒️ FORGE' },
-              { path: '/freeboard', label: '📋 게시판' },
+              { path: '/freeboard', label: t('header.freeboard') },
             ].map(({ path, label }) => (
               <button key={path} className="nf-quick-link" onClick={() => navigate(path)}>
                 {label}
