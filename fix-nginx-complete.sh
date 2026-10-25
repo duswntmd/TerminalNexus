@@ -13,9 +13,9 @@ sudo cp /etc/nginx/sites-available/default "$BACKUP_FILE"
 echo "✅ 백업 완료: $BACKUP_FILE"
 echo ""
 
-# 2. nginx.conf.sample 파일이 있는지 확인
-if [ ! -f "nginx.conf.sample" ]; then
-    echo "❌ nginx.conf.sample 파일을 찾을 수 없습니다."
+# 2. nginx/tnhub.conf 파일이 있는지 확인
+if [ ! -f "nginx/tnhub.conf" ]; then
+    echo "❌ nginx/tnhub.conf 파일을 찾을 수 없습니다."
     echo "   이 스크립트는 프로젝트 루트 디렉토리에서 실행해야 합니다."
     exit 1
 fi
@@ -38,7 +38,7 @@ echo ""
 echo "다음 명령어로 설정 파일을 열어주세요:"
 echo "   sudo nano /etc/nginx/sites-available/default"
 echo ""
-echo "그리고 nginx.conf.sample 파일의 내용을 참고하여"
+echo "그리고 nginx/tnhub.conf 파일의 내용을 참고하여"
 echo "다음 location 블록들을 추가/수정해주세요:"
 echo ""
 echo "   ✅ location /api/ { ... }"
@@ -46,9 +46,9 @@ echo "   ✅ location /oauth2/ { ... }"
 echo "   ✅ location ~ ^/(login|logout) { ... }"
 echo "   ✅ location ~ ^/(upload|download|display)/ { ... }"
 echo ""
-echo "📝 nginx.conf.sample 파일 내용 미리보기:"
+echo "📝 nginx/tnhub.conf 파일 내용 미리보기:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-cat nginx.conf.sample
+cat nginx/tnhub.conf
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -104,4 +104,4 @@ echo "   → 응답: JSON with accessToken (405가 아니면 성공!)"
 echo ""
 echo "📝 참고:"
 echo "   - 백업 파일 위치: $BACKUP_FILE"
-echo "   - 전체 설정 예시: nginx.conf.sample 파일 참조"
+echo "   - 전체 설정 예시: nginx/tnhub.conf 파일 참조"

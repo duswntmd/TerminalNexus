@@ -32,15 +32,15 @@ echo ""
 echo "🛠️ 5. 추가 백엔드 경로 설정 확인 중..."
 
 if ! grep -q "location /oauth2/" /etc/nginx/sites-available/default; then
-    echo "⚠️ OAuth2 프록시 설정이 없습니다. nginx.conf.sample을 참고하여 수동으로 추가하세요."
+    echo "⚠️ OAuth2 프록시 설정이 없습니다. nginx/tnhub.conf을 참고하여 수동으로 추가하세요."
 fi
 
 if ! grep -q "location ~ ^/(login|logout)" /etc/nginx/sites-available/default; then
-    echo "⚠️ 로그인/로그아웃 프록시 설정이 없습니다. nginx.conf.sample을 참고하여 수동으로 추가하세요."
+    echo "⚠️ 로그인/로그아웃 프록시 설정이 없습니다. nginx/tnhub.conf을 참고하여 수동으로 추가하세요."
 fi
 
 if ! grep -q "location ~ ^/(upload|download|display)" /etc/nginx/sites-available/default; then
-    echo "⚠️ 파일 업로드/다운로드 프록시 설정이 없습니다. nginx.conf.sample을 참고하여 수동으로 추가하세요."
+    echo "⚠️ 파일 업로드/다운로드 프록시 설정이 없습니다. nginx/tnhub.conf을 참고하여 수동으로 추가하세요."
 fi
 echo ""
 
@@ -80,4 +80,4 @@ echo "   4. 200 OK 응답이 오면 성공!"
 echo ""
 echo "📝 참고:"
 echo "   - 백업 파일 위치: /etc/nginx/sites-available/default.backup.*"
-echo "   - 전체 설정 예시: nginx.conf.sample 파일 참조"
+echo "   - 전체 설정 예시: nginx/tnhub.conf 파일 참조"

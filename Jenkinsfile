@@ -56,19 +56,28 @@ pipeline {
                 sh "sudo mkdir -p ${NGINX_WEB_ROOT}"
                 sh "sudo cp -r frontend/dist/* ${NGINX_WEB_ROOT}/"
                 
-                echo '🔧 Nginx 업로드 크기 제한 설정 중...'
+                echo '🔧 Nginx 사이트 설정(nginx/tnhub.conf) 적용 중...'
                 sh '''
-                    # Nginx 설정에 client_max_body_size 추가/수정
-                    if ! grep -q "client_max_body_size" /etc/nginx/nginx.conf; then
-                        sudo sed -i '/http {/a \\    client_max_body_size 1024M;' /etc/nginx/nginx.conf
-                        echo "✅ client_max_body_size 추가됨"
+                    SITE=/etc/nginx/sites-available/default
+                    BACKUP=/etc/nginx/sites-available/default.bak-jenkins
+
+                    # 변경 없으면 건너뜀
+                    if sudo cmp -s nginx/tnhub.conf "$SITE"; then
+                        echo "✅ Nginx 설정 변경 없음"
                     else
-                        echo "✅ client_max_body_size 이미 존재함"
+                        sudo cp "$SITE" "$BACKUP"
+                        sudo cp nginx/tnhub.conf "$SITE"
+                        if sudo nginx -t; then
+                            sudo systemctl reload nginx
+                            echo "✅ Nginx 설정 적용 완료 (이전 설정 백업: $BACKUP)"
+                        else
+                            # 문법 오류 시 이전 설정으로 즉시 복구하고 빌드 실패 처리
+                            sudo cp "$BACKUP" "$SITE"
+                            sudo nginx -t && sudo systemctl reload nginx
+                            echo "❌ Nginx 설정 오류 → 이전 설정으로 복구함"
+                            exit 1
+                        fi
                     fi
-                    
-                    # Nginx 설정 테스트 및 재시작
-                    sudo nginx -t && sudo systemctl reload nginx
-                    echo "✅ Nginx 재시작 완료"
                 '''
                 
                 echo '📁 업로드 디렉토리 생성 중...'
@@ -134,7 +143,7 @@ pipeline {
                             docker ps --filter "publish=8080" -q | xargs -r docker stop || true
 
                             docker run -d \\
-                                -p 8080:8080 \\
+                                -p 127.0.0.1:8080:8080 \\
                                 -v ${HOST_UPLOAD_DIR}:${CONTAINER_UPLOAD_DIR} \\
                                 --name ${CONTAINER_NAME} \\
                                 --restart unless-stopped \\
