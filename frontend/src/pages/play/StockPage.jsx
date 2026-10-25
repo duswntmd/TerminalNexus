@@ -146,7 +146,8 @@ const StockPage = () => {
   useEffect(() => {
     const wsUrl = BACKEND_URL.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:');
     const client = new Client({
-      brokerURL: `${wsUrl}/ws-chat`,
+      // SockJS 엔드포인트의 raw WebSocket 경로 (nginx /ws-chat/ 프록시 경유)
+      brokerURL: `${wsUrl}/ws-chat/websocket`,
       debug: () => {},
       reconnectDelay: 5000,
     });

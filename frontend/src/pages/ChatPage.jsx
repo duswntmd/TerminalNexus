@@ -60,7 +60,8 @@ const ChatPage = () => {
             .replace(/^https:/, 'wss:');
 
         const client = new Client({
-            brokerURL: `${wsUrl}/ws-chat`,
+            // SockJS 엔드포인트의 raw WebSocket 경로 (nginx /ws-chat/ 프록시 경유)
+            brokerURL: `${wsUrl}/ws-chat/websocket`,
             debug: () => {},  // 콘솔 디버그 로그 비활성화
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,

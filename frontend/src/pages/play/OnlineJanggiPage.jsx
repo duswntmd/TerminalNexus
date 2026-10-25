@@ -393,7 +393,8 @@ const OnlineJanggiPage = () => {
     }
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProtocol}//${window.location.host}/ws-chat`;
+    // SockJS 엔드포인트의 raw WebSocket 경로 (nginx /ws-chat/ 프록시 경유)
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws-chat/websocket`;
 
     const client = new Client({
       webSocketFactory: () => {
