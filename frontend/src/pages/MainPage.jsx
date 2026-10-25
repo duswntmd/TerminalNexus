@@ -1210,6 +1210,7 @@ const StockSection = () => {
 
   useEffect(() => {
     const fetchTopStocks = async () => {
+      if (document.hidden) return; // 탭이 보이지 않을 때는 폴링 생략
       try {
         const res = await fetch('/api/stock/prices');
         if (res.ok) {

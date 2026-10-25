@@ -139,10 +139,10 @@ public class SecurityConfig {
                                                                 "/freeboard/**", "/cookie/**",
                                                                 "/api/message", "/oauth2/**", "/logout",
                                                                 "/jwt/**", "/api/user/exist/**",
-                                                                "/api/display", "/api/download", "/api/upload/**",
-                                                                "/api/uploadAjax", "/api/removeFile", // 파일 업로드/다운로드 엔드포인트
+                                                                "/api/display", "/api/download", // 파일 표시/다운로드 (업로드는 로그인 필요)
                                                                 "/api/freeboard/**",
-                                                                "/ws-chat/**")
+                                                                "/ws-chat", "/ws-chat/**",
+                                                                "/error") // 오류 응답이 401로 가려지지 않도록 허용
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/donation/public").permitAll()
@@ -156,8 +156,17 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/history/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
                                                 .requestMatchers("/api/stock/**").authenticated()
                                                 .requestMatchers("/api/chat/**").authenticated()
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated());
+
+                // 미인증 요청은 로그인 페이지 리다이렉트 대신 401 응답 (프론트에서 토큰 재발급/로그인 이동 처리)
+                http
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint((request, response, authException) -> {
+                                                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                                        response.setContentType("application/json;charset=UTF-8");
+                                                        response.getWriter().write("{\"error\":\"로그인이 필요합니다.\"}");
+                                                }));
 
                 return http.build();
         }

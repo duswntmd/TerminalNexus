@@ -3,6 +3,8 @@ package kr.pe.tn.api;
 import kr.pe.tn.domain.janggi.dto.JanggiDTO;
 import kr.pe.tn.domain.janggi.entity.JanggiRoom;
 import kr.pe.tn.domain.janggi.service.JanggiRoomService;
+import kr.pe.tn.domain.user.entity.UserEntity;
+import kr.pe.tn.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -11,6 +13,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -22,6 +25,7 @@ public class JanggiGameController {
 
     private final JanggiRoomService roomService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
     /**
      * 모든 대국 방 목록 조회
@@ -67,7 +71,14 @@ public class JanggiGameController {
      * 대국 방 삭제 (방장 전용)
      */
     @DeleteMapping("/api/janggi/room/{roomId}")
-    public ResponseEntity<Void> deleteRoom(@PathVariable("roomId") String roomId, @RequestParam("hostNickname") String hostNickname) {
+    public ResponseEntity<Void> deleteRoom(@PathVariable("roomId") String roomId, Principal principal) {
+        // 방장 확인은 요청 파라미터가 아닌 로그인 사용자의 닉네임으로 수행
+        String hostNickname = userRepository.findByUsernameAndIsLock(principal.getName(), false)
+                .map(UserEntity::getNickname)
+                .orElse(null);
+        if (hostNickname == null) {
+            return ResponseEntity.status(403).build();
+        }
         boolean deleted = roomService.deleteRoom(roomId, hostNickname);
         if (deleted) {
             messagingTemplate.convertAndSend("/topic/janggi/room/" + roomId, JanggiDTO.GameMessage.builder()

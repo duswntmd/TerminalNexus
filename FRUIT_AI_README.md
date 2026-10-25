@@ -48,7 +48,7 @@ RAG(Retrieval-Augmented Generation)는 대규모 언어 모델(LLM)이 단독으
 
 ```properties
 # Gemini AI API 키 설정
-gemini.api.key=${GEMINI_API_KEY:AIzaSyBXBjQo-ZBiMmZaJy6KDUjS296BB3vBwDk}
+gemini.api.key=${GEMINI_API_KEY:dummy_key}
 ```
 
 #### 서버 실행

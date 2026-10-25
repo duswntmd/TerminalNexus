@@ -63,3 +63,13 @@ export async function fetchWithAccess(url, options = {}) {
 
     return response;
 }
+
+// AccessToken과 함께 fetch 하되, 오류 응답도 throw 하지 않고 Response 그대로 반환 (res.ok 분기용)
+export async function fetchWithAccessRaw(url, options = {}) {
+    try {
+        return await fetchWithAccess(url, options);
+    } catch (err) {
+        if (err.response) return err.response;
+        throw err;
+    }
+}

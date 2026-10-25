@@ -27,7 +27,7 @@ public class AdminInitializer {
     @Value("${admin.init.username:admin}")
     private String adminUsername;
 
-    @Value("${admin.init.password:admin1234!}")
+    @Value("${admin.init.password:}")
     private String adminPassword;
 
     @Value("${admin.init.nickname:관리자}")
@@ -44,6 +44,11 @@ public class AdminInitializer {
         return args -> {
             // 이미 관리자 계정이 존재하는지 확인
             if (!userRepository.existsByUsername(adminUsername)) {
+                if (adminPassword == null || adminPassword.isBlank()) {
+                    log.warn("⚠️  ADMIN_PASSWORD 환경변수가 없어 초기 관리자 계정을 생성하지 않습니다.");
+                    return;
+                }
+
                 UserEntity adminUser = UserEntity.builder()
                         .username(adminUsername)
                         .password(passwordEncoder.encode(adminPassword))

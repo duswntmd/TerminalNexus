@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,17 +52,42 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")
     public ChatMessage sendMessage(@DestinationVariable String roomId,
-            @Payload ChatMessage chatMessage) {
+            @Payload ChatMessage chatMessage, Principal principal) {
+
+        boolean anonymous = "anonymous".equals(roomId)
+                || chatMessage.getRoomType() == ChatMessage.RoomType.ANONYMOUS
+                || chatMessage.isAnonymous();
 
         chatMessage.setTimestamp(LocalDateTime.now());
         chatMessage.setRoomId(roomId);
+        chatMessage.setAnonymous(anonymous);
+        if (anonymous) {
+            chatMessage.setRoomType(ChatMessage.RoomType.ANONYMOUS);
+        }
+
+        // 발신자는 클라이언트 값 대신 인증된 WebSocket 사용자로 고정 (사칭 방지)
+        if (principal instanceof UsernamePasswordAuthenticationToken auth && auth.getDetails() != null) {
+            chatMessage.setSenderId(auth.getDetails().toString());
+            chatMessage.setSender(anonymous ? "익명" : auth.getName());
+        } else if (anonymous) {
+            chatMessage.setSender("익명");
+        }
 
         log.info("[{}] {} : {}", roomId, chatMessage.getSender(), chatMessage.getContent());
 
         // CHAT 타입만 비동기로 DB 저장 (WebSocket 응답 지연 없음)
         chatService.saveMessageAsync(chatMessage);
 
-        return chatMessage;
+        // 브로드캐스트에는 실제 ID(senderId)를 싣지 않음 (익명 보호)
+        return ChatMessage.builder()
+                .type(chatMessage.getType())
+                .roomType(chatMessage.getRoomType())
+                .roomId(roomId)
+                .content(chatMessage.getContent())
+                .sender(chatMessage.getSender())
+                .timestamp(chatMessage.getTimestamp())
+                .isAnonymous(anonymous)
+                .build();
     }
 
     /**
@@ -73,9 +99,10 @@ public class ChatController {
     @SendTo("/topic/{roomId}")
     public ChatMessage addUser(@DestinationVariable String roomId,
             @Payload ChatMessage chatMessage,
-            SimpMessageHeaderAccessor headerAccessor) {
+            SimpMessageHeaderAccessor headerAccessor,
+            Principal principal) {
 
-        String username = chatMessage.getSender();
+        String username = principal != null ? principal.getName() : chatMessage.getSender();
         String sessionId = headerAccessor.getSessionId();
 
         // 세션에 사용자 정보 저장
@@ -99,7 +126,14 @@ public class ChatController {
      * 서버 → /user/{receiver}/queue/whisper
      */
     @MessageMapping("/chat.whisper")
-    public void sendWhisper(@Payload ChatMessage chatMessage) {
+    public void sendWhisper(@Payload ChatMessage chatMessage, Principal principal) {
+
+        // 귓속말은 로그인된 WebSocket 연결에서만 허용, 발신자는 서버가 지정
+        if (principal == null) {
+            return;
+        }
+        chatMessage.setSender(principal.getName());
+        chatMessage.setSenderId(null);
 
         String receiver = chatMessage.getReceiver();
 

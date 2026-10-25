@@ -50,7 +50,7 @@ docker run -d \
     -e "SPRING_DATASOURCE_PASSWORD=tn" \
     -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \
     -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \
-    -e "GEMINI_API_KEY=AIzaSyA8qMohOVhS3IlkWxxsW4IPpreAYt_Kq7E" \
+    -e "GEMINI_API_KEY=${GEMINI_API_KEY}" \
     duswntmd/tn:1.0
 
 echo "✅ 컨테이너 실행 완료"
@@ -92,7 +92,7 @@ echo ""
 echo "4️⃣ 로그인 API:"
 curl -s -o /dev/null -w "   HTTP Status: %{http_code}\n" -X POST https://tnhub.kr/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"wjdxhdtkantlf"}'
+  -d '{"username":"admin","password":"<관리자_비밀번호>"}'
 echo ""
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

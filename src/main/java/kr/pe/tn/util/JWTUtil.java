@@ -16,8 +16,15 @@ public class JWTUtil {
     private static final Long refreshTokenExpiresIn;
 
     static  {
-        String secretKeyString = "himynameiskimjihunmyyoutubechann";
-        secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        // 비밀키는 환경변수 JWT_SECRET(32바이트 이상)으로 주입
+        // 미설정 시 기동마다 랜덤 키 생성 → 재시작하면 기존 토큰은 모두 무효화됨
+        String secretKeyString = System.getenv("JWT_SECRET");
+        if (secretKeyString != null && secretKeyString.getBytes(StandardCharsets.UTF_8).length >= 32) {
+            secretKey = new SecretKeySpec(secretKeyString.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        } else {
+            System.err.println("[JWTUtil] JWT_SECRET 환경변수가 없거나 32바이트 미만입니다. 임시 랜덤 키를 사용합니다.");
+            secretKey = Jwts.SIG.HS256.key().build();
+        }
 
         accessTokenExpiresIn = 3600L * 1000; // 1시간
         refreshTokenExpiresIn = 604800L * 1000; // 7일

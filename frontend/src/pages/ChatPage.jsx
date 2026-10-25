@@ -67,6 +67,12 @@ const ChatPage = () => {
             heartbeatOutgoing: 4000,
         });
 
+        // 연결(재연결)마다 최신 AccessToken 전달 → 서버가 사용자 확인 (귓속말 수신에 필요)
+        client.beforeConnect = () => {
+            const token = localStorage.getItem('accessToken');
+            client.connectHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+        };
+
         client.onConnect = () => {
             console.log('WebSocket 연결 성공!');
             setConnected(true);

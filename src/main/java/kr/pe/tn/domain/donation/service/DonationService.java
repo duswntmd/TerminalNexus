@@ -75,7 +75,10 @@ public class DonationService {
      * 2. imp_uid로 실제 결제 정보 조회
      * 3. DB에 저장된 금액 vs 포트원 실제 결제 금액 비교 (핵심!)
      * 4. 일치 시 PAID 상태로 업데이트
+     *
+     * noRollbackFor: 검증 실패 시 예외를 던져도 FAILED 상태 기록은 DB에 남김
      */
+    @Transactional(noRollbackFor = Exception.class)
     public DonationDTO.Response verify(DonationDTO.VerifyRequest request) {
         // DB에서 사전 등록된 결제 정보 조회
         Donation donation = donationRepository.findByMerchantUid(request.getMerchantUid())

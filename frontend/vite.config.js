@@ -45,15 +45,7 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
-      "/admin": {
-        target: "http://localhost:8080",
-        changeOrigin: true,
-      },
-      "/freeboard": {
-        target: "http://localhost:8080",
-        changeOrigin: true,
-      },
-      // /user는 프론트엔드 라우팅이므로 프록시 제거
+      // /admin, /freeboard, /user는 프론트엔드 라우팅이므로 프록시하지 않음 (API는 /api/** 사용)
     },
   },
   define: {

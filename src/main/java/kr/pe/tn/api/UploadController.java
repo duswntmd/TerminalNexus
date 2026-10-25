@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +31,35 @@ public class UploadController {
 
     @Value("${org.zerock.upload.path}") // application.properties check needed
     private String uploadPath;
+
+    // 업로드 허용 확장자 (html/svg/js 등 브라우저에서 실행 가능한 파일 차단)
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+            "jpg", "jpeg", "png", "gif", "bmp", "webp",
+            "mp4", "avi", "mov", "mkv", "webm",
+            "txt", "pdf", "zip", "7z", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "hwp", "csv", "mp3");
+
+    // 브라우저에서 바로 보여줘도 되는 타입 (그 외는 다운로드로 강제)
+    private static final Set<String> INLINE_EXTENSIONS = Set.of(
+            "jpg", "jpeg", "png", "gif", "bmp", "webp", "mp4", "webm", "mov", "mp3");
+
+    private static String extensionOf(String name) {
+        int dot = name.lastIndexOf('.');
+        return dot < 0 ? "" : name.substring(dot + 1).toLowerCase(Locale.ROOT);
+    }
+
+    // 업로드 폴더 밖을 가리키는 경로(../ 등)는 null 반환
+    private File resolveInUploadPath(String fileName) throws IOException {
+        if (fileName == null || fileName.isBlank()) {
+            return null;
+        }
+        String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        Path base = Paths.get(uploadPath).toAbsolutePath().normalize();
+        Path target = base.resolve(srcFileName).normalize();
+        if (!target.startsWith(base)) {
+            return null;
+        }
+        return target.toFile();
+    }
 
     @PostMapping("/uploadAjax")
     public ResponseEntity<List<UploadResultDTO>> uploadFile(MultipartFile[] uploadFiles) {
@@ -48,6 +79,11 @@ public class UploadController {
             }
 
             String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+            fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+
+            if (!ALLOWED_EXTENSIONS.contains(extensionOf(fileName))) {
+                return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+            }
 
             String folderPath = makeFolder();
             String uuid = UUID.randomUUID().toString();
@@ -112,21 +148,21 @@ public class UploadController {
             @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
         try {
-            String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-            File file = new File(uploadPath + File.separator + srcFileName);
+            File file = resolveInUploadPath(fileName);
 
-            if (!file.exists()) {
+            if (file == null || !file.isFile()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             long fileSize = file.length();
             String contentType = Files.probeContentType(file.toPath());
-            if (contentType == null) {
+            if (contentType == null || !INLINE_EXTENSIONS.contains(extensionOf(file.getName()))) {
                 contentType = "application/octet-stream";
             }
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", contentType);
+            headers.add("X-Content-Type-Options", "nosniff");
             headers.add("Accept-Ranges", "bytes");
 
             // Handle Range requests (essential for video streaming)
@@ -171,14 +207,17 @@ public class UploadController {
     @GetMapping("/download")
     public ResponseEntity<byte[]> download(String fileName) {
         try {
-            String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-            File file = new File(uploadPath + File.separator + srcFileName);
+            File file = resolveInUploadPath(fileName);
+            if (file == null || !file.isFile()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
 
             String originName = file.getName().substring(file.getName().indexOf("_") + 1);
             String encodedName = URLEncoder.encode(originName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/octet-stream");
+            headers.add("X-Content-Type-Options", "nosniff");
             headers.add("Content-Disposition", "attachment; filename*=UTF-8''" + encodedName);
 
             return new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), headers, HttpStatus.OK);

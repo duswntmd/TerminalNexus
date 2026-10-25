@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithAccess } from "../../util/fetchUtil";
 import "./AdminUserManagePage.css";
+
+const ADMIN_USERS_API = `${import.meta.env.VITE_BACKEND_API_BASE_URL}/admin/users`;
 
 /**
  * 관리자 전용 회원 관리 페이지
@@ -17,26 +20,15 @@ function AdminUserManagePage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/admin/users", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          alert("관리자만 접근할 수 있습니다.");
-          navigate("/");
-          return;
-        }
-        throw new Error("회원 목록을 불러오는데 실패했습니다.");
-      }
-
+      const response = await fetchWithAccess(ADMIN_USERS_API, { method: "GET" });
       const data = await response.json();
       setUsers(data);
     } catch (err) {
+      if (err.response?.status === 403) {
+        alert("관리자만 접근할 수 있습니다.");
+        navigate("/");
+        return;
+      }
       setError(err.message);
       console.error("회원 목록 조회 오류:", err);
     } finally {
@@ -59,14 +51,9 @@ function AdminUserManagePage() {
     }
 
     try {
-      const response = await fetch(`/admin/users/${userId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
+      await fetchWithAccess(`${ADMIN_USERS_API}/${userId}`, { method: "DELETE" }).catch(() => {
         throw new Error("회원 삭제에 실패했습니다.");
-      }
+      });
 
       alert("회원이 삭제되었습니다.");
       fetchUsers(); // 목록 새로고침
@@ -105,19 +92,16 @@ function AdminUserManagePage() {
         updateData.password = editingUser.password;
       }
 
-      const response = await fetch(`/admin/users/${editingUser.id}`, {
+      await fetchWithAccess(`${ADMIN_USERS_API}/${editingUser.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(updateData),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
+      }).catch(async (err) => {
+        const errorText = err.response ? await err.response.text() : "";
         throw new Error(errorText || "회원 정보 수정에 실패했습니다.");
-      }
+      });
 
       alert("회원 정보가 수정되었습니다.");
       setEditingUser(null);

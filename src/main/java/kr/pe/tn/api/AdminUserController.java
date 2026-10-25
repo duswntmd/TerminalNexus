@@ -15,7 +15,7 @@ import java.util.List;
  * ADMIN 권한이 있는 사용자만 접근 가능
  */
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
 public class AdminUserController {
 
