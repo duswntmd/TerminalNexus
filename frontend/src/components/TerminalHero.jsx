@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchWithAccess } from '../util/fetchUtil';
 import './TerminalHero.css';
 
 const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -20,15 +19,19 @@ const TerminalHero = () => {
     const fetchNickname = async () => {
       if (isLoggedIn) {
         try {
-          const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/user`, {
+          // 닉네임은 표시용이라 토큰이 만료돼도 로그인 페이지로 보내지 않음 (fetchWithAccess 미사용)
+          const res = await fetch(`${BACKEND_API_BASE_URL}/user`, {
              method: 'GET',
-             headers: { 'Content-Type': 'application/json' },
+             headers: {
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+             },
           });
           if (res.ok) {
             const data = await res.json();
             setPromptUser(data.nickname || 'Guest');
           }
-        } catch (e) {
+        } catch {
           // Ignore error, stay as Guest
         }
       } else {

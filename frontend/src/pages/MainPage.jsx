@@ -10,36 +10,23 @@ import {
   Stack,
   Chip,
   Paper,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey';
 import CasinoIcon from '@mui/icons-material/Casino';
 import TerminalHero from '../components/TerminalHero';
-
-/* ──────────────────────────────────────────────
-   로또 볼 색상 정의
-────────────────────────────────────────────── */
-const LOTTO_COLORS = ['#f9ca24', '#6ab04c', '#e84393', '#0652DD', '#9b59b6'];
-const getBallColor = (n) => {
-  if (n <= 10) return LOTTO_COLORS[0];
-  if (n <= 20) return LOTTO_COLORS[1];
-  if (n <= 30) return LOTTO_COLORS[2];
-  if (n <= 40) return LOTTO_COLORS[3];
-  return LOTTO_COLORS[4];
-};
+import { ballColor, pickNumbers, rankOf } from './lotto/lottoUtils';
 
 /* ──────────────────────────────────────────────
    결과 표시용 로또볼
 ────────────────────────────────────────────── */
-const LottoBall = ({ number, visible, size = 54 }) => {
-  const color = getBallColor(number);
+const LottoBall = ({ number, visible, size = 54, small = false }) => {
+  const color = ballColor(number);
   return (
     <Box
       sx={{
-        width: { xs: 42, sm: 48, md: size },
-        height: { xs: 42, sm: 48, md: size },
+        width: small ? { xs: 30, sm: 34 } : { xs: 42, sm: 48, md: size },
+        height: small ? { xs: 30, sm: 34 } : { xs: 42, sm: 48, md: size },
         borderRadius: '50%',
         background: `
           radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, transparent 50%),
@@ -60,7 +47,7 @@ const LottoBall = ({ number, visible, size = 54 }) => {
       <Typography
         sx={{
           fontWeight: 900,
-          fontSize: { xs: '0.8rem', sm: '0.9rem', md: `${size * 0.32}px` },
+          fontSize: small ? { xs: '0.72rem', sm: '0.8rem' } : { xs: '0.8rem', sm: '0.9rem', md: `${size * 0.32}px` },
           color: '#fff',
           textShadow: '0 1px 5px rgba(0,0,0,0.5)',
           userSelect: 'none',
@@ -187,16 +174,16 @@ const MachineBall = ({ color, delay, animName, size = 38 }) => (
 /* ──────────────────────────────────────────────
    로또 추첨 기계
 ────────────────────────────────────────────── */
-const LottoMachine = ({ isDrawing }) => {
+const LottoMachine = ({ isDrawing, drawingLabel }) => {
   const balls = [
     { color: '#f9ca24', animName: 'lb0' },
-    { color: '#6ab04c', animName: 'lb1' },
-    { color: '#e84393', animName: 'lb2' },
-    { color: '#0652DD', animName: 'lb3' },
-    { color: '#9b59b6', animName: 'lb4' },
+    { color: '#3b82f6', animName: 'lb1' },
+    { color: '#ef4444', animName: 'lb2' },
+    { color: '#22c55e', animName: 'lb3' },
+    { color: '#71717a', animName: 'lb4' },
     { color: '#f9ca24', animName: 'lb5' },
-    { color: '#e84393', animName: 'lb6' },
-    { color: '#0652DD', animName: 'lb7' },
+    { color: '#ef4444', animName: 'lb6' },
+    { color: '#22c55e', animName: 'lb7' },
   ];
 
   return (
@@ -261,7 +248,7 @@ const LottoMachine = ({ isDrawing }) => {
             textTransform: 'uppercase', zIndex: 10,
             animation: 'none',
           }}>
-            추첨 중
+            {drawingLabel}
           </Typography>
         )}
       </Box>
@@ -282,26 +269,29 @@ const LottoMachine = ({ isDrawing }) => {
 };
 
 const LottoSection = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isDrawing, setIsDrawing] = useState(false);
   const [numbers, setNumbers] = useState([]);
-  const [bonus, setBonus] = useState(null);
   const [visibleCount, setVisibleCount] = useState(0);
+  const [latest, setLatest] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/lotto/latest')
+      .then((r) => (r.status === 200 ? r.json() : null))
+      .then(setLatest)
+      .catch(() => {});
+  }, []);
 
   const draw = () => {
     if (isDrawing) return;
     setNumbers([]);
-    setBonus(null);
     setVisibleCount(0);
     setIsDrawing(true);
 
     setTimeout(() => {
-      const pool = Array.from({ length: 45 }, (_, i) => i + 1);
-      const shuffled = pool.sort(() => Math.random() - 0.5);
-      const picked = shuffled.slice(0, 6).sort((a, b) => a - b);
-      const bonusBall = shuffled[6];
-
+      const picked = pickNumbers();
       setNumbers(picked);
-      setBonus(bonusBall);
       setIsDrawing(false);
 
       // 공 순차 등장
@@ -310,6 +300,10 @@ const LottoSection = () => {
       });
     }, 2800);
   };
+
+  const done = numbers.length > 0 && visibleCount >= 6;
+  const rank = done && latest ? rankOf(numbers, latest) : null;
+  const matched = done && latest ? numbers.filter((n) => latest.numbers.includes(n)).length : 0;
 
   return (
     <Box
@@ -338,7 +332,7 @@ const LottoSection = () => {
             gap: { xs: 6, md: 8 },
           }}
         >
-          {/* 왼쪽: 설명 */}
+          {/* 왼쪽: 설명 + 최신 당첨번호 */}
           <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '40%' } }}>
             <Chip
               label="🎰 Lucky Draw"
@@ -355,19 +349,38 @@ const LottoSection = () => {
               }}
             >
               <span style={{ background: 'linear-gradient(to right,#fff,#d4d4d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                오늘의 행운 번호를
+                {t('main.lotto.title_1')}
               </span>
               <br />
               <span style={{ background: 'linear-gradient(135deg,#f9ca24,#f39c12)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                뽑아보세요
+                {t('main.lotto.title_2')}
               </span>
             </Typography>
-            <Typography sx={{ color: '#71717a', fontSize: '0.9rem', lineHeight: 1.7, mb: 3, maxWidth: 360 }}>
-              순수 난수 기반 로또 번호 생성기입니다.
-              단순한 행운의 유희로 즐겨보세요.
+            <Typography sx={{ color: '#71717a', fontSize: '0.9rem', lineHeight: 1.7, mb: 3, maxWidth: 380 }}>
+              {t('main.lotto.desc')}
             </Typography>
 
-            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            {latest && (
+              <Box
+                onClick={() => navigate('/lotto')}
+                sx={{
+                  mb: 3, p: 1.8, borderRadius: '14px', cursor: 'pointer', maxWidth: 420,
+                  bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)',
+                  transition: 'border-color 0.2s', '&:hover': { borderColor: 'rgba(249,202,36,0.35)' },
+                }}
+              >
+                <Typography sx={{ color: '#a1a1aa', fontSize: '0.75rem', fontWeight: 700, mb: 1 }}>
+                  {t('main.lotto.latest', { no: latest.drwNo, date: latest.date })}
+                </Typography>
+                <Stack direction="row" alignItems="center" spacing={0.6}>
+                  {latest.numbers.map((n) => <LottoBall key={n} number={n} visible small />)}
+                  <Typography sx={{ color: '#52525b', fontWeight: 700, px: 0.3 }}>+</Typography>
+                  <LottoBall number={latest.bonus} visible small />
+                </Stack>
+              </Box>
+            )}
+
+            <Stack direction="row" spacing={1.5} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
               <Button
                 variant="contained"
                 onClick={draw}
@@ -384,7 +397,19 @@ const LottoSection = () => {
                   transition: 'all 0.25s',
                 }}
               >
-                {isDrawing ? '추첨 중...' : numbers.length > 0 ? '다시 추첨' : '추첨하기'}
+                {isDrawing ? t('main.lotto.drawing') : numbers.length > 0 ? t('main.lotto.redraw') : t('main.lotto.draw')}
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/lotto')}
+                endIcon={<ArrowForwardIcon />}
+                sx={{
+                  px: 2.5, py: 1.6, borderRadius: '12px', textTransform: 'none', fontWeight: 700,
+                  color: '#d4d4d8', borderColor: 'rgba(255,255,255,0.15)',
+                  '&:hover': { borderColor: '#f9ca24', color: '#f9ca24' },
+                }}
+              >
+                {t('main.lotto.more')}
               </Button>
             </Stack>
           </Box>
@@ -417,9 +442,9 @@ const LottoSection = () => {
                   gap: 1.5,
                 }}
               >
-                <LottoMachine isDrawing={isDrawing} />
+                <LottoMachine isDrawing={isDrawing} drawingLabel={t('main.lotto.drawing_short')} />
 
-                {/* ── 볼 한 줄: 6개 번호 + '+' + 보너스 ── */}
+                {/* ── 볼 한 줄: 6개 번호 ── */}
                 <Stack
                   direction="row"
                   alignItems="center"
@@ -433,42 +458,12 @@ const LottoSection = () => {
                       ))
                     : Array.from({ length: 6 }).map((_, i) => (
                         <Box key={i} sx={{
-                          width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 },
+                          width: { xs: 42, sm: 48, md: 42 }, height: { xs: 42, sm: 48, md: 42 },
                           borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.04)',
                           border: '2px dashed rgba(255,255,255,0.08)', flexShrink: 0,
                         }} />
                       ))
                   }
-
-                  {/* + 구분자 */}
-                  <Typography sx={{
-                    color: '#3f3f46', fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' },
-                    flexShrink: 0, px: 0.3,
-                    opacity: visibleCount >= 6 ? 1 : 0.15, transition: 'opacity 0.4s',
-                  }}>+</Typography>
-
-                  {/* 보너스 볼 */}
-                  {bonus && visibleCount >= 6 ? (
-                    <Box sx={{
-                      width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 }, borderRadius: '50%',
-                      background: `radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, transparent 50%), radial-gradient(circle, ${getBallColor(bonus)} 60%, ${getBallColor(bonus)}cc 100%)`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: `0 4px 14px ${getBallColor(bonus)}55`,
-                      border: `2px solid ${getBallColor(bonus)}99`, flexShrink: 0,
-                      transform: 'scale(1)', opacity: 1,
-                      transition: 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.38s ease',
-                    }}>
-                      <Typography sx={{ fontWeight: 900, fontSize: { xs: '0.72rem', md: '0.82rem' }, color: '#fff', textShadow: '0 1px 5px rgba(0,0,0,0.5)' }}>
-                        {bonus}
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <Box sx={{
-                      width: { xs: 34, md: 42 }, height: { xs: 34, md: 42 },
-                      borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.04)',
-                      border: '2px dashed rgba(255,255,255,0.08)', flexShrink: 0,
-                    }} />
-                  )}
                 </Stack>
               </Box>
             </Box>
@@ -478,26 +473,26 @@ const LottoSection = () => {
               sx={{
                 p: { xs: 1.8, md: 2.2 },
                 borderRadius: '14px',
-                background: numbers.length > 0 && visibleCount >= 6
+                background: done
                   ? 'linear-gradient(135deg, rgba(249,202,36,0.06) 0%, rgba(0,0,0,0) 100%)'
                   : 'rgba(255,255,255,0.015)',
-                border: numbers.length > 0 && visibleCount >= 6
+                border: done
                   ? '1px solid rgba(249,202,36,0.18)'
                   : '1px solid rgba(255,255,255,0.06)',
                 transition: 'background 0.6s, border-color 0.6s',
               }}
             >
-              {numbers.length === 0 || visibleCount < 6 ? (
+              {!done ? (
                 <Stack direction="row" alignItems="center" spacing={1.5}>
                   <Typography sx={{ fontSize: '1.1rem' }}>
                     {isDrawing ? '🎲' : '🎰'}
                   </Typography>
                   <Box>
                     <Typography sx={{ color: '#a1a1aa', fontSize: '0.75rem', fontWeight: 600, mb: 0.2 }}>
-                      {isDrawing ? '운명의 번호를 선택하는 중...' : '오늘의 행운을 시험해보세요'}
+                      {isDrawing ? t('main.lotto.wait_title') : t('main.lotto.idle_title')}
                     </Typography>
                     <Typography sx={{ color: '#52525b', fontSize: '0.68rem' }}>
-                      {isDrawing ? '잠시만 기다려주세요 ✨' : '추첨하기 버튼을 눌러 번호를 뽑아보세요'}
+                      {isDrawing ? t('main.lotto.wait_sub') : t('main.lotto.idle_sub')}
                     </Typography>
                   </Box>
                 </Stack>
@@ -506,28 +501,21 @@ const LottoSection = () => {
                   <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                     <Typography sx={{ fontSize: '1rem' }}>🍀</Typography>
                     <Typography sx={{ color: '#f9ca24', fontSize: '0.78rem', fontWeight: 800, letterSpacing: 0.3 }}>
-                      이번 주 행운의 번호
+                      {t('main.lotto.result_title')}
                     </Typography>
-                    <Box sx={{ flex: 1 }} />
-                    <Chip
-                      label="Lucky"
-                      size="small"
-                      sx={{
-                        height: 18, fontSize: '0.6rem', fontWeight: 700,
-                        bgcolor: 'rgba(249,202,36,0.1)', color: '#f9ca24',
-                        border: '1px solid rgba(249,202,36,0.2)',
-                      }}
-                    />
                   </Stack>
                   <Typography sx={{ color: '#d4d4d8', fontSize: '0.88rem', fontWeight: 700, mb: 0.6, letterSpacing: 0.5 }}>
                     {numbers.join('  ·  ')}
-                    <span style={{ color: '#52525b', margin: '0 8px', fontWeight: 400 }}>+</span>
-                    <span style={{ color: '#f9ca24' }}>{bonus}</span>
                   </Typography>
-                  <Typography sx={{ color: '#52525b', fontSize: '0.68rem', lineHeight: 1.6 }}>
-                    이 번호로 이번 주 행운이 찾아오길 바랍니다 ✨
-                    <br />
-                    <span style={{ color: '#3f3f46' }}>* 본 번호는 순수 재미용이며 실제 당첨을 보장하지 않습니다.</span>
+                  {latest && (
+                    <Typography sx={{ color: rank ? '#f9ca24' : '#a1a1aa', fontSize: '0.75rem', mb: 0.6 }}>
+                      {rank
+                        ? t('main.lotto.compare_win', { no: latest.drwNo, count: matched, rank })
+                        : t('main.lotto.compare_lose', { no: latest.drwNo, count: matched })}
+                    </Typography>
+                  )}
+                  <Typography sx={{ color: '#3f3f46', fontSize: '0.68rem', lineHeight: 1.6 }}>
+                    {t('main.lotto.disclaimer')}
                   </Typography>
                 </>
               )}
@@ -541,49 +529,51 @@ const LottoSection = () => {
 };
 
 
-
-
-
-
 /* ──────────────────────────────────────────────
    날씨 기상 코드 정보 매퍼
    ────────────────────────────────────────────── */
 const getWeatherDetails = (code) => {
   switch (code) {
     case 0:
-      return { text: '맑음', icon: '☀️', color: '#f39c12' };
+      return { key: 'clear', icon: '☀️', color: '#f39c12' };
     case 1:
-      return { text: '대체로 맑음', icon: '🌤️', color: '#f1c40f' };
+      return { key: 'mostly_clear', icon: '🌤️', color: '#f1c40f' };
     case 2:
-      return { text: '구름 조금', icon: '⛅', color: '#bdc3c7' };
+      return { key: 'partly_cloudy', icon: '⛅', color: '#bdc3c7' };
     case 3:
-      return { text: '흐림', icon: '☁️', color: '#95a5a6' };
+      return { key: 'cloudy', icon: '☁️', color: '#95a5a6' };
     case 45:
     case 48:
-      return { text: '안개', icon: '🌫️', color: '#7f8c8d' };
+      return { key: 'fog', icon: '🌫️', color: '#7f8c8d' };
     case 51:
     case 53:
     case 55:
-      return { text: '이슬비', icon: '🌦️', color: '#3498db' };
+    case 56:
+    case 57:
+      return { key: 'drizzle', icon: '🌦️', color: '#3498db' };
     case 61:
     case 63:
     case 65:
-      return { text: '비', icon: '🌧️', color: '#2980b9' };
+    case 66:
+    case 67:
+      return { key: 'rain', icon: '🌧️', color: '#2980b9' };
     case 71:
     case 73:
     case 75:
     case 77:
-      return { text: '눈', icon: '❄️', color: '#ecf0f1' };
+    case 85:
+    case 86:
+      return { key: 'snow', icon: '❄️', color: '#ecf0f1' };
     case 80:
     case 81:
     case 82:
-      return { text: '소나기', icon: '🌧️', color: '#2980b9' };
+      return { key: 'showers', icon: '🌧️', color: '#2980b9' };
     case 95:
     case 96:
     case 99:
-      return { text: '뇌우', icon: '⚡', color: '#f39c12' };
+      return { key: 'thunder', icon: '⚡', color: '#f39c12' };
     default:
-      return { text: '맑음', icon: '☀️', color: '#f39c12' };
+      return { key: 'unknown', icon: '🌡️', color: '#95a5a6' };
   }
 };
 
@@ -591,32 +581,32 @@ const getWeatherDetails = (code) => {
    날씨 섹션 (구글 다크모드 날씨 스타일 클론)
    ────────────────────────────────────────────── */
 const WeatherSection = () => {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [locationName, setLocationName] = useState('위치 정보 확인 중...');
+  const [error, setError] = useState(false);
+  const [locationName, setLocationName] = useState(null); // null: 확인 중, 'default': 기본 위치
   const [weatherData, setWeatherData] = useState(null);
   const [activeTab, setActiveTab] = useState('temp'); // 'temp' | 'precip' | 'wind'
 
   // 단계별 실시간 로딩 진행 상태
   const [loadingStep, setLoadingStep] = useState(1);
-  const [loadingStatus, setLoadingStatus] = useState('GPS 위치 권한 확인 중...');
-  const [loadingSubText, setLoadingSubText] = useState('더 정밀한 지역 날씨를 제공하기 위해 브라우저의 위치 권한 허용 팝업을 확인해 주세요.');
+  const [loadingPhase, setLoadingPhase] = useState('gps'); // gps | ip | gps_ok | geo | fetch
   const [gpsCountdown, setGpsCountdown] = useState(5);
 
   const fetchWeather = async (lat = 37.5665, lon = 126.9780, isFallback = false, showLoading = true) => {
     if (showLoading) setLoading(true);
-    setError(null);
+    setError(false);
     try {
       if (showLoading) {
         setLoadingStep(3);
-        setLoadingStatus('지역 구역 주소 분석 중...');
-        setLoadingSubText('위도 및 경도 좌표를 기반으로 한글 행정구역 명칭(시/구/동)을 분석하고 있습니다.');
+        setLoadingPhase('geo');
       }
 
       if (!isFallback) {
         try {
           const geoRes = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ko`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang === 'en' ? 'en' : 'ko'}`
           );
           if (geoRes.ok) {
             const geoData = await geoRes.json();
@@ -629,32 +619,31 @@ const WeatherSection = () => {
             } else if (city) {
               locName = city;
             } else {
-              locName = principal || '현재 위치';
+              locName = principal;
             }
-            setLocationName(locName || '현재 위치');
+            setLocationName(locName);
           }
         } catch (e) {
           console.error('Reverse geocoding failed', e);
         }
       } else {
-        setLocationName('서울특별시 중구 (기본값)');
+        setLocationName('default');
       }
 
       if (showLoading) {
         setLoadingStep(4);
-        setLoadingStatus('실시간 기상 데이터 수신 중...');
-        setLoadingSubText('기상청 관측 및 Open-Meteo 인공위성 서버로부터 온도, 풍속, 예보 데이터를 빌드 중입니다.');
+        setLoadingPhase('fetch');
       }
 
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto`;
       const weatherRes = await fetch(weatherUrl);
-      if (!weatherRes.ok) throw new Error('날씨 정보를 가져오는 데 실패했습니다.');
+      if (!weatherRes.ok) throw new Error(`weather ${weatherRes.status}`);
       const wData = await weatherRes.json();
 
       setWeatherData(wData);
     } catch (err) {
       console.error(err);
-      setError(err.message || '날씨 정보를 불러오는 과정에서 오류가 발생했습니다.');
+      setError(true);
     } finally {
       if (showLoading) setLoading(false);
     }
@@ -678,8 +667,7 @@ const WeatherSection = () => {
   const getPosition = async () => {
     setLoading(true);
     setLoadingStep(1);
-    setLoadingStatus('GPS 위치 권한 확인 중...');
-    setLoadingSubText('정밀한 지역 날씨 정보를 위해 브라우저 상단/좌측의 위치 권한 허용 팝업을 확인해 주세요.');
+    setLoadingPhase('gps');
     setGpsCountdown(5);
 
     let countdownVal = 5;
@@ -690,7 +678,7 @@ const WeatherSection = () => {
       if (countdownVal <= 0) {
         clearInterval(timer);
         timerCleared = true;
-        triggerIpFallback('GPS 응답 제한시간(5초) 초과');
+        triggerIpFallback('GPS timeout (5s)');
       } else {
         setGpsCountdown(countdownVal);
       }
@@ -703,8 +691,7 @@ const WeatherSection = () => {
 
       console.warn(`GPS Geolocation bypassed: ${reason}. IP fallback starting.`);
       setLoadingStep(2);
-      setLoadingStatus('네트워크 IP 위치 검색 중...');
-      setLoadingSubText('GPS 승인이 거부되었거나 시간 초과되었습니다. 네트워크 IP 주소 기반으로 위치를 검색합니다.');
+      setLoadingPhase('ip');
 
       const ipPos = await fetchIpLocation();
       let currentLat = 37.5665;
@@ -728,17 +715,16 @@ const WeatherSection = () => {
 
           const { latitude, longitude } = position.coords;
           setLoadingStep(2);
-          setLoadingStatus('기기 GPS 위치 좌표 분석 중...');
-          setLoadingSubText('GPS 위경도 좌표 획득에 성공했습니다. 날씨 데이터 매핑을 준비합니다.');
+          setLoadingPhase('gps_ok');
           await fetchWeather(latitude, longitude, false, true);
         },
         async (err) => {
-          triggerIpFallback(err.message || '사용자가 GPS 권한 거절');
+          triggerIpFallback(err.message || 'GPS permission denied');
         },
         { timeout: 5000 }
       );
     } else {
-      triggerIpFallback('브라우저 Geolocation 기능 미지원');
+      triggerIpFallback('Geolocation not supported');
     }
   };
 
@@ -753,8 +739,8 @@ const WeatherSection = () => {
         justifyContent: 'center', alignItems: 'center', bgcolor: '#000',
         scrollSnapAlign: 'start', scrollSnapStop: 'always',
       }}>
-        <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>
-        <Button variant="outlined" onClick={getPosition} sx={{ color: '#fff', borderColor: '#fff' }}>다시 시도</Button>
+        <Typography color="error" sx={{ mb: 2 }}>{t('main.weather.error')}</Typography>
+        <Button variant="outlined" onClick={getPosition} sx={{ color: '#fff', borderColor: '#fff' }}>{t('main.weather.retry')}</Button>
       </Box>
     );
   }
@@ -822,7 +808,7 @@ const WeatherSection = () => {
                 fontSize: { xs: '1.1rem', md: '1.25rem' }
               }}
             >
-              {loadingStatus}
+              {t(`main.weather.phase.${loadingPhase}.title`)}
             </Typography>
 
             {/* 단계별 상세 안내 텍스트 */}
@@ -838,7 +824,7 @@ const WeatherSection = () => {
                 animation: 'fade-in-up 0.6s ease-out forwards'
               }}
             >
-              {loadingSubText}
+              {t(`main.weather.phase.${loadingPhase}.sub`)}
             </Typography>
 
             {/* 1단계 GPS 권한 대기 시에만 노출되는 카운트다운 타이머 */}
@@ -852,7 +838,7 @@ const WeatherSection = () => {
                   mt: -1
                 }}
               >
-                (대기 시간 단축을 위해 권한을 허용해 주세요. {gpsCountdown}초 후 자동 IP 탐색 전환)
+                {t('main.weather.gps_countdown', { s: gpsCountdown })}
               </Typography>
             )}
 
@@ -934,11 +920,15 @@ const WeatherSection = () => {
   const weatherDetails = getWeatherDetails(current.weather_code);
 
   const hourly = weatherData.hourly;
+  const locale = lang === 'en' ? 'en-US' : 'ko-KR';
+  const hourFmt = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
+  // 시간별 예보는 현재 시각(현지 기준)부터 3시간 간격
+  const nowIdx = Math.max(0, hourly.time.findIndex((tm) => tm.slice(0, 13) === (current.time || '').slice(0, 13)));
   const hourlyPoints = [];
-  for (let i = 0; i < 24; i += 3) {
+  for (let i = nowIdx; i < nowIdx + 24; i += 3) {
     if (hourly.temperature_2m[i] !== undefined) {
       hourlyPoints.push({
-        time: `${(i + 9) % 24 === 0 ? '오전' : (i + 9) % 24 < 12 ? '오전' : '오후'} ${(i + 9) % 12 === 0 ? 12 : (i + 9) % 12}시`,
+        time: hourFmt.format(new Date(2000, 0, 1, Number(hourly.time[i].slice(11, 13)))),
         temp: Math.round(hourly.temperature_2m[i]),
         precip: Math.round(hourly.precipitation_probability[i]),
         wind: Math.round(hourly.wind_speed_10m[i]),
@@ -979,12 +969,11 @@ const WeatherSection = () => {
   }
 
   const daily = weatherData.daily;
-  const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-  const todayIndex = new Date().getDay();
+  const dayFmt = new Intl.DateTimeFormat(locale, { weekday: 'short' });
 
   const dailyForecast = [];
-  for (let i = 0; i < 7; i++) {
-    const dayName = i === 0 ? '오늘' : daysOfWeek[(todayIndex + i) % 7];
+  for (let i = 0; i < Math.min(7, daily.time.length); i++) {
+    const dayName = i === 0 ? t('main.weather.today') : dayFmt.format(new Date(`${daily.time[i]}T12:00:00`));
     dailyForecast.push({
       day: dayName,
       max: Math.round(daily.temperature_2m_max[i]),
@@ -1032,7 +1021,7 @@ const WeatherSection = () => {
           {/* 상단 1: 위치 및 정확한 위치 사용 */}
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
             <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              📍 {locationName}
+              📍 {locationName === null ? t('main.weather.locating') : locationName === 'default' ? t('main.weather.default_location') : locationName || t('main.weather.here')}
             </Typography>
             <Button
               variant="outlined"
@@ -1048,7 +1037,7 @@ const WeatherSection = () => {
                 '&:hover': { borderColor: 'rgba(255,255,255,0.4)', color: '#fff', bgcolor: 'rgba(255,255,255,0.03)' }
               }}
             >
-              정확한 위치 사용
+              {t('main.weather.use_location')}
             </Button>
           </Stack>
 
@@ -1061,21 +1050,21 @@ const WeatherSection = () => {
                 <span style={{ fontSize: '1.8rem', fontWeight: 400, marginLeft: '2px', color: '#888' }}>°C</span>
               </Typography>
               <Box sx={{ borderLeft: '1px solid rgba(255,255,255,0.15)', pl: 2.5 }}>
-                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>강수확률: {hourlyPoints[0]?.precip ?? 0}%</Typography>
-                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>습도: {current?.relative_humidity_2m ?? 0}%</Typography>
-                <Typography sx={{ fontSize: '0.85rem', color: '#aaa' }}>풍속: {current?.wind_speed_10m ?? 0} m/s</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>{t('main.weather.precip')}: {hourlyPoints[0]?.precip ?? 0}%</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa', mb: 0.5 }}>{t('main.weather.humidity')}: {current?.relative_humidity_2m ?? 0}%</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#aaa' }}>{t('main.weather.wind_speed')}: {Math.round((current?.wind_speed_10m ?? 0) * 10) / 10} m/s</Typography>
               </Box>
             </Stack>
 
             <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
               <Typography sx={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', mb: 0.5, letterSpacing: '-0.5px' }}>
-                날씨
+                {t('main.weather.title')}
               </Typography>
               <Typography sx={{ fontSize: '0.9rem', color: '#888', mb: 0.5 }}>
-                {new Date().toLocaleDateString('ko-KR', { weekday: 'long' })} 오후 {new Date().getHours()}:00
+                {new Date().toLocaleDateString(locale, { weekday: 'long' })} {new Date().toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
               </Typography>
               <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: weatherDetails.color }}>
-                {weatherDetails.text}
+                {t(`main.weather.codes.${weatherDetails.key}`)}
               </Typography>
             </Box>
           </Box>
@@ -1083,9 +1072,9 @@ const WeatherSection = () => {
           {/* 탭 전환 영역 */}
           <Stack direction="row" spacing={1} mb={2.5} sx={{ borderBottom: '1px solid rgba(255,255,255,0.08)', pb: 1 }}>
             {[
-              { id: 'temp', label: '기온' },
-              { id: 'precip', label: '강수확률' },
-              { id: 'wind', label: '바람' }
+              { id: 'temp', label: t('main.weather.tab_temp') },
+              { id: 'precip', label: t('main.weather.precip') },
+              { id: 'wind', label: t('main.weather.tab_wind') }
             ].map(tab => (
               <Button
                 key={tab.id}
@@ -1185,7 +1174,7 @@ const WeatherSection = () => {
                       {d.day}
                     </Typography>
                     <Typography sx={{ fontSize: '1.7rem', lineHeight: 1 }}>{det.icon}</Typography>
-                    <Typography sx={{ fontSize: '0.72rem', color: '#777', fontWeight: 500 }}>{det.text}</Typography>
+                    <Typography sx={{ fontSize: '0.72rem', color: '#777', fontWeight: 500 }}>{t(`main.weather.codes.${det.key}`)}</Typography>
                     <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, mt: 0.5 }}>
                       {d.max}° <span style={{ color: '#555', fontWeight: 400 }}>{d.min}°</span>
                     </Typography>
@@ -1342,7 +1331,7 @@ const StockSection = () => {
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography sx={{ fontWeight: 900, fontFamily: 'monospace', fontSize: { xs: '0.95rem', sm: '1.1rem' }, color: isUp ? '#ef4444' : '#3b82f6' }}>
-                          {stock.currentPrice.toLocaleString()}원
+                          {t('main.won', { v: stock.currentPrice.toLocaleString() })}
                         </Typography>
                         <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: isUp ? '#ef4444' : '#3b82f6' }}>
                           {isUp ? '▲' : '▼'} {Math.abs(stock.changeRate)}%
@@ -1365,10 +1354,7 @@ const StockSection = () => {
 };
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Box
@@ -1387,11 +1373,8 @@ const MainPage = () => {
       }}
     >
       <Helmet>
-        <title>TerminalNexus | 코드 하나로 연결되는 터미널 스페이스</title>
-        <meta
-          name="description"
-          content="브라우저에서 즉시 실행되는 완벽한 리눅스 터미널 환경. 클라우드 인프라와 개발자 커뮤니티가 결합된 새로운 차원의 플랫폼."
-        />
+        <title>{t('main.meta_title')}</title>
+        <meta name="description" content={t('main.meta_desc')} />
       </Helmet>
 
       {/* ── 1번 섹션: 주식 시뮬레이터 ── */}

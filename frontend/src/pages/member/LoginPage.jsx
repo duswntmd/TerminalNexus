@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -32,6 +33,7 @@ const darkInput = {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const location = useLocation();
   const from = location.state?.from?.pathname || new URLSearchParams(location.search).get('redirect') || "/";
@@ -44,7 +46,7 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     if (!username || !password) {
-      setError("아이디와 비밀번호를 입력하세요.");
+      setError(t('auth.enter_credentials'));
       return;
     }
     try {
@@ -56,13 +58,13 @@ function LoginPage() {
       });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "로그인 실패");
+        throw new Error(errorData.message || t('auth.login_failed'));
       }
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || "아이디 또는 비밀번호가 틀렸습니다.");
+      setError(err.message || t('auth.login_failed'));
     }
   };
 
@@ -73,8 +75,8 @@ function LoginPage() {
   return (
     <>
       <Helmet>
-        <title>로그인 - TerminalNexus</title>
-        <meta name="description" content="TerminalNexus에 로그인하고 터미널 환경과 개발자 커뮤니티를 이용하세요." />
+        <title>{`${t('auth.login')} - TerminalNexus`}</title>
+        <meta name="description" content={t('auth.login_meta')} />
         <link rel="canonical" href="https://tnhub.kr/login" />
       </Helmet>
 
@@ -127,10 +129,10 @@ function LoginPage() {
                 fontSize: { xs: '1.8rem', md: '2rem' },
               }}
             >
-              다시 오셨군요
+              {t('auth.welcome_back')}
             </Typography>
             <Typography sx={{ color: '#71717a', fontSize: '0.9rem' }}>
-              계속하려면 로그인하세요
+              {t('auth.login_sub')}
             </Typography>
           </Box>
 
@@ -149,7 +151,7 @@ function LoginPage() {
             <Stack spacing={2.5}>
               <TextField
                 fullWidth
-                label="아이디"
+                label={t('auth.username')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
@@ -158,7 +160,7 @@ function LoginPage() {
               />
               <TextField
                 fullWidth
-                label="비밀번호"
+                label={t('auth.password')}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -193,13 +195,13 @@ function LoginPage() {
                   transition: 'all 0.2s',
                 }}
               >
-                계속
+                {t('auth.continue')}
               </Button>
             </Stack>
 
             <Box textAlign="center" mt={3}>
               <Typography component="span" sx={{ color: '#52525b', fontSize: '0.85rem' }}>
-                계정이 없으신가요?{' '}
+                {t('auth.no_account')}{' '}
               </Typography>
               <Typography
                 component="span"
@@ -210,7 +212,7 @@ function LoginPage() {
                   '&:hover': { color: '#a5b4fc' },
                 }}
               >
-                회원가입
+                {t('header.signup')}
               </Typography>
             </Box>
           </Box>
@@ -218,7 +220,7 @@ function LoginPage() {
           {/* 구분선 */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 3 }}>
             <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
-            <Typography sx={{ color: '#3f3f46', fontSize: '0.75rem' }}>또는</Typography>
+            <Typography sx={{ color: '#3f3f46', fontSize: '0.75rem' }}>{t('auth.or')}</Typography>
             <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
           </Box>
 
@@ -237,7 +239,7 @@ function LoginPage() {
               }}
             >
               <Box component="span" mr={1.5} sx={{ fontSize: '1.1rem' }}>🔵</Box>
-              Google로 계속하기
+              {t('auth.continue_with', { provider: 'Google' })}
             </Button>
             <Button
               fullWidth variant="outlined"
@@ -252,7 +254,7 @@ function LoginPage() {
               }}
             >
               <Box component="span" mr={1.5} sx={{ fontSize: '1.1rem' }}>🟢</Box>
-              Naver로 계속하기
+              {t('auth.continue_with', { provider: 'Naver' })}
             </Button>
           </Stack>
         </Container>

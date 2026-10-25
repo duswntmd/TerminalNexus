@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -43,6 +44,7 @@ const successInput = {
 
 const JoinPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({ username: "", password: "", nickname: "", email: "" });
   const [validity, setValidity] = useState({ username: null, nickname: null });
@@ -98,10 +100,10 @@ const JoinPage = () => {
   const handleSignUp = async () => {
     const { username, password, nickname, email } = formData;
     if (username.length < 4 || password.length < 4 || !nickname || !email) {
-      setErrorMsg("모든 항목을 입력해주세요. (ID/PW 4자 이상)"); return;
+      setErrorMsg(t('auth.fill_all')); return;
     }
     if (validity.username !== true || validity.nickname !== true) {
-      setErrorMsg("아이디 또는 닉네임 중복 확인이 필요합니다."); return;
+      setErrorMsg(t('auth.need_check')); return;
     }
     setLoading(prev => ({ ...prev, submit: true }));
     setErrorMsg("");
@@ -110,11 +112,11 @@ const JoinPage = () => {
         method: "POST", headers: { "Content-Type": "application/json" },
         credentials: "include", body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error("회원가입 실패");
-      alert("회원가입이 완료되었습니다!");
+      if (!res.ok) throw new Error('signup failed');
+      alert(t('auth.signup_done'));
       navigate("/login");
     } catch {
-      setErrorMsg("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setErrorMsg(t('auth.signup_error'));
     } finally {
       setLoading(prev => ({ ...prev, submit: false }));
     }
@@ -126,15 +128,15 @@ const JoinPage = () => {
 
   const getHelper = (field) => {
     if (field === 'username') {
-      if (loading.username) return "확인 중...";
-      if (formData.username.length > 0 && formData.username.length < 4) return "4자 이상 입력해주세요.";
-      if (validity.username === true) return "✓ 사용 가능한 아이디입니다.";
-      if (validity.username === false) return "이미 사용 중인 아이디입니다.";
+      if (loading.username) return t('auth.checking');
+      if (formData.username.length > 0 && formData.username.length < 4) return t('auth.min4');
+      if (validity.username === true) return t('auth.username_ok');
+      if (validity.username === false) return t('auth.username_taken');
     }
     if (field === 'nickname') {
-      if (loading.nickname) return "확인 중...";
-      if (validity.nickname === true) return "✓ 사용 가능한 닉네임입니다.";
-      if (validity.nickname === false) return "이미 사용 중인 닉네임입니다.";
+      if (loading.nickname) return t('auth.checking');
+      if (validity.nickname === true) return t('auth.nickname_ok');
+      if (validity.nickname === false) return t('auth.nickname_taken');
     }
     return "";
   };
@@ -155,8 +157,8 @@ const JoinPage = () => {
   return (
     <>
       <Helmet>
-        <title>회원가입 - TerminalNexus | 무료 계정 만들기</title>
-        <meta name="description" content="TerminalNexus에 가입하고 브라우저 기반 터미널을 경험하세요." />
+        <title>{`${t('header.signup')} - TerminalNexus`}</title>
+        <meta name="description" content={t('auth.join_meta')} />
         <link rel="canonical" href="https://tnhub.kr/join" />
       </Helmet>
 
@@ -201,10 +203,10 @@ const JoinPage = () => {
               variant="h4" fontWeight={800}
               sx={{ color: '#f4f4f5', letterSpacing: '-1.5px', mb: 1, fontSize: { xs: '1.8rem', md: '2rem' } }}
             >
-              계정 만들기
+              {t('auth.create_account')}
             </Typography>
             <Typography sx={{ color: '#71717a', fontSize: '0.9rem' }}>
-              무료로 시작하고 언제든 업그레이드하세요
+              {t('auth.join_sub')}
             </Typography>
           </Box>
 
@@ -220,7 +222,7 @@ const JoinPage = () => {
           >
             <Stack spacing={2.5}>
               <TextField
-                fullWidth label="아이디" name="username"
+                fullWidth label={t('auth.username')} name="username"
                 value={formData.username} onChange={handleChange}
                 autoFocus autoComplete="username"
                 error={isError(validity.username) || (formData.username.length > 0 && formData.username.length < 4)}
@@ -229,15 +231,15 @@ const JoinPage = () => {
                 sx={getInputSx('username')}
               />
               <TextField
-                fullWidth label="비밀번호" name="password"
+                fullWidth label={t('auth.password')} name="password"
                 type="password" value={formData.password} onChange={handleChange}
                 autoComplete="new-password"
-                helperText={formData.password.length > 0 && formData.password.length < 4 ? "4자 이상 입력해주세요." : ""}
+                helperText={formData.password.length > 0 && formData.password.length < 4 ? t('auth.min4') : ""}
                 error={formData.password.length > 0 && formData.password.length < 4}
                 sx={darkInput}
               />
               <TextField
-                fullWidth label="닉네임" name="nickname"
+                fullWidth label={t('auth.nickname')} name="nickname"
                 value={formData.nickname} onChange={handleChange}
                 error={isError(validity.nickname)}
                 helperText={getHelper('nickname')}
@@ -245,7 +247,7 @@ const JoinPage = () => {
                 sx={getInputSx('nickname')}
               />
               <TextField
-                fullWidth label="이메일" name="email"
+                fullWidth label={t('auth.email')} name="email"
                 type="email" value={formData.email} onChange={handleChange}
                 autoComplete="email"
                 sx={darkInput}
@@ -280,27 +282,27 @@ const JoinPage = () => {
                   transition: 'all 0.2s',
                 }}
               >
-                {loading.submit ? <CircularProgress size={22} sx={{ color: '#818cf8' }} /> : "회원가입"}
+                {loading.submit ? <CircularProgress size={22} sx={{ color: '#818cf8' }} /> : t('header.signup')}
               </Button>
             </Stack>
 
             <Box textAlign="center" mt={3}>
               <Typography component="span" sx={{ color: '#52525b', fontSize: '0.85rem' }}>
-                이미 계정이 있으신가요?{' '}
+                {t('auth.have_account')}{' '}
               </Typography>
               <Typography
                 component="span" onClick={() => navigate('/login')}
                 sx={{ color: '#818cf8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#a5b4fc' } }}
               >
-                로그인
+                {t('header.login')}
               </Typography>
             </Box>
           </Box>
 
           {/* 보안 뱃지 */}
           <Stack direction="row" justifyContent="center" gap={1.5} mt={3} flexWrap="wrap">
-            {['🔒 보안 연결', '⚡ 즉시 활성화', '🆓 무료 시작'].map(t => (
-              <Chip key={t} label={t} size="small" sx={{
+            {[t('auth.badge_secure'), t('auth.badge_instant'), t('auth.badge_free')].map(label => (
+              <Chip key={label} label={label} size="small" sx={{
                 bgcolor: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.07)',
                 color: '#52525b', fontSize: '0.7rem',

@@ -155,6 +155,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/janggi/**").authenticated() // 실시간 온라인 장기 API (로그인 필수!)
                                                 .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/market", "/api/stock/ticks/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
                                                 .requestMatchers("/api/stock/**").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/lotto/**").permitAll()
                                                 .requestMatchers("/api/chat/**").authenticated()
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated());
