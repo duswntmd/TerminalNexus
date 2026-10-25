@@ -16,58 +16,31 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 
+// 카테고리별 강조 색상
+const GROUP_COLORS = ['#818cf8', '#34d399', '#f9ca24'];
+
 const GuidePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
-  const steps = [
-    {
-      num: t('guide.step1_num'),
-      title: t('guide.step1_title'),
-      desc: t('guide.step1_desc'),
-      color: '#818cf8',
-      bg: 'rgba(129,140,248,0.07)',
-      border: 'rgba(129,140,248,0.18)',
-    },
-    {
-      num: t('guide.step2_num'),
-      title: t('guide.step2_title'),
-      desc: t('guide.step2_desc'),
-      color: '#34d399',
-      bg: 'rgba(52,211,153,0.07)',
-      border: 'rgba(52,211,153,0.18)',
-    },
-    {
-      num: t('guide.step3_num'),
-      title: t('guide.step3_title'),
-      desc: t('guide.step3_desc'),
-      color: '#f9ca24',
-      bg: 'rgba(249,202,36,0.07)',
-      border: 'rgba(249,202,36,0.18)',
-    },
-    {
-      num: t('guide.step4_num'),
-      title: t('guide.step4_title'),
-      desc: t('guide.step4_desc'),
-      color: '#f472b6',
-      bg: 'rgba(244,114,182,0.07)',
-      border: 'rgba(244,114,182,0.18)',
-    },
-  ];
+  const groups = t('guide.groups', { returnObjects: true });
+  const steps = t('guide.steps', { returnObjects: true });
+  const faqs = t('guide.faqs', { returnObjects: true });
 
-  const faqs = [
-    { q: t('guide.faq1_q'), a: t('guide.faq1_a') },
-    { q: t('guide.faq2_q'), a: t('guide.faq2_a') },
-    { q: t('guide.faq3_q'), a: t('guide.faq3_a') },
-  ];
+  const sectionTitleSx = {
+    mb: { xs: 5, md: 7 },
+    fontSize: { xs: '1.8rem', md: '2.4rem' },
+    letterSpacing: '-1.5px',
+    color: '#f4f4f5',
+  };
 
   return (
     <>
       <Helmet>
-        <title>이용안내 - TerminalNexus | 서비스 사용 가이드</title>
-        <meta name="description" content="TerminalNexus 서비스 이용 방법을 안내합니다. 회원가입부터 터미널 사용까지 단계별로 알아보세요." />
-        <meta name="keywords" content="이용안내, 사용법, 가이드, 터미널 사용, 회원가입 방법" />
+        <title>소개 - TerminalNexus | 커뮤니티와 미니게임</title>
+        <meta name="description" content="TerminalNexus는 자유게시판·실시간 채팅 커뮤니티와 모의 주식, 장기, 강화, 타자 게임 등 미니게임을 무료로 즐길 수 있는 터미널 감성의 개발자 놀이터입니다." />
+        <meta name="keywords" content="TerminalNexus, 모의 주식, 장기, 타자 게임, 강화 게임, 커뮤니티, 채팅" />
         <link rel="canonical" href="https://tnhub.kr/guide" />
       </Helmet>
 
@@ -77,7 +50,7 @@ const GuidePage = () => {
         <Box
           sx={{
             pt: { xs: 14, md: 18 },
-            pb: { xs: 10, md: 14 },
+            pb: { xs: 8, md: 12 },
             textAlign: 'center',
             position: 'relative',
             overflow: 'hidden',
@@ -92,7 +65,7 @@ const GuidePage = () => {
 
           <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
             <Chip
-              label="Getting Started"
+              label="About"
               sx={{
                 mb: 3, bgcolor: 'rgba(99,102,241,0.08)',
                 color: '#818cf8', border: '1px solid rgba(99,102,241,0.22)',
@@ -124,7 +97,7 @@ const GuidePage = () => {
                 fontSize: { xs: '1rem', md: '1.1rem' },
                 lineHeight: 1.75,
                 whiteSpace: 'pre-line',
-                maxWidth: 480,
+                maxWidth: 520,
                 mx: 'auto',
               }}
             >
@@ -133,68 +106,123 @@ const GuidePage = () => {
           </Container>
         </Box>
 
-        {/* ── 4단계 스텝 ── */}
+        {/* ── 기능 소개 (카테고리별 카드, 클릭 시 이동) ── */}
         <Box sx={{ pb: { xs: 10, md: 14 } }}>
           <Container maxWidth="lg">
+            <Typography variant="h2" fontWeight={800} textAlign="center" sx={sectionTitleSx}>
+              {t('guide.features_title')}
+            </Typography>
+
+            <Stack spacing={{ xs: 6, md: 8 }}>
+              {groups.map((group, gi) => {
+                const color = GROUP_COLORS[gi % GROUP_COLORS.length];
+                return (
+                  <Box key={group.name}>
+                    <Typography
+                      sx={{
+                        color, fontWeight: 800, fontSize: '0.85rem',
+                        letterSpacing: '1px', mb: 2, textTransform: 'uppercase',
+                      }}
+                    >
+                      {group.name}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+                        gap: 2.5,
+                      }}
+                    >
+                      {group.items.map((item) => (
+                        <Box
+                          key={item.name}
+                          component="button"
+                          type="button"
+                          onClick={() => navigate(item.path)}
+                          sx={{
+                            textAlign: 'left',
+                            font: 'inherit',
+                            cursor: 'pointer',
+                            p: { xs: 3, md: 3.5 },
+                            borderRadius: '20px',
+                            border: `1px solid ${color}2e`,
+                            bgcolor: `${color}0d`,
+                            color: 'inherit',
+                            transition: 'transform 0.25s, box-shadow 0.25s, border-color 0.25s',
+                            '&:hover, &:focus-visible': {
+                              transform: 'translateY(-4px)',
+                              boxShadow: `0 16px 48px ${color}18`,
+                              borderColor: `${color}66`,
+                              outline: 'none',
+                            },
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 1.5 }}>
+                            <Box sx={{ fontSize: '1.6rem', lineHeight: 1 }} aria-hidden="true">{item.icon}</Box>
+                            <Typography fontWeight={700} sx={{ color: '#f4f4f5', fontSize: { xs: '1rem', md: '1.08rem' } }}>
+                              {item.name}
+                            </Typography>
+                            {item.login && (
+                              <Chip
+                                label={t('guide.login_required')}
+                                size="small"
+                                sx={{
+                                  ml: 'auto !important', height: 22, fontSize: '0.7rem', fontWeight: 600,
+                                  bgcolor: 'rgba(255,255,255,0.06)', color: '#a1a1aa',
+                                }}
+                              />
+                            )}
+                          </Stack>
+                          <Typography sx={{ color: '#8b8b94', fontSize: { xs: '0.88rem', md: '0.92rem' }, lineHeight: 1.7 }}>
+                            {item.desc}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Container>
+        </Box>
+
+        {/* ── 시작하는 방법 ── */}
+        <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <Container maxWidth="lg">
+            <Typography variant="h2" fontWeight={800} textAlign="center" sx={sectionTitleSx}>
+              {t('guide.start_title')}
+            </Typography>
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
                 gap: 3,
               }}
             >
               {steps.map((step, i) => (
                 <Box
-                  key={step.num}
+                  key={step.title}
                   sx={{
                     p: { xs: 3, md: 4 },
                     borderRadius: '20px',
-                    border: `1px solid ${step.border}`,
-                    bgcolor: step.bg,
-                    backdropFilter: 'blur(4px)',
-                    transition: 'transform 0.25s, box-shadow 0.25s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: `0 16px 48px ${step.color}18`,
-                    },
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    bgcolor: 'rgba(255,255,255,0.02)',
                   }}
                 >
-                  {/* 번호 배지 */}
                   <Box
                     sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 44, height: 44,
-                      borderRadius: '12px',
-                      bgcolor: `${step.color}18`,
-                      border: `1px solid ${step.color}30`,
-                      mb: 2.5,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      width: 40, height: 40, borderRadius: '12px', mb: 2,
+                      bgcolor: 'rgba(129,140,248,0.12)', border: '1px solid rgba(129,140,248,0.25)',
+                      color: '#818cf8', fontWeight: 800, fontVariantNumeric: 'tabular-nums',
                     }}
                   >
-                    <Typography
-                      sx={{
-                        color: step.color,
-                        fontWeight: 800,
-                        fontSize: '1rem',
-                        fontVariantNumeric: 'tabular-nums',
-                        letterSpacing: '-0.5px',
-                      }}
-                    >
-                      {step.num}
-                    </Typography>
+                    {i + 1}
                   </Box>
-
-                  <Typography
-                    variant="h6"
-                    fontWeight={700}
-                    sx={{ color: '#f4f4f5', mb: 1.5, fontSize: { xs: '1rem', md: '1.1rem' } }}
-                  >
+                  <Typography fontWeight={700} sx={{ color: '#f4f4f5', mb: 1, fontSize: '1.05rem' }}>
                     {step.title}
                   </Typography>
-                  <Typography
-                    sx={{ color: '#71717a', fontSize: { xs: '0.88rem', md: '0.93rem' }, lineHeight: 1.75 }}
-                  >
+                  <Typography sx={{ color: '#71717a', fontSize: '0.92rem', lineHeight: 1.7 }}>
                     {step.desc}
                   </Typography>
                 </Box>
@@ -212,24 +240,14 @@ const GuidePage = () => {
           }}
         >
           <Container maxWidth="md">
-            <Typography
-              variant="h2"
-              fontWeight={800}
-              textAlign="center"
-              sx={{
-                mb: 8,
-                fontSize: { xs: '1.8rem', md: '2.4rem' },
-                letterSpacing: '-1.5px',
-                color: '#f4f4f5',
-              }}
-            >
+            <Typography variant="h2" fontWeight={800} textAlign="center" sx={sectionTitleSx}>
               {t('guide.faq_title')}
             </Typography>
 
             <Stack spacing={2}>
               {faqs.map((faq, i) => (
                 <Accordion
-                  key={i}
+                  key={faq.q}
                   expanded={expanded === i}
                   onChange={() => setExpanded(expanded === i ? false : i)}
                   disableGutters
@@ -348,7 +366,7 @@ const GuidePage = () => {
                   transition: 'all 0.2s',
                 }}
               >
-                무료로 시작하기
+                {t('guide.cta')}
               </Button>
             </Stack>
           </Container>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 
 import JoinPage from "./pages/member/JoinPage";
@@ -23,8 +23,7 @@ import TypeRacerPage from "./pages/play/TypeRacerPage";
 import HackerModePage from "./pages/play/HackerModePage";
 import TerminalHackPage from "./pages/play/TerminalHackPage";
 import StockPage from "./pages/play/StockPage";
-import JanggiPage from "./pages/play/JanggiPage";
-import OnlineJanggiPage from "./pages/play/OnlineJanggiPage";
+import JanggiPage from "./pages/play/janggi/JanggiPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 
@@ -162,11 +161,8 @@ const AppContent = () => {
           <Route path="/play/terminalhack" element={<TerminalHackPage />} />
           <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
-          <Route path="/play/janggi-online" element={
-            <ProtectedRoute>
-              <OnlineJanggiPage />
-            </ProtectedRoute>
-          } />
+          {/* 예전 온라인 장기 주소 → 장기 페이지 온라인 탭 */}
+          <Route path="/play/janggi-online" element={<Navigate to="/play/janggi?mode=online" replace />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/terms" element={<TermsOfServicePage />} />
           {/* 404 캐치올 — 모든 미등록 경로 */}
