@@ -10,4 +10,7 @@ public interface StockTradeRepository extends JpaRepository<StockTradeEntity, Lo
 
     /** 최근 거래 내역 최대 20건 */
     List<StockTradeEntity> findTop20ByUserOrderByTradedAtDesc(UserEntity user);
+
+    /** 최근 거래 내역 최대 50건 */
+    List<StockTradeEntity> findTop50ByUserOrderByTradedAtDesc(UserEntity user);
 }

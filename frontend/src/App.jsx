@@ -22,7 +22,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import TypeRacerPage from "./pages/play/TypeRacerPage";
 import HackerModePage from "./pages/play/HackerModePage";
 import TerminalHackPage from "./pages/play/TerminalHackPage";
-import StockPage from "./pages/play/StockPage";
+import StockPage from "./pages/play/stock/StockPage";
 import JanggiPage from "./pages/play/janggi/JanggiPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";

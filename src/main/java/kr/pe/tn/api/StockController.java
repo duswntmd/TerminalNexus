@@ -1,6 +1,7 @@
 package kr.pe.tn.api;
 
 import kr.pe.tn.domain.stock.dto.StockDTO;
+import kr.pe.tn.domain.stock.service.StockRules;
 import kr.pe.tn.domain.stock.service.StockService;
 import kr.pe.tn.domain.user.entity.UserEntity;
 import kr.pe.tn.domain.user.repository.UserRepository;
@@ -28,105 +29,91 @@ public class StockController {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
-    /** 전체 종목 시세 조회 (공개) */
+    /** 전체 종목 시세 (공개) */
     @GetMapping("/prices")
-    public ResponseEntity<List<StockDTO.StockItemResponse>> getAllStocks() {
-        return ResponseEntity.ok(stockService.getAllStocks());
+    public List<StockDTO.StockItemResponse> getAllStocks() {
+        return stockService.getAllStocks();
     }
 
-    /** 특정 종목 라인 차트 히스토리 (공개) */
-    @GetMapping("/history/{ticker}")
-    public ResponseEntity<List<StockDTO.PriceHistoryResponse>> getPriceHistory(@PathVariable String ticker) {
-        return ResponseEntity.ok(stockService.getPriceHistory(ticker.toUpperCase()));
+    /** 장 정보: 장 마감 시각, 수수료·세율 (공개) */
+    @GetMapping("/market")
+    public Map<String, Object> getMarket() {
+        return Map.of(
+                "sessionEndsAt", stockService.getSessionEndsAt(),
+                "serverTime", System.currentTimeMillis(),
+                "feeRate", StockRules.FEE_RATE,
+                "taxRate", StockRules.TAX_RATE,
+                "initialCash", StockService.INITIAL_CASH);
     }
 
-    /** 특정 종목 캔들스틱 OHLC 봉차트 데이터 (공개) */
+    /** 봉 데이터: interval = M1(분봉) / D1(일봉, 1시간 = 1거래일) (공개) */
     @GetMapping("/candles/{ticker}")
-    public ResponseEntity<List<StockDTO.CandleResponse>> getCandles(@PathVariable String ticker) {
-        return ResponseEntity.ok(stockService.getCandles(ticker.toUpperCase()));
+    public List<StockDTO.CandleResponse> getCandles(@PathVariable String ticker,
+                                                   @RequestParam(defaultValue = "M1") String interval) {
+        return stockService.getCandles(ticker.toUpperCase(), interval);
     }
 
-    /** 특정 종목 10호가창 데이터 (공개) */
+    /** 실시간 체결 (공개) */
+    @GetMapping("/ticks/{ticker}")
+    public List<StockDTO.TickResponse> getTicks(@PathVariable String ticker) {
+        return stockService.getRecentTicks(ticker.toUpperCase());
+    }
+
+    /** 10단 호가 (공개, 로그인 시 내 주문 표시) */
     @GetMapping("/orderbook/{ticker}")
-    public ResponseEntity<StockDTO.OrderBookResponse> getOrderBook(@PathVariable String ticker) {
-        return ResponseEntity.ok(stockService.getOrderBook(ticker.toUpperCase()));
+    public StockDTO.OrderBookResponse getOrderBook(@PathVariable String ticker, Principal principal) {
+        UserEntity viewer = principal != null ? userRepository.findByUsername(principal.getName()).orElse(null) : null;
+        return stockService.getOrderBook(ticker.toUpperCase(), viewer);
     }
 
-    /** 특정 종목 기업 정보 & 재무 지표 (공개) */
+    /** 기업 정보 (공개) */
     @GetMapping("/detail/{ticker}")
-    public ResponseEntity<StockDTO.CompanyDetailResponse> getCompanyDetail(@PathVariable String ticker) {
-        return ResponseEntity.ok(stockService.getCompanyDetail(ticker.toUpperCase()));
+    public StockDTO.CompanyDetailResponse getCompanyDetail(@PathVariable String ticker) {
+        return stockService.getCompanyDetail(ticker.toUpperCase());
     }
 
-    /** 전체 랭킹 (공개) */
+    /** 총자산 랭킹 (공개) */
     @GetMapping("/leaderboard")
-    public ResponseEntity<List<StockDTO.LeaderboardResponse>> getLeaderboard() {
-        return ResponseEntity.ok(stockService.getLeaderboard());
+    public List<StockDTO.LeaderboardResponse> getLeaderboard() {
+        return stockService.getLeaderboard();
     }
 
-    /** 최근 주식 속보 뉴스 (공개) */
+    /** 최근 뉴스 (공개) */
     @GetMapping("/news")
-    public ResponseEntity<List<StockDTO.StockNewsResponse>> getRecentNews() {
-        return ResponseEntity.ok(stockService.getRecentNews());
+    public List<StockDTO.StockNewsResponse> getRecentNews() {
+        return stockService.getRecentNews();
     }
 
-    /** 내 지갑 정보 (로그인 필수) */
     @GetMapping("/wallet")
-    public ResponseEntity<StockDTO.WalletResponse> getWallet(Principal principal) {
-        UserEntity user = getUser(principal);
-        return ResponseEntity.ok(stockService.getWalletResponse(user));
+    public StockDTO.WalletResponse getWallet(Principal principal) {
+        return stockService.getWallet(getUser(principal));
     }
 
-    /** 내 보유 종목 (로그인 필수) */
     @GetMapping("/holdings")
-    public ResponseEntity<List<StockDTO.HoldingResponse>> getHoldings(Principal principal) {
-        UserEntity user = getUser(principal);
-        return ResponseEntity.ok(stockService.getHoldings(user));
+    public List<StockDTO.HoldingResponse> getHoldings(Principal principal) {
+        return stockService.getHoldings(getUser(principal));
     }
 
-    /** 내 거래 내역 (로그인 필수) */
     @GetMapping("/trades")
-    public ResponseEntity<List<StockDTO.TradeHistoryResponse>> getTradeHistory(Principal principal) {
-        UserEntity user = getUser(principal);
-        return ResponseEntity.ok(stockService.getTradeHistory(user));
+    public List<StockDTO.TradeHistoryResponse> getTradeHistory(Principal principal) {
+        return stockService.getTradeHistory(getUser(principal));
     }
 
-    /** 내 미체결 예약 주문 목록 (로그인 필수) */
     @GetMapping("/orders/pending")
-    public ResponseEntity<List<StockDTO.PendingOrderResponse>> getPendingOrders(Principal principal) {
-        UserEntity user = getUser(principal);
-        return ResponseEntity.ok(stockService.getPendingOrders(user));
+    public List<StockDTO.PendingOrderResponse> getPendingOrders(Principal principal) {
+        return stockService.getPendingOrders(getUser(principal));
     }
 
-    /** 신규 주문 접수 (시장가/지정가, LONG/SHORT, 1x/2x 레버리지) */
+    /** 주문 (시장가 / 지정가) */
     @PostMapping("/order")
-    public ResponseEntity<?> createOrder(Principal principal, @RequestBody StockDTO.OrderRequest request) {
-        UserEntity user = getUser(principal);
-        stockService.createOrder(user, request);
-        return ResponseEntity.ok(Map.of("message", "주문이 정상 접수되었습니다."));
+    public StockDTO.OrderResult createOrder(Principal principal, @RequestBody StockDTO.OrderRequest request) {
+        return stockService.createOrder(getUser(principal), request);
     }
 
     /** 미체결 주문 취소 */
     @DeleteMapping("/order/{orderId}")
     public ResponseEntity<?> cancelOrder(Principal principal, @PathVariable Long orderId) {
-        UserEntity user = getUser(principal);
-        stockService.cancelOrder(user, orderId);
+        stockService.cancelOrder(getUser(principal), orderId);
         return ResponseEntity.ok(Map.of("message", "주문이 취소되었습니다."));
-    }
-
-    /** 구 버전 호환 매수 API */
-    @PostMapping("/buy")
-    public ResponseEntity<?> buyStock(Principal principal, @RequestBody StockDTO.TradeRequest request) {
-        UserEntity user = getUser(principal);
-        stockService.buyStock(user, request.getTicker().toUpperCase(), request.getQuantity());
-        return ResponseEntity.ok(Map.of("message", "매수가 완료되었습니다."));
-    }
-
-    /** 구 버전 호환 매도 API */
-    @PostMapping("/sell")
-    public ResponseEntity<?> sellStock(Principal principal, @RequestBody StockDTO.TradeRequest request) {
-        UserEntity user = getUser(principal);
-        stockService.sellStock(user, request.getTicker().toUpperCase(), request.getQuantity());
-        return ResponseEntity.ok(Map.of("message", "매도가 완료되었습니다."));
     }
 }

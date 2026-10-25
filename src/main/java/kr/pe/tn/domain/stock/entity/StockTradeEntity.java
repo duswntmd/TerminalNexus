@@ -42,6 +42,9 @@ public class StockTradeEntity {
     @Column(name = "price", nullable = false)
     private Long price;
 
+    @Column(name = "fee")
+    private Long fee; // 수수료 + 세금
+
     @CreatedDate
     @Column(name = "traded_at", updatable = false)
     private LocalDateTime tradedAt;
@@ -56,6 +59,7 @@ public class StockTradeEntity {
     public TradeType getTradeType() { return tradeType; }
     public Long getQuantity() { return quantity; }
     public Long getPrice() { return price; }
+    public Long getFee() { return fee != null ? fee : 0L; }
     public LocalDateTime getTradedAt() { return tradedAt; }
 
     public static StockTradeEntityBuilder builder() { return new StockTradeEntityBuilder(); }
@@ -66,12 +70,14 @@ public class StockTradeEntity {
         private TradeType tradeType;
         private Long quantity;
         private Long price;
+        private Long fee;
 
         public StockTradeEntityBuilder user(UserEntity user) { this.user = user; return this; }
         public StockTradeEntityBuilder ticker(String ticker) { this.ticker = ticker; return this; }
         public StockTradeEntityBuilder tradeType(TradeType tradeType) { this.tradeType = tradeType; return this; }
         public StockTradeEntityBuilder quantity(Long quantity) { this.quantity = quantity; return this; }
         public StockTradeEntityBuilder price(Long price) { this.price = price; return this; }
+        public StockTradeEntityBuilder fee(Long fee) { this.fee = fee; return this; }
 
         public StockTradeEntity build() {
             StockTradeEntity t = new StockTradeEntity();
@@ -80,6 +86,7 @@ public class StockTradeEntity {
             t.tradeType = this.tradeType;
             t.quantity = this.quantity;
             t.price = this.price;
+            t.fee = this.fee;
             return t;
         }
     }

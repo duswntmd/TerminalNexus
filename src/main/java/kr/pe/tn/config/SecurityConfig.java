@@ -153,7 +153,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.GET, "/api/typeracer/leaderboard").permitAll()
                                                 .requestMatchers("/api/typeracer/**").authenticated()
                                                 .requestMatchers("/api/janggi/**").authenticated() // 실시간 온라인 장기 API (로그인 필수!)
-                                                .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/history/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/market", "/api/stock/ticks/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
                                                 .requestMatchers("/api/stock/**").authenticated()
                                                 .requestMatchers("/api/chat/**").authenticated()
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
