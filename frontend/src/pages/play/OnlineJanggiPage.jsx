@@ -25,6 +25,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useAuth } from '../../context/AuthContext';
+import { fetchWithAccessRaw as authFetch } from '../../util/fetchUtil';
 
 /* ──────────────────────────────────────────────
    Web Audio API 기반 효과음 합성기
@@ -363,7 +364,7 @@ const OnlineJanggiPage = () => {
   const fetchRooms = async () => {
     setIsLoadingRooms(true);
     try {
-      const res = await fetch('/api/janggi/rooms', { headers: { 'Accept': 'application/json' } });
+      const res = await authFetch('/api/janggi/rooms', { headers: { 'Accept': 'application/json' } });
       if (res.ok) {
         const data = await res.json();
         setRooms(Array.isArray(data) ? data : []);
@@ -462,7 +463,7 @@ const OnlineJanggiPage = () => {
 
   const fetchRoomDetail = async (roomId) => {
     try {
-      const res = await fetch(`/api/janggi/room/${roomId}`);
+      const res = await authFetch(`/api/janggi/room/${roomId}`);
       if (res.ok) {
         const data = await res.json();
         setCurrentRoom(data);
@@ -551,7 +552,7 @@ const OnlineJanggiPage = () => {
   const handleDeleteRoom = async (roomId) => {
     if (!window.confirm('정말로 이 대국 방을 삭제하시겠습니까?')) return;
     try {
-      const res = await fetch(`/api/janggi/room/${roomId}?hostNickname=${encodeURIComponent(nickname)}`, {
+      const res = await authFetch(`/api/janggi/room/${roomId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -613,7 +614,7 @@ const OnlineJanggiPage = () => {
     setIsCreateModalOpen(false);
 
     try {
-      const res = await fetch('/api/janggi/room', {
+      const res = await authFetch('/api/janggi/room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({

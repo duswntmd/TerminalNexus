@@ -89,7 +89,7 @@ echo ""
 echo "4️⃣ 로그인 API:"
 curl -s -o /dev/null -w "   HTTP Status: %{http_code}\n" -X POST https://tnhub.kr/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"wjdxhdtkantlf"}'
+  -d '{"username":"admin","password":"<관리자_비밀번호>"}'
 echo ""
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../context/AuthContext';
 import { Client } from '@stomp/stompjs';
+import { fetchWithAccessRaw } from '../../util/fetchUtil';
 import './StockPage.css';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL ||
@@ -99,10 +100,10 @@ const StockPage = () => {
     if (!user) return;
     try {
       const [wRes, hRes, tRes, pRes] = await Promise.all([
-        fetch('/api/stock/wallet'),
-        fetch('/api/stock/holdings'),
-        fetch('/api/stock/trades'),
-        fetch('/api/stock/orders/pending')
+        fetchWithAccessRaw('/api/stock/wallet'),
+        fetchWithAccessRaw('/api/stock/holdings'),
+        fetchWithAccessRaw('/api/stock/trades'),
+        fetchWithAccessRaw('/api/stock/orders/pending')
       ]);
 
       if (wRes.ok) setWallet(await wRes.json());
@@ -345,7 +346,7 @@ const StockPage = () => {
       return;
     }
     try {
-      const res = await fetch('/api/stock/order', {
+      const res = await fetchWithAccessRaw('/api/stock/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -374,7 +375,7 @@ const StockPage = () => {
   // 8. 미체결 주문 취소
   const handleCancelOrder = async (orderId) => {
     try {
-      const res = await fetch(`/api/stock/order/${orderId}`, { method: 'DELETE' });
+      const res = await fetchWithAccessRaw(`/api/stock/order/${orderId}`, { method: 'DELETE' });
       const data = await res.json();
       if (res.ok) {
         setMsg({ text: '주문이 취소되었습니다.', type: 'success' });

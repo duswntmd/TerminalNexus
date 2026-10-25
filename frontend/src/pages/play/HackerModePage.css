@@ -214,3 +214,30 @@
   pointer-events: none;
   z-index: 100;
 }
+
+/* 모바일: 툴바를 세로로 쌓고 버튼은 줄바꿈 (화면 밖으로 밀려나지 않도록) */
+@media (max-width: 768px) {
+  .hacker-container {
+    padding: 12px;
+  }
+
+  .hacker-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .toolbar-title {
+    font-size: 1rem;
+  }
+
+  .toolbar-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .control-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}

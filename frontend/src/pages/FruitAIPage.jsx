@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { fetchWithAccess } from '../util/fetchUtil';
 
 const BACKEND_API_BASE_URL = '';
 
@@ -51,12 +52,11 @@ const FruitAIPage = () => {
     setError('');
     setAnswer(null);
     try {
-      const res = await fetch(`${BACKEND_API_BASE_URL}/api/fruits/ask`, {
+      const res = await fetchWithAccess(`${BACKEND_API_BASE_URL}/api/fruits/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
-      if (!res.ok) throw new Error('AI 답변 생성 실패');
       setAnswer(await res.json());
     } catch {
       setError('AI 답변을 가져오는 중 오류가 발생했습니다.');

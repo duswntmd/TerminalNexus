@@ -15,6 +15,7 @@ pipeline {
         CONTAINER_UPLOAD_DIR = "/app/uploads"
         CONTAINER_NAME = "tn_container"
         NGINX_WEB_ROOT = "/var/www/html"
+        JWT_SECRET_FILE = "/home/ubuntu/.tn_jwt_secret"
     }
 
     stages {
@@ -117,6 +118,17 @@ pipeline {
                         string(credentialsId: 'GOOGLE_CLIENT_SECRET', variable: 'GOOGLE_SECRET')
                     ]) {
                         sh """
+                            # JWT 서명 키: 최초 1회 서버에 랜덤 생성 후 재사용 (재배포해도 로그인 유지)
+                            if ! sudo test -s ${JWT_SECRET_FILE}; then
+                                openssl rand -hex 32 | sudo tee ${JWT_SECRET_FILE} > /dev/null
+                                sudo chmod 600 ${JWT_SECRET_FILE}
+                                echo "🔑 JWT 서명 키 신규 생성: ${JWT_SECRET_FILE}"
+                            fi
+                            # 키 값이 빌드 로그에 찍히지 않도록 trace 끄고 읽은 뒤, docker에는 변수명만 전달
+                            { set +x; } 2>/dev/null
+                            export JWT_SECRET=\$(sudo cat ${JWT_SECRET_FILE})
+                            set -x
+
                             docker stop ${CONTAINER_NAME} || true
                             docker rm ${CONTAINER_NAME} || true
                             docker ps --filter "publish=8080" -q | xargs -r docker stop || true
@@ -134,6 +146,7 @@ pipeline {
                                 -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/naver" \\
                                 -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \\
                                 -e "ADMIN_PASSWORD=\${ADMIN_PASS}" \\
+                                -e JWT_SECRET \\
                                 -e "GEMINI_API_KEY=\${GEMINI_KEY}" \\
                                 -e "NAVER_CLIENT_SECRET=\${NAVER_SECRET}" \\
                                 -e "GOOGLE_CLIENT_SECRET=\${GOOGLE_SECRET}" \\
