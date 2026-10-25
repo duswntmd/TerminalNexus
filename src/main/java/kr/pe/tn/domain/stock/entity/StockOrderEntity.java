@@ -69,6 +69,9 @@ public class StockOrderEntity {
     @Column(name = "filled_at")
     private LocalDateTime filledAt;
 
+    @Column(name = "reserved_cash")
+    private Long reservedCash; // 매수 주문 시 묶어 둔 금액 (주문금액 + 수수료)
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -105,6 +108,7 @@ public class StockOrderEntity {
     public Long getQuantity() { return quantity; }
     public OrderStatus getOrderStatus() { return orderStatus; }
     public LocalDateTime getFilledAt() { return filledAt; }
+    public Long getReservedCash() { return reservedCash; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public static StockOrderEntityBuilder builder() { return new StockOrderEntityBuilder(); }
@@ -118,6 +122,7 @@ public class StockOrderEntity {
         private Integer leverage;
         private Long targetPrice;
         private Long quantity;
+        private Long reservedCash;
         private OrderStatus orderStatus = OrderStatus.PENDING;
 
         public StockOrderEntityBuilder user(UserEntity user) { this.user = user; return this; }
@@ -128,6 +133,7 @@ public class StockOrderEntity {
         public StockOrderEntityBuilder leverage(Integer leverage) { this.leverage = leverage; return this; }
         public StockOrderEntityBuilder targetPrice(Long targetPrice) { this.targetPrice = targetPrice; return this; }
         public StockOrderEntityBuilder quantity(Long quantity) { this.quantity = quantity; return this; }
+        public StockOrderEntityBuilder reservedCash(Long reservedCash) { this.reservedCash = reservedCash; return this; }
         public StockOrderEntityBuilder orderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus; return this; }
 
         public StockOrderEntity build() {
@@ -140,6 +146,7 @@ public class StockOrderEntity {
             o.leverage = this.leverage != null ? this.leverage : 1;
             o.targetPrice = this.targetPrice;
             o.quantity = this.quantity;
+            o.reservedCash = this.reservedCash;
             o.orderStatus = this.orderStatus != null ? this.orderStatus : OrderStatus.PENDING;
             return o;
         }

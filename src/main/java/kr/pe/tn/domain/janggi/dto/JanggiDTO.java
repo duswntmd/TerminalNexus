@@ -5,70 +5,87 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 실시간 온라인 장기 DTO
  */
 public class JanggiDTO {
 
-    /**
-     * 방 생성 요청 DTO
-     */
+    /** 방 생성 요청 */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
     public static class CreateRoomRequest {
         private String title;
-        private String hostNickname;
-        private String preferredTeam; // "CHO" or "HAN"
-        private String formation;     // "N_E_N_E", etc.
+        private String side;      // "CHO" or "HAN"
+        private String formation; // "N_E_N_E" 등
     }
 
-    /**
-     * 방 응답 DTO
-     */
+    /** 로비 목록용 요약 */
     @Data
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
-    public static class RoomResponse {
+    public static class RoomSummary {
         private String roomId;
         private String title;
-        private String hostNickname;
-        private String guestNickname;
-        private String choNickname;
-        private String hanNickname;
-        private String choFormation;
-        private String hanFormation;
-        private String status; // "WAITING", "PLAYING", "FINISHED"
-        private String currentTurn; // "CHO" or "HAN"
-        private int userCount;
+        private String host;
+        private String cho;
+        private String han;
+        private String status; // WAITING, PLAYING, FINISHED
+        private int playerCount;
     }
 
-    /**
-     * STOMP 대국 메시지 DTO
-     */
+    /** 대국 전체 상태 (클라이언트는 상차림 + 기보로 판을 재구성) */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RoomState {
+        private String roomId;
+        private String title;
+        private String host;
+        private String cho;
+        private String han;
+        private String choFormation;
+        private String hanFormation;
+        private String status;
+        private String turn;          // "CHO" or "HAN"
+        private List<int[]> moves;    // [from, to], 한수쉼은 [-1, -1]
+        private String winner;        // "CHO" / "HAN" / null
+        private String reason;
+        private boolean bikjang;
+        private String inCheck;       // 장군 받은 진영 또는 null
+        private double choScore;
+        private double hanScore;
+    }
+
+    /** STOMP 클라이언트 → 서버 동작 */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
-    public static class GameMessage {
-        public enum MessageType {
-            JOIN, READY, START, MOVE, PASS, RESIGN, CHAT, RESTART, LEAVE
-        }
+    public static class Action {
+        public enum Type { FORMATION, START, MOVE, PASS, RESIGN, CHAT, LEAVE, REMATCH }
 
-        private MessageType type;
-        private String roomId;
+        private Type type;
+        private Integer from;
+        private Integer to;
+        private String formation;
+        private String text;
+    }
+
+    /** 서버 → 클라이언트 브로드캐스트 */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Event {
+        public enum Type { STATE, CHAT, CLOSED, ERROR }
+
+        private Type type;
+        private RoomState state;
         private String sender;
-        private String team; // "CHO" or "HAN"
-        private Integer fromX;
-        private Integer fromY;
-        private Integer toX;
-        private Integer toY;
-        private String text; // 채팅 메시지 또는 상차림 정보
-        private String choFormation;
-        private String hanFormation;
-        private String currentTurn;
-        private String status;
+        private String text;
     }
 }

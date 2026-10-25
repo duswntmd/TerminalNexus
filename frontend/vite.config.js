@@ -49,7 +49,8 @@ export default defineConfig({
     },
   },
   define: {
-    global: 'window',
+    // sockjs-client 호환용. window 대신 globalThis → Web Worker(장기 AI)에서도 동작
+    global: 'globalThis',
   },
   // ✅ 프로덕션 빌드 시 console 및 debugger 자동 제거
   esbuild: {

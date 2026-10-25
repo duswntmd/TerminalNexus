@@ -5,7 +5,7 @@
     "logout": "Log Out",
     "mypage": "My Page",
     "freeboard": "Free Board",
-    "guide": "Guide",
+    "guide": "About",
     "admin_users": "User Management",
     "typeracer": "⌨️ TypeRacer",
     "hackermode": "📟 Hacker Mode",
@@ -61,29 +61,134 @@
     "withdraw_error": "An error occurred during account deletion: "
   },
   "guide": {
-    "title": "TerminalNexus Detailed Guide & Operating Manual",
-    "subtitle": "Your private, sandboxed terminal environment right in the web browser\nFrom sign-up to local CLI setup, remote port forwarding, and security sandbox policies",
-    "step1_num": "Step 01",
-    "step1_title": "Account Creation & Security Authentication",
-    "step1_desc": "Click 'Sign Up' in the upper-right corner to create a personal, isolated account via secure email verification or standard OAuth2 providers (Google, Naver). Upon successful registration, a unique authorization token is provisioned to maintain secure session management.",
-    "step2_num": "Step 02",
-    "step2_title": "Spinning Up Isolated Linux Instances",
-    "step2_desc": "Once authenticated, click 'Create Terminal' on your main dashboard. Our backend immediately allocates a dedicated container sandbox (1vCPU, 512MB RAM). Standard shells like Bash and Zsh are fully supported alongside essential developer tools (Git, Curl, Vim, Nano).",
-    "step3_num": "Step 03",
-    "step3_title": "TN CLI Tool Installation & Port Forwarding",
-    "step3_desc": "Install the helper CLI globally by running 'npm install -g @terminalnexus/cli' on your local computer. Synchronize credentials with 'tn login', and spawn secure SSH tunnels using 'tn ssh' or manage remote port redirection with 'tn forward -p 3000' commands.",
-    "step4_num": "Step 04",
-    "step4_title": "Collaborative Developer Community",
-    "step4_desc": "Use the Free Board to share shell script templates and exchange tips. Our built-in markdown editor renders rich content and syntax highlighting smoothly. You can update profile credentials, nickname aliases, and plan tiers in My Page at any time.",
-    "faq_title": "Frequently Asked Questions (FAQ) & Technical Guidelines",
-    "faq1_q": "Q. What resources and constraints apply to the free sandbox plan?",
-    "faq1_a": "A. Free members receive permanent access to the remote terminal sandbox, live chat lobbies, and community boards. A single session has a continuous execution timeout of 2 hours, after which background processes are automatically paused to prevent server abuse.",
-    "faq2_q": "Q. Is my sandbox state permanently saved after logouts or session drops?",
-    "faq2_a": "A. Yes, all workspace files and configurations are stored in an encrypted persistent storage volume. Reconnecting to the service restores your previous workspace state exactly where you left off, ensuring maximum development continuity.",
-    "faq3_q": "Q. What measures secure OAuth2 integration and passwords?",
-    "faq3_a": "A. We adhere strictly to standard OAuth2 specifications. Passwords are securely hashed using the BCrypt algorithm, and credentials are protected with Json Web Tokens (JWT) using distinct Access/Refresh tokens to defend against credential harvesting.",
-    "contact_title": "Technical Support & Service Operation",
-    "contact_desc": "For immediate technical troubleshooting, bug reporting, partnership proposals, or AdSense issues, please send an inquiry email to our support team. A senior engineer will review the log diagnostics and reply within 24 hours.",
-    "contact_email": "contact@tnhub.kr"
+    "title": "About TerminalNexus",
+    "subtitle": "A terminal-themed playground for developers.\nCommunity and mini games, all in one place.",
+    "features_title": "What can you do here?",
+    "login_required": "Login required",
+    "groups": [
+      {
+        "name": "Community",
+        "items": [
+          {
+            "icon": "📋",
+            "name": "Free Board",
+            "desc": "Post text, images and videos, and discuss with comments and replies. Like or dislike posts.",
+            "path": "/freeboard",
+            "login": true
+          },
+          {
+            "icon": "💬",
+            "name": "Live Chat",
+            "desc": "Public chat, an anonymous room, and whispers with /w nickname.",
+            "path": "/chat",
+            "login": true
+          }
+        ]
+      },
+      {
+        "name": "Play",
+        "items": [
+          {
+            "icon": "📈",
+            "name": "Stock Simulator",
+            "desc": "Trade virtual stocks with live-moving prices using virtual money. Order book, charts and a profit ranking.",
+            "path": "/play/stock",
+            "login": false
+          },
+          {
+            "icon": "♟️",
+            "name": "Janggi",
+            "desc": "Play Korean chess against the AI, with a friend on one screen, or online in real time.",
+            "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "⚒️",
+            "name": "Forge",
+            "desc": "Upgrade your weapon to the highest level — it might break. Records go to the hall of fame.",
+            "path": "/forge",
+            "login": true
+          },
+          {
+            "icon": "⌨️",
+            "name": "TypeRacer",
+            "desc": "Type Linux and Git commands fast and accurately. Top 10 leaderboard.",
+            "path": "/play/typeracer",
+            "login": false
+          },
+          {
+            "icon": "📟",
+            "name": "Hacker Mode",
+            "desc": "Mash any key and code pours out like a movie hacker's terminal.",
+            "path": "/play/hackermode",
+            "login": false
+          },
+          {
+            "icon": "🔐",
+            "name": "Terminal Hack",
+            "desc": "Find the password among candidates hidden in a memory dump, using letter-match hints.",
+            "path": "/play/terminalhack",
+            "login": false
+          }
+        ]
+      },
+      {
+        "name": "Tools",
+        "items": [
+          {
+            "icon": "🍎",
+            "name": "Fruit AI",
+            "desc": "Ask about the benefits of fruits and Gemini AI answers.",
+            "path": "/fruit-ai",
+            "login": true
+          },
+          {
+            "icon": "🌤️",
+            "name": "Weather · Lucky Draw",
+            "desc": "See local weather and draw lottery numbers on the home page.",
+            "path": "/",
+            "login": false
+          }
+        ]
+      }
+    ],
+    "start_title": "Getting started",
+    "steps": [
+      {
+        "title": "Look around",
+        "desc": "Stocks, Janggi, TypeRacer and more work without logging in."
+      },
+      {
+        "title": "Sign up",
+        "desc": "Create an ID, or start right away with Google or Naver."
+      },
+      {
+        "title": "Keep records",
+        "desc": "Logged-in users can post and chat, and game records go to the rankings."
+      }
+    ],
+    "faq_title": "FAQ",
+    "faqs": [
+      {
+        "q": "Is it free?",
+        "a": "Everything is free. The site is supported by ads and voluntary donations."
+      },
+      {
+        "q": "Is the stock simulator real money?",
+        "a": "No. You trade only with virtual money given on sign-up. It has nothing to do with real money or real stocks."
+      },
+      {
+        "q": "How is my data stored?",
+        "a": "Passwords are stored with one-way BCrypt hashing, and social login only receives your name and email. See the privacy policy for details."
+      },
+      {
+        "q": "How do I delete my account?",
+        "a": "You can delete your account any time from My Page."
+      }
+    ],
+    "contact_title": "Contact",
+    "contact_desc": "Send bug reports and suggestions to the email below.",
+    "contact_email": "contact@tnhub.kr",
+    "cta": "Get started free"
   }
 }
