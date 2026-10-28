@@ -1,243 +1,180 @@
-/* HackerModePage.css */
-
-.hacker-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background-color: #030303;
-  color: #0f0;
-  font-family: 'Courier New', Courier, monospace;
-  padding: 20px;
+/* 해커 모드 — 멀티 패널 작전 콘솔 (연출용) */
+.hk-page {
+  --fg: #4dff88;
+  --fg-hi: #c9ffdb;
+  --fg-dim: #1f6b3d;
+  --bg: #04100a;
+  --panel: rgba(8, 28, 18, 0.72);
+  --line: rgba(77, 255, 136, 0.22);
+  --warn: #ff5b5b;
+  min-height: calc(100vh - 70px);
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at 50% 0%, #0a2016 0%, var(--bg) 70%);
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1rem 1.2rem 1.4rem;
   box-sizing: border-box;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  user-select: none;
+  gap: 0.8rem;
+  position: relative;
+}
+.hk-page *, .hk-page *::before, .hk-page *::after { box-sizing: border-box; }
+.hk-theme-amber { --fg: #ffbf40; --fg-hi: #ffe9b8; --fg-dim: #7a5410; --bg: #140d02; --panel: rgba(34, 22, 2, 0.72); --line: rgba(255, 191, 64, 0.22); }
+.hk-theme-ice { --fg: #5fd4ff; --fg-hi: #d2f3ff; --fg-dim: #1d5f7a; --bg: #04101a; --panel: rgba(8, 26, 38, 0.72); --line: rgba(95, 212, 255, 0.22); }
+
+.hk-bar {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  border: 1px solid var(--line); background: var(--panel); border-radius: 8px;
+  padding: 0.5rem 0.9rem; font-size: 0.82rem;
+}
+.hk-brand { color: var(--fg-hi); font-weight: 800; letter-spacing: 0.05em; }
+.hk-fake { color: var(--fg-dim); }
+.hk-controls { margin-left: auto; display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.hk-controls select, .hk-controls button {
+  background: transparent; color: var(--fg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 0.3rem 0.6rem; font: inherit; font-size: 0.8rem; cursor: pointer;
+}
+.hk-controls select option { background: #05140d; color: #cfe; }
+.hk-sw { display: flex; gap: 0.35rem; align-items: center; color: var(--fg-dim); cursor: pointer; }
+.hk-sw input { accent-color: var(--fg); }
+.hk-page button:focus-visible, .hk-page select:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+
+.hk-grid {
+  flex: 1; display: grid; gap: 0.8rem;
+  grid-template-columns: 1.3fr 1.5fr 1fr;
+  grid-template-rows: 1.1fr 0.9fr;
+  grid-template-areas:
+    'code map crack'
+    'code stats log';
+  min-height: 560px;
+}
+.hk-panel-code { grid-area: code; }
+.hk-panel-map { grid-area: map; }
+.hk-panel-crack { grid-area: crack; }
+.hk-panel-stats { grid-area: stats; }
+.hk-panel-log { grid-area: log; }
+.hk-panel-fall { display: none; }
+
+.hk-panel {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 10px;
+  padding: 0.6rem 0.8rem; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+}
+.hk-panel header {
+  font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-dim);
+  border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; margin-bottom: 0.5rem; flex: none;
 }
 
-/* CRT scanlines effect */
-.hacker-container::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-  z-index: 999;
-  background-size: 100% 3px, 6px 100%;
-  pointer-events: none;
+/* 코드 스트림 */
+.hk-code {
+  flex: 1; margin: 0; overflow: hidden; white-space: pre-wrap; word-break: break-all;
+  font-size: 0.74rem; line-height: 1.35; color: var(--fg);
+  text-shadow: 0 0 6px rgba(77, 255, 136, 0.4);
+  -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 88%, transparent);
+  mask-image: linear-gradient(transparent, #000 18%, #000 88%, transparent);
 }
+.hk-cursor { animation: hk-blink 1s steps(1) infinite; }
+@keyframes hk-blink { 50% { opacity: 0; } }
 
-/* Screen flicker animation */
-.hacker-container::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 1000;
-  pointer-events: none;
-  animation: flicker 0.15s infinite;
-}
+/* 지도 */
+.hk-map { width: 100%; flex: 1; min-height: 0; }
+.hk-land { fill: var(--fg-dim); opacity: 0.55; }
+.hk-route { fill: none; stroke: var(--line); stroke-width: 0.6; }
+.hk-route-lit { fill: none; stroke: var(--fg); stroke-width: 1; transition: stroke-dashoffset 0.3s linear; filter: drop-shadow(0 0 2px var(--fg)); }
+.hk-node { fill: var(--bg); stroke: var(--fg-dim); stroke-width: 1; }
+.hk-node.on { fill: var(--fg); stroke: var(--fg); }
+.hk-node.target { stroke: var(--warn); }
+.hk-node.target.on { fill: var(--warn); }
+.hk-ping { fill: none; stroke: var(--fg); stroke-width: 0.8; opacity: 0; animation: hk-ping 1.6s ease-out infinite; }
+@keyframes hk-ping { 0% { r: 3; opacity: 0.7; } 100% { r: 11; opacity: 0; } }
+.hk-maprow { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; font-size: 0.66rem; color: var(--fg-dim); margin-top: 0.4rem; flex: none; }
+.hk-maprow span.on { color: var(--fg-hi); }
 
-@keyframes flicker {
-  0% { opacity: 0.15; }
-  50% { opacity: 0.2; }
-  100% { opacity: 0.15; }
-}
+/* 크랙 */
+.hk-crack { display: flex; gap: 3px; font-size: 1.5rem; font-weight: 800; justify-content: center; margin: 0.5rem 0 0.8rem; flex: none; }
+.hk-crack span { color: var(--fg-dim); min-width: 0.7em; text-align: center; }
+.hk-crack span.locked { color: var(--fg-hi); text-shadow: 0 0 10px var(--fg); }
+.hk-stages { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.74rem; flex: 1; }
+.hk-stages div { display: flex; align-items: center; gap: 0.5rem; color: var(--fg-dim); }
+.hk-stages i { width: 8px; height: 8px; border: 1px solid currentColor; border-radius: 50%; flex: none; }
+.hk-stages .done { color: var(--fg); }
+.hk-stages .done i { background: var(--fg); }
+.hk-stages .active { color: var(--fg-hi); }
+.hk-stages .active i { background: var(--fg-hi); animation: hk-blink 0.6s steps(1) infinite; }
+.hk-progress { position: relative; height: 16px; border: 1px solid var(--line); border-radius: 4px; margin-top: 0.5rem; overflow: hidden; flex: none; }
+.hk-progress div { height: 100%; background: var(--fg); opacity: 0.35; transition: width 0.2s linear; }
+.hk-progress span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.7rem; color: var(--fg-hi); }
 
-.hacker-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #0f0;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-  z-index: 100;
-}
+/* 통계 */
+.hk-stats { list-style: none; margin: 0 0 0.6rem; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.8rem; flex: none; }
+.hk-stats li { display: flex; justify-content: space-between; font-size: 0.76rem; }
+.hk-stats span { color: var(--fg-dim); }
+.hk-stats b { color: var(--fg-hi); font-weight: 600; }
+.hk-bars { display: flex; align-items: flex-end; gap: 2px; flex: 1; min-height: 40px; }
+.hk-bars i { flex: 1; background: linear-gradient(var(--fg), var(--fg-dim)); transition: height 0.3s; min-height: 2px; }
 
-.toolbar-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-shadow: 0 0 5px #0f0;
-}
+/* 비트 폭포 */
+.hk-fall { display: flex; gap: 2px; overflow: hidden; flex: 1; justify-content: space-between; font-size: 0.7rem; }
+.hk-fall span { writing-mode: vertical-rl; color: var(--fg); opacity: 0.5; animation: hk-drop linear infinite; letter-spacing: 2px; }
+@keyframes hk-drop { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
 
-.toolbar-controls {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
+/* 로그 */
+.hk-log { flex: 1; overflow-y: auto; font-size: 0.72rem; line-height: 1.5; scrollbar-width: thin; }
+.hk-log::-webkit-scrollbar { width: 5px; }
+.hk-log::-webkit-scrollbar-thumb { background: var(--fg-dim); }
+.hk-log div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hk-log time { color: var(--fg-dim); margin-right: 0.6rem; }
+.hk-blink { animation: hk-blink 0.8s steps(1) infinite; }
 
-.control-btn {
-  background: transparent;
-  border: 1px solid #0f0;
-  color: #0f0;
-  padding: 5px 12px;
-  font-family: 'Courier New', Courier, monospace;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
+/* 푸터 */
+.hk-footer { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.hk-help { color: var(--fg-dim); font-size: 0.78rem; }
+.hk-run {
+  margin-left: auto; background: var(--fg); color: var(--bg); border: 0; border-radius: 6px;
+  padding: 0.5rem 1.4rem; font: 700 0.9rem 'JetBrains Mono', monospace; cursor: pointer;
 }
+.hk-run:hover { background: var(--fg-hi); }
+.hk-run.big { font-size: 1.1rem; padding: 0.8rem 2rem; margin: 1.5rem 0 0; }
 
-.control-btn:hover {
-  background: rgba(0, 255, 0, 0.2);
-  box-shadow: 0 0 8px #0f0;
+/* 스플래시 / 결과 */
+.hk-splash, .hk-result {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: rgba(2, 10, 6, 0.92); padding: 2rem;
 }
+.hk-splash h1 { font-size: clamp(3rem, 8vw, 6rem); margin: 0; color: var(--fg); text-shadow: 0 0 30px var(--fg); letter-spacing: 0.1em; }
+.hk-splash p, .hk-result p { color: var(--fg-dim); max-width: 42ch; }
+.hk-result { cursor: pointer; }
+.hk-result-big { font-size: clamp(2.2rem, 7vw, 5rem); font-weight: 800; letter-spacing: 0.08em; }
+.hk-result.granted { background: rgba(2, 20, 10, 0.92); }
+.hk-result.granted .hk-result-big { color: var(--fg); text-shadow: 0 0 40px var(--fg); animation: hk-pop 0.4s ease-out; }
+.hk-result.denied { background: rgba(26, 4, 4, 0.93); }
+.hk-result.denied .hk-result-big { color: var(--warn); text-shadow: 0 0 40px rgba(255, 91, 91, 0.6); animation: hk-shake 0.4s; }
+.hk-result.denied { animation: hk-siren 0.8s steps(2) 3; }
+@keyframes hk-siren { 50% { background: rgba(60, 6, 6, 0.95); } }
+@keyframes hk-pop { from { transform: scale(0.7); opacity: 0; } }
+@keyframes hk-shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+.hk-again { color: var(--fg-dim); font-size: 0.85rem; margin-top: 1rem; }
 
-/* Switch styling */
-.switch-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  text-shadow: 0 0 3px #0f0;
-}
-
-.switch-input {
-  cursor: pointer;
-  accent-color: #0f0;
-}
-
-/* Typing Screen area */
-.hacker-console {
-  flex: 1;
-  width: 100%;
-  overflow-y: auto;
-  font-size: 1.1rem;
-  line-height: 1.4;
-  white-space: pre-wrap;
-  word-break: break-all;
-  padding-bottom: 100px; /* Allow scrolling below */
-}
-
-/* Custom scrollbar for hacker console */
-.hacker-console::-webkit-scrollbar {
-  width: 8px;
-}
-.hacker-console::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-}
-.hacker-console::-webkit-scrollbar-thumb {
-  background: #0f0;
-  border-radius: 4px;
-}
-
-.hacker-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 15px;
-  background-color: #0f0;
-  margin-left: 3px;
-  animation: blink 0.8s infinite;
-  box-shadow: 0 0 5px #0f0;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-/* ACCESS GRANTED Overlay */
-.overlay-granted {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 10, 0, 0.95);
-  border: 4px solid #0f0;
-  color: #0f0;
-  padding: 40px 80px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 3rem;
-  font-weight: bold;
-  box-shadow: 0 0 50px rgba(0, 255, 0, 0.6);
-  z-index: 1001;
-  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  letter-spacing: 4px;
-}
-
-/* ACCESS DENIED Overlay */
-.overlay-denied {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(15, 0, 0, 0.95);
-  border: 4px solid #f00;
-  color: #f00;
-  padding: 40px 80px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 3rem;
-  font-weight: bold;
-  box-shadow: 0 0 50px rgba(255, 0, 0, 0.6);
-  z-index: 1001;
-  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  letter-spacing: 4px;
-}
-
-@keyframes pop-in {
-  from {
-    transform: translate(-50%, -50%) scale(0.5);
-    opacity: 0;
+@media (max-width: 1000px) {
+  .hk-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: 'code code' 'map crack' 'stats log';
+    min-height: 0;
   }
-  to {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
+  .hk-panel-code { min-height: 220px; }
+  .hk-map { min-height: 180px; }
 }
-
-/* DENIED Sirens */
-.siren-active {
-  animation: screen-red-siren 0.5s infinite alternate;
+@media (max-width: 620px) {
+  .hk-page { padding: 0.6rem; }
+  .hk-grid { grid-template-columns: 1fr; grid-template-areas: 'code' 'map' 'crack' 'stats' 'log'; }
+  .hk-fake { display: none; }
+  .hk-controls { width: 100%; }
+  .hk-controls select { flex: 1; }
 }
-
-@keyframes screen-red-siren {
-  from {
-    background-color: #030303;
-  }
-  to {
-    background-color: rgba(60, 0, 0, 0.4);
-  }
-}
-
-/* Small instructions text at bottom */
-.hacker-instructions {
-  position: absolute;
-  bottom: 10px;
-  right: 20px;
-  color: rgba(0, 255, 0, 0.5);
-  font-size: 0.8rem;
-  pointer-events: none;
-  z-index: 100;
-}
-
-/* 모바일: 툴바를 세로로 쌓고 버튼은 줄바꿈 (화면 밖으로 밀려나지 않도록) */
-@media (max-width: 768px) {
-  .hacker-container {
-    padding: 12px;
-  }
-
-  .hacker-toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .toolbar-title {
-    font-size: 1rem;
-  }
-
-  .toolbar-controls {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .control-btn {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .hk-page *, .hk-page *::before { animation: none !important; }
 }

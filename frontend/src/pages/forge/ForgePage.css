@@ -894,3 +894,72 @@
   transition: all 0.15s; font-family: 'Noto Sans KR', sans-serif;
 }
 .forge-reset-cancel-btn:hover { background: rgba(255,255,255,0.06); color: #a1a1aa; }
+
+/* ── 타격 게이지 (정밀 타격) ── */
+.forge-strike {
+  margin-top: 10px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.forge-strike.aiming {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.4), 0 0 24px rgba(251, 191, 36, 0.18);
+  cursor: pointer;
+}
+.forge-strike-track {
+  position: relative;
+  height: 20px;
+  background: #0c0c0e;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.forge-strike-zone { position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 3px; }
+.forge-strike-zone.good    { width: 48%; background: rgba(96, 165, 250, 0.18); }
+.forge-strike-zone.great   { width: 24%; background: rgba(74, 222, 128, 0.25); }
+.forge-strike-zone.perfect { width: 8%;  background: rgba(251, 191, 36, 0.55); box-shadow: 0 0 12px rgba(251,191,36,0.6); }
+.forge-strike-marker {
+  position: absolute; top: -2px; bottom: -2px; width: 3px; margin-left: -1.5px;
+  background: #fff; border-radius: 2px; box-shadow: 0 0 8px #fff;
+}
+.forge-strike.aiming .forge-strike-marker { background: #fde68a; box-shadow: 0 0 10px #fbbf24; }
+.forge-strike-cap { text-align: center; font-size: 0.78rem; color: #a1a1aa; margin-top: 7px; min-height: 1.1em; }
+.forge-strike-res { font-weight: 800; letter-spacing: 0.04em; }
+.forge-strike-res.perfect { color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.5); }
+.forge-strike-res.great { color: #4ade80; }
+.forge-strike-res.good { color: #60a5fa; }
+.forge-strike-res.miss { color: #71717a; }
+
+.forge-opt-row { display: flex; gap: 6px; margin-top: 10px; }
+.forge-opt {
+  flex: 1; background: #18181b; border: 1px solid #27272a; color: #a1a1aa;
+  border-radius: 8px; padding: 8px 4px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s;
+}
+.forge-opt:hover:not(:disabled) { border-color: #3f3f46; color: #e4e4e7; }
+.forge-opt.on { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.08); }
+.forge-opt:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.forge-enhance-btn.aiming { background: linear-gradient(135deg, #f59e0b, #d97706); animation: forge-strike-pulse 0.7s ease-in-out infinite; }
+@keyframes forge-strike-pulse { 50% { filter: brightness(1.18); } }
+
+/* ── 확률표 모달 ── */
+.forge-prob-modal { max-width: 460px; width: 92vw; }
+.forge-prob-note { color: #a1a1aa; font-size: 0.78rem; line-height: 1.5; margin: 0 0 10px; }
+.forge-prob-table { font-size: 0.78rem; max-height: 56vh; overflow-y: auto; }
+.forge-prob-th, .forge-prob-tr {
+  display: grid; grid-template-columns: 1.3fr 0.8fr 0.7fr 0.7fr 0.7fr 1.5fr;
+  gap: 4px; padding: 5px 6px; align-items: center;
+}
+.forge-prob-th { color: #71717a; border-bottom: 1px solid #3f3f46; position: sticky; top: 0; background: #18181b; }
+.forge-prob-tr { border-bottom: 1px solid #27272a; }
+.forge-prob-tr.cur { background: rgba(251, 191, 36, 0.1); border-radius: 6px; }
+.forge-prob-tr .g { color: #4ade80; }
+.forge-prob-tr .y { color: #fbbf24; }
+.forge-prob-tr .r { color: #ef4444; }
+.forge-prob-tr .cost { color: #a1a1aa; font-size: 0.72rem; text-align: right; }
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-enhance-btn.aiming, .forge-strike-marker { animation: none !important; }
+}

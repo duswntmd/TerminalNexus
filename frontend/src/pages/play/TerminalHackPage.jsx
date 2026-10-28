@@ -1,570 +1,320 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import "./TerminalHackPage.css";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { buildBoard, chooseWords, COLS, hexAddr, likeness, ROWS, serverName, stageConfig } from './terminalhack/data';
+import '../../styles/gameFonts';
+import './TerminalHackPage.css';
 
-// 1. 난이도별 단어 세트
-const WORD_SETS = {
-  easy: [
-    "ABOUT", "ALERT", "BOARD", "CLEAR", "CLOSE", "ENTER",
-    "INDEX", "LOGIN", "MODEM", "PHASE", "RESET", "ROUTE",
-    "SHELL", "STACK", "START", "WRITE", "LOGIC", "PANEL"
-  ],
-  medium: [
-    "CHANNEL", "COMMAND", "COMPILE", "CONSOLE", "DESKTOP",
-    "DYNAMIC", "GATEWAY", "HACKING", "MONITOR", "NETWORK",
-    "PLAYING", "ROUTING", "SANDBOX", "STORAGE", "VERSION",
-    "RECORDS", "UPGRADE", "UTILITY"
-  ],
-  hard: [
-    "ALGORITHM", "AUTHENTIC", "DATABASED", "DIRECTORY", "EXCEPTION",
-    "INTERFACE", "LOCALIZED", "MULTITASK", "PRACTICAL", "RECURSIVE",
-    "SENSITIVE", "STRUCTURE", "SUBMODULE", "VARIABLES", "WEBSOCKET",
-    "ENCRYPTION", "CONNECTION"
-  ]
-};
+const MAX_ATTEMPTS = 4;
+const BEST_KEY = 'th_best_run';
+const readBest = () => { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || { score: 0, stage: 0 }; } catch { return { score: 0, stage: 0 }; } };
 
-const BRACKETS = [
-  { open: "[", close: "]" },
-  { open: "{", close: "}" },
-  { open: "<", close: ">" },
-  { open: "(", close: ")" }
-];
+function useBeeper(on) {
+  const ctx = useRef(null);
+  return useCallback((freq, dur = 0.06, type = 'square', vol = 0.04, delay = 0) => {
+    if (!on) return;
+    try {
+      ctx.current ||= new (window.AudioContext || window.webkitAudioContext)();
+      const c = ctx.current; if (c.state === 'suspended') c.resume();
+      const t = c.currentTime + delay; const o = c.createOscillator(); const g = c.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + 0.02);
+    } catch { /* 오디오 미지원 */ }
+  }, [on]);
+}
 
-const SPECIAL_CHARS = "!@#$%^&*()_+{}|[]\\:;\"'<>,.?/~`".split("");
+// 화면 순서(왼쪽 열 0~15행, 오른쪽 열 16~31행) 기준 커서 이동
+function moveCursor(i, key) {
+  let r = Math.floor(i / COLS), c = i % COLS;
+  const half = ROWS / 2;
+  if (key === 'ArrowRight') { if (c < COLS - 1) c++; else if (r < half) { r += half; c = 0; } }
+  if (key === 'ArrowLeft') { if (c > 0) c--; else if (r >= half) { r -= half; c = COLS - 1; } }
+  if (key === 'ArrowUp' && r % half > 0) r--;
+  if (key === 'ArrowDown' && r % half < half - 1) r++;
+  return r * COLS + c;
+}
 
 const TerminalHackPage = () => {
-  const { t } = useTranslation();
-  const [difficulty, setDifficulty] = useState("easy");
-  const [attempts, setAttempts] = useState(4);
-  const [gameState, setGameState] = useState("PLAYING"); // PLAYING, SUCCESS, LOCKOUT
-  const [secretWord, setSecretWord] = useState("");
+  const [phase, setPhase] = useState('title'); // title | play | cleared | over
+  const [stage, setStage] = useState(1);
+  const [score, setScore] = useState(0);
+  const [cells, setCells] = useState([]);
   const [words, setWords] = useState([]);
-  const [removedDuds, setRemovedDuds] = useState(new Set()); // 제거된 오답 단어 인덱스
-  const [usedBrackets, setUsedBrackets] = useState(new Set()); // 사용된 괄호쌍 ID
+  const [secret, setSecret] = useState('');
+  const [attempts, setAttempts] = useState(MAX_ATTEMPTS);
+  const [removed, setRemoved] = useState(() => new Set());
+  const [usedBr, setUsedBr] = useState(() => new Set());
+  const [guesses, setGuesses] = useState([]);
   const [log, setLog] = useState([]);
-  
-  // 384글자 평탄화 보드 리스트
-  const [boardChars, setBoardChars] = useState([]);
-  // 마우스 호버 인덱스 추적
-  const [hoveredIndices, setHoveredIndices] = useState([]);
-  const [selectedElementInfo, setSelectedElementInfo] = useState("");
+  const [cursor, setCursor] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [assist, setAssist] = useState(false);
+  const [sound, setSound] = useState(true);
+  const [flash, setFlash] = useState('');
+  const [gain, setGain] = useState(null);
+  const [best, setBest] = useState(readBest);
+  const [cleared, setCleared] = useState(0);
+  const boardRef = useRef(null);
+  const logRef = useRef(null);
+  const beep = useBeeper(sound);
 
-  const consoleEndRef = useRef(null);
-  const audioCtxRef = useRef(null);
+  const cfg = stageConfig(stage);
 
-  // 사운드 재생 편의 함수
-  const initAudio = () => {
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  };
+  const pushLog = useCallback((...lines) => setLog((l) => [...l, ...lines].slice(-40)), []);
 
-  const playBeep = (freq, duration, type = "sine", volume = 0.1) => {
-    try {
-      initAudio();
-      const ctx = audioCtxRef.current;
-      if (ctx.state === "suspended") {
-        ctx.resume();
-      }
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+  const loadStage = useCallback((n) => {
+    const c = stageConfig(n);
+    const { secret: s, words: w } = chooseWords(c.len, c.count);
+    setSecret(s); setWords(w); setCells(buildBoard(w));
+    setAttempts(MAX_ATTEMPTS); setRemoved(new Set()); setUsedBr(new Set()); setGuesses([]);
+    setTimeLeft(c.time); setCursor(0); setStage(n); setGain(null);
+    setLog([]);
+    const boot = [`> 접속 대상: ${serverName(n)}`, `> 암호 길이 ${c.len}자 · 후보 ${c.count}개`, '> 추적 프로그램 가동. 서두르세요.'];
+    boot.forEach((line, i) => setTimeout(() => setLog((l) => [...l, line]), 180 * (i + 1)));
+    setPhase('play');
+    setTimeout(() => boardRef.current?.focus({ preventScroll: true }), 30);
+  }, []);
 
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      gain.gain.setValueAtTime(volume, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  const startRun = () => { setScore(0); setCleared(0); beep(660, 0.08); beep(990, 0.12, 'square', 0.04, 0.09); loadStage(1); };
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start();
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {
-      console.warn("Audio Context blocked or not supported:", e);
-    }
-  };
-
-  const playClickSound = () => playBeep(880, 0.05, "sine", 0.08);
-  const playHoverSound = () => playBeep(1200, 0.02, "sine", 0.03);
-  const playSuccessSound = () => {
-    playBeep(523.25, 0.1); // C5
-    setTimeout(() => playBeep(659.25, 0.1), 100); // E5
-    setTimeout(() => playBeep(783.99, 0.1), 200); // G5
-    setTimeout(() => playBeep(1046.50, 0.3), 300); // C6
-  };
-  const playDeniedSound = () => {
-    playBeep(180, 0.4, "sawtooth", 0.15);
-  };
-  const playBonusSound = () => {
-    playBeep(440, 0.15, "triangle", 0.1);
-    setTimeout(() => playBeep(880, 0.25, "triangle", 0.1), 150);
-  };
-
-  // 게임 시작 및 보드 초기화
+  // 추적 타이머: 0이 되면 기회 1회 소모
   useEffect(() => {
-    startNewGame();
-  }, [difficulty]);
+    if (phase !== 'play') return undefined;
+    const id = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [phase]);
 
-  // 로그 스크롤 자동화
+  const loseAttempt = useCallback((reason) => {
+    setAttempts((a) => {
+      const n = a - 1;
+      if (n <= 0) {
+        beep(110, 0.6, 'sawtooth', 0.08);
+        pushLog(reason, '> !!! 터미널 잠김 !!!');
+        setTimeout(() => setPhase('over'), 900);
+      }
+      return Math.max(0, n);
+    });
+    setFlash('bad'); setTimeout(() => setFlash(''), 350);
+  }, [beep, pushLog]);
+
   useEffect(() => {
-    if (consoleEndRef.current) {
-      consoleEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (phase !== 'play' || timeLeft > 0) return;
+    loseAttempt('> 추적 감지됨: 연결을 우회합니다. 기회 -1');
+    setTimeLeft(cfg.time);
+  }, [timeLeft, phase, cfg.time, loseAttempt]);
+
+  // 런 종료 시 최고 기록 저장
+  useEffect(() => {
+    if (phase !== 'over') return;
+    if (score > best.score) {
+      const nb = { score, stage: cleared };
+      setBest(nb);
+      try { localStorage.setItem(BEST_KEY, JSON.stringify(nb)); } catch { /* 저장 불가 */ }
     }
-  }, [log]);
+  }, [phase, score, cleared, best.score]);
 
-  const startNewGame = () => {
-    const wordList = [...WORD_SETS[difficulty]];
-    // 무작위로 12개 선택
-    const chosenWords = [];
-    const tempWords = [...wordList];
-    const wordsCount = 12;
-    for (let i = 0; i < wordsCount && tempWords.length > 0; i++) {
-      const randIdx = Math.floor(Math.random() * tempWords.length);
-      chosenWords.push(tempWords.splice(randIdx, 1)[0].toUpperCase());
+  useEffect(() => { logRef.current?.scrollTo({ top: logRef.current.scrollHeight }); }, [log]);
+
+  // 지금까지의 유사도 결과와 모순되지 않는 후보
+  const candidates = useMemo(() => new Set(words.map((w, i) => (guesses.every((g) => likeness(w, g.word) === g.like) ? i : -1)).filter((i) => i >= 0)), [words, guesses]);
+
+  const groupAt = useCallback((i) => {
+    const c = cells[i];
+    if (!c) return [i];
+    if (c.word !== undefined && !removed.has(c.word)) return cells.map((x, k) => (x.word === c.word ? k : -1)).filter((k) => k >= 0);
+    if (c.bracket && !usedBr.has(c.bracket.id) && i === c.bracket.start) {
+      return Array.from({ length: c.bracket.end - c.bracket.start + 1 }, (_, k) => c.bracket.start + k);
     }
+    return [i];
+  }, [cells, removed, usedBr]);
 
-    const targetWord = chosenWords[Math.floor(Math.random() * chosenWords.length)];
-    setSecretWord(targetWord);
-    setWords(chosenWords);
-    setAttempts(4);
-    setGameState("PLAYING");
-    setRemovedDuds(new Set());
-    setUsedBrackets(new Set());
-    
-    // 로그 초기화
-    setLog([
-      `> TN-OS v2.4 BOOTING...`,
-      `> ENTERING PRIVATE SUBNET`,
-      `> LOGGING ATTEMPTS LEFT: 4`,
-      `> CHOOSE PASSCODE...`
-    ]);
+  const hl = useMemo(() => new Set(groupAt(cursor)), [groupAt, cursor]);
+  const hoverText = [...hl].sort((a, b) => a - b).map((k) => cells[k]?.ch).join('');
 
-    // 보드 캐릭터 배열 설계
-    generateBoard(chosenWords);
-  };
-
-  // 보드 문자열 스트림 생성
-  const generateBoard = (chosenWords) => {
-    const totalLength = 384; // 12글자 * 32줄
-    const tempChars = Array(totalLength).fill(null);
-
-    // 1. 단어들 임의 오프셋 배치
-    const wordLength = chosenWords[0].length;
-    // 오프셋 겹치지 않게 안전하게 배치
-    let placedCount = 0;
-    while (placedCount < chosenWords.length) {
-      // 12글자 로우를 침범하지 않는 최소한의 간격 유지
-      const randIdx = Math.floor(Math.random() * (totalLength - wordLength));
-      
-      // 단어가 세로 줄 바꿈 경계에 걸쳐 분열되지 않도록 검사
-      const rowStart = Math.floor(randIdx / 12);
-      const rowEnd = Math.floor((randIdx + wordLength - 1) / 12);
-      
-      if (rowStart !== rowEnd) continue; // 다른 줄에 걸쳐 있으면 무효
-
-      // 겹침 여부 확인
-      let hasConflict = false;
-      for (let i = 0; i < wordLength; i++) {
-        if (tempChars[randIdx + i] !== null) {
-          hasConflict = true;
-          break;
-        }
-      }
-
-      if (!hasConflict) {
-        // 단어 세팅
-        const word = chosenWords[placedCount];
-        for (let i = 0; i < wordLength; i++) {
-          tempChars[randIdx + i] = {
-            char: word[i],
-            isWord: true,
-            wordIndex: placedCount,
-            wordText: word
-          };
-        }
-        placedCount++;
-      }
-    }
-
-    // 2. 남은 자리를 특수 기호로 채우기
-    for (let i = 0; i < totalLength; i++) {
-      if (tempChars[i] === null) {
-        const randSpecial = SPECIAL_CHARS[Math.floor(Math.random() * SPECIAL_CHARS.length)];
-        tempChars[i] = {
-          char: randSpecial,
-          isWord: false
-        };
-      }
-    }
-
-    // 3. 각 줄(Row) 마다 괄호쌍 찾기 (이스터에그 매핑)
-    // 12글자 단위로 순회
-    let bracketIdCounter = 1;
-    const bracketBonusList = [];
-
-    for (let row = 0; row < 32; row++) {
-      const rowStartIdx = row * 12;
-      const rowEndIdx = rowStartIdx + 12;
-      
-      // 한 줄 안에서 괄호쌍 탐색
-      for (let i = rowStartIdx; i < rowEndIdx; i++) {
-        const charObj = tempChars[i];
-        if (charObj.isWord) continue;
-
-        // 매칭되는 괄호 타입 찾기
-        const bracketType = BRACKETS.find(b => b.open === charObj.char);
-        if (bracketType) {
-          // 닫히는 괄호 탐색 (우측 방향으로)
-          for (let j = i + 1; j < rowEndIdx; j++) {
-            const nextCharObj = tempChars[j];
-            if (nextCharObj.isWord) break; // 중간에 단어가 끼어 있으면 무효화
-
-            if (nextCharObj.char === bracketType.close) {
-              // 유효한 괄호쌍 발견!
-              const bracketId = bracketIdCounter++;
-              // 괄호 범위 내의 모든 캐릭터에 속성 매핑
-              for (let k = i; k <= j; k++) {
-                tempChars[k].isBracket = true;
-                tempChars[k].bracketId = bracketId;
-                tempChars[k].bracketStart = i;
-                tempChars[k].bracketEnd = j;
-              }
-              break; // 가장 바깥쪽 괄호 하나만 한 번 매칭하고 넘김
-            }
-          }
-        }
-      }
-    }
-
-    setBoardChars(tempChars);
-  };
-
-  // 마우스 호버 시 동일 단어/괄호 전체 하이라이트 계산
-  const handleMouseEnter = (index) => {
-    const charObj = boardChars[index];
-    if (!charObj) return;
-
-    playHoverSound();
-
-    if (charObj.isWord) {
-      // 해당 단어가 삭제된 더드인지 확인
-      if (removedDuds.has(charObj.wordIndex)) {
-        setHoveredIndices([index]);
-        setSelectedElementInfo(charObj.char);
+  const select = (i) => {
+    if (phase !== 'play') return;
+    const c = cells[i];
+    if (!c) return;
+    beep(880, 0.03, 'square', 0.03);
+    if (c.word !== undefined && !removed.has(c.word)) {
+      const word = words[c.word];
+      if (guesses.some((g) => g.word === word)) return;
+      if (word === secret) {
+        const timeBonus = timeLeft * 5;
+        const attemptBonus = attempts * 60;
+        const base = 120 * stage;
+        const total = Math.round((base + timeBonus + attemptBonus) * (assist ? 0.6 : 1));
+        setScore((s) => s + total);
+        setGain({ base, timeBonus, attemptBonus, total, assist });
+        setCleared(stage);
+        pushLog(`> ${word}`, '> 일치. 접근 허가.');
+        [523, 659, 784, 1047].forEach((f, k) => beep(f, 0.12, 'square', 0.04, k * 0.09));
+        setFlash('good');
+        setTimeout(() => { setFlash(''); setPhase('cleared'); }, 700);
         return;
       }
-      // 같은 단어에 속한 모든 인덱스 수집
-      const indices = [];
-      boardChars.forEach((c, idx) => {
-        if (c.isWord && c.wordIndex === charObj.wordIndex) {
-          indices.push(idx);
-        }
-      });
-      setHoveredIndices(indices);
-      setSelectedElementInfo(charObj.wordText);
-    } else if (charObj.isBracket && !usedBrackets.has(charObj.bracketId)) {
-      // 사용하지 않은 괄호쌍 하이라이트
-      const indices = [];
-      for (let k = charObj.bracketStart; k <= charObj.bracketEnd; k++) {
-        indices.push(k);
-      }
-      setHoveredIndices(indices);
-      // 괄호 텍스트 구성
-      const bracketStr = indices.map(idx => boardChars[idx].char).join("");
-      setSelectedElementInfo(bracketStr);
-    } else {
-      // 일반 특수 문자
-      setHoveredIndices([index]);
-      setSelectedElementInfo(charObj.char);
+      const like = likeness(word, secret);
+      setGuesses((g) => [...g, { word, like }]);
+      pushLog(`> ${word}`, '> 접근 거부.', `> 유사도 ${like}/${secret.length}`);
+      beep(196, 0.18, 'sawtooth', 0.05);
+      loseAttempt('> 기회를 모두 써버렸습니다.');
+      return;
     }
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndices([]);
-    setSelectedElementInfo("");
-  };
-
-  // 요소 클릭 시 처리
-  const handleClick = (index) => {
-    if (gameState !== "PLAYING") return;
-
-    const charObj = boardChars[index];
-    if (!charObj) return;
-
-    playClickSound();
-
-    if (charObj.isWord) {
-      // 제거된 Dud(오답) 단어인 경우 무시
-      if (removedDuds.has(charObj.wordIndex)) {
-        return;
-      }
-
-      const selectedWord = charObj.wordText;
-      
-      // 1. 정답인 경우
-      if (selectedWord === secretWord) {
-        playSuccessSound();
-        setGameState("SUCCESS");
-        setLog(prev => [
-          ...prev,
-          `> SELECTING "${selectedWord}"`,
-          `> MATCH ENCRYPTED KEY [OK]`,
-          `> ACCESS GRANTED! WELCOME BACK.`
-        ]);
-        return;
-      }
-
-      // 2. 오답인 경우
-      const sim = calculateSimilarity(selectedWord, secretWord);
-      const newAttempts = attempts - 1;
-      setAttempts(newAttempts);
-
-      setLog(prev => [
-        ...prev,
-        `> SELECTING "${selectedWord}"`,
-        `> ACCESS DENIED.`,
-        `> SIMILARITY=${sim}/${secretWord.length}`
-      ]);
-
-      if (newAttempts <= 0) {
-        playDeniedSound();
-        setGameState("LOCKOUT");
-        setLog(prev => [
-          ...prev,
-          `> !!! SYSTEM TERMINAL LOCKED OUT !!!`,
-          `> COLD REBOOT REQUIRED.`
-        ]);
-      }
-    } else if (charObj.isBracket && !usedBrackets.has(charObj.bracketId)) {
-      // 괄호 이스터에그 보너스 발동
-      const bracketId = charObj.bracketId;
-      setUsedBrackets(prev => {
-        const next = new Set(prev);
-        next.add(bracketId);
-        return next;
-      });
-
-      // 50% 확률로 기회 보충 or 오답 제거
-      const isReplenish = Math.random() > 0.5;
-
-      if (isReplenish) {
-        setAttempts(4);
-        playBonusSound();
-        setLog(prev => [
-          ...prev,
-          `> BRACKET MODEM BYPASS...`,
-          `> ATTEMPTS REPLENISHED.`,
-        ]);
+    if (c.bracket && !usedBr.has(c.bracket.id) && i === c.bracket.start) {
+      setUsedBr((s) => new Set(s).add(c.bracket.id));
+      const duds = words.map((w, k) => (w !== secret && !removed.has(k) ? k : -1)).filter((k) => k >= 0);
+      const label = cells.slice(c.bracket.start, c.bracket.end + 1).map((x) => x.ch).join('');
+      if ((Math.random() < 0.3 && attempts < MAX_ATTEMPTS) || !duds.length) {
+        setAttempts(MAX_ATTEMPTS);
+        pushLog(`> ${label}`, '> 우회 성공: 기회 충전');
+      } else if (Math.random() < 0.25) {
+        setTimeLeft((t) => t + 15);
+        pushLog(`> ${label}`, '> 추적 지연: 시간 +15초');
       } else {
-        // 제거 가능한 오답 단어 필터링 (정답 제외, 이미 제거된 오답 제외)
-        const activeDudIndices = [];
-        words.forEach((w, idx) => {
-          if (w !== secretWord && !removedDuds.has(idx)) {
-            activeDudIndices.push(idx);
-          }
-        });
-
-        if (activeDudIndices.length > 0) {
-          const randDudIdx = activeDudIndices[Math.floor(Math.random() * activeDudIndices.length)];
-          setRemovedDuds(prev => {
-            const next = new Set(prev);
-            next.add(randDudIdx);
-            return next;
-          });
-          playBonusSound();
-          setLog(prev => [
-            ...prev,
-            `> BRACKET DUD DISMANTLE...`,
-            `> DUD "${words[randDudIdx]}" REMOVED.`,
-          ]);
-        } else {
-          // 지울 오답이 없으면 기회 충전으로 우회
-          setAttempts(4);
-          playBonusSound();
-          setLog(prev => [
-            ...prev,
-            `> BRACKET MODEM BYPASS...`,
-            `> ATTEMPTS REPLENISHED.`,
-          ]);
-        }
+        const k = duds[Math.floor(Math.random() * duds.length)];
+        setRemoved((s) => new Set(s).add(k));
+        pushLog(`> ${label}`, `> 오답 제거: ${words[k]}`);
       }
-      
-      // 괄호는 사용한 것으로 마킹되므로 호버 효과 해제
-      setHoveredIndices([]);
+      beep(440, 0.1, 'triangle', 0.06); beep(880, 0.16, 'triangle', 0.06, 0.1);
+      return;
     }
+    pushLog(`> ${c.ch}`, '> 오류');
   };
 
-  // 일치하는 글자 수 (자리수와 단어가 완벽히 일치해야 함)
-  const calculateSimilarity = (wordA, wordB) => {
-    let count = 0;
-    const len = Math.min(wordA.length, wordB.length);
-    for (let i = 0; i < len; i++) {
-      if (wordA[i] === wordB[i]) {
-        count++;
-      }
-    }
-    return count;
+  const onKeyDown = (e) => {
+    if (phase !== 'play') return;
+    if (e.key.startsWith('Arrow')) { e.preventDefault(); setCursor((i) => moveCursor(i, e.key)); beep(1500, 0.01, 'square', 0.015); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(cursor); }
   };
 
-  // 가상의 16진수 주소 라벨 생성
-  const getHexAddress = (rowNum) => {
-    const base = 0xF3A4 + (rowNum * 12);
-    return "0x" + base.toString(16).toUpperCase();
-  };
+  useEffect(() => {
+    const h = (e) => {
+      if (e.key !== 'Enter' || ['BUTTON', 'INPUT'].includes(document.activeElement?.tagName)) return;
+      if (phase === 'title' || phase === 'over') { e.preventDefault(); startRun(); }
+      else if (phase === 'cleared') { e.preventDefault(); loadStage(stage + 1); }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
 
-  // 12글자 단위로 잘라낸 줄 렌더러
-  const renderRow = (rowNum) => {
-    const rowStart = rowNum * 12;
-    const elements = [];
-
-    for (let i = 0; i < 12; i++) {
-      const boardIdx = rowStart + i;
-      const charObj = boardChars[boardIdx];
-      if (!charObj) continue;
-
-      const isHovered = hoveredIndices.includes(boardIdx);
-      const isDudRemoved = charObj.isWord && removedDuds.has(charObj.wordIndex);
-      const isBracketUsed = charObj.isBracket && usedBrackets.has(charObj.bracketId);
-
-      // 출력할 문자
-      let displayChar = charObj.char;
-      if (isDudRemoved) {
-        displayChar = "."; // 오답 제거 시 온점으로 대체
-      }
-
-      // CSS 클래스 매핑
-      let classNames = "char-span";
-      if (isHovered) classNames += " highlighted";
-
-      elements.push(
-        <span
-          key={i}
-          className={classNames}
-          onMouseEnter={() => handleMouseEnter(boardIdx)}
-          onMouseLeave={handleMouseLeave}
-          onClick={() => handleClick(boardIdx)}
-          style={{
-            color: isDudRemoved ? "#1a5c1a" : (isBracketUsed ? "#1a5c1a" : undefined)
-          }}
-        >
-          {displayChar}
-        </span>
-      );
-    }
-
-    return (
-      <div className="matrix-row" key={rowNum}>
-        <span className="hex-address">{getHexAddress(rowNum)}</span>
-        <span className="char-container">{elements}</span>
-      </div>
-    );
-  };
+  const renderRow = (r) => (
+    <div className="th-row" key={r}>
+      <span className="th-addr">{hexAddr(r)}</span>
+      <span className="th-cells">
+        {Array.from({ length: COLS }, (_, c) => {
+          const i = r * COLS + c; const cell = cells[i];
+          if (!cell) return null;
+          const isWord = cell.word !== undefined;
+          const gone = isWord && removed.has(cell.word);
+          const tried = isWord && guesses.some((g) => g.word === words[cell.word]);
+          const ruledOut = assist && isWord && !gone && !candidates.has(cell.word);
+          const usedB = cell.bracket && usedBr.has(cell.bracket.id);
+          const cls = ['th-c', hl.has(i) ? 'hl' : '', gone ? 'gone' : '', tried ? 'tried' : '', ruledOut ? 'out' : '', usedB ? 'usedb' : ''].join(' ');
+          return (
+            <span key={c} className={cls} onMouseEnter={() => setCursor(i)} onClick={() => { setCursor(i); select(i); }}>
+              {gone ? '.' : cell.ch}
+            </span>
+          );
+        })}
+      </span>
+    </div>
+  );
 
   return (
-    <div className="terminal-hack-wrapper">
-      <div className="difficulty-selector">
-        <button
-          className={`diff-btn ${difficulty === "easy" ? "active" : ""}`}
-          onClick={() => { playClickSound(); setDifficulty("easy"); }}
-        >
-          EASY (5L)
-        </button>
-        <button
-          className={`diff-btn ${difficulty === "medium" ? "active" : ""}`}
-          onClick={() => { playClickSound(); setDifficulty("medium"); }}
-        >
-          MEDIUM (7L)
-        </button>
-        <button
-          className={`diff-btn ${difficulty === "hard" ? "active" : ""}`}
-          onClick={() => { playClickSound(); setDifficulty("hard"); }}
-        >
-          HARD (9L)
-        </button>
+    <div className="th-page">
+      <div className="th-toolbar">
+        <h1>터미널 해킹</h1>
+        <div className="th-toggles">
+          <label><input type="checkbox" checked={assist} onChange={(e) => setAssist(e.target.checked)} disabled={phase === 'play'} /> 추론 보조 <small>(점수 60%)</small></label>
+          <label><input type="checkbox" checked={sound} onChange={(e) => setSound(e.target.checked)} /> 효과음</label>
+        </div>
       </div>
 
-      <div className="crt-screen">
-        <div className="crt-screen-inner">
-          
-          {/* 게임 헤더 */}
-          <div className="hack-header">
-            <div className="hack-title">📟 TERMINAL SECURITY PROTOCOL</div>
-            <div className="hack-attempts">
-              <span>{t("attempts", "ATTEMPTS REMAINING:")}</span>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`attempt-indicator ${i >= attempts ? "spent" : ""}`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {gameState === "PLAYING" ? (
-            <div className="hack-body">
-              {/* 좌측 32개 줄 (2개 열로 나누어 출력) */}
-              <div className="word-matrix">
-                <div className="matrix-column">
-                  {Array.from({ length: 16 }).map((_, i) => renderRow(i))}
-                </div>
-                <div className="matrix-column">
-                  {Array.from({ length: 16 }).map((_, i) => renderRow(i + 16))}
-                </div>
-              </div>
-
-              {/* 우측 진행 로그 및 호버 단어 피드백 */}
-              <div className="console-log">
-                {log.map((line, idx) => (
-                  <div
-                    key={idx}
-                    className={`log-entry ${
-                      line.includes("REMOVED") ? "dud" :
-                      line.includes("REPLENISHED") ? "replenish" :
-                      line.includes("DENIED") || line.includes("LOCKED OUT") ? "error" :
-                      line.includes("GRANTED") ? "success" : ""
-                    }`}
-                  >
-                    {line}
-                  </div>
-                ))}
-                
-                {/* 호버 중인 정보 출력 */}
-                {selectedElementInfo && (
-                  <div className="log-entry hover-preview" style={{ marginTop: "auto", borderTop: "1px dashed #1a5c1a", paddingTop: "10px" }}>
-                    {`> LINK: ${selectedElementInfo}`}
-                  </div>
-                )}
-                <div ref={consoleEndRef} />
-              </div>
-            </div>
-          ) : (
-            /* 성공 / 실패 락아웃 오버레이 */
-            <div className="game-overlay">
-              {gameState === "SUCCESS" ? (
-                <>
-                  <div className="overlay-title success">ACCESS GRANTED</div>
-                  <p>{t("hack_success_desc", "보안 프로토콜을 통과했습니다. 시스템 코어 권한이 허용되었습니다.")}</p>
-                  <button className="reset-btn" onClick={() => { playClickSound(); startNewGame(); }}>
-                    {t("play_again", "NEW TERMINAL ACCESS")}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="overlay-title denied">TERMINAL LOCKED OUT</div>
-                  <p>{t("hack_lockout_desc", "인증 횟수를 모두 초과했습니다. 시스템 강제 잠금 상태가 활성화되었습니다.")}</p>
-                  <button className="reset-btn denied-btn" onClick={() => { playClickSound(); startNewGame(); }}>
-                    {t("reboot_system", "FORCE SYSTEM REBOOT")}
-                  </button>
-                </>
-              )}
+      <div className={`th-crt ${flash}`}>
+        <div className="th-screen">
+          {phase === 'title' && (
+            <div className="th-title">
+              <pre className="th-logo" aria-hidden="true">{`████████╗███╗   ██╗
+╚══██╔══╝████╗  ██║
+   ██║   ██╔██╗ ██║
+   ██║   ██║╚██╗██║
+   ██║   ██║ ╚████║
+   ╚═╝   ╚═╝  ╚═══╝`}</pre>
+              <p className="th-lead">서버를 하나씩 뚫고 더 깊이 들어가세요. 단계가 오를수록 암호는 길어지고 추적은 빨라져요.</p>
+              <ul className="th-rules">
+                <li>화면 속 단어 중 하나가 암호예요. 틀리면 <b>유사도</b>(같은 자리에 같은 글자 수)를 알려줘요.</li>
+                <li>기회는 4번. 추적 시간이 끝나도 기회가 하나 줄어요.</li>
+                <li>한 줄 안의 괄호쌍 <b>( ) [ ] {'{ }'} &lt; &gt;</b>을 누르면 오답 제거, 기회 충전, 시간 연장 중 하나가 일어나요.</li>
+                <li>방향키로 움직이고 Enter로 선택할 수 있어요.</li>
+              </ul>
+              <button className="th-btn" onClick={startRun}>&gt; 침투 시작</button>
+              {best.score > 0 && <p className="th-best">최고 기록 {best.score.toLocaleString()}점 · {best.stage}단계 돌파</p>}
             </div>
           )}
 
-          {/* 하단 단축키 & 이용법 */}
-          <div className="hack-footer">
-            [HELP] {t("hack_help", "단어 중 비밀번호를 추측하세요. 괄호쌍 {...}, [...], <...>, (...)을 클릭해 오답을 제거하거나 기회를 충전할 수 있습니다.")}
-          </div>
+          {(phase === 'play' || phase === 'cleared') && (
+            <>
+              <div className="th-status">
+                <div><span className="th-k">단계</span> {stage} · {serverName(stage)}</div>
+                <div><span className="th-k">점수</span> {score.toLocaleString()}</div>
+                <div className={`th-trace ${timeLeft <= 10 ? 'low' : ''}`}><span className="th-k">추적</span> {String(Math.max(0, timeLeft)).padStart(2, '0')}초</div>
+                <div className="th-att" aria-label={`남은 기회 ${attempts}번`}>
+                  <span className="th-k">기회</span>
+                  {Array.from({ length: MAX_ATTEMPTS }, (_, k) => <i key={k} className={k < attempts ? 'on' : ''} />)}
+                </div>
+              </div>
+              <div className="th-tracebar"><div style={{ width: `${Math.max(0, timeLeft / cfg.time) * 100}%` }} /></div>
 
+              <div className="th-body">
+                <div className="th-board" tabIndex={0} ref={boardRef} onKeyDown={onKeyDown} aria-label="해킹 보드. 방향키로 이동, Enter로 선택">
+                  <div className="th-col">{Array.from({ length: ROWS / 2 }, (_, r) => renderRow(r))}</div>
+                  <div className="th-col">{Array.from({ length: ROWS / 2 }, (_, r) => renderRow(r + ROWS / 2))}</div>
+                </div>
+                <div className="th-side">
+                  <div className="th-log" ref={logRef}>
+                    {log.map((l, k) => <div key={k} className={/거부|잠김|감지/.test(l) ? 'bad' : /허가|충전|제거|지연/.test(l) ? 'good' : ''}>{l}</div>)}
+                    <div className="th-hover">&gt; {hoverText}<span className="th-caret">█</span></div>
+                  </div>
+                  {guesses.length > 0 && (
+                    <div className="th-guesses">
+                      {guesses.map((g) => (
+                        <div key={g.word}><span>{g.word}</span><span className="th-bar">{Array.from({ length: secret.length }, (_, k) => <i key={k} className={k < g.like ? 'on' : ''} />)}</span><b>{g.like}</b></div>
+                      ))}
+                      {assist && <p className="th-cand">남은 후보 {candidates.size}개</p>}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {phase === 'cleared' && gain && (
+                <div className="th-overlay">
+                  <div className="th-granted">접근 허가</div>
+                  <p>{serverName(stage)} 장악 완료. 비밀번호는 {secret}였어요.</p>
+                  <dl className="th-gain">
+                    <div><dt>단계 보상</dt><dd>{gain.base}</dd></div>
+                    <div><dt>남은 시간</dt><dd>+{gain.timeBonus}</dd></div>
+                    <div><dt>남은 기회</dt><dd>+{gain.attemptBonus}</dd></div>
+                    {gain.assist && <div><dt>추론 보조</dt><dd>×0.6</dd></div>}
+                    <div className="sum"><dt>획득</dt><dd>{gain.total}</dd></div>
+                  </dl>
+                  <button className="th-btn" onClick={() => loadStage(stage + 1)} autoFocus>&gt; 다음 서버: {serverName(stage + 1)}</button>
+                </div>
+              )}
+            </>
+          )}
+
+          {phase === 'over' && (
+            <div className="th-title th-over">
+              <div className="th-locked">터미널 잠김</div>
+              <p className="th-lead">{serverName(stage)}에서 추적당했어요. 암호는 <b>{secret}</b>였어요.</p>
+              <dl className="th-gain">
+                <div><dt>돌파한 서버</dt><dd>{cleared}</dd></div>
+                <div className="sum"><dt>최종 점수</dt><dd>{score.toLocaleString()}</dd></div>
+                <div><dt>최고 기록</dt><dd>{Math.max(best.score, score).toLocaleString()}</dd></div>
+              </dl>
+              {score > 0 && score >= best.score && <p className="th-best">새 최고 기록이에요.</p>}
+              <button className="th-btn" onClick={startRun}>&gt; 처음부터 다시 침투</button>
+            </div>
+          )}
         </div>
       </div>
     </div>
