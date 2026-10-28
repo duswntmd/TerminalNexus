@@ -24,6 +24,7 @@ import HackerModePage from "./pages/play/HackerModePage";
 import TerminalHackPage from "./pages/play/TerminalHackPage";
 import StockPage from "./pages/play/stock/StockPage";
 import JanggiPage from "./pages/play/janggi/JanggiPage";
+import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
@@ -162,6 +163,7 @@ const AppContent = () => {
           <Route path="/play/terminalhack" element={<TerminalHackPage />} />
           <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
+          <Route path="/play/linux" element={<RockyLinuxPage />} />
           <Route path="/lotto" element={<LottoPage />} />
           {/* 예전 온라인 장기 주소 → 장기 페이지 온라인 탭 */}
           <Route path="/play/janggi-online" element={<Navigate to="/play/janggi?mode=online" replace />} />

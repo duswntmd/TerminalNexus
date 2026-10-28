@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import RockyTerminal from './rocky/RockyTerminal';
 import './TerminalHero.css';
 
 const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -12,6 +13,9 @@ const TerminalHero = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [promptUser, setPromptUser] = useState('Guest');
+  const [mode, setMode] = useState('cmd'); // 'cmd' | 'rocky'
+  const cmdHistory = useRef([]);
+  const cmdHistIdx = useRef(-1);
   const scrollRef = useRef(null);
 
   // Fetch nickname if logged in
@@ -45,7 +49,8 @@ const TerminalHero = () => {
   const welcomeText = [
     "Welcome to TN (Terminal Nexus) CLI v1.0.0",
     "",
-    "Type 'ls' to see available commands."
+    "Type 'ls' to see available commands.",
+    "Type 'rocky' to try a Rocky Linux 9.6 shell right here."
   ];
 
   // ... (Typewriter effect unchanged)
@@ -101,6 +106,8 @@ const TerminalHero = () => {
           "  /join     - Go to sign up page",
           "  freeboard - Go to community board",
           "  /guide    - Go to user guide",
+          "  rocky     - Open Rocky Linux 9.6 shell (here)",
+          "  /linux    - Open Rocky Linux lab (full screen)",
           "  clear     - Clear terminal screen"
         ];
         break;
@@ -115,6 +122,8 @@ const TerminalHero = () => {
           "  /join",
           "  freeboard",
           "  /guide",
+          "  rocky",
+          "  /linux",
           "  clear"
         ];
         break;
@@ -143,6 +152,17 @@ const TerminalHero = () => {
         output = ["Opening User Guide..."];
         setTimeout(() => navigate('/guide'), 800);
         break;
+      case 'rocky':
+      case '/rocky':
+      case 'ssh rocky':
+        setHistory(prev => [...prev, { type: 'input', content: `C:\\Users\\${promptUser}> ${cmd}` }]);
+        setMode('rocky');
+        return;
+      case '/linux':
+      case 'linux':
+        output = ["Opening Rocky Linux Lab..."];
+        setTimeout(() => navigate('/play/linux'), 800);
+        break;
       case 'clear':
         setHistory([]);
         return; // Early return to avoid adding command to history
@@ -161,13 +181,30 @@ const TerminalHero = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      if (input.trim()) cmdHistory.current.push(input);
+      cmdHistIdx.current = -1;
       handleCommand(input);
       setInput('');
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      const h = cmdHistory.current;
+      if (!h.length) return;
+      e.preventDefault();
+      let i = cmdHistIdx.current === -1 ? h.length : cmdHistIdx.current;
+      i = e.key === 'ArrowUp' ? Math.max(0, i - 1) : i + 1;
+      if (i >= h.length) { cmdHistIdx.current = -1; setInput(''); return; }
+      cmdHistIdx.current = i;
+      setInput(h[i]);
     }
   };
 
+  const exitRocky = () => {
+    setMode('cmd');
+    setHistory(prev => [...prev, { type: 'text', content: 'Connection to rocky closed.' }]);
+    setTimeout(() => document.getElementById('terminal-input')?.focus({ preventScroll: true }), 0);
+  };
+
   return (
-    <div className="terminal-hero" onClick={() => !isTyping && document.getElementById('terminal-input').focus()}>
+    <div className="terminal-hero" onClick={() => mode === 'cmd' && !isTyping && document.getElementById('terminal-input')?.focus({ preventScroll: true })}>
       <div className="terminal-window">
         <div className="terminal-header">
           <div className="window-controls">
@@ -175,8 +212,11 @@ const TerminalHero = () => {
             <span className="control minimize"></span>
             <span className="control maximize"></span>
           </div>
-          <div className="window-title">Command Prompt - TN CLI</div>
+          <div className="window-title">{mode === 'rocky' ? 'Rocky Linux 9.6 - ssh rocky' : 'Command Prompt - TN CLI'}</div>
         </div>
+        {mode === 'rocky' ? (
+          <RockyTerminal embedded user={promptUser} onExit={exitRocky} />
+        ) : (
         <div className="terminal-body" ref={scrollRef}>
           {history.map((line, i) => (
             <div key={i} className={`line ${line.type}`}>
@@ -198,6 +238,7 @@ const TerminalHero = () => {
             </div>
           )}
         </div>
+        )}
       </div>
     </div>
   );

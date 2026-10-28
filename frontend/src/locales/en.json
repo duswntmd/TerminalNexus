@@ -18,7 +18,8 @@
     "forge": "⚒️ Forge",
     "chat": "💬 Chat",
     "fruitai": "🍎 Fruit AI",
-    "lotto": "🎱 Lotto"
+    "lotto": "🎱 Lotto",
+    "linux": "🐧 Linux Lab"
   },
   "main": {
     "badge": "👾 Developer's Toy Sandbox",
@@ -197,6 +198,13 @@
             "desc": "Find the password among candidates hidden in a memory dump, using letter-match hints.",
             "path": "/play/terminalhack",
             "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "Linux Lab",
+            "desc": "Try a Rocky Linux 9.6 shell in your browser. Practice dnf, systemctl and firewall-cmd like the real thing.",
+            "path": "/play/linux",
+            "login": false
           }
         ]
       },
@@ -369,5 +377,25 @@
     "badge_secure": "🔒 Secure connection",
     "badge_instant": "⚡ Instant activation",
     "badge_free": "🆓 Free"
+  },
+  "linux": {
+    "title": "Rocky Linux 9.6 Lab Terminal",
+    "subtitle": "Practice Linux commands right in your browser. A safe simulator that never touches a real server.",
+    "missions": "Lab missions",
+    "cheats": "Handy commands",
+    "insert": "Click to put it in the prompt",
+    "tip1": "Tab completion · ↑↓ history · Ctrl+L clear · Ctrl+C cancel",
+    "tip2": "Files and settings are saved in this browser. Start over with tn-reset",
+    "tip3": "No external internet, no vi editor, no live top",
+    "m": {
+      "os": "Check the OS version",
+      "files": "Create a directory and a file",
+      "perm": "Change file permission to 600",
+      "httpd": "Install Apache (httpd)",
+      "service": "Start httpd and enable it at boot",
+      "firewall": "Permanently allow http in the firewall",
+      "curl": "Check the web server response",
+      "user": "Create a user and add to wheel"
+    }
   }
 }

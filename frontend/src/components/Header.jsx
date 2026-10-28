@@ -140,6 +140,7 @@ const Header = () => {
                 <li><Link to="/play/typeracer" onClick={closeMenu}>{t('header.typeracer')}</Link></li>
                 <li><Link to="/play/hackermode" onClick={closeMenu}>{t('header.hackermode')}</Link></li>
                 <li><Link to="/play/terminalhack" onClick={closeMenu}>{t('header.terminalhack')}</Link></li>
+                <li><Link to="/play/linux" onClick={closeMenu}>{t('header.linux')}</Link></li>
               </ul>
             </li>
           </ul>

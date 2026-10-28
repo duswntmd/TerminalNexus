@@ -18,7 +18,8 @@
     "forge": "⚒️ 강화",
     "chat": "💬 채팅",
     "fruitai": "🍎 과일 AI",
-    "lotto": "🎱 로또"
+    "lotto": "🎱 로또",
+    "linux": "🐧 리눅스 실습"
   },
   "main": {
     "badge": "👾 개발자 전용 짬뽕 장난감 상자",
@@ -197,6 +198,13 @@
             "desc": "글자 더미 속 암호 후보 중 정답을 찾는 추리 게임. 일치하는 글자 수를 힌트로 맞혀요.",
             "path": "/play/terminalhack",
             "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "리눅스 실습",
+            "desc": "Rocky Linux 9.6 셸을 브라우저에서 체험해요. dnf·systemctl·firewall-cmd까지 실제처럼 연습할 수 있어요.",
+            "path": "/play/linux",
+            "login": false
           }
         ]
       },
@@ -364,5 +372,25 @@
     "badge_secure": "🔒 보안 연결",
     "badge_instant": "⚡ 즉시 활성화",
     "badge_free": "🆓 무료"
+  },
+  "linux": {
+    "title": "Rocky Linux 9.6 실습 터미널",
+    "subtitle": "브라우저에서 리눅스 명령어를 바로 연습해 보세요. 서버에 연결되지 않는 안전한 시뮬레이터예요.",
+    "missions": "실습 미션",
+    "cheats": "자주 쓰는 명령어",
+    "insert": "클릭하면 입력창에 넣어줘요",
+    "tip1": "Tab 자동완성 · ↑↓ 이전 명령 · Ctrl+L 화면 지우기 · Ctrl+C 취소",
+    "tip2": "파일과 설정은 이 브라우저에 저장돼요. 처음부터 하려면 tn-reset",
+    "tip3": "외부 인터넷 접속, vi 편집기, 실시간 top은 지원하지 않아요",
+    "m": {
+      "os": "OS 버전 확인하기",
+      "files": "디렉터리와 파일 만들기",
+      "perm": "파일 권한을 600으로 바꾸기",
+      "httpd": "Apache(httpd) 설치하기",
+      "service": "httpd 서비스 시작 + 부팅 시 자동 시작",
+      "firewall": "방화벽에 http 영구 허용하기",
+      "curl": "웹서버 응답 확인하기",
+      "user": "새 사용자 만들고 wheel 그룹 추가"
+    }
   }
 }
