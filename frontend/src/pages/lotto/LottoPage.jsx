@@ -51,7 +51,7 @@ const LatestCard = ({ latest, t, lang }) => {
           <Typography sx={{ fontWeight: 800, fontSize: { xs: '1.4rem', md: '1.7rem' }, mb: 0.3 }}>
             {t('lotto.draw_no', { no: latest.drwNo })}
           </Typography>
-          <Typography sx={{ color: '#71717a', fontSize: '0.85rem', mb: 2 }}>
+          <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.85rem', mb: 2 }}>
             {t('lotto.draw_date', { date: latest.date })}
           </Typography>
           <BallRow numbers={latest.numbers} bonus={latest.bonus} size={narrow ? 34 : 46} />
@@ -62,7 +62,7 @@ const LatestCard = ({ latest, t, lang }) => {
           <Row label={t('lotto.second_prize')} value={`${formatWon(latest.secondPrize, lang)} · ${t('lotto.people', { count: latest.secondWinners ?? 0 })}`} />
           <Row label={t('lotto.total_sales')} value={formatWon(latest.totalSales, lang)} />
           <Box sx={{ mt: 1, p: 1.2, borderRadius: '10px', bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <Typography sx={{ color: '#a1a1aa', fontSize: '0.75rem' }}>
+            <Typography sx={{ color: 'var(--tn-text-2)', fontSize: '0.75rem' }}>
               {t('lotto.next_draw', { date: latest.nextDrawDate })}
             </Typography>
             <Typography sx={{ color: '#f4f4f5', fontWeight: 700, fontSize: '0.95rem', fontVariantNumeric: 'tabular-nums' }}>
@@ -77,7 +77,7 @@ const LatestCard = ({ latest, t, lang }) => {
 
 const Row = ({ label, value, strong }) => (
   <Stack direction="row" justifyContent="space-between" spacing={2}>
-    <Typography sx={{ color: '#71717a', fontSize: '0.85rem' }}>{label}</Typography>
+    <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.85rem' }}>{label}</Typography>
     <Typography sx={{ color: strong ? '#f9ca24' : '#e4e4e7', fontWeight: strong ? 800 : 600, fontSize: '0.88rem', textAlign: 'right' }}>
       {value}
     </Typography>
@@ -107,10 +107,10 @@ const HistoryTab = ({ draws, t }) => {
         size="small" fullWidth value={query}
         onChange={(e) => { setQuery(e.target.value); setPage(1); }}
         placeholder={t('lotto.search_placeholder')}
-        InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#52525b' }} /></InputAdornment> }}
+        InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'var(--tn-text-3)' }} /></InputAdornment> }}
         sx={inputSx}
       />
-      <Typography sx={{ color: '#52525b', fontSize: '0.75rem', mt: 1, mb: 2 }}>
+      <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', mt: 1, mb: 2 }}>
         {t('lotto.result_count', { count: filtered.length })}
       </Typography>
       <Stack divider={<Box sx={{ borderTop: '1px solid rgba(255,255,255,0.05)' }} />}>
@@ -118,19 +118,19 @@ const HistoryTab = ({ draws, t }) => {
           <Stack key={d.no} direction={{ xs: 'column', sm: 'row' }} alignItems={{ sm: 'center' }} spacing={{ xs: 1, sm: 2 }} sx={{ py: 1.3 }}>
             <Box sx={{ minWidth: 120 }}>
               <Typography sx={{ fontWeight: 700, fontSize: '0.92rem' }}>{t('lotto.draw_no', { no: d.no })}</Typography>
-              <Typography sx={{ color: '#52525b', fontSize: '0.75rem' }}>{d.date}</Typography>
+              <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem' }}>{d.date}</Typography>
             </Box>
             <BallRow numbers={d.numbers} bonus={d.bonus} size={32} />
           </Stack>
         ))}
         {shown.length === 0 && (
-          <Typography sx={{ color: '#71717a', py: 4, textAlign: 'center' }}>{t('lotto.no_result')}</Typography>
+          <Typography sx={{ color: 'var(--tn-text-3)', py: 4, textAlign: 'center' }}>{t('lotto.no_result')}</Typography>
         )}
       </Stack>
       {pages > 1 && (
         <Pagination
           count={pages} page={page} onChange={(_, p) => setPage(p)} siblingCount={0}
-          sx={{ mt: 2, display: 'flex', justifyContent: 'center', '& .MuiPaginationItem-root': { color: '#a1a1aa' } }}
+          sx={{ mt: 2, display: 'flex', justifyContent: 'center', '& .MuiPaginationItem-root': { color: 'var(--tn-text-2)' } }}
         />
       )}
     </Panel>
@@ -178,7 +178,7 @@ const StatsTab = ({ draws, t }) => {
                 <Box sx={{ width: '60%', height: `${barHeight(s.count)}%`, minHeight: 2, bgcolor: ballColor(s.n), borderRadius: '4px 4px 0 0', opacity: 0.85 }} />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center' }}><Ball n={s.n} size={26} /></Box>
-              <Typography sx={{ color: '#a1a1aa', fontSize: '0.7rem', mt: 0.3 }}>{s.count}</Typography>
+              <Typography sx={{ color: 'var(--tn-text-2)', fontSize: '0.7rem', mt: 0.3 }}>{s.count}</Typography>
             </Box>
           ))}
         </Box>
@@ -189,7 +189,7 @@ const StatsTab = ({ draws, t }) => {
         <StatList title={t('lotto.least_drawn')} items={byCount.slice(-6).reverse()} render={(s) => t('lotto.times', { count: s.count })} />
         <StatList title={t('lotto.longest_gap')} items={longest} render={(s) => (s.gap == null ? t('lotto.never') : t('lotto.draws_ago', { count: s.gap }))} />
       </Box>
-      <Typography sx={{ color: '#52525b', fontSize: '0.75rem', px: 1 }}>{t('lotto.stats_note')}</Typography>
+      <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', px: 1 }}>{t('lotto.stats_note')}</Typography>
     </Stack>
   );
 };
@@ -201,7 +201,7 @@ const StatList = ({ title, items, render }) => (
       {items.map((s) => (
         <Stack key={s.n} direction="row" alignItems="center" spacing={1.5}>
           <Ball n={s.n} size={28} />
-          <Typography sx={{ color: '#a1a1aa', fontSize: '0.85rem' }}>{render(s)}</Typography>
+          <Typography sx={{ color: 'var(--tn-text-2)', fontSize: '0.85rem' }}>{render(s)}</Typography>
         </Stack>
       ))}
     </Stack>
@@ -220,7 +220,7 @@ const CheckTab = ({ draws, t, initial }) => {
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '440px 1fr' }, gap: 2 }}>
       <Panel>
         <Typography sx={{ fontWeight: 700, mb: 0.5 }}>{t('lotto.check_title')}</Typography>
-        <Typography sx={{ color: '#71717a', fontSize: '0.8rem', mb: 2 }}>{t('lotto.check_desc')}</Typography>
+        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.8rem', mb: 2 }}>{t('lotto.check_desc')}</Typography>
         <NumberPicker state={(n) => (picked.includes(n) ? 'on' : 'off')} onToggle={toggle} />
         <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
           <Button size="small" variant="outlined" onClick={() => setPicked(pickNumbers())} sx={outlineBtnSx}>{t('lotto.random_fill')}</Button>
@@ -230,23 +230,23 @@ const CheckTab = ({ draws, t, initial }) => {
       <Panel>
         <Box sx={{ minHeight: 46, mb: 2 }}>
           {picked.length ? <BallRow numbers={picked} size={40} /> : (
-            <Typography sx={{ color: '#52525b' }}>{t('lotto.pick_six', { left: 6, count: 6 })}</Typography>
+            <Typography sx={{ color: 'var(--tn-text-3)' }}>{t('lotto.pick_six', { left: 6, count: 6 })}</Typography>
           )}
         </Box>
         {!result && picked.length > 0 && (
-          <Typography sx={{ color: '#71717a' }}>{t('lotto.pick_six', { left: 6 - picked.length, count: 6 - picked.length })}</Typography>
+          <Typography sx={{ color: 'var(--tn-text-3)' }}>{t('lotto.pick_six', { left: 6 - picked.length, count: 6 - picked.length })}</Typography>
         )}
         {result && (
           <>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, mb: 2.5 }}>
               {[1, 2, 3, 4, 5].map((r) => (
                 <Box key={r} sx={{ textAlign: 'center', p: 1.2, borderRadius: '10px', bgcolor: result.counts[r] && r <= 3 ? 'rgba(249,202,36,0.08)' : 'rgba(255,255,255,0.03)' }}>
-                  <Typography sx={{ color: '#71717a', fontSize: '0.72rem' }}>{t('lotto.rank', { r })}</Typography>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem' }}>{t('lotto.rank', { r })}</Typography>
                   <Typography sx={{ fontWeight: 800, fontSize: '1.2rem', color: result.counts[r] && r <= 3 ? '#f9ca24' : '#e4e4e7' }}>{result.counts[r]}</Typography>
                 </Box>
               ))}
             </Box>
-            <Typography sx={{ color: '#a1a1aa', fontSize: '0.82rem', mb: 1.5 }}>
+            <Typography sx={{ color: 'var(--tn-text-2)', fontSize: '0.82rem', mb: 1.5 }}>
               {t('lotto.check_summary', { total: draws.length, win: draws.length - result.counts[0] })}
             </Typography>
             <Stack spacing={1.2}>
@@ -254,13 +254,13 @@ const CheckTab = ({ draws, t, initial }) => {
                 <Stack key={d.no} direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 0.8, sm: 2 }} alignItems={{ sm: 'center' }}>
                   <Box sx={{ minWidth: 130 }}>
                     <Chip size="small" label={t('lotto.rank', { r: d.rank })} sx={{ mr: 1, height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: d.rank <= 2 ? '#f9ca24' : 'rgba(255,255,255,0.08)', color: d.rank <= 2 ? '#000' : '#d4d4d8' }} />
-                    <Typography component="span" sx={{ fontSize: '0.82rem', color: '#a1a1aa' }}>{t('lotto.draw_no', { no: d.no })}</Typography>
+                    <Typography component="span" sx={{ fontSize: '0.82rem', color: 'var(--tn-text-2)' }}>{t('lotto.draw_no', { no: d.no })}</Typography>
                   </Box>
                   <BallRow numbers={d.numbers} bonus={d.bonus} size={28} highlight={picked} />
                 </Stack>
               ))}
               {result.hits.length === 0 && (
-                <Typography sx={{ color: '#71717a', fontSize: '0.85rem' }}>{t('lotto.no_high_rank')}</Typography>
+                <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.85rem' }}>{t('lotto.no_high_rank')}</Typography>
               )}
             </Stack>
           </>
@@ -296,9 +296,9 @@ const GenerateTab = ({ t, onCheck }) => {
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '440px 1fr' }, gap: 2 }}>
       <Panel>
         <Typography sx={{ fontWeight: 700, mb: 0.5 }}>{t('lotto.gen_title')}</Typography>
-        <Typography sx={{ color: '#71717a', fontSize: '0.8rem', mb: 2 }}>{t('lotto.gen_desc')}</Typography>
+        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.8rem', mb: 2 }}>{t('lotto.gen_desc')}</Typography>
         <NumberPicker state={(n) => (fixed.includes(n) ? 'on' : excluded.includes(n) ? 'x' : 'off')} onToggle={cycle} />
-        <Typography sx={{ color: '#52525b', fontSize: '0.75rem', mt: 1.5 }}>
+        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', mt: 1.5 }}>
           {t('lotto.gen_status', { fixed: fixed.length, excluded: excluded.length })}
         </Typography>
         <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
@@ -308,21 +308,21 @@ const GenerateTab = ({ t, onCheck }) => {
       </Panel>
       <Panel>
         {games.length === 0 ? (
-          <Typography sx={{ color: '#52525b' }}>{t('lotto.gen_empty')}</Typography>
+          <Typography sx={{ color: 'var(--tn-text-3)' }}>{t('lotto.gen_empty')}</Typography>
         ) : (
           <Stack spacing={1.5}>
             {games.map((g, i) => (
               <Stack key={i} direction="row" alignItems="center" spacing={1.5} flexWrap="wrap" useFlexGap>
-                <Typography sx={{ color: '#71717a', fontWeight: 800, width: 18 }}>{'ABCDE'[i]}</Typography>
+                <Typography sx={{ color: 'var(--tn-text-3)', fontWeight: 800, width: 18 }}>{'ABCDE'[i]}</Typography>
                 <BallRow numbers={g} size={36} />
-                <Button size="small" onClick={() => onCheck(g)} sx={{ color: '#a1a1aa', textTransform: 'none', fontSize: '0.75rem' }}>
+                <Button size="small" onClick={() => onCheck(g)} sx={{ color: 'var(--tn-text-2)', textTransform: 'none', fontSize: '0.75rem' }}>
                   {t('lotto.check_this')}
                 </Button>
               </Stack>
             ))}
           </Stack>
         )}
-        <Typography sx={{ color: '#3f3f46', fontSize: '0.72rem', mt: 3, lineHeight: 1.6 }}>{t('lotto.gen_note')}</Typography>
+        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem', mt: 3, lineHeight: 1.6 }}>{t('lotto.gen_note')}</Typography>
       </Panel>
     </Box>
   );
@@ -332,10 +332,10 @@ const inputSx = {
   '& .MuiOutlinedInput-root': { color: '#e4e4e7', bgcolor: 'rgba(255,255,255,0.02)', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' } },
 };
 const toggleSx = {
-  '& .MuiToggleButton-root': { color: '#a1a1aa', borderColor: 'rgba(255,255,255,0.1)', textTransform: 'none', px: 1.5 },
+  '& .MuiToggleButton-root': { color: 'var(--tn-text-2)', borderColor: 'rgba(255,255,255,0.1)', textTransform: 'none', px: 1.5 },
   '& .Mui-selected': { color: '#000 !important', bgcolor: '#f9ca24 !important' },
 };
-const outlineBtnSx = { color: '#a1a1aa', borderColor: 'rgba(255,255,255,0.15)', textTransform: 'none' };
+const outlineBtnSx = { color: 'var(--tn-text-2)', borderColor: 'rgba(255,255,255,0.15)', textTransform: 'none' };
 const primaryBtnSx = { bgcolor: '#f9ca24', color: '#000', fontWeight: 800, textTransform: 'none', '&:hover': { bgcolor: '#f5bc00' } };
 
 const LottoPage = () => {
@@ -368,17 +368,17 @@ const LottoPage = () => {
         <meta name="description" content={t('lotto.meta_desc')} />
         <link rel="canonical" href="https://tnhub.kr/lotto" />
       </Helmet>
-      <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', pt: { xs: 12, md: 14 }, pb: 10 }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', pt: { xs: 12, md: 14 }, pb: 10 }}>
         <Container maxWidth="lg">
           <Typography component="h1" sx={{ fontWeight: 800, fontSize: { xs: '1.8rem', md: '2.4rem' }, letterSpacing: '-1px', mb: 1 }}>
             {t('lotto.title')}
           </Typography>
-          <Typography sx={{ color: '#71717a', mb: 4, fontSize: '0.92rem' }}>{t('lotto.subtitle')}</Typography>
+          <Typography sx={{ color: 'var(--tn-text-3)', mb: 4, fontSize: '0.92rem' }}>{t('lotto.subtitle')}</Typography>
 
           {error && <Typography sx={{ color: '#ef4444' }}>{t('lotto.load_error')}</Typography>}
           {!error && !draws && <Box sx={{ py: 10, textAlign: 'center' }}><CircularProgress sx={{ color: '#f9ca24' }} /></Box>}
           {!error && draws && draws.length === 0 && (
-            <Panel><Typography sx={{ color: '#a1a1aa' }}>{t('lotto.syncing')}</Typography></Panel>
+            <Panel><Typography sx={{ color: 'var(--tn-text-2)' }}>{t('lotto.syncing')}</Typography></Panel>
           )}
 
           {draws && draws.length > 0 && (
@@ -386,7 +386,7 @@ const LottoPage = () => {
               <LatestCard latest={latest} t={t} lang={lang} />
               <Tabs
                 value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" allowScrollButtonsMobile
-                sx={{ borderBottom: '1px solid rgba(255,255,255,0.08)', '& .MuiTab-root': { color: '#71717a', textTransform: 'none', fontWeight: 700 }, '& .Mui-selected': { color: '#f9ca24 !important' }, '& .MuiTabs-indicator': { bgcolor: '#f9ca24' } }}
+                sx={{ borderBottom: '1px solid rgba(255,255,255,0.08)', '& .MuiTab-root': { color: 'var(--tn-text-3)', textTransform: 'none', fontWeight: 700 }, '& .Mui-selected': { color: '#f9ca24 !important' }, '& .MuiTabs-indicator': { bgcolor: '#f9ca24' } }}
               >
                 {TABS.map((k) => <Tab key={k} value={k} label={t(`lotto.tab_${k}`)} />)}
               </Tabs>
@@ -394,7 +394,7 @@ const LottoPage = () => {
               {tab === 'stats' && <StatsTab draws={draws} t={t} />}
               {tab === 'check' && <CheckTab draws={draws} t={t} initial={checkNumbers} />}
               {tab === 'generate' && <GenerateTab t={t} onCheck={(g) => { setCheckNumbers(g); setTab('check'); }} />}
-              <Typography sx={{ color: '#3f3f46', fontSize: '0.72rem' }}>{t('lotto.source_note')}</Typography>
+              <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem' }}>{t('lotto.source_note')}</Typography>
             </Stack>
           )}
         </Container>

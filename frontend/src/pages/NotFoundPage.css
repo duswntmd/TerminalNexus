@@ -3,7 +3,7 @@
 .nf-root {
   position: relative;
   min-height: calc(100vh - 70px);
-  background: #030712;
+  background: var(--tn-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,8 +16,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 40px 40px;
   animation: nf-grid-drift 20s linear infinite;
 }
@@ -31,7 +31,7 @@
   position: absolute;
   left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
   pointer-events: none;
   transition: top 0.02s linear;
   z-index: 1;
@@ -63,11 +63,8 @@
   letter-spacing: -0.05em;
   display: inline-block;
   position: relative;
-  background: linear-gradient(135deg, #06b6d4 0%, #a855f7 50%, #06b6d4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 30px rgba(6, 182, 212, 0.4));
+  color: var(--tn-tape);
+  font-family: var(--tn-mono);
 }
 
 .nf-glitch::before,
@@ -88,7 +85,7 @@
 }
 
 .nf-glitch::after {
-  background: linear-gradient(135deg, #06b6d4, #6366f1);
+  background: var(--tn-tape);
   clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
   animation: nf-glitch-bot 3s steps(1) infinite;
   transform: translateX(3px);
@@ -137,7 +134,7 @@
 .nf-terminal-title {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.72rem;
-  color: #52525b;
+  color: var(--tn-text-3);
   margin-left: 8px;
 }
 
@@ -152,13 +149,13 @@
 }
 
 .nf-prompt { color: #4ade80; }
-.nf-cmd    { color: #06b6d4; }
+.nf-cmd    { color: var(--tn-led); }
 .nf-arg    { color: #fbbf24; }
 .nf-error  { color: #f87171; }
-.nf-hint   { color: #71717a; }
+.nf-hint   { color: var(--tn-text-3); }
 
 .nf-blink {
-  color: #06b6d4;
+  color: var(--tn-led);
   animation: nf-blink 1s step-end infinite;
 }
 @keyframes nf-blink {
@@ -189,26 +186,24 @@
 }
 
 .nf-btn-primary {
-  background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(99,102,241,0.1));
-  border-color: rgba(6,182,212,0.5);
-  color: #67e8f9;
+  background: var(--tn-tape);
+  border-color: var(--tn-tape);
+  color: var(--tn-tape-ink);
 }
 .nf-btn-primary:hover {
-  background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(99,102,241,0.2));
-  border-color: #06b6d4;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(6,182,212,0.2);
+  background: var(--tn-tape-hover);
+  border-color: var(--tn-tape-hover);
 }
 
 .nf-btn-secondary {
   background: rgba(255,255,255,0.03);
   border-color: rgba(255,255,255,0.1);
-  color: #71717a;
+  color: var(--tn-text-3);
 }
 .nf-btn-secondary:hover {
   background: rgba(255,255,255,0.07);
   border-color: rgba(255,255,255,0.2);
-  color: #a1a1aa;
+  color: var(--tn-text-2);
   transform: translateY(-2px);
 }
 
@@ -225,7 +220,7 @@
 
 .nf-links-label {
   font-size: 0.78rem;
-  color: #3f3f46;
+  color: var(--tn-text-3);
 }
 
 .nf-quick-link {
@@ -233,7 +228,7 @@
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.06);
   background: rgba(255,255,255,0.03);
-  color: #52525b;
+  color: var(--tn-text-3);
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -242,6 +237,6 @@
 
 .nf-quick-link:hover {
   background: rgba(6,182,212,0.08);
-  border-color: rgba(6,182,212,0.3);
+  border-color: rgba(255,255,255,0.12);
   color: #22d3ee;
 }

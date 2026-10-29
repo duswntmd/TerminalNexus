@@ -17,7 +17,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 
 // 카테고리별 강조 색상
-const GROUP_COLORS = ['#818cf8', '#34d399', '#f9ca24'];
+const GROUP_COLORS = ['var(--tn-tape)', '#34d399', '#f9ca24'];
 
 const GuidePage = () => {
   const { t } = useTranslation();
@@ -44,7 +44,7 @@ const GuidePage = () => {
         <link rel="canonical" href="https://tnhub.kr/guide" />
       </Helmet>
 
-      <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', overflowX: 'hidden' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', overflowX: 'hidden' }}>
 
         {/* ── 히어로 ── */}
         <Box
@@ -59,19 +59,11 @@ const GuidePage = () => {
           <Box sx={{
             position: 'absolute', top: '0%', left: '50%', transform: 'translateX(-50%)',
             width: '80vw', height: '80vw', maxWidth: 800, maxHeight: 800,
-            background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 65%)',
+            background: 'radial-gradient(circle, rgba(242,194,48,0.1) 0%, transparent 65%)',
             pointerEvents: 'none',
           }} />
 
           <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-            <Chip
-              label="About"
-              sx={{
-                mb: 3, bgcolor: 'rgba(99,102,241,0.08)',
-                color: '#818cf8', border: '1px solid rgba(99,102,241,0.22)',
-                fontWeight: 700, fontSize: '0.78rem',
-              }}
-            />
             <Typography
               variant="h1"
               component="h1"
@@ -93,7 +85,7 @@ const GuidePage = () => {
             </Typography>
             <Typography
               sx={{
-                color: '#71717a',
+                color: 'var(--tn-text-3)',
                 fontSize: { xs: '1rem', md: '1.1rem' },
                 lineHeight: 1.75,
                 whiteSpace: 'pre-line',
@@ -168,7 +160,7 @@ const GuidePage = () => {
                                 size="small"
                                 sx={{
                                   ml: 'auto !important', height: 22, fontSize: '0.7rem', fontWeight: 600,
-                                  bgcolor: 'rgba(255,255,255,0.06)', color: '#a1a1aa',
+                                  bgcolor: 'rgba(255,255,255,0.06)', color: 'var(--tn-text-2)',
                                 }}
                               />
                             )}
@@ -213,8 +205,8 @@ const GuidePage = () => {
                     sx={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       width: 40, height: 40, borderRadius: '12px', mb: 2,
-                      bgcolor: 'rgba(129,140,248,0.12)', border: '1px solid rgba(129,140,248,0.25)',
-                      color: '#818cf8', fontWeight: 800, fontVariantNumeric: 'tabular-nums',
+                      bgcolor: 'rgba(242,194,48,0.12)', border: '1px solid rgba(242,194,48,0.25)',
+                      color: 'var(--tn-tape)', fontWeight: 800, fontVariantNumeric: 'tabular-nums',
                     }}
                   >
                     {i + 1}
@@ -222,7 +214,7 @@ const GuidePage = () => {
                   <Typography fontWeight={700} sx={{ color: '#f4f4f5', mb: 1, fontSize: '1.05rem' }}>
                     {step.title}
                   </Typography>
-                  <Typography sx={{ color: '#71717a', fontSize: '0.92rem', lineHeight: 1.7 }}>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.92rem', lineHeight: 1.7 }}>
                     {step.desc}
                   </Typography>
                 </Box>
@@ -236,7 +228,7 @@ const GuidePage = () => {
           sx={{
             py: { xs: 10, md: 14 },
             borderTop: '1px solid rgba(255,255,255,0.05)',
-            bgcolor: '#09090b',
+            bgcolor: 'var(--tn-panel)',
           }}
         >
           <Container maxWidth="md">
@@ -253,9 +245,9 @@ const GuidePage = () => {
                   disableGutters
                   elevation={0}
                   sx={{
-                    bgcolor: expanded === i ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.02)',
+                    bgcolor: expanded === i ? 'rgba(242,194,48,0.06)' : 'rgba(255,255,255,0.02)',
                     border: expanded === i
-                      ? '1px solid rgba(99,102,241,0.25)'
+                      ? '1px solid rgba(242,194,48,0.25)'
                       : '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '14px !important',
                     transition: 'all 0.25s',
@@ -267,7 +259,7 @@ const GuidePage = () => {
                     expandIcon={
                       <ExpandMoreIcon
                         sx={{
-                          color: expanded === i ? '#818cf8' : '#52525b',
+                          color: expanded === i ? 'var(--tn-tape)' : 'var(--tn-text-3)',
                           transition: 'color 0.2s',
                         }}
                       />
@@ -277,7 +269,7 @@ const GuidePage = () => {
                     <Typography
                       fontWeight={600}
                       sx={{
-                        color: expanded === i ? '#e4e4e7' : '#a1a1aa',
+                        color: expanded === i ? '#e4e4e7' : 'var(--tn-text-2)',
                         fontSize: { xs: '0.9rem', md: '0.98rem' },
                         transition: 'color 0.2s',
                         pr: 2,
@@ -288,7 +280,7 @@ const GuidePage = () => {
                   </AccordionSummary>
                   <AccordionDetails sx={{ px: { xs: 3, md: 4 }, pb: 3 }}>
                     <Typography
-                      sx={{ color: '#71717a', fontSize: { xs: '0.88rem', md: '0.93rem' }, lineHeight: 1.75 }}
+                      sx={{ color: 'var(--tn-text-3)', fontSize: { xs: '0.88rem', md: '0.93rem' }, lineHeight: 1.75 }}
                     >
                       {faq.a}
                     </Typography>
@@ -320,7 +312,7 @@ const GuidePage = () => {
             >
               {t('guide.contact_title')}
             </Typography>
-            <Typography sx={{ color: '#71717a', mb: 4, fontSize: { xs: '0.9rem', md: '0.95rem' } }}>
+            <Typography sx={{ color: 'var(--tn-text-3)', mb: 4, fontSize: { xs: '0.9rem', md: '0.95rem' } }}>
               {t('guide.contact_desc')}
             </Typography>
             <Stack
@@ -359,10 +351,10 @@ const GuidePage = () => {
                 sx={{
                   px: 4, py: 1.5,
                   borderRadius: '12px',
-                  bgcolor: '#fff', color: '#000',
+                  bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)',
                   fontWeight: 700, textTransform: 'none',
                   fontSize: '0.9rem',
-                  '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-2px)' },
+                  '&:hover': { bgcolor: 'var(--tn-tape-hover)', transform: 'translateY(-2px)' },
                   transition: 'all 0.2s',
                 }}
               >

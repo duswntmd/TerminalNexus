@@ -30,7 +30,7 @@ export default function DonationSuccessPage() {
           <div style={styles.detailRow}>
             <span style={styles.detailLabel}>후원 금액</span>
             <span style={styles.detailValue}>
-              <strong style={{ color: "#6c63ff", fontSize: "20px" }}>
+              <strong style={{ color: "var(--tn-tape)", fontSize: "20px" }}>
                 {amount?.toLocaleString()}원
               </strong>
             </span>
@@ -62,7 +62,7 @@ export default function DonationSuccessPage() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+    background: "var(--tn-bg)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -88,14 +88,14 @@ const styles = {
     width: "80px",
     height: "80px",
     borderRadius: "50%",
-    background: "linear-gradient(135deg, #6c63ff, #4facfe)",
+    background: "var(--tn-tape)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontSize: "36px",
     color: "#fff",
     fontWeight: "bold",
-    boxShadow: "0 8px 30px rgba(108,99,255,0.5)",
+    boxShadow: "0 8px 30px rgba(242,194,48,0.5)",
   },
   title: {
     fontSize: "28px",
@@ -105,7 +105,7 @@ const styles = {
   },
   subtitle: {
     fontSize: "16px",
-    color: "rgba(255,255,255,0.6)",
+    color: "var(--tn-text-2)",
     marginBottom: "32px",
   },
   detailBox: {
@@ -145,8 +145,8 @@ const styles = {
     padding: "14px",
     borderRadius: "12px",
     border: "none",
-    background: "linear-gradient(135deg, #6c63ff, #4facfe)",
-    color: "#fff",
+    background: "var(--tn-tape)",
+    color: "var(--tn-tape-ink)",
     fontSize: "16px",
     fontWeight: "700",
     cursor: "pointer",

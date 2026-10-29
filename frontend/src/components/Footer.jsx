@@ -1,36 +1,49 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { NAV_GROUPS } from '../nav';
 import './Footer.css';
 
 const Footer = () => {
   const { t } = useTranslation();
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        {/* 좌측: 로고 및 타이틀 */}
-        <div className="footer-left">
-          <img src="/favicon-192.png" alt="TerminalNexus Logo" className="footer-logo" />
-          <span className="footer-title">TerminalNexus</span>
+    <footer className="ft">
+      <div className="ft-inner">
+        <div className="ft-brand">
+          <Link to="/" className="ft-logo-row">
+            <img src="/favicon-192.png" alt="" className="ft-logo" />
+            <span className="ft-word">TerminalNexus</span>
+          </Link>
+          <p className="ft-desc">{t('footer.desc')}</p>
+          <p className="ft-host"><span className="tn-led" aria-hidden="true" />{t('footer.host')}</p>
         </div>
 
-        {/* 중간: 이용약관 및 개인정보처리방침 */}
-        <div className="footer-links" style={{ display: "flex", gap: "20px", fontSize: "0.85rem" }}>
-          <a href="/terms" style={{ color: "#8892b0", textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => e.target.style.color = "#00ff66"} onMouseOut={(e) => e.target.style.color = "#8892b0"}>{t('footer.terms')}</a>
-          <a href="/privacy" style={{ color: "#8892b0", textDecoration: "none", fontWeight: "bold", transition: "color 0.2s" }} onMouseOver={(e) => e.target.style.color = "#00ff66"} onMouseOut={(e) => e.target.style.color = "#8892b0"}>{t('footer.privacy')}</a>
-        </div>
-
-        {/* 우측: 제작자 정보 및 이메일 */}
-        <div className="footer-right">
-          <div className="footer-info">
-            <span className="info-item"><strong>{t('footer.name')}:</strong> JS</span>
-            <span className="info-divider">|</span>
-            <span className="info-item"><strong>{t('footer.nickname')}:</strong> 에고수</span>
+        <nav className="ft-map" aria-label={t('footer.sitemap')}>
+          {NAV_GROUPS.map((g) => (
+            <div key={g.key} className="ft-col">
+              <h2>{t(`nav.groups.${g.key}`)}</h2>
+              <ul>
+                {g.items.map((it) => <li key={it.key}><Link to={it.path}>{t(`nav.${it.key}.name`)}</Link></li>)}
+              </ul>
+            </div>
+          ))}
+          <div className="ft-col">
+            <h2>{t('footer.site')}</h2>
+            <ul>
+              <li><Link to="/guide">{t('nav.guide')}</Link></li>
+              <li><Link to="/donation">{t('nav.donation')}</Link></li>
+              <li><Link to="/terms">{t('footer.terms')}</Link></li>
+              <li><Link to="/privacy" className="ft-strong">{t('footer.privacy')}</Link></li>
+            </ul>
           </div>
-          <div className="footer-emails">
-            <span className="email-item">📧 efvihv@gmail.com</span>
-            <span className="email-item">📧 wnend1010@naver.com</span>
-          </div>
-        </div>
+        </nav>
+      </div>
+      <div className="ft-bottom">
+        <span>{t('footer.operator')} JS ({t('footer.nickname')} 에고수)</span>
+        <span className="ft-mail">
+          <a href="mailto:efvihv@gmail.com">efvihv@gmail.com</a>
+          <a href="mailto:wnend1010@naver.com">wnend1010@naver.com</a>
+        </span>
       </div>
     </footer>
   );

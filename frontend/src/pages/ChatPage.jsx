@@ -284,7 +284,7 @@ const ChatPage = () => {
                         size="small"
                         sx={{
                             bgcolor: msg.type === 'JOIN' ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
-                            color: msg.type === 'JOIN' ? '#34d399' : '#71717a',
+                            color: msg.type === 'JOIN' ? '#34d399' : 'var(--tn-text-3)',
                             border: msg.type === 'JOIN' ? '1px solid rgba(52,211,153,0.2)' : '1px solid rgba(255,255,255,0.07)',
                             fontSize: '0.72rem',
                         }}
@@ -305,11 +305,11 @@ const ChatPage = () => {
                         <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
                             <Avatar sx={{
                                 width: 22, height: 22, fontSize: '0.68rem',
-                                bgcolor: 'rgba(255,255,255,0.08)', color: '#a1a1aa',
+                                bgcolor: 'rgba(255,255,255,0.08)', color: 'var(--tn-text-2)',
                             }}>
                                 {msg.sender[0]}
                             </Avatar>
-                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#a1a1aa' }}>
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--tn-text-2)' }}>
                                 {msg.sender}
                             </Typography>
                             {isWhisper && (
@@ -333,19 +333,19 @@ const ChatPage = () => {
                             px: 1.8, py: 1.2,
                             borderRadius: isMyMessage ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
                             bgcolor: isMyMessage
-                                ? (isWhisper ? 'rgba(147,51,234,0.3)' : 'rgba(99,102,241,0.22)')
+                                ? (isWhisper ? 'rgba(147,51,234,0.3)' : 'rgba(242,194,48,0.22)')
                                 : (isWhisper ? 'rgba(168,85,247,0.08)' : 'rgba(255,255,255,0.05)'),
                             border: isWhisper
                                 ? '1px solid rgba(168,85,247,0.25)'
                                 : isMyMessage
-                                    ? '1px solid rgba(99,102,241,0.3)'
+                                    ? '1px solid rgba(242,194,48,0.3)'
                                     : '1px solid rgba(255,255,255,0.06)',
                         }}
                     >
                         <Typography sx={{ color: '#e4e4e7', fontSize: '0.88rem', lineHeight: 1.5 }}>
                             {msg.content}
                         </Typography>
-                        <Typography sx={{ color: '#52525b', fontSize: '0.68rem', display: 'block', mt: 0.5, textAlign: isMyMessage ? 'right' : 'left' }}>
+                        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.68rem', display: 'block', mt: 0.5, textAlign: isMyMessage ? 'right' : 'left' }}>
                             {formatTime(msg.timestamp)}
                         </Typography>
                     </Box>
@@ -357,11 +357,11 @@ const ChatPage = () => {
     /* ── 로딩 상태 ── */
     if (authLoading || !user) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#000' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'var(--tn-bg)' }}>
                 <Box sx={{
                     width: 32, height: 32,
                     border: '3px solid rgba(255,255,255,0.08)',
-                    borderTop: '3px solid #818cf8',
+                    borderTop: '3px solid var(--tn-tape)',
                     borderRadius: '50%',
                     animation: 'spin 0.8s linear infinite',
                 }} />
@@ -377,7 +377,7 @@ const ChatPage = () => {
                 <meta name="description" content="TerminalNexus 실시간 채팅. 전체 채팅, 익명 채팅, 귓속말 기능 제공" />
             </Helmet>
 
-            <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', pt: { xs: 10, md: 12 }, pb: 4, px: { xs: 1, md: 2 } }}>
+            <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', pt: { xs: 10, md: 12 }, pb: 4, px: { xs: 1, md: 2 } }}>
                 <Container maxWidth="lg">
                     <Box display="flex" gap={2} height="calc(100vh - 140px)">
 
@@ -401,7 +401,7 @@ const ChatPage = () => {
                                     size="small"
                                     sx={{
                                         bgcolor: connected ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.05)',
-                                        color: connected ? '#34d399' : '#71717a',
+                                        color: connected ? '#34d399' : 'var(--tn-text-3)',
                                         border: connected ? '1px solid rgba(52,211,153,0.25)' : '1px solid rgba(255,255,255,0.08)',
                                         fontSize: '0.7rem', fontWeight: 600,
                                     }}
@@ -414,9 +414,9 @@ const ChatPage = () => {
                                 onChange={(e, v) => setCurrentTab(v)}
                                 sx={{
                                     borderBottom: '1px solid rgba(255,255,255,0.06)',
-                                    '& .MuiTab-root': { color: '#71717a', textTransform: 'none', fontWeight: 500, fontSize: '0.85rem', minHeight: 48 },
-                                    '& .Mui-selected': { color: '#818cf8 !important' },
-                                    '& .MuiTabs-indicator': { bgcolor: '#818cf8' },
+                                    '& .MuiTab-root': { color: 'var(--tn-text-3)', textTransform: 'none', fontWeight: 500, fontSize: '0.85rem', minHeight: 48 },
+                                    '& .Mui-selected': { color: 'var(--tn-tape) !important' },
+                                    '& .MuiTabs-indicator': { bgcolor: 'var(--tn-tape)' },
                                 }}
                             >
                                 <Tab icon={<GroupIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="전체 채팅" />
@@ -435,11 +435,11 @@ const ChatPage = () => {
                                         <Box sx={{
                                             width: 16, height: 16,
                                             border: '2px solid rgba(255,255,255,0.08)',
-                                            borderTop: '2px solid #818cf8',
+                                            borderTop: '2px solid var(--tn-tape)',
                                             borderRadius: '50%',
                                             animation: 'spin 0.8s linear infinite',
                                         }} />
-                                        <Typography sx={{ color: '#52525b', fontSize: '0.72rem' }}>이전 메시지 불러오는 중...</Typography>
+                                        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem' }}>이전 메시지 불러오는 중...</Typography>
                                         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                                     </Box>
                                 )}
@@ -478,9 +478,9 @@ const ChatPage = () => {
                                                 bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '12px', color: '#f4f4f5',
                                                 '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
                                                 '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.18)' },
-                                                '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+                                                '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
                                             },
-                                            '& .MuiInputBase-input::placeholder': { color: '#52525b', opacity: 1 },
+                                            '& .MuiInputBase-input::placeholder': { color: 'var(--tn-text-3)', opacity: 1 },
                                         }}
                                     />
                                     <Button
@@ -490,9 +490,9 @@ const ChatPage = () => {
                                         sx={{
                                             minWidth: 90, height: 56, borderRadius: '12px',
                                             fontWeight: 700, fontSize: '0.88rem', textTransform: 'none',
-                                            bgcolor: whisperTarget ? '#9333ea' : '#818cf8', color: '#fff', boxShadow: 'none',
-                                            '&:hover:not(:disabled)': { bgcolor: whisperTarget ? '#7c3aed' : '#6366f1', transform: 'translateY(-1px)' },
-                                            '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.05)', color: '#3f3f46' },
+                                            bgcolor: whisperTarget ? '#9333ea' : 'var(--tn-tape)', color: '#fff', boxShadow: 'none',
+                                            '&:hover:not(:disabled)': { bgcolor: whisperTarget ? '#7c3aed' : 'var(--tn-tape)', transform: 'translateY(-1px)' },
+                                            '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.05)', color: 'var(--tn-text-3)' },
                                             transition: 'all 0.2s',
                                         }}
                                     >
@@ -520,26 +520,26 @@ const ChatPage = () => {
                                     <Box
                                         sx={{
                                             width: 56, height: 56, borderRadius: '50%',
-                                            bgcolor: 'rgba(99,102,241,0.08)',
-                                            border: '1px solid rgba(99,102,241,0.2)',
+                                            bgcolor: 'rgba(242,194,48,0.08)',
+                                            border: '1px solid rgba(242,194,48,0.2)',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         }}
                                     >
-                                        <VisibilityOffIcon sx={{ color: '#6366f1', fontSize: '1.6rem' }} />
+                                        <VisibilityOffIcon sx={{ color: 'var(--tn-tape)', fontSize: '1.6rem' }} />
                                     </Box>
-                                    <Typography sx={{ color: '#52525b', fontSize: '0.72rem', fontWeight: 600, textAlign: 'center', lineHeight: 1.6 }}>
+                                    <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem', fontWeight: 600, textAlign: 'center', lineHeight: 1.6 }}>
                                         익명 채팅 중<br />신원이 공개되지 않습니다
                                     </Typography>
                                     <Chip
                                         label={`${onlineUsers.length}명 참여 중`}
                                         size="small"
-                                        sx={{ bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', fontSize: '0.72rem' }}
+                                        sx={{ bgcolor: 'rgba(242,194,48,0.08)', color: 'var(--tn-tape)', border: '1px solid rgba(242,194,48,0.2)', fontSize: '0.72rem' }}
                                     />
                                 </Box>
                             ) : (
                                 /* ── 전체 채팅 사이드바: 실제 사용자 목록 ── */
                                 <>
-                                    <Typography sx={{ color: '#52525b', fontSize: '0.7rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', mb: 1.5 }}>
+                                    <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', mb: 1.5 }}>
                                         Online
                                     </Typography>
                                     <Chip
@@ -563,7 +563,7 @@ const ChatPage = () => {
                                                                 edge="end" size="small"
                                                                 onClick={() => setWhisperTarget(username)}
                                                                 title="귓속말"
-                                                                sx={{ color: '#3f3f46', '&:hover': { color: '#c084fc', bgcolor: 'rgba(168,85,247,0.08)' } }}
+                                                                sx={{ color: 'var(--tn-text-3)', '&:hover': { color: '#c084fc', bgcolor: 'rgba(168,85,247,0.08)' } }}
                                                             >
                                                                 <WhisperIcon sx={{ fontSize: '0.9rem' }} />
                                                             </IconButton>
@@ -577,9 +577,9 @@ const ChatPage = () => {
                                                     >
                                                         <Avatar sx={{
                                                             width: 28, height: 28, mr: 1.2,
-                                                            bgcolor: username === user.nickname ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.06)',
-                                                            color: username === user.nickname ? '#818cf8' : '#71717a',
-                                                            fontSize: '0.72rem', fontWeight: 700, border: username === user.nickname ? '1px solid rgba(129,140,248,0.3)' : 'none',
+                                                            bgcolor: username === user.nickname ? 'rgba(242,194,48,0.15)' : 'rgba(255,255,255,0.06)',
+                                                            color: username === user.nickname ? 'var(--tn-tape)' : 'var(--tn-text-3)',
+                                                            fontSize: '0.72rem', fontWeight: 700, border: username === user.nickname ? '1px solid rgba(242,194,48,0.3)' : 'none',
                                                         }}>
                                                             {username[0]}
                                                         </Avatar>
@@ -589,7 +589,7 @@ const ChatPage = () => {
                                                         primaryTypographyProps={{
                                                             fontSize: '0.8rem',
                                                             fontWeight: username === user.nickname ? 700 : 400,
-                                                            color: username === user.nickname ? '#818cf8' : '#a1a1aa',
+                                                            color: username === user.nickname ? 'var(--tn-tape)' : 'var(--tn-text-2)',
                                                             noWrap: true,
                                                         }}
                                                     />

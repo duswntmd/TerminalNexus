@@ -49,13 +49,13 @@ const AppContent = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#ffffff'
+        backgroundColor: 'var(--tn-bg)'
       }}>
         <div style={{
           width: '32px',
           height: '32px',
-          border: '3px solid #e0e0e0',
-          borderTop: '3px solid #1a1a1a',
+          border: '3px solid var(--tn-line)',
+          borderTop: '3px solid var(--tn-tape)',
           borderRadius: '50%',
           animation: 'spin 0.8s linear infinite'
         }} />
@@ -67,7 +67,7 @@ const AppContent = () => {
   return (
     <div className="app-container">
       <Header />
-      <main className="main-content">
+      <main className="main-content" id="main" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/join" element={<JoinPage />} />

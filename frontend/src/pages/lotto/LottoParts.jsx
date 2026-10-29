@@ -30,7 +30,7 @@ export const BallRow = ({ numbers, bonus, size = 40, highlight }) => (
     ))}
     {bonus != null && (
       <>
-        <Typography sx={{ color: '#52525b', fontWeight: 700, mx: 0.3 }}>+</Typography>
+        <Typography sx={{ color: 'var(--tn-text-3)', fontWeight: 700, mx: 0.3 }}>+</Typography>
         <Ball n={bonus} size={size} dim={highlight ? !highlight.includes(bonus) : false} />
       </>
     )}
@@ -56,9 +56,9 @@ export const NumberPicker = ({ state, onToggle }) => (
           sx={{
             aspectRatio: '1', borderRadius: '50%', cursor: 'pointer', p: 0,
             fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.85rem' }, fontFamily: 'inherit',
-            border: `1.5px solid ${s === 'on' ? c : s === 'x' ? '#3f3f46' : 'rgba(255,255,255,0.12)'}`,
+            border: `1.5px solid ${s === 'on' ? c : s === 'x' ? 'var(--tn-text-3)' : 'rgba(255,255,255,0.12)'}`,
             bgcolor: s === 'on' ? c : 'transparent',
-            color: s === 'on' ? '#fff' : s === 'x' ? '#3f3f46' : '#d4d4d8',
+            color: s === 'on' ? '#fff' : s === 'x' ? 'var(--tn-text-3)' : '#d4d4d8',
             textDecoration: s === 'x' ? 'line-through' : 'none',
             transition: 'all 0.15s',
             '&:hover': { borderColor: c },
@@ -75,7 +75,7 @@ export const Panel = ({ children, sx }) => (
   <Box
     sx={{
       p: { xs: 2, md: 3 }, borderRadius: '16px',
-      bgcolor: '#0a0a0c', border: '1px solid rgba(255,255,255,0.07)',
+      bgcolor: 'var(--tn-panel)', border: '1px solid rgba(255,255,255,0.07)',
       ...sx,
     }}
   >

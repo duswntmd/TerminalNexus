@@ -42,9 +42,9 @@ const darkInputSx = {
         color: '#f4f4f5',
         '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
         '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.22)' },
-        '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+        '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
     },
-    '& .MuiInputBase-input::placeholder': { color: '#52525b', opacity: 1 },
+    '& .MuiInputBase-input::placeholder': { color: 'var(--tn-text-3)', opacity: 1 },
 };
 
 function FreeBoardRead() {
@@ -78,15 +78,15 @@ function FreeBoardRead() {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#000' }}>
-                <CircularProgress sx={{ color: '#818cf8' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'var(--tn-bg)' }}>
+                <CircularProgress sx={{ color: 'var(--tn-tape)' }} />
             </Box>
         );
     }
 
     if (!post) {
         return (
-            <Box sx={{ minHeight: '100vh', bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Box sx={{ p: 3, borderRadius: '14px', bgcolor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
                     게시글을 찾을 수 없습니다.
                 </Box>
@@ -95,12 +95,12 @@ function FreeBoardRead() {
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', pt: { xs: 10, md: 12 }, pb: 10 }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', pt: { xs: 10, md: 12 }, pb: 10 }}>
             {/* 배경 글로우 */}
             <Box sx={{
                 position: 'fixed', top: '10%', right: '5%',
                 width: '35vw', height: '35vw', maxWidth: 500, maxHeight: 500,
-                background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 65%)',
+                background: 'radial-gradient(circle, rgba(242,194,48,0.05) 0%, transparent 65%)',
                 pointerEvents: 'none', zIndex: 0,
             }} />
 
@@ -129,19 +129,19 @@ function FreeBoardRead() {
                             icon={<PersonIcon sx={{ fontSize: '0.9rem !important', color: '#71717a !important' }} />}
                             label={post.writerNickname}
                             size="small"
-                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: '#a1a1aa', border: '1px solid rgba(255,255,255,0.07)' }}
+                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: 'var(--tn-text-2)', border: '1px solid rgba(255,255,255,0.07)' }}
                         />
                         <Chip
                             icon={<AccessTimeIcon sx={{ fontSize: '0.9rem !important', color: '#71717a !important' }} />}
                             label={new Date(post.modDate !== post.regDate ? post.modDate : post.regDate).toLocaleString('ko-KR')}
                             size="small"
-                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: '#71717a', border: '1px solid rgba(255,255,255,0.07)' }}
+                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: 'var(--tn-text-3)', border: '1px solid rgba(255,255,255,0.07)' }}
                         />
                         <Chip
                             icon={<VisibilityIcon sx={{ fontSize: '0.9rem !important', color: '#71717a !important' }} />}
                             label={`조회 ${post.viewCount}`}
                             size="small"
-                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: '#71717a', border: '1px solid rgba(255,255,255,0.07)' }}
+                            sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: 'var(--tn-text-3)', border: '1px solid rgba(255,255,255,0.07)' }}
                         />
                     </Stack>
 
@@ -165,7 +165,7 @@ function FreeBoardRead() {
                             padding: '0.1em 0.4em',
                         },
                         '& .toastui-editor-contents blockquote': {
-                            borderLeft: '3px solid rgba(129,140,248,0.4)',
+                            borderLeft: '3px solid rgba(242,194,48,0.4)',
                             color: '#71717a !important',
                         },
                     }}>
@@ -188,7 +188,7 @@ function FreeBoardRead() {
                     {/* 첨부파일 */}
                     {post.fileDTOs && post.fileDTOs.length > 0 && (
                         <Box sx={{ mb: 4, p: 2.5, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                            <Typography sx={{ color: '#71717a', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', mb: 1.5 }}>
+                            <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', mb: 1.5 }}>
                                 첨부파일
                             </Typography>
                             <Stack spacing={1}>
@@ -204,13 +204,13 @@ function FreeBoardRead() {
                                                 component="a"
                                                 href={`${BACKEND_API_BASE_URL}/download?fileName=${encodeURIComponent(file.folderPath + "/" + file.uuid + "_" + file.fileName)}`}
                                                 target="_blank" rel="noopener noreferrer"
-                                                sx={{ color: '#818cf8', fontSize: '0.85rem', textDecoration: 'none', flex: 1, '&:hover': { textDecoration: 'underline' } }}
+                                                sx={{ color: 'var(--tn-tape)', fontSize: '0.85rem', textDecoration: 'none', flex: 1, '&:hover': { textDecoration: 'underline' } }}
                                             >
                                                 {file.fileName}
                                             </Typography>
                                             {isImage && (
                                                 <IconButton size="small" onClick={() => { setPreviewUrl(imageUrl); setPreviewOpen(true); }}
-                                                    sx={{ color: '#52525b', '&:hover': { color: '#818cf8' } }}>
+                                                    sx={{ color: 'var(--tn-text-3)', '&:hover': { color: 'var(--tn-tape)' } }}>
                                                     <ZoomInIcon fontSize="small" />
                                                 </IconButton>
                                             )}
@@ -242,8 +242,8 @@ function FreeBoardRead() {
                             startIcon={<ThumbUpIcon />}
                             onClick={handleLike}
                             sx={post.isLiked
-                                ? { bgcolor: '#818cf8', color: '#fff', borderRadius: '10px', textTransform: 'none', '&:hover': { bgcolor: '#6366f1' } }
-                                : { borderColor: 'rgba(255,255,255,0.12)', color: '#a1a1aa', borderRadius: '10px', textTransform: 'none', '&:hover': { borderColor: '#818cf8', color: '#818cf8', bgcolor: 'rgba(129,140,248,0.06)' } }
+                                ? { bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', borderRadius: '10px', textTransform: 'none', '&:hover': { bgcolor: 'var(--tn-tape)' } }
+                                : { borderColor: 'rgba(255,255,255,0.12)', color: 'var(--tn-text-2)', borderRadius: '10px', textTransform: 'none', '&:hover': { borderColor: 'var(--tn-tape)', color: 'var(--tn-tape)', bgcolor: 'rgba(242,194,48,0.06)' } }
                             }
                         >
                             좋아요 {post.likeCount}
@@ -254,7 +254,7 @@ function FreeBoardRead() {
                             onClick={handleDislike}
                             sx={post.isDisliked
                                 ? { bgcolor: '#ef4444', color: '#fff', borderRadius: '10px', textTransform: 'none', '&:hover': { bgcolor: '#dc2626' } }
-                                : { borderColor: 'rgba(255,255,255,0.12)', color: '#a1a1aa', borderRadius: '10px', textTransform: 'none', '&:hover': { borderColor: '#ef4444', color: '#ef4444', bgcolor: 'rgba(239,68,68,0.06)' } }
+                                : { borderColor: 'rgba(255,255,255,0.12)', color: 'var(--tn-text-2)', borderRadius: '10px', textTransform: 'none', '&:hover': { borderColor: '#ef4444', color: '#ef4444', bgcolor: 'rgba(239,68,68,0.06)' } }
                             }
                         >
                             싫어요 {post.dislikeCount}
@@ -268,14 +268,14 @@ function FreeBoardRead() {
                         <Button
                             variant="outlined" startIcon={<ArrowBackIcon />}
                             onClick={() => navigate('/freeboard')}
-                            sx={{ borderRadius: '10px', borderColor: 'rgba(255,255,255,0.1)', color: '#a1a1aa', textTransform: 'none', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.03)' } }}
+                            sx={{ borderRadius: '10px', borderColor: 'rgba(255,255,255,0.1)', color: 'var(--tn-text-2)', textTransform: 'none', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.03)' } }}
                         >
                             목록
                         </Button>
                         {post.canEdit && (
                             <Button variant="outlined" startIcon={<EditIcon />}
                                 onClick={() => navigate(`/freeboard/edit/${id}`)}
-                                sx={{ borderRadius: '10px', borderColor: 'rgba(129,140,248,0.3)', color: '#818cf8', textTransform: 'none', '&:hover': { bgcolor: 'rgba(129,140,248,0.06)', borderColor: '#818cf8' } }}
+                                sx={{ borderRadius: '10px', borderColor: 'rgba(242,194,48,0.3)', color: 'var(--tn-tape)', textTransform: 'none', '&:hover': { bgcolor: 'rgba(242,194,48,0.06)', borderColor: 'var(--tn-tape)' } }}
                             >
                                 수정
                             </Button>
@@ -293,7 +293,7 @@ function FreeBoardRead() {
                 {/* ── 댓글 섹션 ── */}
                 <Box>
                     <Typography sx={{ color: '#f4f4f5', fontWeight: 700, fontSize: '1rem', mb: 3 }}>
-                        💬 댓글 <span style={{ color: '#52525b', fontWeight: 400 }}>{comments.length}개</span>
+                        💬 댓글 <span style={{ color: 'var(--tn-text-3)', fontWeight: 400 }}>{comments.length}개</span>
                     </Typography>
 
                     {/* 댓글 작성 폼 */}
@@ -304,7 +304,7 @@ function FreeBoardRead() {
                                     label={`↩ ${replyMode.parentNickname}님에게 답글 작성 중`}
                                     onDelete={() => setReplyMode({ active: false, parentId: null })}
                                     size="small"
-                                    sx={{ bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', '& .MuiChip-deleteIcon': { color: '#818cf8' } }}
+                                    sx={{ bgcolor: 'rgba(242,194,48,0.08)', color: 'var(--tn-tape)', border: '1px solid rgba(242,194,48,0.2)', '& .MuiChip-deleteIcon': { color: 'var(--tn-tape)' } }}
                                 />
                             </Box>
                         )}
@@ -318,12 +318,12 @@ function FreeBoardRead() {
                         <Stack direction="row" spacing={1.5} justifyContent="flex-end">
                             {replyMode.active && (
                                 <Button onClick={() => setReplyMode({ active: false, parentId: null })}
-                                    sx={{ borderRadius: '10px', color: '#71717a', textTransform: 'none' }}>
+                                    sx={{ borderRadius: '10px', color: 'var(--tn-text-3)', textTransform: 'none' }}>
                                     취소
                                 </Button>
                             )}
                             <Button variant="contained" onClick={handleCommentSubmit}
-                                sx={{ borderRadius: '10px', bgcolor: '#818cf8', color: '#fff', fontWeight: 600, textTransform: 'none', '&:hover': { bgcolor: '#6366f1' } }}>
+                                sx={{ borderRadius: '10px', bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 600, textTransform: 'none', '&:hover': { bgcolor: 'var(--tn-tape)' } }}>
                                 {replyMode.active ? '답글 작성' : '댓글 작성'}
                             </Button>
                         </Stack>

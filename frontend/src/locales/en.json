@@ -278,7 +278,12 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "name": "Name (initials)",
-    "nickname": "Nickname"
+    "nickname": "Nickname",
+    "desc": "A terminal-flavored playground for developers. Board, chat, mini games and a Linux lab in one place.",
+    "host": "Served from a Raspberry Pi in a home rack",
+    "sitemap": "Site map",
+    "site": "Site",
+    "operator": "Run by"
   },
   "notfound": {
     "title": "Page not found",
@@ -396,6 +401,108 @@
       "firewall": "Permanently allow http in the firewall",
       "curl": "Check the web server response",
       "user": "Create a user and add to wheel"
+    }
+  },
+  "nav": {
+    "groups": {
+      "community": "Community",
+      "play": "Games & Labs",
+      "tools": "Tools"
+    },
+    "freeboard": {
+      "name": "Free Board",
+      "desc": "Post text, images and video, then talk in comments"
+    },
+    "chat": {
+      "name": "Live Chat",
+      "desc": "Open chat, anonymous chat and whispers"
+    },
+    "stock": {
+      "name": "Mock Stocks",
+      "desc": "Trade live prices with virtual money"
+    },
+    "janggi": {
+      "name": "Janggi",
+      "desc": "Korean chess vs AI or friends online"
+    },
+    "forge": {
+      "name": "Forge",
+      "desc": "Enhance a weapon up to +20. It may break"
+    },
+    "typeracer": {
+      "name": "Type Racer",
+      "desc": "A 60-second race on real-world commands"
+    },
+    "terminalhack": {
+      "name": "Terminal Hack",
+      "desc": "Deduce the password and break in"
+    },
+    "hackermode": {
+      "name": "Hacker Mode",
+      "desc": "A movie-style hacker console"
+    },
+    "linux": {
+      "name": "Linux Lab",
+      "desc": "Practice a Rocky Linux 9.6 shell in the browser"
+    },
+    "lotto": {
+      "name": "Lotto",
+      "desc": "Results, stats and a number generator"
+    },
+    "fruitai": {
+      "name": "Fruit AI",
+      "desc": "Ask AI about fruit benefits"
+    },
+    "guide": "About",
+    "donation": "Support",
+    "menu": "Menu",
+    "close": "Close",
+    "login_needed": "Login required",
+    "open": "Open to all",
+    "skip": "Skip to content"
+  },
+  "home": {
+    "title_1": "A developer playground",
+    "title_2": "you explore by command",
+    "lead": "A free board and live chat, mini games like mock stocks, Janggi and Forge, plus a Linux shell that runs in your browser.",
+    "lead_try": "Type ls in the terminal on the right.",
+    "lead_try_m": "Type ls in the terminal below.",
+    "cta_join": "Sign up free",
+    "cta_board": "Go to the board",
+    "cta_explore": "See what is here",
+    "note": "Most games and the Linux lab work without an account.",
+    "chips": "Tap to run",
+    "rack_title": "What you can do here",
+    "rack_sub": "Green light: open to everyone. Amber light: log in first.",
+    "rack_extra": "Site",
+    "guide_desc": "Feature guide and FAQ",
+    "donation_desc": "Support the server",
+    "live_title": "Happening now",
+    "posts": "Latest posts",
+    "posts_more": "All posts",
+    "posts_empty": "No posts yet. Write the first one.",
+    "posts_write": "Write",
+    "posts_error": "Could not load posts.",
+    "stock": "Mock stocks",
+    "stock_more": "Open exchange",
+    "stock_wait": "Fetching prices.",
+    "stock_closed": "Could not load prices.",
+    "lotto": "Lotto",
+    "lotto_more": "See stats",
+    "lotto_none": "Could not load the latest draw.",
+    "lotto_mine": "My numbers",
+    "ago_min": "{{n}} min ago",
+    "ago_hour": "{{n}} h ago",
+    "ago_day": "{{n}} d ago",
+    "just_now": "just now",
+    "weather_ip": "Approximate location",
+    "weather_gps": "Your current location",
+    "term": {
+      "intro1": "Type ls for the feature list, or a path like /forge to jump there.",
+      "intro2": "Type rocky to open a Linux shell right here.",
+      "help_more": "Also: rocky  clear  whoami  login  join",
+      "not_found": "command not found. Try ls.",
+      "aria": "Terminal command input"
     }
   }
 }
