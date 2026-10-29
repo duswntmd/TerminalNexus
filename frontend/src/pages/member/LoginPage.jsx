@@ -25,10 +25,10 @@ const darkInput = {
     color: '#f4f4f5',
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
     '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
-    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
   },
-  '& .MuiInputLabel-root': { color: '#71717a' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
+  '& .MuiInputLabel-root': { color: 'var(--tn-text-3)' },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--tn-tape)' },
 };
 
 function LoginPage() {
@@ -83,7 +83,7 @@ function LoginPage() {
       <Box
         sx={{
           minHeight: '100vh',
-          bgcolor: '#000',
+          bgcolor: 'var(--tn-bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -96,7 +96,7 @@ function LoginPage() {
           position: 'absolute', top: '30%', left: '50%',
           transform: 'translateX(-50%)',
           width: '60vw', height: '60vw', maxWidth: 700, maxHeight: 700,
-          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(242,194,48,0.08) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
 
@@ -131,7 +131,7 @@ function LoginPage() {
             >
               {t('auth.welcome_back')}
             </Typography>
-            <Typography sx={{ color: '#71717a', fontSize: '0.9rem' }}>
+            <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.9rem' }}>
               {t('auth.login_sub')}
             </Typography>
           </Box>
@@ -188,10 +188,10 @@ function LoginPage() {
                 variant="contained"
                 sx={{
                   py: 1.6, borderRadius: '10px',
-                  bgcolor: '#fff', color: '#000', fontWeight: 700,
+                  bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 700,
                   fontSize: '0.95rem', textTransform: 'none',
-                  boxShadow: '0 0 20px rgba(255,255,255,0.1)',
-                  '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-1px)' },
+                  
+                  '&:hover': { bgcolor: 'var(--tn-tape-hover)', transform: 'translateY(-1px)' },
                   transition: 'all 0.2s',
                 }}
               >
@@ -200,16 +200,16 @@ function LoginPage() {
             </Stack>
 
             <Box textAlign="center" mt={3}>
-              <Typography component="span" sx={{ color: '#52525b', fontSize: '0.85rem' }}>
+              <Typography component="span" sx={{ color: 'var(--tn-text-3)', fontSize: '0.85rem' }}>
                 {t('auth.no_account')}{' '}
               </Typography>
               <Typography
                 component="span"
                 onClick={() => navigate('/join')}
                 sx={{
-                  color: '#818cf8', fontSize: '0.85rem', fontWeight: 600,
+                  color: 'var(--tn-tape)', fontSize: '0.85rem', fontWeight: 600,
                   cursor: 'pointer',
-                  '&:hover': { color: '#a5b4fc' },
+                  '&:hover': { color: 'var(--tn-tape)' },
                 }}
               >
                 {t('header.signup')}
@@ -220,7 +220,7 @@ function LoginPage() {
           {/* 구분선 */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 3 }}>
             <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
-            <Typography sx={{ color: '#3f3f46', fontSize: '0.75rem' }}>{t('auth.or')}</Typography>
+            <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem' }}>{t('auth.or')}</Typography>
             <Divider sx={{ flex: 1, borderColor: 'rgba(255,255,255,0.07)' }} />
           </Box>
 

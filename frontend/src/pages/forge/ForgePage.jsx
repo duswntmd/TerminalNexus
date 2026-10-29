@@ -143,8 +143,16 @@ const ForgePage = () => {
   const [useBooster,     setUseBooster]    = useState(false); // 부스터 사용 여부
   const [bgmOn,          setBgmOn]         = useState(false); // BGM 토글
   const [hofDetail,      setHofDetail]     = useState(null); // 명예의 전당 상세 무기 정보
+  const [precision,      setPrecision]     = useState(true);  // 정밀 타격(타이밍 미니게임) 사용
+  const [aiming,         setAiming]        = useState(false); // 타격 게이지 조준 중
+  const [marker,         setMarker]        = useState(0);     // 타격 마커 위치 0~100
+  const [lastStrike,     setLastStrike]    = useState(null);  // 마지막 타격 결과 {bonus,label}
+  const [auto,           setAuto]          = useState(false); // 자동 강화
+  const [showProbTable,  setShowProbTable] = useState(false); // 확률표 모달
   const logRef = useRef(null);
   const audioRef = useRef(null);
+  const rafRef = useRef(null);
+  const autoRef = useRef(false);
 
   useEffect(() => {
     if (bgmOn && audioRef.current) {
@@ -282,8 +290,48 @@ const ForgePage = () => {
     pushLog(`${item.emoji} ${item.name}을(를) 구매했습니다.`, 'buy');
   };
 
-  // 강화 실행
-  const enhance = () => {
+  // 강화 버튼: 정밀 타격이 켜져 있으면 조준부터
+  const onEnhanceClick = () => {
+    if (!equip || equip.destroyed || enhancing || aiming) return;
+    const cfg = getConfig(equip.level);
+    if (gold < cfg.gold)  { pushLog('골드가 부족합니다!', 'error'); return; }
+    if (stone < cfg.stone){ pushLog('강화석이 부족합니다!', 'error'); return; }
+    if (equip.level >= 20){ pushLog('이미 최고 단계입니다!', 'error'); return; }
+    if (precision) startStrike();
+    else doEnhance(0);
+  };
+
+  // 타격 게이지: 마커가 좌우로 왕복, 가운데에 가까울수록 보너스
+  const startStrike = () => {
+    setAiming(true);
+    setLastStrike(null);
+    const started = performance.now();
+    const period = 1100; // 한 번 왕복
+    const loop = (now) => {
+      const phase = ((now - started) % period) / period;
+      const tri = phase < 0.5 ? phase * 2 : 2 - phase * 2; // 0→1→0 삼각파
+      setMarker(tri * 100);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+  };
+
+  const lockStrike = () => {
+    if (!aiming) return;
+    cancelAnimationFrame(rafRef.current);
+    setAiming(false);
+    const dist = Math.abs(marker - 50); // 중앙(50)에서 벗어난 정도
+    let bonus = 0; let label = '';
+    if (dist <= 4) { bonus = 15; label = 'PERFECT'; }
+    else if (dist <= 12) { bonus = 8; label = 'GREAT'; }
+    else if (dist <= 24) { bonus = 3; label = 'GOOD'; }
+    else { bonus = 0; label = 'MISS'; }
+    setLastStrike({ bonus, label });
+    doEnhance(bonus);
+  };
+
+  // 강화 실행 (extraBonus: 정밀 타격 보너스)
+  const doEnhance = (extraBonus = 0) => {
     if (!equip || equip.destroyed || enhancing) return;
     const cfg = getConfig(equip.level);
     if (gold < cfg.gold)  { pushLog('골드가 부족합니다!', 'error'); return; }
@@ -299,13 +347,14 @@ const ForgePage = () => {
     let effectiveRate = guaranteeCount >= 29
       ? 100
       : calcBonusRate(cfg.rate, blessingStack);
-      
+
     const boosterActive = useBooster && booster > 0;
     if (boosterActive) {
       setBooster(b => b - 1);
       effectiveRate = Math.min(100, effectiveRate + 5);
       setUseBooster(false);
     }
+    if (extraBonus > 0) effectiveRate = Math.min(100, effectiveRate + extraBonus);
 
     setTimeout(() => {
       const roll = Math.random() * 100;
@@ -369,6 +418,29 @@ const ForgePage = () => {
       setEnhancing(false);
     }, 1400);
   };
+
+  // 자동 강화: 정밀 타격 없이, 자원이 있고 파괴되지 않는 동안 반복
+  useEffect(() => { autoRef.current = auto; }, [auto]);
+  useEffect(() => {
+    if (!auto) return;
+    if (enhancing || aiming) return;
+    if (!equip || equip.destroyed || equip.level >= 20) { setAuto(false); return; }
+    const cfg = getConfig(equip.level);
+    if (gold < cfg.gold || stone < cfg.stone) { setAuto(false); pushLog('자원이 부족해 자동 강화를 멈춥니다.', 'error'); return; }
+    const t = setTimeout(() => { if (autoRef.current) doEnhance(0); }, 450);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auto, enhancing, aiming, equip, gold, stone]);
+
+  // 조준 중 스페이스/엔터로 타격, 언마운트 시 raf 정리
+  useEffect(() => {
+    const onKey = (e) => {
+      if (aiming && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); lockStrike(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); cancelAnimationFrame(rafRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiming, marker]);
 
   const cfg = equip && !equip.destroyed ? getConfig(equip.level) : null;
   const grade = equip ? getGrade(equip.level) : null;
@@ -532,21 +604,50 @@ const ForgePage = () => {
               </div>
             )}
 
+            {/* 타격 게이지 (정밀 타격) */}
+            {equip && !equip.destroyed && equip.level < 20 && (
+              <div className={`forge-strike ${aiming ? 'aiming' : ''}`} onClick={aiming ? lockStrike : undefined}>
+                <div className="forge-strike-track">
+                  <span className="forge-strike-zone good" />
+                  <span className="forge-strike-zone great" />
+                  <span className="forge-strike-zone perfect" />
+                  <span className="forge-strike-marker" style={{ left: `${marker}%` }} />
+                </div>
+                <div className="forge-strike-cap">
+                  {aiming ? '지금! 모루를 내리쳐요 (클릭 / Space)'
+                    : lastStrike ? <span className={`forge-strike-res ${lastStrike.label.toLowerCase()}`}>{lastStrike.label}{lastStrike.bonus > 0 ? ` +${lastStrike.bonus}%` : ''}</span>
+                    : precision ? '한가운데를 노려 성공률 보너스를 얻으세요'
+                    : '정밀 타격이 꺼져 있어요'}
+                </div>
+              </div>
+            )}
+
+            {/* 강화 옵션 토글 */}
+            {equip && !equip.destroyed && equip.level < 20 && (
+              <div className="forge-opt-row">
+                <button className={`forge-opt ${precision ? 'on' : ''}`} onClick={() => setPrecision(v => !v)} disabled={auto}>🎯 정밀 타격 {precision ? 'ON' : 'OFF'}</button>
+                <button className={`forge-opt ${auto ? 'on' : ''}`} onClick={() => setAuto(v => !v)} disabled={aiming}>{auto ? '■ 자동 멈춤' : '♾ 자동 강화'}</button>
+                <button className="forge-opt" onClick={() => setShowProbTable(true)}>📊 확률표</button>
+              </div>
+            )}
+
             {/* 강화 버튼 */}
             <button
               id="forge-enhance-btn"
-              className={`forge-enhance-btn ${enhancing ? 'loading' : ''} ${result || ''}`}
-              onClick={enhance}
-              disabled={!equip || equip.destroyed || enhancing || equip.level >= 20}
+              className={`forge-enhance-btn ${enhancing ? 'loading' : ''} ${aiming ? 'aiming' : ''} ${result || ''}`}
+              onClick={aiming ? lockStrike : onEnhanceClick}
+              disabled={auto || (!aiming && (!equip || equip.destroyed || enhancing || equip.level >= 20))}
             >
               {enhancing ? (
                 <span className="forge-btn-inner">
                   <span className="forge-spinner" />
                   강화 중...
                 </span>
+              ) : aiming ? (
+                <span className="forge-btn-inner">🔨 내리치기!</span>
               ) : (
                 <span className="forge-btn-inner">
-                  ⚡ 강화 시작
+                  {precision ? '🔨 모루 달구기' : '⚡ 강화 시작'}
                   {equip && !equip.destroyed && <span className="forge-next-level">+{equip?.level} → +{(equip?.level ?? 0) + 1}</span>}
                 </span>
               )}
@@ -877,6 +978,31 @@ const ForgePage = () => {
       )}
 
       {/* ── 초기화 확인 모달 ── */}
+      {showProbTable && (
+        <div className="forge-modal-overlay" onClick={() => setShowProbTable(false)}>
+          <div className="forge-modal forge-prob-modal" onClick={e => e.stopPropagation()}>
+            <div className="forge-modal-header">
+              <span>📊 단계별 강화 확률</span>
+              <button className="forge-modal-close" onClick={() => setShowProbTable(false)}>✕</button>
+            </div>
+            <p className="forge-prob-note">정밀 타격 PERFECT는 +15%, 축복·보조제는 성공률을 추가로 올려줘요. 아래는 기본값이에요.</p>
+            <div className="forge-prob-table" role="table">
+              <div className="forge-prob-th" role="row"><span>단계</span><span>성공</span><span>유지</span><span>하락</span><span>파괴</span><span>비용</span></div>
+              {ENHANCE_CONFIG.map((c) => (
+                <div key={c.level} role="row" className={`forge-prob-tr ${equip && equip.level === c.level ? 'cur' : ''}`}>
+                  <span>+{c.level}→{c.level + 1}</span>
+                  <span className="g">{c.rate}%</span>
+                  <span>{c.maintain || '-'}</span>
+                  <span className="y">{c.drop || '-'}</span>
+                  <span className="r">{c.destroy || '-'}</span>
+                  <span className="cost">🪙{c.gold >= 1000 ? `${c.gold / 1000}k` : c.gold} 🔮{c.stone}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {showReset && (
         <div className="forge-modal-overlay" onClick={() => setShowReset(false)}>
           <div className="forge-modal forge-reset-modal" onClick={e => e.stopPropagation()}>

@@ -182,8 +182,8 @@ const FreeBoardRegister = () => {
     };
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', pt: { xs: 10, md: 12 }, pb: 10 }}>
-            <Backdrop sx={{ color: '#818cf8', zIndex: (theme) => theme.zIndex.drawer + 999 }} open={isLoading}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', pt: { xs: 10, md: 12 }, pb: 10 }}>
+            <Backdrop sx={{ color: 'var(--tn-tape)', zIndex: (theme) => theme.zIndex.drawer + 999 }} open={isLoading}>
                 <CircularProgress color="inherit" />
             </Backdrop>
 
@@ -192,7 +192,7 @@ const FreeBoardRegister = () => {
                 <Box mb={5}>
                     <Chip
                         label={isEditMode ? '✏️ 게시글 수정' : '📝 새 글 작성'}
-                        sx={{ mb: 2, bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', fontWeight: 700, fontSize: '0.76rem' }}
+                        sx={{ mb: 2, bgcolor: 'rgba(242,194,48,0.08)', color: 'var(--tn-tape)', border: '1px solid rgba(242,194,48,0.2)', fontWeight: 700, fontSize: '0.76rem' }}
                     />
                     <Typography variant="h3" fontWeight={800}
                         sx={{ color: '#f4f4f5', letterSpacing: '-1.5px', fontSize: { xs: '1.8rem', md: '2.4rem' } }}>
@@ -213,17 +213,17 @@ const FreeBoardRegister = () => {
                                     bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '12px', color: '#f4f4f5',
                                     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
                                     '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.22)' },
-                                    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+                                    '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
                                 },
-                                '& .MuiInputLabel-root': { color: '#71717a' },
-                                '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
+                                '& .MuiInputLabel-root': { color: 'var(--tn-text-3)' },
+                                '& .MuiInputLabel-root.Mui-focused': { color: 'var(--tn-tape)' },
                             }}
                         />
 
                         {/* 기존 파일 목록 (수정 모드) */}
                         {isEditMode && existingFiles.length > 0 && (
                             <Box sx={{ mb: 4, p: 2.5, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                                <Typography sx={{ color: '#71717a', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', mb: 1.5 }}>
+                                <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', mb: 1.5 }}>
                                     기존 첨부파일
                                 </Typography>
                                 <List dense>
@@ -238,7 +238,7 @@ const FreeBoardRegister = () => {
                                                             setDeletedFileIds(prev => [...prev, fileId]);
                                                         }
                                                     }}
-                                                    sx={{ color: '#52525b', '&:hover': { color: '#f87171' } }}>
+                                                    sx={{ color: 'var(--tn-text-3)', '&:hover': { color: '#f87171' } }}>
                                                     <DeleteIcon fontSize="small" />
                                                 </IconButton>
                                             }
@@ -247,7 +247,7 @@ const FreeBoardRegister = () => {
                                                 primary={`📎 ${file.fileName}`}
                                                 secondary={`${file.type || '파일'}`}
                                                 primaryTypographyProps={{ fontSize: '0.85rem', color: '#c4c4c8' }}
-                                                secondaryTypographyProps={{ fontSize: '0.72rem', color: '#52525b' }}
+                                                secondaryTypographyProps={{ fontSize: '0.72rem', color: 'var(--tn-text-3)' }}
                                             />
                                         </ListItem>
                                     ))}
@@ -269,7 +269,7 @@ const FreeBoardRegister = () => {
                                     내 동영상
                                 </Button>
                                 <Button component="label" variant="outlined" size="small" startIcon={<CloudUploadIcon />}
-                                    sx={{ borderRadius: '8px', borderColor: 'rgba(129,140,248,0.3)', color: '#818cf8', textTransform: 'none', fontSize: '0.8rem', fontWeight: 600, '&:hover': { bgcolor: 'rgba(129,140,248,0.06)', borderColor: '#818cf8' } }}>
+                                    sx={{ borderRadius: '8px', borderColor: 'rgba(242,194,48,0.3)', color: 'var(--tn-tape)', textTransform: 'none', fontSize: '0.8rem', fontWeight: 600, '&:hover': { bgcolor: 'rgba(242,194,48,0.06)', borderColor: 'var(--tn-tape)' } }}>
                                     파일 첨부
                                     <input type="file" multiple hidden onChange={handleFileChange} />
                                 </Button>
@@ -282,7 +282,7 @@ const FreeBoardRegister = () => {
                                             <ListItem
                                                 secondaryAction={
                                                     <IconButton edge="end" size="small" onClick={() => handleRemoveFile(idx)}
-                                                        sx={{ color: '#52525b', '&:hover': { color: '#f87171' } }}>
+                                                        sx={{ color: 'var(--tn-text-3)', '&:hover': { color: '#f87171' } }}>
                                                         <DeleteIcon fontSize="small" />
                                                     </IconButton>
                                                 }>
@@ -296,14 +296,14 @@ const FreeBoardRegister = () => {
                             )}
 
                             <Stack direction="column" spacing={0.3}>
-                                <Typography sx={{ fontSize: '0.72rem', color: '#52525b' }}>
-                                    💡 <strong style={{ color: '#71717a' }}>에디터 미디어 vs 파일 첨부</strong>
+                                <Typography sx={{ fontSize: '0.72rem', color: 'var(--tn-text-3)' }}>
+                                    💡 <strong style={{ color: 'var(--tn-text-3)' }}>에디터 미디어 vs 파일 첨부</strong>
                                 </Typography>
-                                <Typography sx={{ fontSize: '0.72rem', color: '#52525b' }}>
-                                    • <strong style={{ color: '#71717a' }}>YouTube/내 동영상</strong>: 본문에 직접 삽입 (재생 가능)
+                                <Typography sx={{ fontSize: '0.72rem', color: 'var(--tn-text-3)' }}>
+                                    • <strong style={{ color: 'var(--tn-text-3)' }}>YouTube/내 동영상</strong>: 본문에 직접 삽입 (재생 가능)
                                 </Typography>
-                                <Typography sx={{ fontSize: '0.72rem', color: '#52525b' }}>
-                                    • <strong style={{ color: '#71717a' }}>파일 첨부</strong>: 다운로드 가능한 별도 첨부파일
+                                <Typography sx={{ fontSize: '0.72rem', color: 'var(--tn-text-3)' }}>
+                                    • <strong style={{ color: 'var(--tn-text-3)' }}>파일 첨부</strong>: 다운로드 가능한 별도 첨부파일
                                 </Typography>
                             </Stack>
                         </Box>
@@ -385,11 +385,11 @@ const FreeBoardRegister = () => {
                         {/* 하단 버튼 */}
                         <Stack direction="row" spacing={1.5} justifyContent="flex-end">
                             <Button variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate('/freeboard')}
-                                sx={{ borderRadius: '10px', borderColor: 'rgba(255,255,255,0.1)', color: '#a1a1aa', textTransform: 'none', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.03)' } }}>
+                                sx={{ borderRadius: '10px', borderColor: 'rgba(255,255,255,0.1)', color: 'var(--tn-text-2)', textTransform: 'none', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.03)' } }}>
                                 취소
                             </Button>
                             <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSubmit}
-                                sx={{ borderRadius: '10px', bgcolor: '#818cf8', color: '#fff', fontWeight: 700, textTransform: 'none', boxShadow: '0 0 20px rgba(129,140,248,0.2)', '&:hover': { bgcolor: '#6366f1' } }}>
+                                sx={{ borderRadius: '10px', bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 700, textTransform: 'none', boxShadow: '0 0 20px rgba(242,194,48,0.2)', '&:hover': { bgcolor: 'var(--tn-tape)' } }}>
                                 {isEditMode ? '수정 완료' : '등록'}
                             </Button>
                         </Stack>
@@ -412,18 +412,18 @@ const FreeBoardRegister = () => {
                                 bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '10px', color: '#f4f4f5',
                                 '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
                                 '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.22)' },
-                                '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
                             },
-                            '& .MuiInputLabel-root': { color: '#71717a' },
-                            '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
+                            '& .MuiInputLabel-root': { color: 'var(--tn-text-3)' },
+                            '& .MuiInputLabel-root.Mui-focused': { color: 'var(--tn-tape)' },
                         }}
                     />
                 </Box>
                 <Stack direction="row" spacing={1} justifyContent="flex-end" px={3} pb={3}>
                     <Button onClick={() => setOpenYoutubeDialog(false)}
-                        sx={{ borderRadius: '9px', color: '#71717a', textTransform: 'none' }}>취소</Button>
+                        sx={{ borderRadius: '9px', color: 'var(--tn-text-3)', textTransform: 'none' }}>취소</Button>
                     <Button onClick={handleInsertYoutube} variant="contained"
-                        sx={{ borderRadius: '9px', bgcolor: '#818cf8', textTransform: 'none', '&:hover': { bgcolor: '#6366f1' } }}>삽입</Button>
+                        sx={{ borderRadius: '9px', bgcolor: 'var(--tn-tape)', textTransform: 'none', '&:hover': { bgcolor: 'var(--tn-tape)' } }}>삽입</Button>
                 </Stack>
             </Dialog>
         </Box>

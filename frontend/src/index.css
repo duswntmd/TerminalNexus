@@ -1,0 +1,75 @@
+/* TerminalNexus 공통 디자인 토큰 — "홈랩 서버 랙"
+   흑연 강철 바탕, 라벨 테이프 노랑(주요 동작·이름표), LED 초록(실시간 상태) */
+:root {
+  --tn-bg: #1d2026;
+  --tn-bg-deep: #181a1f;
+  --tn-panel: #262a31;
+  --tn-panel-2: #2e333b;
+  --tn-line: #3a404a;
+  --tn-line-soft: #30353e;
+  --tn-text: #eceef1;
+  --tn-text-2: #b3bac5;
+  --tn-text-3: #8c94a1;
+  --tn-tape: #f2c230;
+  --tn-tape-hover: #ffd34d;
+  --tn-tape-ink: #1a1500;
+  --tn-led: #3ddc84;
+  --tn-red: #ff6257;
+  --tn-blue: #79b8ff;
+  --tn-radius: 10px;
+  --tn-radius-lg: 14px;
+  --tn-font: 'IBM Plex Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --tn-mono: 'JetBrains Mono', 'D2Coding', Consolas, monospace;
+  --tn-header-h: 64px;
+  color-scheme: dark;
+}
+
+html { background: var(--tn-bg); }
+
+body {
+  background: var(--tn-bg);
+  color: var(--tn-text);
+  font-family: var(--tn-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+::selection { background: var(--tn-tape); color: var(--tn-tape-ink); }
+:focus-visible { outline: 2px solid var(--tn-tape); outline-offset: 2px; }
+a { color: inherit; }
+
+* { scrollbar-color: var(--tn-line) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--tn-line); border-radius: 6px; border: 2px solid var(--tn-bg); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* 공통 버튼 */
+.tn-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+  min-height: 44px; padding: 0 1.15rem; border-radius: var(--tn-radius);
+  font: 700 0.95rem/1 var(--tn-font); text-decoration: none; cursor: pointer;
+  border: 1px solid transparent; transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.tn-btn-primary { background: var(--tn-tape); color: var(--tn-tape-ink); }
+.tn-btn-primary:hover { background: var(--tn-tape-hover); }
+.tn-btn-ghost { background: transparent; color: var(--tn-text); border-color: var(--tn-line); }
+.tn-btn-ghost:hover { border-color: var(--tn-text-3); background: var(--tn-panel); }
+
+/* 라벨 테이프 이름표 */
+.tn-tape {
+  display: inline-block; font: 700 0.78rem/1 var(--tn-mono); letter-spacing: 0.02em;
+  background: var(--tn-tape); color: var(--tn-tape-ink); padding: 0.32rem 0.55rem 0.3rem;
+  border-radius: 2px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* 상태 LED */
+.tn-led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--tn-led); box-shadow: 0 0 6px var(--tn-led); flex: none; }
+.tn-led.off { background: #5a616c; box-shadow: none; }
+.tn-led.amber { background: var(--tn-tape); box-shadow: 0 0 6px var(--tn-tape); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

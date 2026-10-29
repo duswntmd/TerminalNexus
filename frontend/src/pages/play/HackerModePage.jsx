@@ -1,305 +1,277 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./HackerModePage.css";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import '../../styles/gameFonts';
+import { CITIES, CODE, landDots, LOG_LINES, project, SCENARIOS, STAGES } from './hackermode/data';
+import './HackerModePage.css';
 
-const SOURCE_CODE = `
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/fs.h>
-#include <linux/uaccess.h>
+// 전부 허구의 연출용 시뮬레이션. 실제로 아무 시스템에도 접속하지 않습니다.
 
-#define DEVICE_NAME "nexus_core"
-#define BUF_LEN 1024
-
-static int device_open(struct inode *, struct file *);
-static int device_release(struct inode *, struct file *);
-static ssize_t device_read(struct file *, char *, size_t, loff_t *);
-static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
-
-static int major_num;
-static int device_open_count = 0;
-static char msg_buffer[BUF_LEN];
-static char *msg_ptr;
-
-static struct file_operations fops = {
-    .read = device_read,
-    .write = device_write,
-    .open = device_open,
-    .release = device_release
+const THEMES = {
+  green: { label: '포스포어 그린' },
+  amber: { label: '앰버 CRT' },
+  ice: { label: '아이스 블루' },
 };
+const CODE_KEYS = Object.keys(CODE);
+const rand = (n) => Math.floor(Math.random() * n);
+const hex = (n) => Array.from({ length: n }, () => '0123456789ABCDEF'[rand(16)]).join('');
 
-static int __init nexus_init(void) {
-    printk(KERN_INFO "NexusCore: Initializing system sandbox terminal...\\n");
-    major_num = register_chrdev(0, DEVICE_NAME, &fops);
-    if (major_num < 0) {
-        printk(KERN_ALERT "NexusCore: Failed to register a major number %d\\n", major_num);
-        return major_num;
-    }
-    printk(KERN_INFO "NexusCore: Registered successfully with major number %d\\n", major_num);
-    return 0;
+function useBeeper(on) {
+  const ctx = useRef(null);
+  return useCallback((seq) => {
+    if (!on) return;
+    try {
+      ctx.current ||= new (window.AudioContext || window.webkitAudioContext)();
+      const c = ctx.current; if (c.state === 'suspended') c.resume();
+      seq.forEach(([f, t, d, type = 'sine', v = 0.08]) => {
+        const o = c.createOscillator(); const g = c.createGain(); const at = c.currentTime + t;
+        o.type = type; o.frequency.setValueAtTime(f, at);
+        g.gain.setValueAtTime(v, at); g.gain.exponentialRampToValueAtTime(0.0001, at + d);
+        o.connect(g); g.connect(c.destination); o.start(at); o.stop(at + d + 0.02);
+      });
+    } catch { /* 오디오 미지원 */ }
+  }, [on]);
 }
 
-static void __exit nexus_exit(void) {
-    unregister_chrdev(major_num, DEVICE_NAME);
-    printk(KERN_INFO "NexusCore: Sandbox terminal module unloaded.\\n");
+// 세계 지도 + 프록시 경로 애니메이션
+function WorldMap({ hops, progress }) {
+  const W = 480, H = 240;
+  const dots = useMemo(() => landDots(5), []);
+  const path = useMemo(() => hops.map((c) => project(CITIES[c], W, H)), [hops]);
+  const d = path.length > 1 ? `M ${path.map((p) => p.join(',')).join(' L ')}` : '';
+  const lit = Math.min(path.length - 1, Math.floor((progress / 100) * (path.length - 1)) + 1);
+  return (
+    <svg className="hk-map" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="프록시 경유 지도">
+      {dots.map(([lon, lat], i) => { const [x, y] = project([lat, lon], W, H); return <circle key={i} cx={x} cy={y} r="0.8" className="hk-land" />; })}
+      {d && <path d={d} className="hk-route" />}
+      {d && <path d={d} className="hk-route-lit" style={{ strokeDasharray: 1000, strokeDashoffset: 1000 - (lit / Math.max(1, path.length - 1)) * 1000 }} />}
+      {path.map(([x, y], i) => (
+        <g key={i}>
+          <circle cx={x} cy={y} r={i === 0 || i === path.length - 1 ? 3.5 : 2.4} className={`hk-node ${i <= lit ? 'on' : ''} ${i === path.length - 1 ? 'target' : ''}`} />
+          {i <= lit && <circle cx={x} cy={y} r="3.5" className="hk-ping" />}
+        </g>
+      ))}
+    </svg>
+  );
 }
 
-/* System Boot Log Simulation */
-[    0.000000] Booting Linux on physical CPU 0x0
-[    0.000000] Linux version 6.1.0-21-amd64 (debian-kernel@lists.debian.org)
-[    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.1.0-21-amd64 root=UUID=8d2e-4b9a ro quiet
-[    0.072841] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
-[    0.072895] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
-[    0.072942] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
-[    0.410928] ACPI: Core revision 20221020
-[    0.732912] SCSI subsystem initialized
-[    0.841928] libata version 3.00 loaded.
-[    1.129381] EXT4-fs (sda2): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
-[    1.503928] systemd[1]: Inserted module 'autofs4'
-[    1.902918] systemd[1]: Reached target Local File Systems.
-[    2.120392] systemd[1]: Starting LSB: VirtualBox Additions service...
-[    2.381928] nexus-daemon[412]: Connecting to Central Gateway tnhub.kr:443...
-[    2.791823] nexus-daemon[412]: SSL handshake completed. AES-256-GCM.
-[    3.102918] nexus-daemon[412]: INITIALIZING PRIVATE SANDBOX CONTEXT [OK]
-[    3.491029] nexus-daemon[412]: EXPORTING TERMINAL NEXUS SHELL BINDINGS [OK]
-[    3.819208] EXT4-fs (sda2): re-mounted. Opts: errors=remount-ro
-[    4.119280] udevd[431]: starting version 252.22-1~deb12u1
-[    4.492102] EXT4-fs (sda2): mounting detected custom workspace system [OK]
-[    4.892019] audit: type=1400 audit(1716310239.019:2): lsm=apparmor res=1
-[    5.110291] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-[    5.390192] docker0: port 1(veth01) entered blocking state
-[    5.789208] docker0: port 1(veth01) entered forwarding state
-[    6.110291] SYSTEM RUNLEVEL 5: MULTIUSER GRAPHICAL DESKTOP ENVIRONMENT [OK]
-[    6.481902] TERMINAL NEXUS KERNEL STACK MODULE SUCCESSFUL BINDINGS
-[    6.901823] WARNING: STACK BOUNDARY VERIFICATION INCOMPLETE, BYPASS ATTEMPT DETECTED
-`;
+// 흐르는 코드 패널
+function CodeStream({ codeKey, speed, theme }) {
+  const [shown, setShown] = useState('');
+  const ref = useRef(null);
+  const idx = useRef(0);
+  useEffect(() => { setShown(''); idx.current = 0; }, [codeKey]);
+  useEffect(() => {
+    const src = CODE[codeKey];
+    const id = setInterval(() => {
+      idx.current = (idx.current + 2 + rand(4)) % src.length;
+      setShown((p) => {
+        const next = p + src.slice(Math.max(0, idx.current - 3), idx.current);
+        return next.length > 2600 ? next.slice(-2200) : next;
+      });
+    }, speed);
+    return () => clearInterval(id);
+  }, [codeKey, speed]);
+  useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight; }, [shown]);
+  return <pre className={`hk-code hk-${theme}`} ref={ref}>{shown}<span className="hk-cursor">▊</span></pre>;
+}
+
+// 세로 비트 폭포 (매트릭스)
+function BitFall() {
+  const cols = 22;
+  return (
+    <div className="hk-fall" aria-hidden="true">
+      {Array.from({ length: cols }, (_, i) => (
+        <span key={i} style={{ animationDuration: `${2 + (i % 5) * 0.7}s`, animationDelay: `${(i % 7) * 0.3}s` }}>
+          {Array.from({ length: 18 }, () => (rand(2) ? '1' : '0')).join('')}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// 가짜 막대 그래프
+function Bars({ seed }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const bars = useMemo(() => Array.from({ length: 16 }, () => 20 + rand(80)), [seed]);
+  return (
+    <div className="hk-bars" aria-hidden="true">
+      {bars.map((b, i) => <i key={i} style={{ height: `${b}%` }} />)}
+    </div>
+  );
+}
 
 const HackerModePage = () => {
-  const [displayText, setDisplayText] = useState("TERMINAL NEXUS v2.0 - SECURE SHELL SIMULATOR\nTYPE ANY KEY TO START HACKING...\n\n");
-  const [codeIndex, setCodeIndex] = useState(0);
-  const [overlayState, setOverlayState] = useState(null); // 'GRANTED' or 'DENIED'
-  const [autoType, setAutoType] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [phase, setPhase] = useState('idle'); // idle | running | granted | denied
+  const [scenario, setScenario] = useState(SCENARIOS[0]);
+  const [theme, setTheme] = useState('green');
+  const [sound, setSound] = useState(false);
+  const [stage, setStage] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [log, setLog] = useState([]);
+  const [hops, setHops] = useState([]);
+  const [codeKey, setCodeKey] = useState('python');
+  const [tick, setTick] = useState(0);
+  const [cracked, setCracked] = useState('');
+  const beep = useBeeper(sound);
+  const logRef = useRef(null);
+  const rootRef = useRef(null);
 
-  const consoleRef = useRef(null);
-  const autoTypeInterval = useRef(null);
+  const pushLog = useCallback((line) => {
+    setLog((l) => [...l, { id: `${Date.now()}-${Math.random()}`, t: new Date().toLocaleTimeString('en-GB'), line }].slice(-80));
+  }, []);
 
-  // 자동 스크롤 효과
+  useEffect(() => { logRef.current?.scrollTo({ top: logRef.current.scrollHeight }); }, [log]);
+
+  const start = useCallback(() => {
+    const keys = Object.keys(CITIES);
+    const route = [];
+    while (route.length < 5) { const c = keys[rand(keys.length)]; if (!route.includes(c)) route.push(c); }
+    route.push(scenario.city);
+    setHops(route);
+    setStage(0); setProgress(0); setLog([]); setCracked('');
+    setPhase('running');
+    beep([[523, 0, 0.08], [784, 0.08, 0.1]]);
+    pushLog(`대상 지정: ${scenario.name} (${scenario.target})`);
+    pushLog('연결 경로를 구성합니다 ...');
+  }, [scenario, beep, pushLog]);
+
+  const stop = useCallback((result) => {
+    setPhase(result);
+    if (result === 'granted') beep([[523, 0, 0.09], [659, 0.09, 0.09], [784, 0.18, 0.09], [1047, 0.27, 0.35]]);
+    if (result === 'denied') beep([[300, 0, 0.4, 'sawtooth', 0.12], [200, 0.4, 0.5, 'sawtooth', 0.12]]);
+  }, [beep]);
+
+  // 진행 루프
   useEffect(() => {
-    if (consoleRef.current) {
-      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
-    }
-  }, [displayText]);
-
-  // 키보드 리스너 등록
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      clearInterval(autoTypeInterval.current);
-    };
-  }, [codeIndex, overlayState, autoType]);
-
-  // 자동 스크롤/타이핑
-  useEffect(() => {
-    if (autoType) {
-      autoTypeInterval.current = setInterval(() => {
-        simulateTyping();
-      }, 60);
-    } else {
-      clearInterval(autoTypeInterval.current);
-    }
-    return () => clearInterval(autoTypeInterval.current);
-  }, [autoType, codeIndex]);
-
-  const handleFullscreenChange = () => {
-    setIsFullscreen(!!document.fullscreenElement);
-  };
-
-  // 키 입력 핸들러
-  const handleKeyDown = (e) => {
-    // 단축키 매핑
-    if (e.key === "Tab") {
-      e.preventDefault();
-      triggerGranted();
-      return;
-    }
-    if (e.key === "Escape") {
-      e.preventDefault();
-      triggerDenied();
-      return;
-    }
-    // F11은 브라우저 기본 동작이 있으므로 건드리지 않음
-
-    // 일반 타이핑
-    if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
-      simulateTyping();
-    }
-  };
-
-  // 가짜 텍스트 타이핑 시뮬레이션
-  const simulateTyping = () => {
-    // 소스코드에서 다음 3글자 추출
-    const chunkLength = 3;
-    let nextChunk = SOURCE_CODE.substring(codeIndex, codeIndex + chunkLength);
-    
-    // 만약 소스코드 한바퀴를 다 돌았으면 인덱스 초기화
-    let nextIndex = codeIndex + chunkLength;
-    if (nextIndex >= SOURCE_CODE.length) {
-      nextIndex = 0;
-      nextChunk += "\n\n/* RE-BOOTING SYSTEM MATRIX MODULE */\n\n";
-    }
-
-    setDisplayText((prev) => prev + nextChunk);
-    setCodeIndex(nextIndex);
-  };
-
-  // Web Audio API: ACCESS GRANTED 비프음
-  const playGrantedSound = () => {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const playNote = (freq, startTime, duration) => {
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, startTime);
-        gainNode.gain.setValueAtTime(0.15, startTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start(startTime);
-        osc.stop(startTime + duration);
-      };
-      
-      const now = audioCtx.currentTime;
-      playNote(523.25, now, 0.08); // C5
-      playNote(659.25, now + 0.08, 0.08); // E5
-      playNote(783.99, now + 0.16, 0.08); // G5
-      playNote(1046.50, now + 0.24, 0.3); // C6
-    } catch (e) {
-      console.error("Audio error:", e);
-    }
-  };
-
-  // Web Audio API: ACCESS DENIED 사이렌음
-  const playDeniedSound = () => {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.type = "sawtooth";
-      const now = audioCtx.currentTime;
-
-      // 사이렌 경보음 주파수 스윕
-      osc.frequency.setValueAtTime(250, now);
-      osc.frequency.linearRampToValueAtTime(550, now + 0.35);
-      osc.frequency.linearRampToValueAtTime(250, now + 0.7);
-      osc.frequency.linearRampToValueAtTime(550, now + 1.05);
-      osc.frequency.linearRampToValueAtTime(100, now + 1.4);
-
-      gainNode.gain.setValueAtTime(0.15, now);
-      gainNode.gain.linearRampToValueAtTime(0.15, now + 1.2);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
-
-      osc.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      osc.start(now);
-      osc.stop(now + 1.4);
-    } catch (e) {
-      console.error("Audio error:", e);
-    }
-  };
-
-  // GRANTED 모드 켜기
-  const triggerGranted = () => {
-    setOverlayState("GRANTED");
-    playGrantedSound();
-    setTimeout(() => {
-      setOverlayState(null);
-    }, 2000);
-  };
-
-  // DENIED 모드 켜기
-  const triggerDenied = () => {
-    setOverlayState("DENIED");
-    playDeniedSound();
-    setTimeout(() => {
-      setOverlayState(null);
-    }, 2000);
-  };
-
-  // 전체 화면 토글
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.error(`전체화면 전환 오류: ${err.message}`);
+    if (phase !== 'running') return undefined;
+    const id = setInterval(() => {
+      setTick((t) => t + 1);
+      setProgress((p) => {
+        const np = p + 0.6 + Math.random() * 1.6;
+        if (np >= 100) { stop('granted'); return 100; }
+        return np;
       });
-    } else {
-      document.exitFullscreen();
-    }
+      if (Math.random() < 0.5) {
+        const raw = LOG_LINES[rand(LOG_LINES.length)].replace('%n', hex(4));
+        pushLog(raw);
+      }
+      if (Math.random() < 0.15) setCodeKey(CODE_KEYS[rand(CODE_KEYS.length)]);
+    }, 220);
+    return () => clearInterval(id);
+  }, [phase, stop, pushLog]);
+
+  // 스테이지 전환 + 비밀번호 크랙 애니메이션
+  useEffect(() => {
+    const s = Math.min(STAGES.length - 1, Math.floor((progress / 100) * STAGES.length));
+    if (s !== stage) { setStage(s); pushLog(`▶ ${STAGES[s]} 단계 진입`); beep([[660, 0, 0.05, 'square', 0.05]]); }
+    const want = scenario.pass;
+    const locked = Math.floor((progress / 100) * want.length);
+    setCracked(want.slice(0, locked).split('').join('') + Array.from({ length: want.length - locked }, () => '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'[rand(34)]).join(''));
+  }, [progress, stage, scenario, pushLog, beep]);
+
+  // 단축키
+  useEffect(() => {
+    const h = (e) => {
+      if (['INPUT', 'BUTTON', 'SELECT'].includes(document.activeElement?.tagName)) return;
+      if (e.key === 'Enter' && phase !== 'running') { e.preventDefault(); start(); }
+      if (e.key === 'Tab') { e.preventDefault(); stop('granted'); }
+      if (e.key === 'Escape') { e.preventDefault(); stop('denied'); }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [phase, start, stop]);
+
+  const toggleFull = () => {
+    if (!document.fullscreenElement) rootRef.current?.requestFullscreen?.().catch(() => {});
+    else document.exitFullscreen?.();
   };
 
-  // 콘솔 초기화
-  const clearConsole = () => {
-    setDisplayText("TERMINAL NEXUS v2.0 - SECURE SHELL SIMULATOR\nCONSOLE CLEARED.\n\n");
-    setCodeIndex(0);
-  };
+  const ping = `${20 + (tick % 40)}`;
+  const nodes = hops.length;
 
   return (
-    <div className={`hacker-container ${overlayState === "DENIED" ? "siren-active" : ""}`}>
-      {/* 상단 액션 바 */}
-      <div className="hacker-toolbar">
-        <div className="toolbar-title">📟 HOLLYWOOD HACKER TERMINAL</div>
-        <div className="toolbar-controls">
-          <label className="switch-label">
-            <input
-              type="checkbox"
-              className="switch-input"
-              checked={autoType}
-              onChange={(e) => setAutoType(e.target.checked)}
-            />
-            Auto Type (자동 해킹)
-          </label>
-          <button className="control-btn" onClick={triggerGranted}>
-            Granted (Tab)
-          </button>
-          <button className="control-btn" onClick={triggerDenied}>
-            Denied (Esc)
-          </button>
-          <button className="control-btn" onClick={clearConsole}>
-            Clear
-          </button>
-          <button className="control-btn" onClick={toggleFullScreen}>
-            {isFullscreen ? "Exit Fullscreen" : "Fullscreen (F11)"}
-          </button>
+    <div className={`hk-page hk-theme-${theme}`} ref={rootRef}>
+      <div className="hk-bar">
+        <span className="hk-brand">● NEXUS OPS CONSOLE</span>
+        <span className="hk-fake">모의 연출 — 실제 시스템에 접속하지 않습니다</span>
+        <div className="hk-controls">
+          <select value={scenario.id} onChange={(e) => setScenario(SCENARIOS.find((s) => s.id === e.target.value))} disabled={phase === 'running'} aria-label="작전 선택">
+            {SCENARIOS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+          <select value={theme} onChange={(e) => setTheme(e.target.value)} aria-label="테마">
+            {Object.entries(THEMES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+          </select>
+          <label className="hk-sw"><input type="checkbox" checked={sound} onChange={(e) => setSound(e.target.checked)} /> 효과음</label>
+          <button onClick={toggleFull}>전체화면</button>
         </div>
       </div>
 
-      {/* 해킹 텍스트 콘솔 */}
-      <div className="hacker-console" ref={consoleRef}>
-        {displayText}
-        <span className="hacker-cursor" />
+      <div className="hk-grid">
+        <section className="hk-panel hk-panel-code">
+          <header>소스 스트림 · {codeKey}</header>
+          <CodeStream codeKey={codeKey} speed={phase === 'running' ? 45 : 150} theme={theme} />
+        </section>
+
+        <section className="hk-panel hk-panel-map">
+          <header>프록시 경로 · {nodes ? `${nodes} 홉` : '대기'}</header>
+          <WorldMap hops={hops} progress={progress} />
+          <div className="hk-maprow">
+            {hops.map((c, i) => <span key={i} className={i <= (progress / 100) * (nodes - 1) ? 'on' : ''}>{c.toUpperCase()}</span>)}
+          </div>
+        </section>
+
+        <section className="hk-panel hk-panel-crack">
+          <header>인증 키 복원</header>
+          <div className="hk-crack">{(cracked || scenario.pass.replace(/./g, '-')).split('').map((ch, i) => <span key={i} className={i < (progress / 100) * scenario.pass.length ? 'locked' : ''}>{ch}</span>)}</div>
+          <div className="hk-stages">
+            {STAGES.map((s, i) => <div key={s} className={`${i < stage ? 'done' : ''} ${i === stage && phase === 'running' ? 'active' : ''}`}><i />{s}</div>)}
+          </div>
+          <div className="hk-progress"><div style={{ width: `${progress}%` }} /><span>{Math.floor(progress)}%</span></div>
+        </section>
+
+        <section className="hk-panel hk-panel-fall">
+          <header>데이터 덤프</header>
+          <BitFall />
+        </section>
+
+        <section className="hk-panel hk-panel-stats">
+          <header>네트워크 상태</header>
+          <ul className="hk-stats">
+            <li><span>지연</span><b>{ping}ms</b></li>
+            <li><span>처리량</span><b>{(1.2 + (tick % 30) / 10).toFixed(1)} Gbps</b></li>
+            <li><span>암호화</span><b>AES-256</b></li>
+            <li><span>수신 패킷</span><b>{(tick * 137).toLocaleString()}</b></li>
+          </ul>
+          <Bars seed={Math.floor(tick / 3)} />
+        </section>
+
+        <section className="hk-panel hk-panel-log">
+          <header>작전 로그</header>
+          <div className="hk-log" ref={logRef}>
+            {log.map((l) => <div key={l.id}><time>{l.t}</time>{l.line}</div>)}
+            {phase === 'running' && <div className="hk-blink"><time>{new Date().toLocaleTimeString('en-GB')}</time>_</div>}
+          </div>
+        </section>
       </div>
 
-      {/* 팝업 오버레이 */}
-      {overlayState === "GRANTED" && (
-        <div className="overlay-granted">
-          ACCESS GRANTED
+      <div className="hk-footer">
+        <div className="hk-help">[Enter] 작전 시작 · [Tab] ACCESS GRANTED · [Esc] ACCESS DENIED</div>
+        <button className="hk-run" onClick={phase === 'running' ? () => stop('denied') : start}>{phase === 'running' ? '■ 중단' : '▶ 작전 시작'}</button>
+      </div>
+
+      {phase === 'idle' && (
+        <div className="hk-splash">
+          <h1>NEXUS OPS</h1>
+          <p>영화 속 해커처럼, 작전을 골라 콘솔을 가동해 보세요. 모든 화면은 연출이에요.</p>
+          <button className="hk-run big" onClick={start}>▶ 작전 시작</button>
         </div>
       )}
-      {overlayState === "DENIED" && (
-        <div className="overlay-denied">
-          ACCESS DENIED
+      {(phase === 'granted' || phase === 'denied') && (
+        <div className={`hk-result ${phase}`} onClick={start} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && start()}>
+          <div className="hk-result-big">{phase === 'granted' ? 'ACCESS GRANTED' : 'ACCESS DENIED'}</div>
+          <p>{phase === 'granted' ? `${scenario.name} 장악 완료 · 키 ${scenario.pass}` : '연결이 차단되었어요.'}</p>
+          <span className="hk-again">클릭하거나 Enter로 다시 시작</span>
         </div>
       )}
-
-      {/* 우측 하단 단축키 가이드 */}
-      <div className="hacker-instructions">
-        [Tab]: Access Granted | [Esc]: Access Denied | [아무 문자키]: 타이핑 입력
-      </div>
     </div>
   );
 };

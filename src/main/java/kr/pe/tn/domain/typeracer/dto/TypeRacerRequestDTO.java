@@ -16,6 +16,7 @@ public class TypeRacerRequestDTO {
 
     @NotNull(message = "타수(WPM)는 필수 입력 값입니다.")
     @Min(value = 0, message = "타수(WPM)는 0 이상이어야 합니다.")
+    @Max(value = 250, message = "비정상적인 타수 기록은 등록할 수 없습니다.")
     private Integer wpm;
 
     @NotNull(message = "정확도는 필수 입력 값입니다.")

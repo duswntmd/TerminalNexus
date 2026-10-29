@@ -24,6 +24,7 @@ import HackerModePage from "./pages/play/HackerModePage";
 import TerminalHackPage from "./pages/play/TerminalHackPage";
 import StockPage from "./pages/play/stock/StockPage";
 import JanggiPage from "./pages/play/janggi/JanggiPage";
+import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
@@ -48,13 +49,13 @@ const AppContent = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#ffffff'
+        backgroundColor: 'var(--tn-bg)'
       }}>
         <div style={{
           width: '32px',
           height: '32px',
-          border: '3px solid #e0e0e0',
-          borderTop: '3px solid #1a1a1a',
+          border: '3px solid var(--tn-line)',
+          borderTop: '3px solid var(--tn-tape)',
           borderRadius: '50%',
           animation: 'spin 0.8s linear infinite'
         }} />
@@ -66,7 +67,7 @@ const AppContent = () => {
   return (
     <div className="app-container">
       <Header />
-      <main className="main-content">
+      <main className="main-content" id="main" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/join" element={<JoinPage />} />
@@ -162,6 +163,7 @@ const AppContent = () => {
           <Route path="/play/terminalhack" element={<TerminalHackPage />} />
           <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
+          <Route path="/play/linux" element={<RockyLinuxPage />} />
           <Route path="/lotto" element={<LottoPage />} />
           {/* 예전 온라인 장기 주소 → 장기 페이지 온라인 탭 */}
           <Route path="/play/janggi-online" element={<Navigate to="/play/janggi?mode=online" replace />} />

@@ -37,7 +37,7 @@
 }
 
 .form-group label {
-  color: #666;
+  color: var(--tn-text-3);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -72,7 +72,7 @@
 .login-btn {
   margin-top: 0.5rem;
   padding: 0.9rem;
-  background: #111;
+  background: var(--tn-panel);
   color: white;
   border: none;
   border-radius: 6px;
@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
-  color: #888;
+  color: var(--tn-text-2);
   font-size: 0.85rem;
 }
 

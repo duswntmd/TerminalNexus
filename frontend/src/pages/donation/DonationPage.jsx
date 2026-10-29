@@ -181,7 +181,7 @@ export default function DonationPage() {
           {finalAmount && (
             <p style={styles.selectedAmount}>
               선택된 금액:{" "}
-              <strong style={{ color: "#6c63ff" }}>
+              <strong style={{ color: "var(--tn-tape)" }}>
                 {finalAmount.toLocaleString()}원
               </strong>
             </p>
@@ -257,7 +257,7 @@ export default function DonationPage() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+    background: "var(--tn-bg)",
     padding: "40px 20px",
     display: "flex",
     flexDirection: "column",
@@ -278,9 +278,6 @@ const styles = {
     fontWeight: "800",
     color: "#fff",
     margin: "0 0 12px 0",
-    background: "linear-gradient(90deg, #a78bfa, #60a5fa)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
   },
   subtitle: {
     fontSize: "16px",
@@ -324,10 +321,10 @@ const styles = {
     transition: "all 0.2s",
   },
   presetBtnActive: {
-    background: "linear-gradient(135deg, #6c63ff, #4facfe)",
+    background: "var(--tn-tape)",
     border: "1px solid transparent",
-    color: "#fff",
-    boxShadow: "0 4px 15px rgba(108,99,255,0.4)",
+    color: "var(--tn-tape-ink)",
+    boxShadow: "0 4px 15px rgba(242,194,48,0.4)",
     transform: "translateY(-2px)",
   },
   customRow: {
@@ -367,9 +364,9 @@ const styles = {
     transition: "all 0.2s",
   },
   pgBtnActive: {
-    background: "rgba(108,99,255,0.25)",
-    border: "1px solid #6c63ff",
-    boxShadow: "0 4px 15px rgba(108,99,255,0.3)",
+    background: "rgba(242,194,48,0.25)",
+    border: "1px solid var(--tn-tape)",
+    boxShadow: "0 4px 15px rgba(242,194,48,0.3)",
   },
   pgEmoji: {
     fontSize: "28px",
@@ -403,13 +400,13 @@ const styles = {
     padding: "18px",
     borderRadius: "16px",
     border: "none",
-    background: "linear-gradient(135deg, #6c63ff, #4facfe)",
-    color: "#fff",
+    background: "var(--tn-tape)",
+    color: "var(--tn-tape-ink)",
     fontSize: "18px",
     fontWeight: "800",
     cursor: "pointer",
     transition: "all 0.3s",
-    boxShadow: "0 8px 25px rgba(108,99,255,0.4)",
+    boxShadow: "0 8px 25px rgba(242,194,48,0.4)",
     letterSpacing: "0.5px",
   },
   donateBtnDisabled: {

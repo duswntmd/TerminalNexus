@@ -126,8 +126,8 @@ function UserPage() {
   };
 
   if (loading) return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <CircularProgress sx={{ color: '#818cf8' }} />
+    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CircularProgress sx={{ color: 'var(--tn-tape)' }} />
     </Box>
   );
 
@@ -137,25 +137,18 @@ function UserPage() {
         <title>마이페이지 - TerminalNexus</title>
       </Helmet>
 
-      <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* 배경 글로우 */}
         <Box sx={{
           position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
           width: '50vw', height: '50vw', maxWidth: 600, maxHeight: 600,
-          background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(242,194,48,0.07) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
 
         <Container maxWidth="sm" sx={{ pt: { xs: 12, md: 14 }, pb: 10, position: 'relative', zIndex: 1 }}>
           {/* 헤더 */}
           <Box mb={6}>
-            <Chip
-              label="Account Settings"
-              sx={{
-                mb: 2, bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8',
-                border: '1px solid rgba(99,102,241,0.22)', fontWeight: 700, fontSize: '0.75rem',
-              }}
-            />
             <Typography
               variant="h3" fontWeight={800}
               sx={{ color: '#f4f4f5', letterSpacing: '-1.5px', fontSize: { xs: '2rem', md: '2.6rem' } }}
@@ -185,14 +178,14 @@ function UserPage() {
               <Stack spacing={3}>
                 {/* 아이디 (읽기 전용) */}
                 <Box>
-                  <Typography sx={{ color: '#52525b', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
                     {t('user.username')}
                   </Typography>
                   <Box sx={{
                     px: 2, py: 1.5, borderRadius: '10px',
                     bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
                   }}>
-                    <Typography sx={{ color: '#a1a1aa', fontSize: '0.95rem', fontFamily: 'monospace' }}>
+                    <Typography sx={{ color: 'var(--tn-text-2)', fontSize: '0.95rem', fontFamily: 'monospace' }}>
                       {userInfo.username}
                     </Typography>
                   </Box>
@@ -200,7 +193,7 @@ function UserPage() {
 
                 {/* 닉네임 */}
                 <Box>
-                  <Typography sx={{ color: '#52525b', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
                     {t('user.nickname')}
                   </Typography>
                   {isEditing ? (
@@ -208,7 +201,7 @@ function UserPage() {
                       style={inputStyle}
                       value={editForm.nickname}
                       onChange={(e) => setEditForm({ ...editForm, nickname: e.target.value })}
-                      onFocus={e => e.target.style.borderColor = '#818cf8'}
+                      onFocus={e => e.target.style.borderColor = 'var(--tn-tape)'}
                       onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                     />
                   ) : (
@@ -220,7 +213,7 @@ function UserPage() {
 
                 {/* 이메일 */}
                 <Box>
-                  <Typography sx={{ color: '#52525b', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
                     {t('user.email')}
                   </Typography>
                   {isEditing ? (
@@ -228,7 +221,7 @@ function UserPage() {
                       type="email" style={inputStyle}
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      onFocus={e => e.target.style.borderColor = '#818cf8'}
+                      onFocus={e => e.target.style.borderColor = 'var(--tn-tape)'}
                       onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                     />
                   ) : (
@@ -242,7 +235,7 @@ function UserPage() {
                 {isEditing && (
                   <>
                     <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
-                    <Typography sx={{ color: '#52525b', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
                       비밀번호 변경 (선택)
                     </Typography>
                     {[
@@ -251,14 +244,14 @@ function UserPage() {
                       { key: 'confirmPassword', label: t('user.password_confirm'), placeholder: '비밀번호 확인' },
                     ].map(({ key, label, placeholder }) => (
                       <Box key={key}>
-                        <Typography sx={{ color: '#52525b', fontSize: '0.72rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
                           {label}
                         </Typography>
                         <input
                           type="password" style={inputStyle} placeholder={placeholder}
                           value={editForm[key] || ''}
                           onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
-                          onFocus={e => e.target.style.borderColor = '#818cf8'}
+                          onFocus={e => e.target.style.borderColor = 'var(--tn-tape)'}
                           onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                         />
                         {key === 'confirmPassword' && editForm.password && editForm.confirmPassword && editForm.password !== editForm.confirmPassword && (
@@ -276,9 +269,9 @@ function UserPage() {
                       <Button
                         variant="contained" onClick={handleUpdate} sx={{
                           flex: 1, py: 1.4, borderRadius: '10px',
-                          bgcolor: '#fff', color: '#000', fontWeight: 700,
+                          bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 700,
                           textTransform: 'none',
-                          '&:hover': { bgcolor: '#e4e4e7' },
+                          '&:hover': { bgcolor: 'var(--tn-tape-hover)' },
                         }}
                       >
                         저장
@@ -286,7 +279,7 @@ function UserPage() {
                       <Button
                         variant="outlined" onClick={toggleEdit} sx={{
                           flex: 1, py: 1.4, borderRadius: '10px',
-                          borderColor: 'rgba(255,255,255,0.1)', color: '#a1a1aa',
+                          borderColor: 'rgba(255,255,255,0.1)', color: 'var(--tn-text-2)',
                           textTransform: 'none',
                           '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.04)' },
                         }}
@@ -298,7 +291,7 @@ function UserPage() {
                     <Button
                       variant="outlined" onClick={toggleEdit} fullWidth sx={{
                         py: 1.4, borderRadius: '10px',
-                        borderColor: 'rgba(255,255,255,0.1)', color: '#a1a1aa',
+                        borderColor: 'rgba(255,255,255,0.1)', color: 'var(--tn-text-2)',
                         textTransform: 'none',
                         '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.04)' },
                       }}
@@ -313,7 +306,7 @@ function UserPage() {
 
           {/* 회원 탈퇴 */}
           <Box mt={4} pt={4} sx={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <Typography sx={{ color: '#3f3f46', fontSize: '0.8rem', mb: 2 }}>
+            <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.8rem', mb: 2 }}>
               위험 구역 — 탈퇴 시 모든 데이터가 영구 삭제됩니다.
             </Typography>
             <Button

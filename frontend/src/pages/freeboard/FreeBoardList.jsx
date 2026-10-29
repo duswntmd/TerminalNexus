@@ -29,11 +29,11 @@ const darkSx = {
     color: '#f4f4f5',
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
     '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.22)' },
-    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
   },
-  '& .MuiInputLabel-root': { color: '#71717a' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-  '& .MuiSelect-icon': { color: '#71717a' },
+  '& .MuiInputLabel-root': { color: 'var(--tn-text-3)' },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--tn-tape)' },
+  '& .MuiSelect-icon': { color: 'var(--tn-text-3)' },
 };
 
 const FreeBoardList = () => {
@@ -93,12 +93,12 @@ const FreeBoardList = () => {
         <link rel="canonical" href="https://tnhub.kr/freeboard" />
       </Helmet>
 
-      <Box sx={{ minHeight: '100vh', bgcolor: '#000', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'var(--tn-bg)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
         {/* 배경 글로우 */}
         <Box sx={{
           position: 'absolute', top: '5%', left: '60%',
           width: '40vw', height: '40vw', maxWidth: 500, maxHeight: 500,
-          background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(242,194,48,0.06) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
 
@@ -106,13 +106,6 @@ const FreeBoardList = () => {
           {/* 헤더 */}
           <Box display="flex" justifyContent="space-between" alignItems="flex-end" mb={5}>
             <Box>
-              <Chip
-                label="Community"
-                sx={{
-                  mb: 1.5, bgcolor: 'rgba(99,102,241,0.08)', color: '#818cf8',
-                  border: '1px solid rgba(99,102,241,0.22)', fontWeight: 700, fontSize: '0.74rem',
-                }}
-              />
               <Typography
                 variant="h3" component="h1" fontWeight={800}
                 sx={{ color: '#f4f4f5', letterSpacing: '-1.5px', fontSize: { xs: '2rem', md: '2.4rem' } }}
@@ -126,10 +119,10 @@ const FreeBoardList = () => {
               onClick={() => navigate('/freeboard/register')}
               sx={{
                 px: 3, py: 1.4, borderRadius: '10px',
-                bgcolor: '#fff', color: '#000', fontWeight: 700,
+                bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 700,
                 textTransform: 'none', fontSize: '0.88rem',
-                boxShadow: '0 0 20px rgba(255,255,255,0.1)',
-                '&:hover': { bgcolor: '#e4e4e7', transform: 'translateY(-1px)' },
+                
+                '&:hover': { bgcolor: 'var(--tn-tape-hover)', transform: 'translateY(-1px)' },
                 transition: 'all 0.2s',
               }}
             >
@@ -149,7 +142,7 @@ const FreeBoardList = () => {
           >
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
               <FormControl sx={{ minWidth: 160 }}>
-                <InputLabel sx={{ color: '#71717a', '&.Mui-focused': { color: '#818cf8' } }}>검색 조건</InputLabel>
+                <InputLabel sx={{ color: 'var(--tn-text-3)', '&.Mui-focused': { color: 'var(--tn-tape)' } }}>검색 조건</InputLabel>
                 <Select
                   value={searchType}
                   label="검색 조건"
@@ -160,8 +153,8 @@ const FreeBoardList = () => {
                     color: '#f4f4f5',
                     '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' },
                     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.22)' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                    '& .MuiSelect-icon': { color: '#71717a' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--tn-tape)' },
+                    '& .MuiSelect-icon': { color: 'var(--tn-text-3)' },
                   }}
                   MenuProps={{
                     PaperProps: {
@@ -176,7 +169,7 @@ const FreeBoardList = () => {
                     { value: 'c', label: '내용만' },
                     { value: 'w', label: '작성자만' },
                   ].map(({ value, label }) => (
-                    <MenuItem key={value} value={value} sx={{ '&:hover': { bgcolor: 'rgba(99,102,241,0.08)' } }}>
+                    <MenuItem key={value} value={value} sx={{ '&:hover': { bgcolor: 'rgba(242,194,48,0.08)' } }}>
                       {label}
                     </MenuItem>
                   ))}
@@ -200,9 +193,9 @@ const FreeBoardList = () => {
                   startIcon={<SearchIcon />}
                   sx={{
                     px: 2.5, height: 56, borderRadius: '10px',
-                    bgcolor: '#818cf8', color: '#fff', fontWeight: 600,
+                    bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', fontWeight: 600,
                     whiteSpace: 'nowrap', textTransform: 'none',
-                    '&:hover': { bgcolor: '#6366f1' },
+                    '&:hover': { bgcolor: 'var(--tn-tape)' },
                   }}
                 >
                   검색
@@ -212,7 +205,7 @@ const FreeBoardList = () => {
                   onClick={handleResetSearch}
                   sx={{
                     px: 2.5, height: 56, borderRadius: '10px',
-                    borderColor: 'rgba(255,255,255,0.1)', color: '#a1a1aa',
+                    borderColor: 'rgba(255,255,255,0.1)', color: 'var(--tn-text-2)',
                     whiteSpace: 'nowrap', textTransform: 'none',
                     '&:hover': { borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.04)' },
                   }}
@@ -226,7 +219,7 @@ const FreeBoardList = () => {
           {/* 테이블 헤더 */}
           <Box
             sx={{
-              display: 'grid',
+              display: { xs: 'none', md: 'grid' },
               gridTemplateColumns: '80px 1fr 130px 120px 80px',
               px: 3, py: 1.5,
               borderRadius: '10px 10px 0 0',
@@ -236,7 +229,7 @@ const FreeBoardList = () => {
             }}
           >
             {['번호', '제목', '작성자', '작성일', '조회'].map((label) => (
-              <Typography key={label} sx={{ color: '#52525b', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
+              <Typography key={label} sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
                 {label}
               </Typography>
             ))}
@@ -250,28 +243,32 @@ const FreeBoardList = () => {
                   key={dto.id}
                   onClick={() => navigate(`/freeboard/${dto.id}`)}
                   sx={{
-                    display: 'grid',
+                    display: { xs: 'flex', md: 'grid' },
+                    flexWrap: 'wrap', columnGap: 1.5, rowGap: 0.6, alignItems: 'baseline',
                     gridTemplateColumns: '80px 1fr 130px 120px 80px',
-                    px: 3, py: 2,
+                    px: { xs: 2, md: 3 }, py: 2,
                     cursor: 'pointer',
                     bgcolor: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
                     borderTop: idx === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
-                    '&:hover': { bgcolor: 'rgba(99,102,241,0.05)' },
+                    '&:hover': { bgcolor: 'rgba(242,194,48,0.05)' },
                     transition: 'background-color 0.15s',
                   }}
                 >
-                  <Typography sx={{ color: '#52525b', fontSize: '0.82rem' }}>{dto.id}</Typography>
-                  <Typography sx={{ color: '#e4e4e7', fontSize: '0.9rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pr: 2 }}>
+                  <Typography sx={{ display: { xs: 'none', md: 'block' }, color: 'var(--tn-text-3)', fontSize: '0.82rem' }}>{dto.id}</Typography>
+                  <Typography sx={{ flexBasis: { xs: '100%', md: 'auto' }, minWidth: 0, color: 'var(--tn-text)', fontSize: { xs: '0.95rem', md: '0.9rem' }, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pr: { xs: 0, md: 2 } }}>
                     {dto.title}
+                    {dto.commentCount > 0 && <Box component="span" sx={{ color: 'var(--tn-tape)', fontFamily: 'var(--tn-mono)', fontSize: '0.8rem', ml: 0.7 }}>[{dto.commentCount}]</Box>}
                   </Typography>
-                  <Typography sx={{ color: '#a1a1aa', fontSize: '0.82rem' }}>{dto.writerNickname}</Typography>
-                  <Typography sx={{ color: '#71717a', fontSize: '0.8rem' }}>{new Date(dto.regDate).toLocaleDateString()}</Typography>
-                  <Typography sx={{ color: '#71717a', fontSize: '0.8rem' }}>{dto.viewCount}</Typography>
+                  <Typography sx={{ color: 'var(--tn-text-2)', fontSize: { xs: '0.78rem', md: '0.82rem' } }}>{dto.writerNickname}</Typography>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: { xs: '0.76rem', md: '0.8rem' } }}>{new Date(dto.regDate).toLocaleDateString()}</Typography>
+                  <Typography sx={{ color: 'var(--tn-text-3)', fontSize: { xs: '0.76rem', md: '0.8rem' } }}>
+                    <Box component="span" sx={{ display: { md: 'none' } }}>조회 </Box>{dto.viewCount}
+                  </Typography>
                 </Box>
               ))
             ) : (
               <Box sx={{ py: 8, textAlign: 'center' }}>
-                <Typography sx={{ color: '#3f3f46', fontSize: '0.9rem' }}>
+                <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.9rem' }}>
                   {keyword ? `'${keyword}'에 대한 검색 결과가 없습니다.` : '등록된 게시글이 없습니다.'}
                 </Typography>
               </Box>
@@ -286,10 +283,10 @@ const FreeBoardList = () => {
               onChange={handlePageChange}
               sx={{
                 '& .MuiPaginationItem-root': {
-                  color: '#71717a',
+                  color: 'var(--tn-text-3)',
                   borderColor: 'rgba(255,255,255,0.08)',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
-                  '&.Mui-selected': { bgcolor: '#818cf8', color: '#fff', borderColor: '#818cf8' },
+                  '&.Mui-selected': { bgcolor: 'var(--tn-tape)', color: 'var(--tn-tape-ink)', borderColor: 'var(--tn-tape)' },
                 },
               }}
             />

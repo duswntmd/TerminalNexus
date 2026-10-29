@@ -1,467 +1,130 @@
-/* ==========================================
-   Header & GNB Navigation System
-   ========================================== */
+/* 헤더 — 랙 상단 레일 */
+.hd {
+  position: sticky; top: 0; z-index: 1000;
+  border-bottom: 1px solid var(--tn-line-soft);
+  font-family: var(--tn-font);
+}
+/* 블러는 가상 요소에 — 헤더 자체에 걸면 position:fixed 모바일 메뉴가 헤더 안에 갇힌다 */
+.hd::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: rgba(29, 32, 38, 0.92);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.hd-skip {
+  position: absolute; left: 12px; top: 10px; z-index: 2; transform: translateY(-200%);
+  background: var(--tn-tape); color: var(--tn-tape-ink); padding: 0.6rem 0.9rem; border-radius: 8px; font-weight: 700; text-decoration: none;
+}
+.hd-skip:focus { transform: none; }
 
-.header {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid #f0f0f0;
-  color: #1a1a1a;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+.hd-inner {
+  max-width: 1280px; margin: 0 auto; height: var(--tn-header-h);
+  padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem;
 }
 
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
+.hd-brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--tn-text); flex: none; }
+.hd-logo { width: 32px; height: 32px; border-radius: 7px; display: block; }
+.hd-word { font: 700 1.02rem/1 var(--tn-mono); letter-spacing: -0.02em; }
+
+.hd-nav { flex: 1; min-width: 0; }
+.hd-nav > ul { list-style: none; display: flex; align-items: center; gap: 0.15rem; margin: 0; padding: 0; }
+.hd-item { position: relative; }
+.hd-link {
+  display: inline-flex; align-items: center; gap: 0.35rem; height: 40px; padding: 0 0.8rem;
+  border-radius: 8px; border: 0; background: transparent; cursor: pointer;
+  color: var(--tn-text-2); font: 500 0.95rem/1 var(--tn-font); text-decoration: none; white-space: nowrap;
+}
+.hd-link:hover, .hd-item.open > .hd-link { color: var(--tn-text); background: var(--tn-panel); }
+.hd-link.active { color: var(--tn-text); box-shadow: inset 0 -2px 0 var(--tn-tape); border-radius: 8px 8px 0 0; }
+.hd-caret { transition: transform 0.15s; opacity: 0.7; }
+.hd-item.open .hd-caret { transform: rotate(180deg); }
+
+/* 드롭다운 패널 */
+.hd-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 5;
+  min-width: 300px; padding: 0.45rem;
+  background: var(--tn-panel); border: 1px solid var(--tn-line); border-radius: var(--tn-radius-lg);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  display: grid; gap: 2px;
+  animation: hd-drop 0.14s ease-out;
+}
+.hd-panel::before { content: ''; position: absolute; left: 0; right: 0; top: -8px; height: 8px; } /* 마우스 이동 틈 메우기 */
+.hd-panel.wide { grid-template-columns: repeat(2, minmax(250px, 1fr)); width: 580px; }
+@keyframes hd-drop { from { opacity: 0; transform: translateY(-4px); } }
+
+.hd-panel-item {
+  display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.65rem 0.7rem; border-radius: 10px;
+  text-decoration: none; color: var(--tn-text);
+}
+.hd-panel-item:hover, .hd-panel-item:focus-visible { background: var(--tn-panel-2); }
+.hd-glyph {
+  flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+  font: 700 0.95rem/1 var(--tn-mono); color: var(--tn-tape);
+  background: var(--tn-bg-deep); border: 1px solid var(--tn-line); border-radius: 8px;
+}
+.hd-panel-text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.hd-panel-name { font-weight: 700; font-size: 0.93rem; display: flex; align-items: center; gap: 0.45rem; }
+.hd-panel-desc { font-size: 0.82rem; color: var(--tn-text-3); line-height: 1.4; }
+.hd-lock {
+  font: 600 0.66rem/1 var(--tn-font); color: var(--tn-text-3);
+  border: 1px solid var(--tn-line); border-radius: 4px; padding: 0.18rem 0.3rem;
 }
 
-/* Logo */
-.logo a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
+/* 오른쪽: 계정·언어 */
+.hd-right { display: flex; align-items: center; gap: 0.6rem; flex: none; }
+.hd-text-link {
+  background: transparent; border: 0; cursor: pointer; padding: 0.5rem 0.4rem;
+  color: var(--tn-text-2); font: 500 0.92rem/1 var(--tn-font); text-decoration: none;
 }
-
-.logo-img {
-  height: 38px;
-  width: auto;
-  border-radius: 8px;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.hd-text-link:hover { color: var(--tn-text); }
+.hd-join { min-height: 38px; padding: 0 0.95rem; font-size: 0.9rem; }
+.hd-user {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.75rem;
+  border: 1px solid var(--tn-line); border-radius: 999px; text-decoration: none; color: var(--tn-text);
+  font-size: 0.9rem; font-weight: 600; max-width: 180px;
 }
-
-.logo-img:hover {
-  transform: scale(1.04);
+.hd-user:hover { border-color: var(--tn-text-3); }
+.hd-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hd-lang { display: inline-flex; border: 1px solid var(--tn-line); border-radius: 8px; overflow: hidden; }
+.hd-lang button {
+  background: transparent; border: 0; color: var(--tn-text-3); cursor: pointer;
+  font: 600 0.74rem/1 var(--tn-mono); padding: 0.45rem 0.55rem;
 }
+.hd-lang button.on { background: var(--tn-panel-2); color: var(--tn-text); }
 
-/* Navigation Base */
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-grow: 1;
-  margin-left: 4rem;
+/* 햄버거 */
+.hd-burger {
+  display: none; margin-left: auto; width: 44px; height: 44px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--tn-line); cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
 }
+.hd-burger span { width: 18px; height: 2px; background: var(--tn-text); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+.hd-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hd-burger.open span:nth-child(2) { opacity: 0; }
+.hd-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* GNB Menu */
-.nav-menu {
-  display: flex;
-  list-style: none;
-  gap: 2.5rem;
-  margin: 0;
-  padding: 0;
-  align-items: center;
+/* 모바일 메뉴 */
+.hd-mobile {
+  position: fixed; inset: var(--tn-header-h) 0 0 0; z-index: 999;
+  background: var(--tn-bg); border-top: 1px solid var(--tn-line-soft);
+  animation: hd-drop 0.16s ease-out;
 }
+.hd-mobile-scroll { height: 100%; overflow-y: auto; padding: 1rem 1rem 2.5rem; }
+.hd-mobile-account { display: flex; flex-direction: column; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--tn-line-soft); }
+.hd-mobile-account .hd-user { align-self: flex-start; max-width: 100%; }
+.hd-mobile-account-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.hd-mobile-group { padding: 1rem 0 0.4rem; border-bottom: 1px solid var(--tn-line-soft); }
+.hd-mobile-group h2 { font-size: 0.82rem; font-weight: 600; color: var(--tn-text-3); margin: 0 0 0.35rem 0.7rem; }
+.hd-mobile-foot { display: flex; align-items: center; gap: 1.2rem; padding: 1.2rem 0.7rem 0; }
+.hd-mobile-foot a { color: var(--tn-text-2); text-decoration: none; font-size: 0.92rem; }
+.hd-mobile-foot .hd-lang { margin-left: auto; }
 
-/* Dropdown Container */
-.dropdown {
-  position: relative;
+@media (max-width: 1080px) {
+  .hd-word { display: none; }
+  .hd-inner { gap: 1rem; }
 }
-
-/* Dropdown Toggle Button */
-.dropdown-toggle {
-  background: none;
-  border: none;
-  color: #555;
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding: 0.6rem 0.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: color 0.2s ease;
-}
-
-.dropdown-toggle:hover {
-  color: #111;
-}
-
-.dropdown-toggle .arrow {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-right: 1.5px solid #888;
-  border-bottom: 1.5px solid #888;
-  transform: rotate(45deg);
-  margin-bottom: 3px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.dropdown:hover .dropdown-toggle {
-  color: #111;
-}
-
-.dropdown:hover .dropdown-toggle .arrow {
-  transform: rotate(-135deg);
-  border-color: #111;
-  margin-bottom: -1px;
-}
-
-/* Dropdown Menu (PC Hover) */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  opacity: 0;
-  visibility: hidden;
-  list-style: none;
-  margin: 0;
-  background: #ffffff;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  padding: 0.6rem 0;
-  min-width: 170px;
-  z-index: 1001;
-  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-              visibility 0.25s;
-}
-
-/* 마우스 호버 시 드롭다운 띄우기 */
-.dropdown:hover .dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(2px);
-}
-
-.dropdown-menu li {
-  width: 100%;
-}
-
-.dropdown-menu li a {
-  display: block;
-  padding: 0.65rem 1.2rem;
-  font-size: 0.9rem;
-  color: #666;
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  text-align: left;
-}
-
-.dropdown-menu li a:hover {
-  background-color: #f7f7f9;
-  color: #000;
-  font-weight: 500;
-}
-
-/* Header Right Area */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-/* Auth Menu */
-.auth-menu {
-  display: flex;
-  list-style: none;
-  gap: 1.2rem;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-}
-
-.auth-menu a {
-  color: #666;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.auth-menu a:hover {
-  color: #111;
-}
-
-/* Logout Button */
-.logout-btn {
-  background: none;
-  border: 1px solid #e0e0e0;
-  color: #666;
-  padding: 0.4rem 0.9rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.logout-btn:hover {
-  color: #d32f2f;
-  border-color: #f8d7da;
-  background-color: #fff5f5;
-}
-
-/* Admin Link Style */
-.admin-link {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white !important;
-  padding: 0.4rem 0.9rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.85rem !important;
-  transition: all 0.3s ease;
-}
-
-.admin-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
-}
-
-/* Language Switcher */
-.lang-switcher {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #ccc;
-}
-
-.lang-switcher button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #aaa;
-  font-weight: 500;
-  padding: 2px 4px;
-  font-size: 0.8rem;
-  transition: color 0.2s;
-}
-
-.lang-switcher button.active {
-  color: #111;
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-.lang-switcher button:hover {
-  color: #555;
-}
-
-/* Hamburger Toggle Button (Hidden by default on PC) */
-.menu-toggle-btn {
-  display: none;
-  background: none;
-  border: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 22px;
-  height: 16px;
-  cursor: pointer;
-  padding: 0;
-  z-index: 1001;
-}
-
-.hamburger-bar {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background-color: #1a1a1a;
-  border-radius: 4px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: 1px 1px;
-}
-
-/* Hamburger to 'X' Transition */
-.menu-toggle-btn.open .hamburger-bar:nth-child(1) {
-  transform: rotate(45deg) translate(1px, 1px);
-}
-
-.menu-toggle-btn.open .hamburger-bar:nth-child(2) {
-  opacity: 0;
-  transform: scale(0);
-}
-
-.menu-toggle-btn.open .hamburger-bar:nth-child(3) {
-  transform: rotate(-45deg) translate(1px, -1px);
-}
-
-/* ==========================================
-   Responsive Design (Mobile & Tablet)
-   ========================================== */
-
-@media (max-width: 1024px) {
-  .header-container {
-    padding: 0.8rem 1.5rem;
-  }
-
-  .menu-toggle-btn {
-    display: flex;
-  }
-
-  /* Navigation Sidebar/Drawer for Mobile */
-  .nav {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid #e0e0e0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    margin-left: 0;
-    align-items: center;
-    padding: 0;
-  }
-
-  .nav.open {
-    max-height: 90vh;
-    overflow-y: auto;
-    opacity: 1;
-    pointer-events: auto;
-    padding: 1.5rem 1.5rem 2.5rem 1.5rem;
-  }
-
-  /* GNB Menu layout on mobile */
-  .nav-menu {
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    align-items: center;
-  }
-
-  .nav-item.dropdown {
-    width: 100%;
-    text-align: center;
-  }
-
-  .dropdown-toggle {
-    width: 100%;
-    justify-content: center;
-    padding: 0.8rem;
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
-
-  .dropdown-toggle .arrow {
-    margin-bottom: 0px;
-    border-right: 2px solid #666;
-    border-bottom: 2px solid #666;
-  }
-
-  /* Mobile Active Dropdown Arrow */
-  .nav-item.dropdown.active .dropdown-toggle .arrow {
-    transform: rotate(-135deg);
-    margin-bottom: -4px;
-  }
-
-  /* Mobile Dropdown Accordion */
-  .dropdown-menu {
-    position: static;
-    transform: none !important;
-    opacity: 0;
-    visibility: hidden;
-    max-height: 0;
-    overflow: hidden;
-    box-shadow: none;
-    border: none;
-    background-color: #fafafb;
-    border-radius: 8px;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    min-width: unset;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.25s ease,
-                padding 0.3s ease;
-  }
-
-  /* PC Hover 방지 on Mobile */
-  .dropdown:hover .dropdown-menu {
-    opacity: 0;
-    visibility: hidden;
-    transform: none;
-    max-height: 0;
-  }
-
-  /* 아코디언 활성화 시 */
-  .nav-item.dropdown.active .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    max-height: 350px;
-    padding: 0.5rem 0;
-  }
-
-  .dropdown-menu li a {
-    text-align: center;
-    padding: 0.8rem;
-    font-size: 0.95rem;
-  }
-
-  /* Header Right on Mobile */
-  .header-right {
-    flex-direction: column;
-    width: 100%;
-    gap: 1.2rem;
-    margin-top: 1.5rem;
-    border-top: 1px solid #eeeeee;
-    padding-top: 1.5rem;
-  }
-
-  .auth-menu {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.8rem;
-  }
-
-  .auth-menu li {
-    width: 100%;
-  }
-
-  .auth-menu a {
-    display: block;
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    background: #f7f7f9;
-    border-radius: 8px;
-  }
-
-  .logout-btn {
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border-radius: 8px;
-  }
-
-  .admin-link {
-    display: block !important;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.8rem !important;
-    font-size: 1rem !important;
-    border-radius: 8px;
-  }
-
-  .lang-switcher {
-    gap: 0.6rem;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-  }
-
-  .lang-switcher button {
-    font-size: 0.9rem;
-    padding: 4px 8px;
-  }
+@media (max-width: 920px) {
+  .hd-nav, .hd-right { display: none; }
+  .hd-burger { display: flex; }
+  .hd-word { display: inline; }
+  .hd-inner { padding: 0 1rem; }
 }

@@ -18,7 +18,8 @@
     "forge": "⚒️ 강화",
     "chat": "💬 채팅",
     "fruitai": "🍎 과일 AI",
-    "lotto": "🎱 로또"
+    "lotto": "🎱 로또",
+    "linux": "🐧 리눅스 실습"
   },
   "main": {
     "badge": "👾 개발자 전용 짬뽕 장난감 상자",
@@ -197,6 +198,13 @@
             "desc": "글자 더미 속 암호 후보 중 정답을 찾는 추리 게임. 일치하는 글자 수를 힌트로 맞혀요.",
             "path": "/play/terminalhack",
             "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "리눅스 실습",
+            "desc": "Rocky Linux 9.6 셸을 브라우저에서 체험해요. dnf·systemctl·firewall-cmd까지 실제처럼 연습할 수 있어요.",
+            "path": "/play/linux",
+            "login": false
           }
         ]
       },
@@ -270,7 +278,12 @@
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
     "name": "이름(이니셜)",
-    "nickname": "닉네임"
+    "nickname": "닉네임",
+    "desc": "터미널 감성의 개발자 놀이터. 게시판·채팅과 미니게임, 리눅스 실습을 한곳에서 즐겨요.",
+    "host": "집 서버 랙의 라즈베리파이에서 운영 중",
+    "sitemap": "사이트 맵",
+    "site": "사이트",
+    "operator": "운영"
   },
   "notfound": {
     "title": "페이지를 찾을 수 없음",
@@ -364,5 +377,127 @@
     "badge_secure": "🔒 보안 연결",
     "badge_instant": "⚡ 즉시 활성화",
     "badge_free": "🆓 무료"
+  },
+  "linux": {
+    "title": "Rocky Linux 9.6 실습 터미널",
+    "subtitle": "브라우저에서 리눅스 명령어를 바로 연습해 보세요. 서버에 연결되지 않는 안전한 시뮬레이터예요.",
+    "missions": "실습 미션",
+    "cheats": "자주 쓰는 명령어",
+    "insert": "클릭하면 입력창에 넣어줘요",
+    "tip1": "Tab 자동완성 · ↑↓ 이전 명령 · Ctrl+L 화면 지우기 · Ctrl+C 취소",
+    "tip2": "파일과 설정은 이 브라우저에 저장돼요. 처음부터 하려면 tn-reset",
+    "tip3": "외부 인터넷 접속, vi 편집기, 실시간 top은 지원하지 않아요",
+    "m": {
+      "os": "OS 버전 확인하기",
+      "files": "디렉터리와 파일 만들기",
+      "perm": "파일 권한을 600으로 바꾸기",
+      "httpd": "Apache(httpd) 설치하기",
+      "service": "httpd 서비스 시작 + 부팅 시 자동 시작",
+      "firewall": "방화벽에 http 영구 허용하기",
+      "curl": "웹서버 응답 확인하기",
+      "user": "새 사용자 만들고 wheel 그룹 추가"
+    }
+  },
+  "nav": {
+    "groups": {
+      "community": "커뮤니티",
+      "play": "게임·체험",
+      "tools": "도구"
+    },
+    "freeboard": {
+      "name": "자유게시판",
+      "desc": "글·사진·영상을 올리고 댓글로 이야기해요"
+    },
+    "chat": {
+      "name": "실시간 채팅",
+      "desc": "전체 채팅과 익명 채팅, 귓속말까지"
+    },
+    "stock": {
+      "name": "모의 주식",
+      "desc": "가상 머니로 실시간 시세를 사고팔아요"
+    },
+    "janggi": {
+      "name": "장기",
+      "desc": "AI와 두거나, 친구와 온라인 대국"
+    },
+    "forge": {
+      "name": "강화",
+      "desc": "무기를 +20까지. 실패하면 파괴될 수도"
+    },
+    "typeracer": {
+      "name": "타자 게임",
+      "desc": "실무 명령어로 달리는 60초 레이스"
+    },
+    "terminalhack": {
+      "name": "터미널 해킹",
+      "desc": "단어 속 암호를 추리해 서버를 돌파"
+    },
+    "hackermode": {
+      "name": "해커 모드",
+      "desc": "영화 속 해커 콘솔을 연출해 보기"
+    },
+    "linux": {
+      "name": "리눅스 실습",
+      "desc": "브라우저에서 Rocky Linux 9.6 셸 연습"
+    },
+    "lotto": {
+      "name": "로또",
+      "desc": "당첨번호·통계 확인과 번호 생성"
+    },
+    "fruitai": {
+      "name": "과일 AI",
+      "desc": "과일 효능을 AI에게 물어보기"
+    },
+    "guide": "소개",
+    "donation": "후원",
+    "menu": "메뉴",
+    "close": "닫기",
+    "login_needed": "로그인 필요",
+    "open": "바로 이용",
+    "skip": "본문으로 건너뛰기"
+  },
+  "home": {
+    "title_1": "명령어 한 줄로 둘러보는",
+    "title_2": "개발자 놀이터",
+    "lead": "자유게시판과 실시간 채팅, 모의 주식·장기·강화 같은 미니게임, 브라우저에서 바로 쓰는 리눅스 셸까지 한곳에 모았어요.",
+    "lead_try": "오른쪽 터미널에 ls를 입력해 보세요.",
+    "lead_try_m": "아래 터미널에 ls를 입력해 보세요.",
+    "cta_join": "무료로 가입하기",
+    "cta_board": "게시판 가기",
+    "cta_explore": "기능 둘러보기",
+    "note": "게임과 리눅스 실습 대부분은 로그인 없이 바로 할 수 있어요.",
+    "chips": "눌러서 실행",
+    "rack_title": "여기서 할 수 있는 것",
+    "rack_sub": "초록 불은 바로 이용, 노란 불은 로그인 후 이용할 수 있어요.",
+    "rack_extra": "사이트",
+    "guide_desc": "기능 안내와 자주 묻는 질문",
+    "donation_desc": "서버 운영을 응원하기",
+    "live_title": "지금 올라온 소식",
+    "posts": "최근 글",
+    "posts_more": "게시판 전체",
+    "posts_empty": "아직 글이 없어요. 첫 글을 남겨보세요.",
+    "posts_write": "글쓰기",
+    "posts_error": "글 목록을 불러오지 못했어요.",
+    "stock": "모의 주식",
+    "stock_more": "거래소 입장",
+    "stock_wait": "시세를 받아오는 중이에요.",
+    "stock_closed": "시세를 불러오지 못했어요.",
+    "lotto": "로또",
+    "lotto_more": "통계 보기",
+    "lotto_none": "당첨번호를 불러오지 못했어요.",
+    "lotto_mine": "내 번호",
+    "ago_min": "{{n}}분 전",
+    "ago_hour": "{{n}}시간 전",
+    "ago_day": "{{n}}일 전",
+    "just_now": "방금",
+    "weather_ip": "대략적인 위치 기준",
+    "weather_gps": "현재 위치 기준",
+    "term": {
+      "intro1": "ls로 기능 목록을 보고, 경로(예: /forge)를 입력하면 이동해요.",
+      "intro2": "rocky를 입력하면 이 자리에서 리눅스 셸이 열려요.",
+      "help_more": "그 밖에: rocky  clear  whoami  login  join",
+      "not_found": "명령을 찾을 수 없어요. ls로 목록을 확인해 보세요.",
+      "aria": "터미널 명령 입력"
+    }
   }
 }

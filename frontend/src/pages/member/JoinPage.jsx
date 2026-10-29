@@ -25,11 +25,11 @@ const darkInput = {
     color: '#f4f4f5',
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
     '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
-    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--tn-tape)' },
   },
-  '& .MuiInputLabel-root': { color: '#71717a' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-  '& .MuiFormHelperText-root': { color: '#71717a' },
+  '& .MuiInputLabel-root': { color: 'var(--tn-text-3)' },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--tn-tape)' },
+  '& .MuiFormHelperText-root': { color: 'var(--tn-text-3)' },
   '& .MuiFormHelperText-root.Mui-error': { color: '#f87171' },
 };
 
@@ -164,7 +164,7 @@ const JoinPage = () => {
 
       <Box
         sx={{
-          minHeight: '100vh', bgcolor: '#000',
+          minHeight: '100vh', bgcolor: 'var(--tn-bg)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative', overflow: 'hidden',
         }}
@@ -173,7 +173,7 @@ const JoinPage = () => {
         <Box sx={{
           position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
           width: '60vw', height: '60vw', maxWidth: 700, maxHeight: 700,
-          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(242,194,48,0.08) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
 
@@ -205,7 +205,7 @@ const JoinPage = () => {
             >
               {t('auth.create_account')}
             </Typography>
-            <Typography sx={{ color: '#71717a', fontSize: '0.9rem' }}>
+            <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.9rem' }}>
               {t('auth.join_sub')}
             </Typography>
           </Box>
@@ -227,7 +227,7 @@ const JoinPage = () => {
                 autoFocus autoComplete="username"
                 error={isError(validity.username) || (formData.username.length > 0 && formData.username.length < 4)}
                 helperText={getHelper('username')}
-                InputProps={{ endAdornment: loading.username ? <CircularProgress size={18} sx={{ color: '#818cf8' }} /> : null }}
+                InputProps={{ endAdornment: loading.username ? <CircularProgress size={18} sx={{ color: 'var(--tn-tape)' }} /> : null }}
                 sx={getInputSx('username')}
               />
               <TextField
@@ -243,7 +243,7 @@ const JoinPage = () => {
                 value={formData.nickname} onChange={handleChange}
                 error={isError(validity.nickname)}
                 helperText={getHelper('nickname')}
-                InputProps={{ endAdornment: loading.nickname ? <CircularProgress size={18} sx={{ color: '#818cf8' }} /> : null }}
+                InputProps={{ endAdornment: loading.nickname ? <CircularProgress size={18} sx={{ color: 'var(--tn-tape)' }} /> : null }}
                 sx={getInputSx('nickname')}
               />
               <TextField
@@ -273,26 +273,26 @@ const JoinPage = () => {
                 endIcon={!loading.submit && <ArrowForwardIcon />}
                 sx={{
                   py: 1.6, borderRadius: '10px',
-                  bgcolor: isSubmitDisabled ? 'rgba(255,255,255,0.06)' : '#fff',
-                  color: isSubmitDisabled ? '#52525b' : '#000',
+                  bgcolor: isSubmitDisabled ? 'rgba(255,255,255,0.06)' : 'var(--tn-tape)',
+                  color: isSubmitDisabled ? 'var(--tn-text-3)' : '#000',
                   fontWeight: 700, fontSize: '0.95rem', textTransform: 'none',
-                  boxShadow: isSubmitDisabled ? 'none' : '0 0 20px rgba(255,255,255,0.1)',
-                  '&:hover:not(:disabled)': { bgcolor: '#e4e4e7', transform: 'translateY(-1px)' },
-                  '&.Mui-disabled': { color: '#52525b' },
+                  boxShadow: 'none',
+                  '&:hover:not(:disabled)': { bgcolor: 'var(--tn-tape-hover)', transform: 'translateY(-1px)' },
+                  '&.Mui-disabled': { color: 'var(--tn-text-3)' },
                   transition: 'all 0.2s',
                 }}
               >
-                {loading.submit ? <CircularProgress size={22} sx={{ color: '#818cf8' }} /> : t('header.signup')}
+                {loading.submit ? <CircularProgress size={22} sx={{ color: 'var(--tn-tape)' }} /> : t('header.signup')}
               </Button>
             </Stack>
 
             <Box textAlign="center" mt={3}>
-              <Typography component="span" sx={{ color: '#52525b', fontSize: '0.85rem' }}>
+              <Typography component="span" sx={{ color: 'var(--tn-text-3)', fontSize: '0.85rem' }}>
                 {t('auth.have_account')}{' '}
               </Typography>
               <Typography
                 component="span" onClick={() => navigate('/login')}
-                sx={{ color: '#818cf8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#a5b4fc' } }}
+                sx={{ color: 'var(--tn-tape)', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', '&:hover': { color: 'var(--tn-tape)' } }}
               >
                 {t('header.login')}
               </Typography>
@@ -305,7 +305,7 @@ const JoinPage = () => {
               <Chip key={label} label={label} size="small" sx={{
                 bgcolor: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.07)',
-                color: '#52525b', fontSize: '0.7rem',
+                color: 'var(--tn-text-3)', fontSize: '0.7rem',
               }} />
             ))}
           </Stack>
