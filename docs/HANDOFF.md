@@ -9,7 +9,7 @@
     `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `LOTTO_MAIL_FROM`
   - 서버 `domain/lotto`: 번호 저장(1인 20개), 새 회차 반영 시 알림 생성, 메일은 SMTP 설정 있을 때만
   - 프론트 `/lotto?tab=my`, 헤더 미확인 알림 표시
-- [ ] 2. 인프라 도구 모음 `/tools`, `/tools/:id`
+- [x] 2. 인프라 도구 모음 `/tools`, `/tools/:id` (검증 스크립트 전부 통과)
   - 프론트 전용: 서브넷, RAID, cron, chmod, nginx 설정 생성, 전송 시간
   - 계산 로직은 `pages/tools/toolsLogic.js`로 분리해 node로 검증, sitemap 추가
 - [ ] 3. 자격증 플랫폼 `/cert`

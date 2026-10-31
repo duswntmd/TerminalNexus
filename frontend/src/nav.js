@@ -23,6 +23,7 @@ export const NAV_GROUPS = [
   {
     key: 'tools',
     items: [
+      { key: 'infra', path: '/tools', glyph: '%' },
       { key: 'lotto', path: '/lotto', glyph: '6' },
       { key: 'fruitai', path: '/fruit-ai', login: true, glyph: '*' },
     ],
