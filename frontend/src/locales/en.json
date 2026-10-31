@@ -212,6 +212,20 @@
         "name": "Tools",
         "items": [
           {
+            "icon": "🎓",
+            "name": "Linux certification practice",
+            "desc": "Practice questions with explanations, mock exams and a review list for Linux Master Level 2.",
+            "path": "/cert",
+            "login": false
+          },
+          {
+            "icon": "🧰",
+            "name": "Infra tools",
+            "desc": "Subnet, RAID, cron and chmod calculators and an nginx config generator.",
+            "path": "/tools",
+            "login": false
+          },
+          {
             "icon": "🍎",
             "name": "Fruit AI",
             "desc": "Ask about the benefits of fruits and Gemini AI answers.",
@@ -221,7 +235,7 @@
           {
             "icon": "🎱",
             "name": "Lotto results",
-            "desc": "Korean Lotto 6/45 results updated weekly, number statistics, a history checker for your numbers, and a generator.",
+            "desc": "Korean Lotto 6/45 results updated weekly, statistics, saved numbers with result alerts, and a generator.",
             "path": "/lotto",
             "login": false
           },
@@ -485,6 +499,10 @@
     "infra": {
       "name": "Infra tools",
       "desc": "Subnet, RAID, cron, chmod and nginx calculators"
+    },
+    "cert": {
+      "name": "Linux certification",
+      "desc": "Linux Master Level 2 practice and mock exams"
     }
   },
   "home": {
@@ -717,5 +735,72 @@
         }
       ]
     }
+  },
+  "cert": {
+    "meta_title": "Linux Master Level 2 practice questions and mock exams | TerminalNexus",
+    "meta_desc": "Original practice questions and mock exams for the Korean Linux Master Level 2 certification, with instant explanations.",
+    "title": "Linux certification practice",
+    "subtitle": "Prepare for Linux Master Level 2 by subject and read the explanation right away. Every question was written for this site. Questions are in Korean.",
+    "loading": "Loading...",
+    "load_error": "Could not load the questions. Please try again later.",
+    "subject_basic": "Linux basics",
+    "subject_ops": "Linux operations",
+    "subject_apps": "Linux applications",
+    "practice_title": "Practice by subject",
+    "practice_desc": "Answer 10 questions with an explanation after each. Log in to collect wrong answers in your review list.",
+    "count_free": "{{free}} free of {{total}}",
+    "count_all": "{{n}} questions",
+    "mock_title": "Mock exam",
+    "mock_desc_full": "{{q}} questions · {{m}} minutes",
+    "mock_desc_trial": "Free mini exam: {{q}} questions · {{m}} minutes (once)",
+    "own_criteria": "This format is our own. You pass with an average of {{pass}} and at least {{min}} in each subject. Check the official notice for the real exam format and pass mark.",
+    "mock_trial": "Start free mock exam",
+    "mock_full": "Start mock exam",
+    "mock_resume": "Resume your exam",
+    "login_to_mock": "Log in to take a mock exam",
+    "trial_used": "You have used your free mock exam. A pass gives you unlimited full exams.",
+    "my_title": "My study",
+    "pass_until": "Pass valid until {{date}}",
+    "wrong_link": "Review list ({{n}})",
+    "mode_full": "Full mock exam",
+    "mode_trial": "Mini mock exam",
+    "score": "{{n}} points",
+    "plan_title": "Pass",
+    "benefits": [
+      "All questions",
+      "Unlimited {{q}}-question, {{m}}-minute mock exams",
+      "Retry only the questions you got wrong"
+    ],
+    "plan_days": "{{n}}-day pass",
+    "price": "₩{{v}}",
+    "buy": "Buy",
+    "pay_soon": "Coming soon",
+    "pay_done": "Your pass is active.",
+    "pay_failed": "The payment was not completed.",
+    "disclaimer": "This is an independent study resource, not affiliated with the exam organizer, and may differ from the actual exam.",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "next": "Next question",
+    "see_result": "See result",
+    "practice_done": "{{n}} of {{total}} correct",
+    "more_locked": "{{n}} more questions in this subject are available with a pass.",
+    "again": "Try again",
+    "back": "Back to practice",
+    "see_plans": "See passes",
+    "wrong_title": "Review list",
+    "wrong_locked": "{{n}} wrong answers are saved. Retrying them requires a pass.",
+    "wrong_empty": "Nothing to review.",
+    "answered": "{{n}} of {{total}} answered",
+    "q_no": "Q{{n}}",
+    "submit": "Submit",
+    "confirm_blank": "{{n}} questions are unanswered. Submit anyway?",
+    "result_title": "Exam result",
+    "passed": "Passed",
+    "failed": "Below the pass mark",
+    "correct_of": "{{n}} of {{total}} correct",
+    "trial_after": "Full mock exams and all questions come with a pass.",
+    "only_wrong": "Show wrong answers only",
+    "all_correct": "All correct!",
+    "no_answer": "You did not answer this one."
   }
 }

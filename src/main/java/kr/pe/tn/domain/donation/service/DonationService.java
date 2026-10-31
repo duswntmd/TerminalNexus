@@ -9,16 +9,11 @@ import kr.pe.tn.domain.user.entity.UserEntity;
 import kr.pe.tn.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -28,18 +23,9 @@ import java.util.stream.Collectors;
 public class DonationService {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DonationService.class);
-    @Value("${portone.imp_key}")
-    private String impKey;
-
-    @Value("${portone.imp_secret}")
-    private String impSecret;
-
-    private static final String PORTONE_TOKEN_URL = "https://api.iamport.kr/users/getToken";
-    private static final String PORTONE_PAYMENT_URL = "https://api.iamport.kr/payments/find/";
-
     private final DonationRepository donationRepository;
     private final UserRepository userRepository;
-    private final RestTemplate restTemplate;
+    private final PortOneClient portOneClient;
 
     // ─── Step 1: 사전 결제 등록 ────────────────────────────────────────────────
     /**
@@ -71,10 +57,9 @@ public class DonationService {
      * 포트원 결제 완료 후 위변조 검증
      *
      * 검증 흐름:
-     * 1. 포트원 서버에서 액세스 토큰 발급
-     * 2. imp_uid로 실제 결제 정보 조회
-     * 3. DB에 저장된 금액 vs 포트원 실제 결제 금액 비교 (핵심!)
-     * 4. 일치 시 PAID 상태로 업데이트
+     * 1. 주문번호로 포트원 실제 결제 정보 조회
+     * 2. DB에 저장된 금액 vs 포트원 실제 결제 금액 비교 (핵심!)
+     * 3. 일치 시 PAID 상태로 업데이트
      *
      * noRollbackFor: 검증 실패 시 예외를 던져도 FAILED 상태 기록은 DB에 남김
      */
@@ -90,14 +75,10 @@ public class DonationService {
         }
 
         try {
-            // 1. 포트원 액세스 토큰 발급
-            String accessToken = getPortOneAccessToken();
+            // 1. merchantUid로 실제 결제 정보 조회 (PortOne imp_uid 조회 버그/지연 우회)
+            PortOneDTO.PaymentResponse.PaymentData paymentData = portOneClient.findPayment(request.getMerchantUid());
 
-            // 2. merchantUid로 실제 결제 정보 조회 (PortOne imp_uid 조회 버그/지연 우회)
-            PortOneDTO.PaymentResponse.PaymentData paymentData = getPortOnePaymentData(request.getMerchantUid(),
-                    accessToken);
-
-            // 3. 핵심: 금액 위변조 검증 (DB 저장 금액 vs 포트원 실제 결제 금액)
+            // 2. 핵심: 금액 위변조 검증 (DB 저장 금액 vs 포트원 실제 결제 금액)
             if (donation.getAmount() != paymentData.getAmount()) {
                 donation.fail();
                 log.warn("결제 금액 불일치! DB: {}원, 포트원: {}원, merchantUid: {}",
@@ -107,13 +88,13 @@ public class DonationService {
                                 donation.getAmount(), paymentData.getAmount()));
             }
 
-            // 4. 결제 상태 검증 (포트원에서 paid 상태인지 확인)
+            // 3. 결제 상태 검증 (포트원에서 paid 상태인지 확인)
             if (!"paid".equals(paymentData.getStatus())) {
                 donation.fail();
                 throw new IllegalStateException("결제가 완료되지 않았습니다. 상태: " + paymentData.getStatus());
             }
 
-            // 5. 최종 승인 처리
+            // 4. 최종 승인 처리
             donation.approve(
                     paymentData.getImp_uid(),
                     paymentData.getPay_method(),
@@ -153,55 +134,5 @@ public class DonationService {
                 .stream()
                 .map(DonationDTO.Response::from)
                 .collect(Collectors.toList());
-    }
-
-    // ─── 포트원 내부 유틸 메서드 ────────────────────────────────────────────────
-
-    /**
-     * 포트원 액세스 토큰 발급
-     * imp_key + imp_secret → access_token
-     */
-    private String getPortOneAccessToken() {
-        Map<String, String> body = new HashMap<>();
-        body.put("imp_key", impKey);
-        body.put("imp_secret", impSecret);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
-
-        ResponseEntity<PortOneDTO.TokenResponse> response = restTemplate.postForEntity(PORTONE_TOKEN_URL, entity,
-                PortOneDTO.TokenResponse.class);
-
-        PortOneDTO.TokenResponse tokenResponse = response.getBody();
-        if (tokenResponse == null || tokenResponse.getCode() != 0) {
-            throw new RuntimeException("포트원 토큰 발급에 실패했습니다.");
-        }
-
-        return tokenResponse.getResponse().getAccess_token();
-    }
-
-    /**
-     * imp_uid로 포트원 서버에서 실제 결제 내역 조회
-     */
-    private PortOneDTO.PaymentResponse.PaymentData getPortOnePaymentData(
-            String impUid, String accessToken) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<PortOneDTO.PaymentResponse> response = restTemplate.exchange(
-                PORTONE_PAYMENT_URL + impUid,
-                HttpMethod.GET,
-                entity,
-                PortOneDTO.PaymentResponse.class);
-
-        PortOneDTO.PaymentResponse paymentResponse = response.getBody();
-        if (paymentResponse == null || paymentResponse.getCode() != 0) {
-            throw new RuntimeException("포트원에서 결제 정보를 조회할 수 없습니다.");
-        }
-
-        return paymentResponse.getResponse();
     }
 }
