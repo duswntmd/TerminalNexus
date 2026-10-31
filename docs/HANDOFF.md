@@ -12,7 +12,7 @@
 - [x] 2. 인프라 도구 모음 `/tools`, `/tools/:id` (검증 스크립트 전부 통과)
   - 프론트 전용: 서브넷, RAID, cron, chmod, nginx 설정 생성, 전송 시간
   - 계산 로직은 `pages/tools/toolsLogic.js`로 분리해 node로 검증, sitemap 추가
-- [x] 3. 자격증 플랫폼 `/cert` (dev 커밋, 운영 미배포)
+- [x] 3. 자격증 플랫폼 `/cert` (2026-10-31 main `ffc7327`로 1~3 모두 운영 배포 확인)
   - 서버 `domain/cert`: 문제 150개는 `resources/cert/`에만 있음(프론트 번들에 안 들어감), 과목별 40% 무료
   - 무료: 과목별 연습, 미니 모의고사 1회 / 이용권: 전체 문제, 50문항 60분 모의고사, 오답노트
   - 결제: `PortOneClient`를 후원과 공용으로 분리, 가짜 포트원 서버로 금액 조작·중복·웹훅 시나리오 검증
@@ -24,6 +24,9 @@
 2. 문제 내용 직접 검수, 공식 시험 범위 확인
 3. 포트원 실결제 설정, 웹훅 URL `https://tnhub.kr/api/cert/order/webhook` 등록
 4. 컨테이너에 `CERT_PAYMENT_ENABLED=true` 전달
+5. Jenkins 배포에 포트원 값 추가: 지금 `Jenkinsfile`은 컨테이너에 `PORTONE_IMP_KEY`, `PORTONE_IMP_SECRET`을 넘기지 않고
+   프론트 빌드에도 `VITE_PORTONE_IMP_CODE`를 넘기지 않음 (2026-10-31 운영 컨테이너에서 PORTONE 환경변수 없음 확인).
+   이 상태면 기본값(테스트 상점, 테스트 키)이 쓰이므로 후원 결제도 함께 영향받음. 실결제로 확인한 것은 아님.
 
 결정 사항: 유료 결제는 약관·환불정책·사업자 정보 확인 전까지 꺼 둔다.
 
