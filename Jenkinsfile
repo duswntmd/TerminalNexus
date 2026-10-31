@@ -156,6 +156,7 @@ pipeline {
                                 -e "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://tnhub.kr/login/oauth2/code/google" \\
                                 -e "ADMIN_PASSWORD=\${ADMIN_PASS}" \\
                                 -e JWT_SECRET \\
+                                \$(sudo test -f /home/ubuntu/.tn_mail.env && echo "--env-file /home/ubuntu/.tn_mail.env") \\
                                 -e "GEMINI_API_KEY=\${GEMINI_KEY}" \\
                                 -e "NAVER_CLIENT_SECRET=\${NAVER_SECRET}" \\
                                 -e "GOOGLE_CLIENT_SECRET=\${GOOGLE_SECRET}" \\

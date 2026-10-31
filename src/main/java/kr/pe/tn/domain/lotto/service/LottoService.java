@@ -3,10 +3,12 @@ package kr.pe.tn.domain.lotto.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.pe.tn.domain.lotto.entity.LottoEntity;
+import kr.pe.tn.domain.lotto.event.LottoDrawAddedEvent;
 import kr.pe.tn.domain.lotto.repository.LottoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,16 +44,18 @@ public class LottoService {
 
     private final LottoRepository lottoRepository;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher events;
     private final RestTemplate http;
     private final String apiUrl;
 
     /** 최신 회차가 앞에 오는 전체 목록 */
     private volatile List<LottoEntity> cache = List.of();
 
-    public LottoService(LottoRepository lottoRepository, ObjectMapper objectMapper,
+    public LottoService(LottoRepository lottoRepository, ObjectMapper objectMapper, ApplicationEventPublisher events,
                         @Value("${lotto.api-url:https://www.dhlottery.co.kr/lt645/selectPstLt645Info.do}") String apiUrl) {
         this.lottoRepository = lottoRepository;
         this.objectMapper = objectMapper;
+        this.events = events;
         this.apiUrl = apiUrl;
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(5_000);
@@ -73,7 +77,7 @@ public class LottoService {
     }
 
     /** 10분마다: 새 회차 발표 시각이 지났는데 아직 없으면 가져옴 */
-    @Scheduled(cron = "0 */10 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "${lotto.check-cron:0 */10 * * * *}", zone = "Asia/Seoul")
     public void checkNewDraw() {
         try {
             if (cache.isEmpty()) {
@@ -106,15 +110,18 @@ public class LottoService {
     /** 최신 회차 이후 발표된 회차만 수집 */
     synchronized void syncNew() {
         long next = cache.isEmpty() ? 1 : cache.get(0).getDrwNo() + 1;
-        boolean added = false;
+        List<LottoEntity> added = new ArrayList<>();
         for (int i = 0; i < 10; i++, next++) {
             List<LottoEntity> found = fetch(String.valueOf(next));
             if (found.isEmpty()) break;
             lottoRepository.saveAll(found);
             log.info("로또 {}회 당첨번호 갱신", next);
-            added = true;
+            added.addAll(found);
         }
-        if (added) reloadCache();
+        if (added.isEmpty()) return;
+        reloadCache();
+        // 알림은 최신 회차 기준 한 번만 (여러 회차가 밀렸어도 예전 회차 알림은 보내지 않음)
+        events.publishEvent(new LottoDrawAddedEvent(added.get(added.size() - 1)));
     }
 
     private void reloadCache() {

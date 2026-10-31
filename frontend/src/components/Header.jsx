@@ -32,6 +32,7 @@ const Header = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [lottoAlerts, setLottoAlerts] = useState(0);
   const [open, setOpen] = useState(null); // 'play' | 'tools' | null (데스크톱 드롭다운)
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef(null);
@@ -44,6 +45,18 @@ const Header = () => {
       .then((d) => setIsAdmin(d?.roleType === 'ADMIN'))
       .catch(() => setIsAdmin(false));
   }, [isLoggedIn]);
+
+  // 로또 결과 알림 수 (토큰이 만료돼도 로그인 페이지로 보내지 않도록 일반 fetch)
+  useEffect(() => {
+    if (!isLoggedIn) { setLottoAlerts(0); return undefined; }
+    const load = () => fetch('/api/lotto/my/unread', { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } })
+      .then((r) => (r.ok ? r.json() : { count: 0 }))
+      .then((d) => setLottoAlerts(d.count || 0))
+      .catch(() => {});
+    load();
+    window.addEventListener('lotto-alerts-read', load);
+    return () => window.removeEventListener('lotto-alerts-read', load);
+  }, [isLoggedIn, location.pathname]);
 
   // 페이지 이동 시 메뉴 닫기
   useEffect(() => { setOpen(null); setMobileOpen(false); }, [location.pathname]);
@@ -121,6 +134,7 @@ const Header = () => {
           {isLoggedIn ? (
             <>
               {isAdmin && <Link to="/admin/users" className="hd-text-link">{t('header.admin_users')}</Link>}
+              {lottoAlerts > 0 && <Link to="/lotto?tab=my" className="hd-alert">{t('lotto.my_header_alert')}</Link>}
               <Link to="/user" className="hd-user" title={t('header.mypage')}>
                 <span className="tn-led" aria-hidden="true" />
                 <span className="hd-user-name">{user?.nickname || t('header.mypage')}</span>
@@ -156,6 +170,7 @@ const Header = () => {
                 <>
                   <Link to="/user" className="hd-user" onClick={close}><span className="tn-led" aria-hidden="true" /><span>{user?.nickname || t('header.mypage')}</span></Link>
                   <div className="hd-mobile-account-actions">
+                    {lottoAlerts > 0 && <Link to="/lotto?tab=my" className="tn-btn tn-btn-primary" onClick={close}>{t('lotto.my_header_alert')}</Link>}
                     {isAdmin && <Link to="/admin/users" className="tn-btn tn-btn-ghost" onClick={close}>{t('header.admin_users')}</Link>}
                     <button type="button" className="tn-btn tn-btn-ghost" onClick={handleLogout}>{t('header.logout')}</button>
                   </div>

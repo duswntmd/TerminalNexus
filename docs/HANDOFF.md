@@ -3,7 +3,10 @@
 사용자 요청: 아래 3개를 순서대로 만든다. 끊기면 이 체크리스트에서 이어서 진행.
 완료할 때마다 체크하고 dev에 커밋한다. main 병합(=운영 배포)은 사용자 승인 후에만.
 
-- [ ] 1. 로또 내 번호 저장 + 토요일 결과 알림
+- [x] 1. 로또 내 번호 저장 + 토요일 결과 알림 (가짜 추첨 서버로 1·2·5등 알림까지 검증)
+  - 메일을 켜려면 서버에 `/home/ubuntu/.tn_mail.env`를 만들면 됨 (없으면 사이트 안 알림만 동작)
+    내용: `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD`,
+    `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `LOTTO_MAIL_FROM`
   - 서버 `domain/lotto`: 번호 저장(1인 20개), 새 회차 반영 시 알림 생성, 메일은 SMTP 설정 있을 때만
   - 프론트 `/lotto?tab=my`, 헤더 미확인 알림 표시
 - [ ] 2. 인프라 도구 모음 `/tools`, `/tools/:id`
