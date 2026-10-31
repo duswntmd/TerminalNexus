@@ -1,3 +1,34 @@
+# 진행 중 작업 (2026-10-31 시작) — 새 세션은 여기부터
+
+사용자 요청: 아래 3개를 순서대로 만든다. 끊기면 이 체크리스트에서 이어서 진행.
+완료할 때마다 체크하고 dev에 커밋한다. main 병합(=운영 배포)은 사용자 승인 후에만.
+
+- [x] 1. 로또 내 번호 저장 + 토요일 결과 알림 (가짜 추첨 서버로 1·2·5등 알림까지 검증)
+  - 메일을 켜려면 서버에 `/home/ubuntu/.tn_mail.env`를 만들면 됨 (없으면 사이트 안 알림만 동작)
+    내용: `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD`,
+    `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `LOTTO_MAIL_FROM`
+  - 서버 `domain/lotto`: 번호 저장(1인 20개), 새 회차 반영 시 알림 생성, 메일은 SMTP 설정 있을 때만
+  - 프론트 `/lotto?tab=my`, 헤더 미확인 알림 표시
+- [x] 2. 인프라 도구 모음 `/tools`, `/tools/:id` (검증 스크립트 전부 통과)
+  - 프론트 전용: 서브넷, RAID, cron, chmod, nginx 설정 생성, 전송 시간
+  - 계산 로직은 `pages/tools/toolsLogic.js`로 분리해 node로 검증, sitemap 추가
+- [x] 3. 자격증 플랫폼 `/cert` (dev 커밋, 운영 미배포)
+  - 서버 `domain/cert`: 문제 150개는 `resources/cert/`에만 있음(프론트 번들에 안 들어감), 과목별 40% 무료
+  - 무료: 과목별 연습, 미니 모의고사 1회 / 이용권: 전체 문제, 50문항 60분 모의고사, 오답노트
+  - 결제: `PortOneClient`를 후원과 공용으로 분리, 가짜 포트원 서버로 금액 조작·중복·웹훅 시나리오 검증
+  - 관리자 계정은 이용권 없이 전체 이용 가능
+  - 모의고사 문항 수·합격선은 자체 기준 (공식 시험 형식은 확인하지 못해 화면에 그렇게 안내함)
+
+유료 결제를 켜기 전에 사용자가 할 일:
+1. 사업자 등록, 통신판매 고지, 이용약관·환불정책 작성 (`/terms`에 반영)
+2. 문제 내용 직접 검수, 공식 시험 범위 확인
+3. 포트원 실결제 설정, 웹훅 URL `https://tnhub.kr/api/cert/order/webhook` 등록
+4. 컨테이너에 `CERT_PAYMENT_ENABLED=true` 전달
+
+결정 사항: 유료 결제는 약관·환불정책·사업자 정보 확인 전까지 꺼 둔다.
+
+---
+
 # 작업 인수인계 (2026-10-25)
 
 다음 세션은 이 문서부터 읽고 "남은 작업"을 이어서 진행한다.

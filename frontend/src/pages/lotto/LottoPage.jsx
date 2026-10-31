@@ -1,18 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Button, Chip, CircularProgress, Container, InputAdornment, Pagination,
-  Stack, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Typography, useMediaQuery,
+  Snackbar, Stack, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Typography, useMediaQuery,
 } from '@mui/material';
 import CasinoIcon from '@mui/icons-material/Casino';
 import SearchIcon from '@mui/icons-material/Search';
+import { useAuth } from '../../context/AuthContext';
 import { Ball, BallRow, NumberPicker, Panel } from './LottoParts';
-import { ballColor, checkAgainstHistory, formatWon, numberStats, pickNumbers } from './lottoUtils';
+import MyNumbersTab from './MyNumbersTab';
+import { ballColor, checkAgainstHistory, formatWon, numberStats, pickNumbers, saveTicket } from './lottoUtils';
 
 const PAGE_SIZE = 15;
-const TABS = ['history', 'stats', 'check', 'generate'];
+const TABS = ['history', 'stats', 'check', 'generate', 'my'];
 
 /** 다음 추첨까지 남은 시간 (매주 토요일 20:35 KST) */
 const useCountdown = (nextDrawDate) => {
@@ -271,7 +273,7 @@ const CheckTab = ({ draws, t, initial }) => {
 };
 
 /* ── 번호 생성 ── */
-const GenerateTab = ({ t, onCheck }) => {
+const GenerateTab = ({ t, onCheck, onSave }) => {
   const [fixed, setFixed] = useState([]);
   const [excluded, setExcluded] = useState([]);
   const [games, setGames] = useState([]);
@@ -318,6 +320,9 @@ const GenerateTab = ({ t, onCheck }) => {
                 <Button size="small" onClick={() => onCheck(g)} sx={{ color: 'var(--tn-text-2)', textTransform: 'none', fontSize: '0.75rem' }}>
                   {t('lotto.check_this')}
                 </Button>
+                <Button size="small" onClick={() => onSave(g)} sx={{ color: '#f9ca24', textTransform: 'none', fontSize: '0.75rem' }}>
+                  {t('lotto.my_save')}
+                </Button>
               </Stack>
             ))}
           </Stack>
@@ -341,7 +346,10 @@ const primaryBtnSx = { bgcolor: '#f9ca24', color: '#000', fontWeight: 800, textT
 const LottoPage = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
+  const [notice, setNotice] = useState('');
   const tab = TABS.includes(params.get('tab')) ? params.get('tab') : 'history';
   const [latest, setLatest] = useState(null);
   const [draws, setDraws] = useState(null);
@@ -360,6 +368,11 @@ const LottoPage = () => {
   }, []);
 
   const setTab = (v) => setParams(v === 'history' ? {} : { tab: v }, { replace: true });
+
+  const saveGame = async (numbers) => {
+    if (!isLoggedIn) { navigate(`/login?redirect=${encodeURIComponent('/lotto?tab=generate')}`); return; }
+    setNotice((await saveTicket(numbers, null, t)) || t('lotto.my_saved'));
+  };
 
   return (
     <>
@@ -393,12 +406,14 @@ const LottoPage = () => {
               {tab === 'history' && <HistoryTab draws={draws} t={t} />}
               {tab === 'stats' && <StatsTab draws={draws} t={t} />}
               {tab === 'check' && <CheckTab draws={draws} t={t} initial={checkNumbers} />}
-              {tab === 'generate' && <GenerateTab t={t} onCheck={(g) => { setCheckNumbers(g); setTab('check'); }} />}
+              {tab === 'generate' && <GenerateTab t={t} onCheck={(g) => { setCheckNumbers(g); setTab('check'); }} onSave={saveGame} />}
+              {tab === 'my' && <MyNumbersTab t={t} />}
               <Typography sx={{ color: 'var(--tn-text-3)', fontSize: '0.72rem' }}>{t('lotto.source_note')}</Typography>
             </Stack>
           )}
         </Container>
       </Box>
+      <Snackbar open={!!notice} autoHideDuration={2500} onClose={() => setNotice('')} message={notice} />
     </>
   );
 };

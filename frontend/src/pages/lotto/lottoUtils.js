@@ -1,4 +1,5 @@
 // 로또 6/45 공용 계산 (번호 생성·등수 판정·통계)
+import { fetchWithAccessRaw } from '../../util/fetchUtil';
 
 export const BALL_COLORS = ['#f9ca24', '#3b82f6', '#ef4444', '#71717a', '#22c55e'];
 
@@ -82,4 +83,20 @@ export const formatWon = (v, lang) => {
     return `${v.toLocaleString()}원`;
   }
   return `₩${v.toLocaleString('en-US')}`;
+};
+
+/** 서버에 번호 저장. 성공하면 null, 실패하면 안내 문구 */
+export const saveTicket = async (numbers, label, t) => {
+  try {
+    const res = await fetchWithAccessRaw('/api/lotto/my/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ numbers, label }),
+    });
+    if (res.ok) return null;
+    const data = await res.json().catch(() => ({}));
+    return data.message || t('lotto.my_save_failed');
+  } catch {
+    return t('lotto.my_save_failed');
+  }
 };

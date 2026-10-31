@@ -128,3 +128,11 @@
   .hd-word { display: inline; }
   .hd-inner { padding: 0 1rem; }
 }
+
+/* 로또 결과 알림 */
+.hd-alert {
+  padding: 0.3rem 0.65rem; border-radius: 999px; white-space: nowrap;
+  background: var(--tn-tape); color: var(--tn-tape-ink);
+  font-size: 0.78rem; font-weight: 700; text-decoration: none;
+}
+.hd-alert:hover { background: var(--tn-tape-hover); }

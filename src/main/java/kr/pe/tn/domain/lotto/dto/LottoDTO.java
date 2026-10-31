@@ -1,5 +1,6 @@
 package kr.pe.tn.domain.lotto.dto;
 
+import kr.pe.tn.domain.lotto.entity.LottoAlertEntity;
 import kr.pe.tn.domain.lotto.entity.LottoEntity;
 
 import java.util.List;
@@ -32,5 +33,25 @@ public class LottoDTO {
         public static DrawSummary of(LottoEntity e) {
             return new DrawSummary(e.getDrwNo(), e.getDrwNoDate(), e.numbers(), e.getBnusNo());
         }
+    }
+
+    public record TicketRequest(List<Integer> numbers, String label) {
+    }
+
+    /** latestRank: 최신 회차 기준 등수 (1~5, 낙첨 0) */
+    public record TicketResponse(long id, List<Integer> numbers, String label, Integer latestRank) {
+    }
+
+    public record AlertResponse(long drwNo, int bestRank, int winCount, int ticketCount, boolean read) {
+        public static AlertResponse of(LottoAlertEntity a) {
+            return new AlertResponse(a.getDrwNo(), a.getBestRank(), a.getWinCount(), a.getTicketCount(), a.getRead());
+        }
+    }
+
+    public record MyLotto(List<TicketResponse> tickets, List<AlertResponse> alerts, boolean emailOn,
+                          boolean emailAvailable, boolean hasEmail, int maxTickets) {
+    }
+
+    public record EmailRequest(boolean on) {
     }
 }

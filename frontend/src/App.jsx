@@ -26,6 +26,11 @@ import StockPage from "./pages/play/stock/StockPage";
 import JanggiPage from "./pages/play/janggi/JanggiPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
+import ToolsPage from "./pages/tools/ToolsPage";
+import CertPage from "./pages/cert/CertPage";
+import CertPractice from "./pages/cert/CertPractice";
+import CertMock from "./pages/cert/CertMock";
+import CertResult from "./pages/cert/CertResult";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 
@@ -165,6 +170,13 @@ const AppContent = () => {
           <Route path="/play/janggi" element={<JanggiPage />} />
           <Route path="/play/linux" element={<RockyLinuxPage />} />
           <Route path="/lotto" element={<LottoPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
+          <Route path="/tools/:id" element={<ToolsPage />} />
+          <Route path="/cert" element={<CertPage />} />
+          <Route path="/cert/practice" element={<CertPractice />} />
+          <Route path="/cert/wrong" element={<ProtectedRoute><CertPractice wrong /></ProtectedRoute>} />
+          <Route path="/cert/mock" element={<ProtectedRoute><CertMock /></ProtectedRoute>} />
+          <Route path="/cert/result/:id" element={<ProtectedRoute><CertResult /></ProtectedRoute>} />
           {/* 예전 온라인 장기 주소 → 장기 페이지 온라인 탭 */}
           <Route path="/play/janggi-online" element={<Navigate to="/play/janggi?mode=online" replace />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />

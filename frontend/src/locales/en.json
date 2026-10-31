@@ -212,6 +212,20 @@
         "name": "Tools",
         "items": [
           {
+            "icon": "🎓",
+            "name": "Linux certification practice",
+            "desc": "Practice questions with explanations, mock exams and a review list for Linux Master Level 2.",
+            "path": "/cert",
+            "login": false
+          },
+          {
+            "icon": "🧰",
+            "name": "Infra tools",
+            "desc": "Subnet, RAID, cron and chmod calculators and an nginx config generator.",
+            "path": "/tools",
+            "login": false
+          },
+          {
             "icon": "🍎",
             "name": "Fruit AI",
             "desc": "Ask about the benefits of fruits and Gemini AI answers.",
@@ -221,7 +235,7 @@
           {
             "icon": "🎱",
             "name": "Lotto results",
-            "desc": "Korean Lotto 6/45 results updated weekly, number statistics, a history checker for your numbers, and a generator.",
+            "desc": "Korean Lotto 6/45 results updated weekly, statistics, saved numbers with result alerts, and a generator.",
             "path": "/lotto",
             "login": false
           },
@@ -348,7 +362,29 @@
     "gen_note": "Every combination has the same 1 in 8,145,060 chance of winning 1st prize. Generated numbers are just for fun.",
     "load_error": "Could not load the results. Please try again later.",
     "syncing": "Fetching results for the first time. Please refresh in a minute.",
-    "source_note": "Source: official Donghaeng Lottery results. Updated automatically after every Saturday draw — check the official site for authoritative information."
+    "source_note": "Source: official Donghaeng Lottery results. Updated automatically after every Saturday draw — check the official site for authoritative information.",
+    "tab_my": "My numbers",
+    "my_login_title": "Save your numbers and get result alerts",
+    "my_login_desc": "Save your numbers and we will tell you your rank after every draw.",
+    "my_add_title": "Save numbers",
+    "my_add_desc": "Save your favorite or purchased numbers and results are checked every week.",
+    "my_label": "Note (optional, e.g. birthday numbers)",
+    "my_save": "Save",
+    "my_saved": "Numbers saved.",
+    "my_save_failed": "Could not save. Please try again later.",
+    "my_email_title": "Email me the results",
+    "my_email_desc": "We send the result to your account email after each draw.",
+    "my_email_off": "Email alerts are coming soon. Results appear at the top of the site for now.",
+    "my_email_none": "Your account has no email address. Please add one on My Page first.",
+    "my_alerts_title": "Result alerts",
+    "my_alerts_empty": "Results appear here from the next draw after you save numbers.",
+    "my_alert_line": "Draw #{{no}} · {{win}} of {{total}} won",
+    "my_list_title": "Saved numbers",
+    "my_list_empty": "No saved numbers yet.",
+    "my_latest": "Latest draw:",
+    "my_lost": "No prize",
+    "my_delete": "Delete",
+    "my_header_alert": "🎱 Lotto results"
   },
   "auth": {
     "login": "Log in",
@@ -459,7 +495,15 @@
     "close": "Close",
     "login_needed": "Login required",
     "open": "Open to all",
-    "skip": "Skip to content"
+    "skip": "Skip to content",
+    "infra": {
+      "name": "Infra tools",
+      "desc": "Subnet, RAID, cron, chmod and nginx calculators"
+    },
+    "cert": {
+      "name": "Linux certification",
+      "desc": "Linux Master Level 2 practice and mock exams"
+    }
   },
   "home": {
     "title_1": "A developer playground",
@@ -504,5 +548,259 @@
       "not_found": "command not found. Try ls.",
       "aria": "Terminal command input"
     }
+  },
+  "tools": {
+    "meta_title": "Infra tools | Subnet, RAID, cron, chmod and nginx calculators",
+    "meta_desc": "Free subnet calculator, RAID capacity calculator, cron expression checker, chmod converter, nginx config generator and transfer time calculator.",
+    "title": "Infra tools",
+    "subtitle": "The calculators you keep searching for during server work, in one place. Everything is computed in your browser and nothing is sent to a server.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "others": "Other tools",
+    "cert_promo": "Preparing for a Linux certification? Try the free practice questions",
+    "subnet": {
+      "name": "Subnet calculator",
+      "desc": "Get the network, broadcast address and usable hosts from a CIDR, and split it into smaller subnets.",
+      "input": "IP address / CIDR (or IP and subnet mask)",
+      "invalid": "That is not a valid IPv4 address. Example: 192.168.0.10/24",
+      "cidr": "Network",
+      "mask": "Subnet mask",
+      "wildcard": "Wildcard mask",
+      "broadcast": "Broadcast",
+      "range": "Usable range",
+      "hosts": "Usable hosts",
+      "kind": "Address type",
+      "split": "Split into smaller subnets",
+      "no_split": "Do not split",
+      "split_count": "{{total}} subnets (showing up to 64)",
+      "kinds": {
+        "private": "Private",
+        "public": "Public",
+        "loopback": "Loopback",
+        "linklocal": "Link-local",
+        "cgnat": "CGNAT shared",
+        "multicast": "Multicast"
+      },
+      "guide": [
+        {
+          "q": "Why does a /24 have 254 usable addresses instead of 256?",
+          "a": "The network address and the broadcast address cannot be assigned to hosts. The exceptions are /31, which uses both on point-to-point links, and /32, which means a single host."
+        },
+        {
+          "q": "What are the private IP ranges?",
+          "a": "10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16. They are not reachable directly from the internet and are used on internal networks."
+        }
+      ]
+    },
+    "raid": {
+      "name": "RAID capacity calculator",
+      "desc": "Work out usable capacity and fault tolerance for RAID 0, 1, 5, 6, 10, 50 and 60.",
+      "level": "RAID level",
+      "disks": "Number of disks",
+      "size": "Disk size (TB)",
+      "groups": "Groups",
+      "usable": "Usable capacity",
+      "raw": "Raw capacity",
+      "redundancy": "Parity / mirror",
+      "efficiency": "Space efficiency",
+      "tolerance": "Fault tolerance",
+      "tol_one": "{{n}} disk(s)",
+      "tol_range": "{{min}} to {{max}} disks (depends on which fail)",
+      "penalty": "Write penalty",
+      "penalty_val": "{{n}} disk I/Os per logical write",
+      "err_input": "Enter the number of disks and their size.",
+      "err_min": "This level needs at least {{min}} disks.",
+      "err_even": "RAID 10 needs an even number of disks.",
+      "err_groups": "Disks must divide evenly into groups, with at least {{per}} per group.",
+      "warn_r5": "Large disks (8 TB and up) take a long time to rebuild, which raises the risk of a second failure. Consider RAID 6 or RAID 10.",
+      "warn_r0": "With RAID 0, one failed disk loses all the data. Do not use it for anything important.",
+      "guide": [
+        {
+          "q": "Why does my 4 TB disk show as 3.6 TB?",
+          "a": "Manufacturers count 1 TB as 10^12 bytes, while operating systems usually show 2^40 bytes (TiB). The result shows both."
+        },
+        {
+          "q": "Is RAID a backup?",
+          "a": "No. RAID keeps you running through disk failure, but it does not protect against deleted files or ransomware. You still need backups."
+        },
+        {
+          "q": "RAID 5 or RAID 10?",
+          "a": "RAID 5 uses space better but has a higher write penalty. RAID 10 is common for write-heavy databases, and RAID 5 or 6 for read-heavy file servers."
+        }
+      ]
+    },
+    "cron": {
+      "name": "Cron expression checker",
+      "desc": "Validate a crontab expression and preview the next run times.",
+      "input": "Cron expression (minute hour day month weekday)",
+      "next": "Next runs",
+      "never": "It will not run any time soon.",
+      "tz": "Times use this browser's time zone. If the server uses another zone, the actual times will differ.",
+      "f_minute": "minute",
+      "f_hour": "hour",
+      "f_dom": "day",
+      "f_month": "month",
+      "f_dow": "weekday",
+      "p_every5": "Every 5 min",
+      "p_hourly": "Hourly",
+      "p_daily3": "Daily at 3 AM",
+      "p_weekday9": "Weekdays 9 AM",
+      "p_monthly": "Monthly",
+      "err_fields": "Enter 5 space-separated fields: minute hour day month weekday.",
+      "err_field": "The {{f}} field is not valid.",
+      "guide": [
+        {
+          "q": "What if both day and weekday are set?",
+          "a": "Crontab runs when either one matches. For example, \"0 0 13 * 5\" runs on the 13th and on every Friday. This tool follows the same rule."
+        },
+        {
+          "q": "What does */5 mean?",
+          "a": "It steps through the field by 5 from the start. In the minute field, */5 runs at minute 0, 5, 10 and so on."
+        },
+        {
+          "q": "My job works in a shell but not in cron",
+          "a": "Cron runs with a minimal environment, so PATH is often different. Use absolute paths and log the output to see what went wrong."
+        }
+      ]
+    },
+    "chmod": {
+      "name": "chmod calculator",
+      "desc": "Convert between numeric modes like 755 and rwxr-xr-x, and build the chmod command.",
+      "input": "Numeric or symbolic mode (e.g. 755, rwxr-xr--)",
+      "invalid": "Use a format like 755 or rwxr-xr-x.",
+      "read": "Read",
+      "write": "Write",
+      "exec": "Execute",
+      "owner": "Owner",
+      "group": "Group",
+      "other": "Other",
+      "setuid": "SetUID",
+      "setgid": "SetGID",
+      "sticky": "Sticky",
+      "recursive": "Recursive (-R)",
+      "octal": "Numeric",
+      "symbolic": "Symbolic",
+      "target": "filename",
+      "warn_777": "777 gives every user write access. Avoid it unless you really need it.",
+      "guide": [
+        {
+          "q": "When do I use 755 and 644?",
+          "a": "Usually 755 for directories and executables, and 644 for regular files. A directory needs the execute bit to be entered."
+        },
+        {
+          "q": "What are SetUID, SetGID and Sticky?",
+          "a": "SetUID runs a file as its owner, SetGID runs it as its group or makes a directory pass on its group, and Sticky lets only owners delete their files, as in /tmp."
+        }
+      ]
+    },
+    "nginx": {
+      "name": "nginx config generator",
+      "desc": "Generate an nginx server block with reverse proxy, HTTPS and WebSocket settings.",
+      "domain": "Domain",
+      "upstream": "Backend address",
+      "root": "Static files path (for SPAs, optional)",
+      "body": "Upload limit (MB, 0 to omit)",
+      "ssl": "HTTPS (Let's Encrypt)",
+      "websocket": "WebSocket",
+      "gzip": "gzip",
+      "hsts": "HSTS",
+      "after": "Check the syntax with sudo nginx -t before applying, then run sudo systemctl reload nginx.",
+      "guide": [
+        {
+          "q": "How do I get a certificate?",
+          "a": "certbot issues free Let's Encrypt certificates. The generated paths are certbot's default locations."
+        },
+        {
+          "q": "What changes if I set a static files path?",
+          "a": "nginx serves your React or Vue app directly and only forwards /api/ to the backend. try_files is added so refreshing a page does not give a 404."
+        }
+      ]
+    },
+    "transfer": {
+      "name": "Transfer time calculator",
+      "desc": "Estimate how long a backup or copy takes from its size and network speed.",
+      "size": "Data size",
+      "speed": "Transfer speed",
+      "overhead": "Protocol overhead (%)",
+      "invalid": "Enter a size and speed above 0.",
+      "u_d": "d",
+      "u_h": "h",
+      "u_m": "m",
+      "u_s": "s",
+      "note": "Network speeds are in bits and file sizes in bytes, an 8x difference. Real speeds can be lower depending on disks and the line.",
+      "guide": [
+        {
+          "q": "Why do I only get about 100 MB/s on 1 Gbps?",
+          "a": "1 Gbps is 125 MB/s, and protocol overhead usually brings it to around 110 MB/s. If the disk is slower, it becomes the limit."
+        }
+      ]
+    }
+  },
+  "cert": {
+    "meta_title": "Linux Master Level 2 practice questions and mock exams | TerminalNexus",
+    "meta_desc": "Original practice questions and mock exams for the Korean Linux Master Level 2 certification, with instant explanations.",
+    "title": "Linux certification practice",
+    "subtitle": "Prepare for Linux Master Level 2 by subject and read the explanation right away. Every question was written for this site. Questions are in Korean.",
+    "loading": "Loading...",
+    "load_error": "Could not load the questions. Please try again later.",
+    "subject_basic": "Linux basics",
+    "subject_ops": "Linux operations",
+    "subject_apps": "Linux applications",
+    "practice_title": "Practice by subject",
+    "practice_desc": "Answer 10 questions with an explanation after each. Log in to collect wrong answers in your review list.",
+    "count_free": "{{free}} free of {{total}}",
+    "count_all": "{{n}} questions",
+    "mock_title": "Mock exam",
+    "mock_desc_full": "{{q}} questions · {{m}} minutes",
+    "mock_desc_trial": "Free mini exam: {{q}} questions · {{m}} minutes (once)",
+    "own_criteria": "This format is our own. You pass with an average of {{pass}} and at least {{min}} in each subject. Check the official notice for the real exam format and pass mark.",
+    "mock_trial": "Start free mock exam",
+    "mock_full": "Start mock exam",
+    "mock_resume": "Resume your exam",
+    "login_to_mock": "Log in to take a mock exam",
+    "trial_used": "You have used your free mock exam. A pass gives you unlimited full exams.",
+    "my_title": "My study",
+    "pass_until": "Pass valid until {{date}}",
+    "wrong_link": "Review list ({{n}})",
+    "mode_full": "Full mock exam",
+    "mode_trial": "Mini mock exam",
+    "score": "{{n}} points",
+    "plan_title": "Pass",
+    "benefits": [
+      "All questions",
+      "Unlimited {{q}}-question, {{m}}-minute mock exams",
+      "Retry only the questions you got wrong"
+    ],
+    "plan_days": "{{n}}-day pass",
+    "price": "₩{{v}}",
+    "buy": "Buy",
+    "pay_soon": "Coming soon",
+    "pay_done": "Your pass is active.",
+    "pay_failed": "The payment was not completed.",
+    "disclaimer": "This is an independent study resource, not affiliated with the exam organizer, and may differ from the actual exam.",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "next": "Next question",
+    "see_result": "See result",
+    "practice_done": "{{n}} of {{total}} correct",
+    "more_locked": "{{n}} more questions in this subject are available with a pass.",
+    "again": "Try again",
+    "back": "Back to practice",
+    "see_plans": "See passes",
+    "wrong_title": "Review list",
+    "wrong_locked": "{{n}} wrong answers are saved. Retrying them requires a pass.",
+    "wrong_empty": "Nothing to review.",
+    "answered": "{{n}} of {{total}} answered",
+    "q_no": "Q{{n}}",
+    "submit": "Submit",
+    "confirm_blank": "{{n}} questions are unanswered. Submit anyway?",
+    "result_title": "Exam result",
+    "passed": "Passed",
+    "failed": "Below the pass mark",
+    "correct_of": "{{n}} of {{total}} correct",
+    "trial_after": "Full mock exams and all questions come with a pass.",
+    "only_wrong": "Show wrong answers only",
+    "all_correct": "All correct!",
+    "no_answer": "You did not answer this one."
   }
 }
