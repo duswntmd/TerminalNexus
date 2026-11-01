@@ -22,6 +22,7 @@
     "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
     "@toast-ui/react-editor": "^3.2.3",
     "axios": "^1.14.0",
+    "dompurify": "^3.4.17",
     "i18next": "^25.7.2",
     "lightweight-charts": "4.2.3",
     "react": "^19.1.1",
@@ -43,6 +44,7 @@
     "vite": "npm:rolldown-vite@7.1.14"
   },
   "overrides": {
+    "dompurify": "^3.4.17",
     "vite": "npm:rolldown-vite@7.1.14"
   }
 }

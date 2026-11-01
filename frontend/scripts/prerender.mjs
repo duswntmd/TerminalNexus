@@ -160,4 +160,24 @@ ${pages.map((p) => `  <url>\n    <loc>${SITE}${p.url}</loc>${p.lastmod ? `\n    
 </urlset>
 `;
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap);
+const xml = (s) => esc(s).replace(/'/g, '&apos;');
+const rssItems = [...ARTICLES].sort((a, b) => b.date.localeCompare(a.date)).map((a) => `    <item>
+      <title>${xml(a.title)}</title>
+      <link>${SITE}/learn/${a.slug}</link>
+      <guid isPermaLink="true">${SITE}/learn/${a.slug}</guid>
+      <description>${xml(a.desc)}</description>
+      <content:encoded><![CDATA[${a.body.map(blockHtml).join('').replace(/]]>/g, ']]]]><![CDATA[>')}]]></content:encoded>
+      <pubDate>${new Date(`${a.date}T09:00:00+09:00`).toUTCString()}</pubDate>
+    </item>`).join('\n');
+fs.writeFileSync(path.join(DIST, 'rss.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>${xml(ko.learn.title)} - TerminalNexus</title>
+    <link>${SITE}/learn</link>
+    <description>${xml(ko.learn.meta_desc)}</description>
+    <language>ko</language>
+${rssItems}
+  </channel>
+</rss>
+`);
 console.log(`prerender: 페이지 ${pages.length}개와 sitemap.xml 생성`);

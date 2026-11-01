@@ -318,7 +318,7 @@ const FreeBoardRegister = () => {
                                 initialEditType="wysiwyg"
                                 useCommandShortcut={true}
                                 plugins={[colorSyntax]}
-                                customHTMLSanitizer={html => html}
+                                customHTMLSanitizer={sanitizeHtml}
                                 widgetRules={[
                                     {
                                         rule: /@video\[(.*?)\]/,

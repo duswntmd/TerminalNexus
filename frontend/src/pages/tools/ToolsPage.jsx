@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ChmodTool, CronTool, NginxTool, RaidTool, SubnetTool, TransferTool } from './ToolPanels';
 import { EncodeTool, HashTool, JsonTool, JwtTool, RegexTool, TimestampTool } from './DevToolPanels';
 import AdSlot from '../../components/AdSlot';
+import ShareBar from '../../components/ShareBar';
+import { ARTICLES } from '../../content/articles';
 import './Tools.css';
 
 const TOOLS = [
@@ -63,6 +65,7 @@ const ToolDetail = ({ tool }) => {
   const { t } = useTranslation();
   const { Panel, id } = tool;
   const guide = t(`tools.${id}.guide`, { returnObjects: true });
+  const related = ARTICLES.filter((a) => a.tool === id);
   return (
     <>
       <Helmet>
@@ -90,6 +93,13 @@ const ToolDetail = ({ tool }) => {
           ))}
         </section>
       )}
+      {related.length > 0 && (
+        <section className="tl-guide">
+          <h2>{t('tools.related')}</h2>
+          {related.map((a) => <Link key={a.slug} to={`/learn/${a.slug}`} className="tl-related">{a.title}</Link>)}
+        </section>
+      )}
+      <ShareBar path={`/tools/${id}`} text={t(`tools.${id}.name`)} />
       <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_TOOL} />
       <nav className="tl-others" aria-label={t('tools.others')}>
         {TOOLS.filter((x) => x.id !== id).map((x) => <Link key={x.id} to={`/tools/${x.id}`}>{t(`tools.${x.id}.name`)}</Link>)}

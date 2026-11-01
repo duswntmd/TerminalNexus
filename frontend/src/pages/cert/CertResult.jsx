@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import ShareBar from '../../components/ShareBar';
 import { authJson } from './certApi';
 import './Cert.css';
 
@@ -39,6 +40,7 @@ const CertResult = () => {
           ))}
         </ul>
         {data.mode === 'TRIAL' && <p className="ct-note">{t('cert.trial_after')} <Link to="/cert">{t('cert.see_plans')}</Link></p>}
+        <ShareBar path="/cert" text={t('cert.share_text', { n: data.score })} />
       </section>
 
       <label className="ct-toggle">

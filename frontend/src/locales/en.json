@@ -901,7 +901,8 @@
           "a": "Not with plain MD5 or SHA-256, which are too fast and weak against brute force. Use a password hash such as bcrypt, scrypt or Argon2."
         }
       ]
-    }
+    },
+    "related": "Related guides"
   },
   "cert": {
     "meta_title": "Linux Master Level 2 practice questions and mock exams | TerminalNexus",
@@ -969,10 +970,7 @@
     "only_wrong": "Show wrong answers only",
     "all_correct": "All correct!",
     "no_answer": "You did not answer this one.",
-    "book_title": "Need a textbook?",
-    "book_desc": "Use a textbook to strengthen weak subjects as you practice.",
-    "book_link": "See Linux Master books on Coupang",
-    "affiliate_note": "As a Coupang Partners participant, this site earns a commission from this link."
+    "share_text": "I scored {{n}} on a Linux Master Level 2 mock exam. Try it free"
   },
   "learn": {
     "meta_title": "Linux and server guides | TerminalNexus",
@@ -981,5 +979,11 @@
     "subtitle": "Common server topics with command examples. Articles are in Korean.",
     "try_tool": "Try {{name}}",
     "more": "More guides"
+  },
+  "share": {
+    "label": "Share",
+    "native": "Share",
+    "copy": "Copy link",
+    "copied": "Copied"
   }
 }

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { ARTICLES, findArticle } from '../../content/articles';
 import AdSlot from '../../components/AdSlot';
+import ShareBar from '../../components/ShareBar';
 import './Learn.css';
 
 const Block = ({ block }) => {
@@ -64,6 +65,7 @@ const LearnArticle = ({ article }) => {
         <span>{t('learn.try_tool', { name: t(`tools.${article.tool}.name`) })}</span>
         <span aria-hidden="true">→</span>
       </Link>
+      <ShareBar path={`/learn/${article.slug}`} text={article.title} />
       <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_ARTICLE} />
       <nav className="ln-more" aria-label={t('learn.more')}>
         <h2>{t('learn.more')}</h2>

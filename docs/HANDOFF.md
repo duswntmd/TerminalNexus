@@ -1,10 +1,11 @@
 # 검색 노출·수익화 작업 (2026-11-01, dev 커밋, 운영 미배포)
 
 - 빌드 뒤 `frontend/scripts/prerender.mjs`가 공개 페이지 34개의 HTML과 sitemap.xml을 생성. `public/sitemap.xml`은 삭제
-- 학습 글 10편 `/learn` (`frontend/src/content/articles.js`), 광고 자리 `AdSlot`, 쿠팡 교재 자리: 값을 넣기 전에는 안 보임
+- 학습 글 10편 `/learn` (`frontend/src/content/articles.js`), 광고 자리 `AdSlot`: 슬롯 값을 넣기 전에는 안 보임
 - nginx: 로그인 POST 20회/분, 가입 POST 5회/분 제한, HTML만 no-cache, `$uri.html` 추가. 임시 nginx로 시험 완료
 - react-helmet-async 3.0으로 올림 (2.0.5는 React 19 미지원, 화면 이동 시 제목이 안 바뀌었음), `seoTags.js`가 정적 태그 중복 제거
-- 남은 취약점: dompurify high 1건 (@toast-ui/editor 의존, 자동 수정 불가)
+- 게시판 저장형 XSS 수정 (`util/sanitizeHtml.js`), npm 취약점 0건, 주식 시작 NPE 수정
+- 홍보: RSS, IndexNow(Jenkins), 공유 버튼, 게시글 초안 `docs/PROMOTION.md`. 쿠팡은 사용자 결정으로 제외
 - 사용자 할 일과 수익 계획은 `docs/MONETIZATION.md`
 
 배포 후 확인: `/tools/json`, `/learn`의 원본 HTML 본문, 301 없음, 로그인, 글쓰기 에디터, `/tools/regex` 워커
