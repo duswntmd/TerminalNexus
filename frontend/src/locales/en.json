@@ -985,5 +985,33 @@
     "native": "Share",
     "copy": "Copy link",
     "copied": "Copied"
+  },
+  "about": {
+    "meta_title": "About and editorial principles | TerminalNexus",
+    "meta_desc": "What TerminalNexus offers and how its guides and questions are made.",
+    "title": "About and editorial principles",
+    "intro": "TerminalNexus is for people learning and running Linux servers. It is self-hosted on a single Raspberry Pi, and the problems met along the way become guides and tools.",
+    "sections": [
+      {
+        "h": "What we offer",
+        "p": "Server guides, developer and infra tools, Linux Master Level 2 practice questions, lottery results and terminal-themed mini games."
+      },
+      {
+        "h": "How guides and tools are made",
+        "p": "Commands and settings are tested wherever possible, and operating notes include real mistakes. Tools process input in your browser and do not send it to a server."
+      },
+      {
+        "h": "Practice questions",
+        "p": "Questions are written for this site for practice. They are not real exam questions, and the site is not affiliated with the exam organizer."
+      },
+      {
+        "h": "Advertising",
+        "p": "Ads may be shown to cover server costs. They do not influence guides or tools."
+      },
+      {
+        "h": "Reporting errors",
+        "p": "If you find a mistake, please use the contact in the Privacy Policy. Confirmed errors are corrected."
+      }
+    ]
   }
 }

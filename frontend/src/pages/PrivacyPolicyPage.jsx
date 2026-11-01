@@ -9,7 +9,7 @@ const KO_CONTENT = (
       🔒 개인정보처리방침
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" sx={{ mb: 4 }}>
-      본 방침은 2026년 7월 2일부터 시행됩니다.
+      본 방침은 2026년 11월 1일부터 시행됩니다.
     </Typography>
     <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 4 }} />
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5 }}>
@@ -39,7 +39,17 @@ const KO_CONTENT = (
       - <strong>전자상거래 등에서의 소비자보호에 관한 법률:</strong> 계약 또는 청약철회 등에 관한 기록(5년)
     </Typography>
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
-      4. 개인정보 보호책임자 및 기술 문의 연락처
+      4. 광고 및 쿠키
+    </Typography>
+    <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
+      이 사이트는 Google AdSense 광고를 게재할 수 있습니다.<br />
+      - Google을 포함한 제3자 공급업체는 쿠키를 사용해 사용자의 이전 방문 기록을 바탕으로 광고를 게재합니다.<br />
+      - 사용자는 <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google 광고 설정</a>에서 맞춤 광고를 끌 수 있습니다.<br />
+      - 자세한 내용은 <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">Google 광고 정책</a>을 참고하세요.<br />
+      - 브라우저 설정에서 쿠키를 거부할 수 있으며, 일부 기능이 제한될 수 있습니다.
+    </Typography>
+    <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
+      5. 개인정보 보호책임자 및 기술 문의 연락처
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
       개인정보 보호 관련 문의 사항 및 관련 불편 사항은 아래의 연락처로 이메일을 접수해 주시면 평일 기준 24시간 내에 응답해 드리겠습니다.<br />
@@ -54,7 +64,7 @@ const EN_CONTENT = (
       🔒 Privacy Policy
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" sx={{ mb: 4 }}>
-      Effective date: July 2, 2026
+      Effective date: November 1, 2026
     </Typography>
     <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 4 }} />
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5 }}>
@@ -84,7 +94,17 @@ const EN_CONTENT = (
       - <strong>Statutory Requirements:</strong> Electronic Commerce Consumer Protection Act holds records for 5 years
     </Typography>
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
-      4. Protection Contact
+      4. Advertising and Cookies
+    </Typography>
+    <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
+      This site may display Google AdSense ads.<br />
+      - Third-party vendors, including Google, use cookies to serve ads based on your prior visits.<br />
+      - You can opt out of personalized ads in <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>.<br />
+      - See <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">how Google uses advertising data</a> for details.<br />
+      - You can refuse cookies in your browser, though some features may be limited.
+    </Typography>
+    <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
+      5. Protection Contact
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
       If you have inquiries regarding privacy practices, please contact us at:<br />

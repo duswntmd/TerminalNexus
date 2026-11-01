@@ -28,6 +28,7 @@ import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
 import LearnPage from "./pages/learn/LearnPage";
+import AboutPage from "./pages/AboutPage";
 import CertPage from "./pages/cert/CertPage";
 import CertPractice from "./pages/cert/CertPractice";
 import CertMock from "./pages/cert/CertMock";
@@ -174,6 +175,7 @@ const AppContent = () => {
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/tools/:id" element={<ToolsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/learn" element={<LearnPage />} />
           <Route path="/learn/:slug" element={<LearnPage />} />
           <Route path="/cert" element={<CertPage />} />

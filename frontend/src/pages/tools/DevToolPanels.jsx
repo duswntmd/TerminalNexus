@@ -235,7 +235,7 @@ export const RegexTool = () => {
   const { t } = useTranslation();
   const [pattern, setPattern] = useState('(\\d{1,3}\\.){3}\\d{1,3}');
   const [flags, setFlags] = useState('g');
-  const [text, setText] = useState('192.168.0.6 - - "GET /api/lotto HTTP/1.1" 200\n10.0.0.1 - - "POST /login HTTP/1.1" 401');
+  const [text, setText] = useState('192.168.0.10 - - "GET /api/lotto HTTP/1.1" 200\n10.0.0.1 - - "POST /login HTTP/1.1" 401');
   const { result, timedOut } = useRegex(pattern, flags, text);
   const toggle = (flag) => setFlags(flags.includes(flag) ? flags.replace(flag, '') : flags + flag);
   const matches = result?.matches;
