@@ -979,7 +979,8 @@
     "title": "Linux and server guides",
     "subtitle": "Common server topics with command examples. Articles are in Korean.",
     "try_tool": "Try {{name}}",
-    "more": "More guides"
+    "more": "More guides",
+    "byline": "By Egosu · {{date}}"
   },
   "share": {
     "label": "Share",
@@ -993,6 +994,10 @@
     "title": "About and editorial principles",
     "intro": "TerminalNexus is for people learning and running Linux servers. It is self-hosted on a single Raspberry Pi, and the problems met along the way become guides and tools.",
     "sections": [
+      {
+        "h": "Who runs this site",
+        "p": "Built and run by Egosu, who writes up what is learned from running servers first-hand."
+      },
       {
         "h": "What we offer",
         "p": "Server guides, developer and infra tools, Linux Master Level 2 practice questions, lottery results and terminal-themed mini games."

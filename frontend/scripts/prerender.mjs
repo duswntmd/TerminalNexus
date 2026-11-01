@@ -92,10 +92,10 @@ for (const a of ARTICLES) {
     title: `${a.title} | TerminalNexus`,
     desc: a.desc,
     type: 'article',
-    body: `<article><p>${link('/learn', ko.learn.title)}</p><h1>${esc(a.title)}</h1><p>${esc(a.desc)}</p>
+    body: `<article><p>${link('/learn', ko.learn.title)}</p><h1>${esc(a.title)}</h1><p>${esc(a.desc)}</p><p>글 에고수 · ${a.date}</p>
 ${a.body.map(blockHtml).join('')}<p>${link(`/tools/${a.tool}`, ko.tools[a.tool].name)}</p></article>`,
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'TechArticle', headline: a.title, description: a.desc, datePublished: a.date, dateModified: a.date, inLanguage: 'ko', url: `${SITE}/learn/${a.slug}`, author: { '@type': 'Organization', name: 'TerminalNexus', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'TerminalNexus', logo: { '@type': 'ImageObject', url: `${SITE}/favicon-192.png` } } },
+      { '@context': 'https://schema.org', '@type': 'TechArticle', headline: a.title, description: a.desc, datePublished: a.date, dateModified: a.date, inLanguage: 'ko', url: `${SITE}/learn/${a.slug}`, author: { '@type': 'Person', name: '에고수', url: `${SITE}/about` }, publisher: { '@type': 'Organization', name: 'TerminalNexus', logo: { '@type': 'ImageObject', url: `${SITE}/favicon-192.png` } } },
       crumbs([[ko.learn.title, '/learn'], [a.title, `/learn/${a.slug}`]]),
     ],
   });

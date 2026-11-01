@@ -10,6 +10,12 @@
 
 🌐 **Live**: [https://tnhub.kr](https://tnhub.kr)
 
+| 바로가기 | 내용 |
+|---|---|
+| [서버 학습 글](https://tnhub.kr/learn) | 서브넷, RAID, cron, nginx, systemd, SSH 보안과 운영 기록 |
+| [개발·인프라 도구](https://tnhub.kr/tools) | JSON, JWT, 정규식, 해시, 서브넷, cron, chmod, nginx 설정 생성 |
+| [리눅스마스터 2급 연습](https://tnhub.kr/cert) | 과목별 무료 문제와 해설, 모의고사 |
+
 ---
 
 ## ✨ 주요 기능
