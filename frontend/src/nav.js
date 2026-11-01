@@ -27,7 +27,6 @@ export const NAV_GROUPS = [
       { key: 'infra', path: '/tools', glyph: '%' },
       { key: 'lotto', path: '/lotto', glyph: '6' },
       { key: 'fruitai', path: '/fruit-ai', login: true, glyph: '*' },
-      { key: 'agephoto', path: '/age-photo', login: true, glyph: '↔' },
     ],
   },
 ];

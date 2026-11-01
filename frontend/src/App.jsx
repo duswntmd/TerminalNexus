@@ -27,7 +27,6 @@ import JanggiPage from "./pages/play/janggi/JanggiPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
-import AgePhotoPage from "./pages/agephoto/AgePhotoPage";
 import CertPage from "./pages/cert/CertPage";
 import CertPractice from "./pages/cert/CertPractice";
 import CertMock from "./pages/cert/CertMock";
@@ -173,7 +172,6 @@ const AppContent = () => {
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/tools/:id" element={<ToolsPage />} />
-          <Route path="/age-photo" element={<ProtectedRoute><AgePhotoPage /></ProtectedRoute>} />
           <Route path="/cert" element={<CertPage />} />
           <Route path="/cert/practice" element={<CertPractice />} />
           <Route path="/cert/wrong" element={<ProtectedRoute><CertPractice wrong /></ProtectedRoute>} />
