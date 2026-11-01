@@ -39,7 +39,18 @@ const KO_CONTENT = (
       - <strong>전자상거래 등에서의 소비자보호에 관한 법률:</strong> 계약 또는 청약철회 등에 관한 기록(5년)
     </Typography>
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
-      4. 개인정보 보호책임자 및 기술 문의 연락처
+      4. AI 나이 변환 사진 기능
+    </Typography>
+    <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
+      이 항목은 나이 변환 사진 기능을 이용하면서 해당 화면에서 동의한 경우에만 적용됩니다.<br />
+      - <strong>처리 항목:</strong> 이용자가 올린 인물 사진 (얼굴이 포함될 수 있음)<br />
+      - <strong>처리 목적:</strong> 사진 속 인물의 어린 시절·나이 든 모습 이미지 생성<br />
+      - <strong>국외 이전:</strong> 생성을 요청할 때마다 사진을 암호화된 통신으로 Google Gemini API(Google LLC)에 전송하며, 서버는 국외에 있을 수 있습니다.<br />
+      - <strong>보유 기간:</strong> 사진과 생성 이미지는 당사 서버에 저장하지 않고, 날짜별 이용 횟수만 보관합니다. Google의 처리는 Gemini API 약관을 따릅니다.<br />
+      - <strong>동의 거부:</strong> 동의하지 않을 수 있으며, 이 경우 해당 기능만 이용할 수 없습니다.
+    </Typography>
+    <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
+      5. 개인정보 보호책임자 및 기술 문의 연락처
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
       개인정보 보호 관련 문의 사항 및 관련 불편 사항은 아래의 연락처로 이메일을 접수해 주시면 평일 기준 24시간 내에 응답해 드리겠습니다.<br />
@@ -84,7 +95,18 @@ const EN_CONTENT = (
       - <strong>Statutory Requirements:</strong> Electronic Commerce Consumer Protection Act holds records for 5 years
     </Typography>
     <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
-      4. Protection Contact
+      4. AI Age Photo Feature
+    </Typography>
+    <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
+      This section applies only if you use the age photo feature and agree to it on that page.<br />
+      - <strong>Items:</strong> The portrait photo you upload, which can include a person's face<br />
+      - <strong>Purpose:</strong> Creating childhood and older-age images of the person in the photo<br />
+      - <strong>Transfer abroad:</strong> The photo is sent over an encrypted connection to the Google Gemini API (Google LLC) at the time of each request. Its servers may be located outside Korea.<br />
+      - <strong>Retention:</strong> We do not store the photo or the generated images on our servers. We keep only the number of uses per day. Handling by Google follows the Gemini API terms.<br />
+      - <strong>Refusal:</strong> You may decline. Only this feature will be unavailable.
+    </Typography>
+    <Typography variant="h6" fontWeight={700} sx={{ color: '#fff', mb: 1.5, mt: 4 }}>
+      5. Protection Contact
     </Typography>
     <Typography variant="body2" color="var(--tn-text-2)" paragraph sx={{ lineHeight: 1.8 }}>
       If you have inquiries regarding privacy practices, please contact us at:<br />

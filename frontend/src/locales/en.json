@@ -233,6 +233,13 @@
             "login": true
           },
           {
+            "icon": "👤",
+            "name": "Age photo",
+            "desc": "AI imagines a younger and an older look from one portrait.",
+            "path": "/age-photo",
+            "login": true
+          },
+          {
             "icon": "🎱",
             "name": "Lotto results",
             "desc": "Korean Lotto 6/45 results updated weekly, statistics, saved numbers with result alerts, and a generator.",
@@ -503,6 +510,10 @@
     "cert": {
       "name": "Linux certification",
       "desc": "Linux Master Level 2 practice and mock exams"
+    },
+    "agephoto": {
+      "name": "Age photo",
+      "desc": "Imagine a younger and older look with AI"
     }
   },
   "home": {
@@ -802,5 +813,28 @@
     "only_wrong": "Show wrong answers only",
     "all_correct": "All correct!",
     "no_answer": "You did not answer this one."
+  },
+  "agephoto": {
+    "meta_title": "Age photo | TerminalNexus",
+    "meta_desc": "Imagine a younger and an older you from one portrait photo with AI.",
+    "title": "Age photo",
+    "subtitle": "AI imagines how the person in one portrait may have looked as a child and may look when older.",
+    "disabled": "This feature is coming soon.",
+    "pick": "Choose a photo (JPG, PNG, WEBP)",
+    "original": "Uploaded photo",
+    "tip": "A front-facing photo of one person with a clear face works best.",
+    "consent": "This is my photo or I have the consent of the person in it, and I agree to send it to the Google Gemini API (servers may be abroad) for image generation. You must be 14 or older.",
+    "privacy_link": "Privacy Policy",
+    "generate": "Create photos",
+    "working_young": "Creating childhood image...",
+    "working_old": "Creating older image...",
+    "remaining": "{{n}} of {{total}} images left today (each photo uses 2)",
+    "label_young": "As a child (about 8)",
+    "label_old": "Older (about 75)",
+    "wait": "Please wait",
+    "download": "Download",
+    "stamp": "AI-generated image",
+    "bad_file": "This photo could not be opened. Please try a JPG or PNG.",
+    "notice": "These images are AI imaginings, not real past or future appearances. Photos and results are not stored on our servers, so download anything you want to keep. Do not use them to deceive or harm anyone."
   }
 }

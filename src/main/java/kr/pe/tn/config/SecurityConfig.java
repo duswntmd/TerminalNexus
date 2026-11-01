@@ -160,6 +160,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.GET, "/api/cert/exam", "/api/cert/practice").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/cert/check", "/api/cert/order/webhook").permitAll()
                                                 .requestMatchers("/api/cert/**").authenticated()
+                                                .requestMatchers("/api/age-photo/**", "/api/age-photo").authenticated()
                                                 .requestMatchers("/api/chat/**").authenticated()
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated());
