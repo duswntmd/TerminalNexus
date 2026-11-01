@@ -1,0 +1,37 @@
+.ln-page { max-width: 760px; margin: 0 auto; padding: 2.5rem 1rem 5rem; color: var(--tn-text); }
+.ln-head { margin-bottom: 1.5rem; }
+.ln-head h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 700; letter-spacing: -0.5px; line-height: 1.3; margin: 0 0 0.5rem; }
+.ln-head p { color: var(--tn-text-2); margin: 0; line-height: 1.6; }
+.ln-crumb { font-size: 0.85rem; margin-bottom: 0.85rem; }
+.ln-crumb a { color: var(--tn-text-2); text-decoration: none; }
+.ln-crumb a:hover { color: var(--tn-tape); }
+
+.ln-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
+.ln-list a {
+  display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem; color: inherit; text-decoration: none;
+  background: var(--tn-panel); border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius-lg);
+}
+.ln-list a:hover { border-color: var(--tn-tape); }
+.ln-list span { color: var(--tn-text-2); font-size: 0.88rem; line-height: 1.5; }
+
+.ln-body { line-height: 1.8; font-size: 1rem; }
+.ln-body h2 { font-size: 1.2rem; margin: 2rem 0 0.6rem; }
+.ln-body p { margin: 0 0 1rem; }
+.ln-body ul { margin: 0 0 1rem; padding-left: 1.25rem; }
+.ln-body li { margin-bottom: 0.35rem; }
+.ln-code {
+  margin: 0 0 1rem; padding: 0.85rem 1rem; overflow-x: auto; border-radius: var(--tn-radius);
+  background: var(--tn-bg-deep); border: 1px solid var(--tn-line-soft); font: 0.85rem/1.6 var(--tn-mono);
+}
+
+.ln-tool {
+  display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.75rem; padding: 1rem 1.15rem; font-weight: 600;
+  border: 1px dashed var(--tn-line); border-radius: var(--tn-radius-lg); color: var(--tn-text); text-decoration: none;
+}
+.ln-tool:hover { border-color: var(--tn-tape); color: var(--tn-tape); }
+
+.ln-more { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--tn-line-soft); }
+.ln-more h2 { font-size: 1rem; margin: 0 0 0.25rem; }
+.ln-more a { color: var(--tn-text-2); text-decoration: none; font-size: 0.92rem; }
+.ln-more a:hover { color: var(--tn-tape); }
+

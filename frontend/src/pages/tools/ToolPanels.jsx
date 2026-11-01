@@ -5,7 +5,7 @@ import {
   permsToSymbolic, raidCapacity, splitSubnet, subnetInfo, symbolicToPerms, transferSeconds,
 } from './toolsLogic';
 
-const Copy = ({ text }) => {
+export const Copy = ({ text }) => {
   const { t } = useTranslation();
   const [done, setDone] = useState(false);
   const copy = async () => {
@@ -20,7 +20,7 @@ const Copy = ({ text }) => {
   return <button type="button" className="tl-copy" onClick={copy}>{done ? t('tools.copied') : t('tools.copy')}</button>;
 };
 
-const Result = ({ rows }) => (
+export const Result = ({ rows }) => (
   <dl className="tl-result">
     {rows.map(([k, v]) => (
       <div key={k}>

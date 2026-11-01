@@ -225,6 +225,7 @@ public class StockService {
     @Scheduled(fixedRate = TICK_MS)
     @Transactional
     public void tick() {
+        if (quotes.isEmpty()) return; // 시작 직후 initStocks가 끝나기 전
         List<StockEntity> stocks = stockRepository.findAll();
         if (stocks.isEmpty()) return;
         long now = System.currentTimeMillis();

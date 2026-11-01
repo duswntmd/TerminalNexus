@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://tnhub.kr/sitemap.xml
+Sitemap: https://tnhub.kr/rss.xml

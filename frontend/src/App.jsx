@@ -27,6 +27,8 @@ import JanggiPage from "./pages/play/janggi/JanggiPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
+import LearnPage from "./pages/learn/LearnPage";
+import AboutPage from "./pages/AboutPage";
 import CertPage from "./pages/cert/CertPage";
 import CertPractice from "./pages/cert/CertPractice";
 import CertMock from "./pages/cert/CertMock";
@@ -39,6 +41,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NavMeta from "./components/NavMeta";
 
 import './App.css'
 
@@ -163,15 +166,18 @@ const AppContent = () => {
           <Route path="/donation" element={<DonationPage />} />
           <Route path="/donation/success" element={<DonationSuccessPage />} />
           <Route path="/donation/history" element={<DonationHistoryPage />} />
-          <Route path="/play/typeracer" element={<TypeRacerPage />} />
-          <Route path="/play/hackermode" element={<HackerModePage />} />
-          <Route path="/play/terminalhack" element={<TerminalHackPage />} />
+          <Route path="/play/typeracer" element={<><NavMeta id="typeracer" path="/play/typeracer" /><TypeRacerPage /></>} />
+          <Route path="/play/hackermode" element={<><NavMeta id="hackermode" path="/play/hackermode" /><HackerModePage /></>} />
+          <Route path="/play/terminalhack" element={<><NavMeta id="terminalhack" path="/play/terminalhack" /><TerminalHackPage /></>} />
           <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
-          <Route path="/play/linux" element={<RockyLinuxPage />} />
+          <Route path="/play/linux" element={<><NavMeta id="linux" path="/play/linux" /><RockyLinuxPage /></>} />
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/tools/:id" element={<ToolsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/learn" element={<LearnPage />} />
+          <Route path="/learn/:slug" element={<LearnPage />} />
           <Route path="/cert" element={<CertPage />} />
           <Route path="/cert/practice" element={<CertPractice />} />
           <Route path="/cert/wrong" element={<ProtectedRoute><CertPractice wrong /></ProtectedRoute>} />

@@ -212,6 +212,13 @@
         "name": "Tools",
         "items": [
           {
+            "icon": "📚",
+            "name": "Server guides",
+            "desc": "Commands and concepts for server work",
+            "path": "/learn",
+            "login": false
+          },
+          {
             "icon": "🎓",
             "name": "Linux certification practice",
             "desc": "Practice questions with explanations, mock exams and a review list for Linux Master Level 2.",
@@ -220,8 +227,8 @@
           },
           {
             "icon": "🧰",
-            "name": "Infra tools",
-            "desc": "Subnet, RAID, cron and chmod calculators and an nginx config generator.",
+            "name": "Dev and infra tools",
+            "desc": "JSON, JWT, regex and hash tools plus subnet, RAID, cron, chmod and nginx tools.",
             "path": "/tools",
             "login": false
           },
@@ -297,7 +304,8 @@
     "host": "Served from a Raspberry Pi in a home rack",
     "sitemap": "Site map",
     "site": "Site",
-    "operator": "Run by"
+    "operator": "Run by",
+    "about": "About"
   },
   "notfound": {
     "title": "Page not found",
@@ -497,12 +505,16 @@
     "open": "Open to all",
     "skip": "Skip to content",
     "infra": {
-      "name": "Infra tools",
-      "desc": "Subnet, RAID, cron, chmod and nginx calculators"
+      "name": "Dev and infra tools",
+      "desc": "JSON, JWT, regex, subnet, cron and more"
     },
     "cert": {
       "name": "Linux certification",
       "desc": "Linux Master Level 2 practice and mock exams"
+    },
+    "learn": {
+      "name": "Server guides",
+      "desc": "Commands and concepts for server work"
     }
   },
   "home": {
@@ -550,10 +562,10 @@
     }
   },
   "tools": {
-    "meta_title": "Infra tools | Subnet, RAID, cron, chmod and nginx calculators",
-    "meta_desc": "Free subnet calculator, RAID capacity calculator, cron expression checker, chmod converter, nginx config generator and transfer time calculator.",
-    "title": "Infra tools",
-    "subtitle": "The calculators you keep searching for during server work, in one place. Everything is computed in your browser and nothing is sent to a server.",
+    "meta_title": "Developer and infra tools | JSON, JWT, regex, subnet, cron",
+    "meta_desc": "Free JSON, Base64, JWT, timestamp, regex, hash, subnet, RAID, cron, chmod and nginx tools.",
+    "title": "Developer and infra tools",
+    "subtitle": "Everyday tools for development and server work. Everything runs in your browser and nothing is sent to a server.",
     "copy": "Copy",
     "copied": "Copied",
     "others": "Other tools",
@@ -734,7 +746,164 @@
           "a": "1 Gbps is 125 MB/s, and protocol overhead usually brings it to around 110 MB/s. If the disk is slower, it becomes the limit."
         }
       ]
-    }
+    },
+    "group_dev": "Developer tools",
+    "group_infra": "Infra tools",
+    "result": "Result",
+    "json": {
+      "name": "JSON formatter",
+      "desc": "Pretty-print or minify JSON and find where it is broken.",
+      "input": "JSON input",
+      "style": "Output style",
+      "indent": "{{n}}-space indent",
+      "minify": "Minify",
+      "sort": "Sort keys",
+      "invalid": "This is not valid JSON.",
+      "invalid_at": "Error near line {{line}}, column {{column}}.",
+      "unsafe": "Some numbers are very long and may change when formatted. Keep values such as IDs as strings.",
+      "guide": [
+        {
+          "q": "What are common JSON errors?",
+          "a": "Trailing commas, single quotes, unquoted keys and comments. Standard JSON allows none of them."
+        },
+        {
+          "q": "Is my input sent to a server?",
+          "a": "No. Everything runs in your browser. Even so, it is a good habit not to paste production passwords or keys into any web tool."
+        }
+      ]
+    },
+    "encode": {
+      "name": "Base64 and URL encoder",
+      "desc": "Convert Base64 and URL encoding with full Unicode support.",
+      "kind": "Format",
+      "mode": "Action",
+      "encode": "Encode",
+      "decode": "Decode",
+      "input": "Input",
+      "url_safe": "URL-safe (no + / =)",
+      "bad_base64": "This is not valid Base64.",
+      "bad_url": "It contains an invalid % sequence.",
+      "binary": "This is binary data ({{n}} bytes), not text.",
+      "swap": "Use the result as input and reverse",
+      "guide": [
+        {
+          "q": "Is Base64 encryption?",
+          "a": "No. Anyone can reverse it, so it cannot protect a password. Kubernetes Secret values are Base64-encoded by default, which is not encryption on its own."
+        },
+        {
+          "q": "When do I need URL encoding?",
+          "a": "When a query value contains spaces, &, = or non-ASCII text. It stops an & inside a value being read as a parameter separator."
+        }
+      ]
+    },
+    "jwt": {
+      "name": "JWT decoder",
+      "desc": "Read the header, payload and expiry of a JWT.",
+      "safety": "Avoid pasting production tokens. This tool does not send or store them.",
+      "input": "JWT",
+      "invalid": "This is not a valid JWT. It needs three parts separated by dots.",
+      "status": "Status",
+      "iat": "Issued (iat)",
+      "exp": "Expires (exp)",
+      "nbf": "Not before (nbf)",
+      "header": "Header",
+      "payload": "Payload",
+      "statuses": {
+        "valid": "Within validity period",
+        "expired": "Expired",
+        "notyet": "Not active yet",
+        "none": "No expiry"
+      },
+      "unsigned": "This token has no signature. A server that accepts it is open to forgery.",
+      "no_verify": "The content was read but the signature was not verified. Only the server can confirm it with the secret key.",
+      "guide": [
+        {
+          "q": "Is a JWT encrypted?",
+          "a": "A typical JWT (JWS) is only Base64-encoded, so anyone can read it. The signature prevents tampering but does not hide the content, so never put secrets in it."
+        },
+        {
+          "q": "How do I read exp?",
+          "a": "It is the number of seconds since 1 January 1970 UTC. It is seconds, not milliseconds, so check the unit when integrating with other systems."
+        }
+      ]
+    },
+    "timestamp": {
+      "name": "Timestamp converter",
+      "desc": "Convert Unix time and dates, with KST and UTC side by side.",
+      "now": "Now",
+      "use_now": "Use current time",
+      "input": "Timestamp or date",
+      "invalid": "Could not read this value. Example: 1700000000 or 2026-01-31 09:00:00",
+      "read_s": "Read as seconds.",
+      "read_ms": "Read as milliseconds.",
+      "read_date": "Read as a date. Without a time zone, your computer's zone is used.",
+      "seconds": "Seconds",
+      "millis": "Milliseconds",
+      "local": "Your computer",
+      "guide": [
+        {
+          "q": "How do I tell seconds from milliseconds?",
+          "a": "Current times are 10 digits in seconds and 13 in milliseconds. This tool treats absolute values of 1e11 or more as milliseconds."
+        },
+        {
+          "q": "Why are my logs 9 hours off?",
+          "a": "The server or container is probably running in UTC, and KST is 9 hours ahead. The timestamp itself has no time zone; only its display changes."
+        }
+      ]
+    },
+    "regex": {
+      "name": "Regex tester",
+      "desc": "See matches and groups for a regular expression instantly.",
+      "pattern": "Pattern",
+      "text": "Test text",
+      "flag_g": "global",
+      "flag_i": "ignore case",
+      "flag_m": "multiline",
+      "flag_s": "dot matches newline",
+      "flag_u": "unicode",
+      "count": "{{n}} matches",
+      "truncated": "Showing only the first {{n}} matches.",
+      "invalid": "Pattern error: {{message}}",
+      "timeout": "This took too long and was stopped. Check for nested repetition such as (a+)+.",
+      "position": "Position",
+      "match": "Match",
+      "groups": "Groups",
+      "guide": [
+        {
+          "q": "Which regex syntax is this?",
+          "a": "Your browser's JavaScript regex. It is close to grep, nginx and Java, but some syntax differs, so test again in your real environment."
+        },
+        {
+          "q": "Why is nested repetition dangerous?",
+          "a": "Patterns like (a+)+$ can take exponentially longer as input grows. On a server, applying them to user input can cause denial of service (ReDoS)."
+        }
+      ]
+    },
+    "hash": {
+      "name": "Hash and checksum tool",
+      "desc": "Compute MD5 and SHA hashes of text or files and compare checksums.",
+      "input": "Text",
+      "file": "Or choose a file (up to 200MB, not uploaded)",
+      "clear": "Clear file",
+      "working": "Calculating...",
+      "failed": "Could not calculate the hash.",
+      "too_big": "Files must be 200MB or smaller.",
+      "compare": "Compare with an official checksum (paste)",
+      "matched": "Matches ({{algo}})",
+      "mismatch": "No match. The file may be damaged or different.",
+      "md5_note": "MD5 and SHA-1 have known collision attacks. Use them only to detect corruption, and SHA-256 or stronger for security.",
+      "guide": [
+        {
+          "q": "Why verify an ISO checksum?",
+          "a": "To confirm the download is not damaged. The SHA-256 on the distribution site must equal the value of your file."
+        },
+        {
+          "q": "Can I store passwords as hashes?",
+          "a": "Not with plain MD5 or SHA-256, which are too fast and weak against brute force. Use a password hash such as bcrypt, scrypt or Argon2."
+        }
+      ]
+    },
+    "related": "Related guides"
   },
   "cert": {
     "meta_title": "Linux Master Level 2 practice questions and mock exams | TerminalNexus",
@@ -801,6 +970,49 @@
     "trial_after": "Full mock exams and all questions come with a pass.",
     "only_wrong": "Show wrong answers only",
     "all_correct": "All correct!",
-    "no_answer": "You did not answer this one."
+    "no_answer": "You did not answer this one.",
+    "share_text": "I scored {{n}} on a Linux Master Level 2 mock exam. Try it free"
+  },
+  "learn": {
+    "meta_title": "Linux and server guides | TerminalNexus",
+    "meta_desc": "Practical guides on subnets, RAID, cron, permissions, nginx, disks, systemd, SSH and log analysis. Written in Korean.",
+    "title": "Linux and server guides",
+    "subtitle": "Common server topics with command examples. Articles are in Korean.",
+    "try_tool": "Try {{name}}",
+    "more": "More guides"
+  },
+  "share": {
+    "label": "Share",
+    "native": "Share",
+    "copy": "Copy link",
+    "copied": "Copied"
+  },
+  "about": {
+    "meta_title": "About and editorial principles | TerminalNexus",
+    "meta_desc": "What TerminalNexus offers and how its guides and questions are made.",
+    "title": "About and editorial principles",
+    "intro": "TerminalNexus is for people learning and running Linux servers. It is self-hosted on a single Raspberry Pi, and the problems met along the way become guides and tools.",
+    "sections": [
+      {
+        "h": "What we offer",
+        "p": "Server guides, developer and infra tools, Linux Master Level 2 practice questions, lottery results and terminal-themed mini games."
+      },
+      {
+        "h": "How guides and tools are made",
+        "p": "Commands and settings are tested wherever possible, and operating notes include real mistakes. Tools process input in your browser and do not send it to a server."
+      },
+      {
+        "h": "Practice questions",
+        "p": "Questions are written for this site for practice. They are not real exam questions, and the site is not affiliated with the exam organizer."
+      },
+      {
+        "h": "Advertising",
+        "p": "Ads may be shown to cover server costs. They do not influence guides or tools."
+      },
+      {
+        "h": "Reporting errors",
+        "p": "If you find a mistake, please use the contact in the Privacy Policy. Confirmed errors are corrected."
+      }
+    ]
   }
 }

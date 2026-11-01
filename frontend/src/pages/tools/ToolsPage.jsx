@@ -3,15 +3,25 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { ChmodTool, CronTool, NginxTool, RaidTool, SubnetTool, TransferTool } from './ToolPanels';
+import { EncodeTool, HashTool, JsonTool, JwtTool, RegexTool, TimestampTool } from './DevToolPanels';
+import AdSlot from '../../components/AdSlot';
+import ShareBar from '../../components/ShareBar';
+import { ARTICLES } from '../../content/articles';
 import './Tools.css';
 
 const TOOLS = [
-  { id: 'subnet', glyph: '/24', Panel: SubnetTool },
-  { id: 'raid', glyph: 'R5', Panel: RaidTool },
-  { id: 'cron', glyph: '* *', Panel: CronTool },
-  { id: 'chmod', glyph: '755', Panel: ChmodTool },
-  { id: 'nginx', glyph: '{ }', Panel: NginxTool },
-  { id: 'transfer', glyph: 'Gb', Panel: TransferTool },
+  { id: 'json', group: 'dev', glyph: '{}', Panel: JsonTool },
+  { id: 'encode', group: 'dev', glyph: 'b64', Panel: EncodeTool },
+  { id: 'jwt', group: 'dev', glyph: 'JWT', Panel: JwtTool },
+  { id: 'timestamp', group: 'dev', glyph: 'UTC', Panel: TimestampTool },
+  { id: 'regex', group: 'dev', glyph: '.*', Panel: RegexTool },
+  { id: 'hash', group: 'dev', glyph: '#', Panel: HashTool },
+  { id: 'subnet', group: 'infra', glyph: '/24', Panel: SubnetTool },
+  { id: 'raid', group: 'infra', glyph: 'R5', Panel: RaidTool },
+  { id: 'cron', group: 'infra', glyph: '* *', Panel: CronTool },
+  { id: 'chmod', group: 'infra', glyph: '755', Panel: ChmodTool },
+  { id: 'nginx', group: 'infra', glyph: '{ }', Panel: NginxTool },
+  { id: 'transfer', group: 'infra', glyph: 'Gb', Panel: TransferTool },
 ];
 
 const ToolsIndex = () => {
@@ -27,17 +37,22 @@ const ToolsIndex = () => {
         <h1>{t('tools.title')}</h1>
         <p>{t('tools.subtitle')}</p>
       </header>
-      <ul className="tl-cards">
-        {TOOLS.map((tool) => (
-          <li key={tool.id}>
-            <Link to={`/tools/${tool.id}`} className="tl-card">
-              <span className="tl-glyph" aria-hidden="true">{tool.glyph}</span>
-              <span className="tl-card-name">{t(`tools.${tool.id}.name`)}</span>
-              <span className="tl-card-desc">{t(`tools.${tool.id}.desc`)}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {['dev', 'infra'].map((group) => (
+        <section key={group} className="tl-group">
+          <h2>{t(`tools.group_${group}`)}</h2>
+          <ul className="tl-cards">
+            {TOOLS.filter((tool) => tool.group === group).map((tool) => (
+              <li key={tool.id}>
+                <Link to={`/tools/${tool.id}`} className="tl-card">
+                  <span className="tl-glyph" aria-hidden="true">{tool.glyph}</span>
+                  <span className="tl-card-name">{t(`tools.${tool.id}.name`)}</span>
+                  <span className="tl-card-desc">{t(`tools.${tool.id}.desc`)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
       <Link to="/cert" className="tl-promo">
         <span>{t('tools.cert_promo')}</span>
         <span aria-hidden="true">→</span>
@@ -50,6 +65,7 @@ const ToolDetail = ({ tool }) => {
   const { t } = useTranslation();
   const { Panel, id } = tool;
   const guide = t(`tools.${id}.guide`, { returnObjects: true });
+  const related = ARTICLES.filter((a) => a.tool === id);
   return (
     <>
       <Helmet>
@@ -77,6 +93,14 @@ const ToolDetail = ({ tool }) => {
           ))}
         </section>
       )}
+      {related.length > 0 && (
+        <section className="tl-guide">
+          <h2>{t('tools.related')}</h2>
+          {related.map((a) => <Link key={a.slug} to={`/learn/${a.slug}`} className="tl-related">{a.title}</Link>)}
+        </section>
+      )}
+      <ShareBar path={`/tools/${id}`} text={t(`tools.${id}.name`)} />
+      <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_TOOL} />
       <nav className="tl-others" aria-label={t('tools.others')}>
         {TOOLS.filter((x) => x.id !== id).map((x) => <Link key={x.id} to={`/tools/${x.id}`}>{t(`tools.${x.id}.name`)}</Link>)}
       </nav>

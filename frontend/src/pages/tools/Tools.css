@@ -25,6 +25,9 @@
 .tl-card-name { font-weight: 700; }
 .tl-card-desc { color: var(--tn-text-2); font-size: 0.85rem; line-height: 1.5; }
 
+.tl-group { margin-bottom: 1.5rem; }
+.tl-group h2 { font-size: 1.05rem; margin: 0 0 0.65rem; }
+
 .tl-promo {
   display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; padding: 1rem 1.15rem;
   border: 1px dashed var(--tn-line); border-radius: var(--tn-radius-lg); color: var(--tn-text); text-decoration: none; font-weight: 600;
@@ -43,6 +46,15 @@
 .tl-field input:focus, .tl-field select:focus { outline: none; border-color: var(--tn-tape); }
 .tl-pair > div { display: grid; grid-template-columns: 1fr 96px; gap: 0.4rem; }
 .tl-mono { font-family: var(--tn-mono) !important; }
+.tl-area {
+  width: 100%; padding: 0.65rem 0.75rem; border-radius: var(--tn-radius); resize: vertical;
+  border: 1px solid var(--tn-line); background: var(--tn-bg-deep); color: var(--tn-text); font: 0.88rem/1.6 var(--tn-mono);
+}
+.tl-area:focus { outline: none; border-color: var(--tn-tape); }
+.tl-gap { margin-top: 0.85rem; }
+.tl-wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.tl-mark { background: var(--tn-tape); color: var(--tn-tape-ink); border-radius: 2px; }
+.tl-ok { color: var(--tn-led); font-size: 0.9rem; margin: 0.25rem 0 0.75rem; }
 
 .tl-result { margin: 0.5rem 0 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem; }
 .tl-result > div { background: var(--tn-bg-deep); border-radius: var(--tn-radius); padding: 0.65rem 0.85rem; min-width: 0; }
@@ -93,6 +105,8 @@
 .tl-guide { margin-top: 2rem; display: grid; gap: 1.1rem; }
 .tl-guide h2 { font-size: 1.02rem; margin: 0 0 0.3rem; }
 .tl-guide p { color: var(--tn-text-2); line-height: 1.7; margin: 0; font-size: 0.92rem; }
+
+.tl-related { color: var(--tn-blue); font-size: 0.92rem; }
 
 .tl-others { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--tn-line-soft); }
 .tl-others a { color: var(--tn-text-2); text-decoration: none; font-size: 0.85rem; padding: 0.3rem 0.65rem; border: 1px solid var(--tn-line-soft); border-radius: 999px; }

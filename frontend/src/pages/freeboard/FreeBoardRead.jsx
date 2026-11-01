@@ -26,6 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Viewer } from '@toast-ui/react-editor';
+import { sanitizeHtml } from '../../util/sanitizeHtml';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
 import { usePost } from './hooks/usePost';
@@ -181,7 +182,7 @@ function FreeBoardRead() {
                                     return `\n\n<div style="display:flex;justify-content:center;margin:20px 0"><video controls style="max-width:100%;border-radius:8px"><source src="${url}" type="video/mp4" /></video></div>\n\n`;
                                 })
                                 : ''}
-                            customHTMLSanitizer={(html) => html}
+                            customHTMLSanitizer={sanitizeHtml}
                         />
                     </Box>
 

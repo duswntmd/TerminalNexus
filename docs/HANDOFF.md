@@ -1,10 +1,30 @@
+# 검색 노출·수익화 작업 (2026-11-01, dev 커밋, 운영 미배포)
+
+- 빌드 뒤 `frontend/scripts/prerender.mjs`가 공개 페이지 34개의 HTML과 sitemap.xml을 생성. `public/sitemap.xml`은 삭제
+- 학습 글 10편 `/learn` (`frontend/src/content/articles.js`), 광고 자리 `AdSlot`: 슬롯 값을 넣기 전에는 안 보임
+- nginx: 로그인 POST 20회/분, 가입 POST 5회/분 제한, HTML만 no-cache, `$uri.html` 추가. 임시 nginx로 시험 완료
+- react-helmet-async 3.0으로 올림 (2.0.5는 React 19 미지원, 화면 이동 시 제목이 안 바뀌었음), `seoTags.js`가 정적 태그 중복 제거
+- 게시판 저장형 XSS 수정 (`util/sanitizeHtml.js`), npm 취약점 0건, 주식 시작 NPE 수정
+- 홍보: RSS, IndexNow(Jenkins), 공유 버튼, 게시글 초안 `docs/PROMOTION.md`. 쿠팡은 사용자 결정으로 제외
+- 사용자 할 일과 수익 계획은 `docs/MONETIZATION.md`
+
+배포 후 확인: `/tools/json`, `/learn`의 원본 HTML 본문, 301 없음, 로그인, 글쓰기 에디터, `/tools/regex` 워커
+
+# 개발자 도구 6종 `/tools` (2026-11-01, dev 커밋, 운영 미배포)
+
+- JSON 정리, Base64·URL, JWT 해석, 타임스탬프, 정규식, 해시·체크섬. 전부 브라우저에서만 처리, 비용 없음
+- 로직은 `pages/tools/devToolsLogic.js`, 정규식은 `regexWorker.js`에서 1.5초 제한으로 실행
+- 검증: node 단정 테스트 통과(해시는 node crypto와 대조), 빌드본 모바일 화면 확인. 운영 배포 후 `/tools/regex`에서 워커 동작 확인 필요
+
+나이 변환 사진은 유료 API가 필요해 취소함 (코드는 커밋 `0d4eb26`).
+
 # 진행 중 작업 (2026-10-31 시작) — 새 세션은 여기부터
 
 사용자 요청: 아래 3개를 순서대로 만든다. 끊기면 이 체크리스트에서 이어서 진행.
 완료할 때마다 체크하고 dev에 커밋한다. main 병합(=운영 배포)은 사용자 승인 후에만.
 
 - [x] 1. 로또 내 번호 저장 + 토요일 결과 알림 (가짜 추첨 서버로 1·2·5등 알림까지 검증)
-  - 메일을 켜려면 서버에 `/home/ubuntu/.tn_mail.env`를 만들면 됨 (없으면 사이트 안 알림만 동작)
+  - 메일을 켜려면 서버에 서버의 메일 환경 파일를 만들면 됨 (없으면 사이트 안 알림만 동작)
     내용: `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD`,
     `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `LOTTO_MAIL_FROM`
   - 서버 `domain/lotto`: 번호 저장(1인 20개), 새 회차 반영 시 알림 생성, 메일은 SMTP 설정 있을 때만
@@ -12,7 +32,7 @@
 - [x] 2. 인프라 도구 모음 `/tools`, `/tools/:id` (검증 스크립트 전부 통과)
   - 프론트 전용: 서브넷, RAID, cron, chmod, nginx 설정 생성, 전송 시간
   - 계산 로직은 `pages/tools/toolsLogic.js`로 분리해 node로 검증, sitemap 추가
-- [x] 3. 자격증 플랫폼 `/cert` (dev 커밋, 운영 미배포)
+- [x] 3. 자격증 플랫폼 `/cert` (2026-10-31 main `ffc7327`로 1~3 모두 운영 배포 확인)
   - 서버 `domain/cert`: 문제 150개는 `resources/cert/`에만 있음(프론트 번들에 안 들어감), 과목별 40% 무료
   - 무료: 과목별 연습, 미니 모의고사 1회 / 이용권: 전체 문제, 50문항 60분 모의고사, 오답노트
   - 결제: `PortOneClient`를 후원과 공용으로 분리, 가짜 포트원 서버로 금액 조작·중복·웹훅 시나리오 검증
@@ -24,6 +44,9 @@
 2. 문제 내용 직접 검수, 공식 시험 범위 확인
 3. 포트원 실결제 설정, 웹훅 URL `https://tnhub.kr/api/cert/order/webhook` 등록
 4. 컨테이너에 `CERT_PAYMENT_ENABLED=true` 전달
+5. Jenkins 배포에 포트원 값 추가: 지금 `Jenkinsfile`은 컨테이너에 `PORTONE_IMP_KEY`, `PORTONE_IMP_SECRET`을 넘기지 않고
+   프론트 빌드에도 `VITE_PORTONE_IMP_CODE`를 넘기지 않음 (2026-10-31 운영 컨테이너에서 PORTONE 환경변수 없음 확인).
+   이 상태면 기본값(테스트 상점, 테스트 키)이 쓰이므로 후원 결제도 함께 영향받음. 실결제로 확인한 것은 아님.
 
 결정 사항: 유료 결제는 약관·환불정책·사업자 정보 확인 전까지 꺼 둔다.
 
@@ -71,4 +94,3 @@
 ## 사용자가 직접 해야 할 일 (보안)
 - MySQL `tn` 계정 비밀번호 변경 (새 값을 먼저 Jenkins Credential `DB_PASSWORD`에 넣은 뒤 요청하면 서버 쪽 변경)
 - Gemini API 키 2개 폐기·재발급, 운영 관리자 비밀번호 변경, Jenkins 관리자 비밀번호 확인
-- 공유기 포트포워딩에서 3306·8080 제거 (서버 방화벽으로 이미 차단됨)

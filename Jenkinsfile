@@ -54,7 +54,10 @@ pipeline {
             steps {
                 echo '📂 Frontend 배포 중...'
                 sh "sudo mkdir -p ${NGINX_WEB_ROOT}"
+                // 바뀐 페이지만 검색엔진에 알림. 실패해도 배포는 계속
+                sh "node frontend/scripts/indexnow.mjs list ${NGINX_WEB_ROOT} frontend/dist > indexnow-urls.txt || true"
                 sh "sudo cp -r frontend/dist/* ${NGINX_WEB_ROOT}/"
+                sh "node frontend/scripts/indexnow.mjs send indexnow-urls.txt || true"
                 
                 echo '🔧 Nginx 사이트 설정(nginx/tnhub.conf) 적용 중...'
                 sh '''

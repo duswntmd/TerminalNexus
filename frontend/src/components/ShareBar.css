@@ -1,0 +1,6 @@
+.tn-share { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin-top: 1.25rem; font-size: 0.85rem; color: var(--tn-text-3); }
+.tn-share button, .tn-share a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 0.8rem; border-radius: var(--tn-radius);
+  border: 1px solid var(--tn-line); background: var(--tn-panel-2); color: var(--tn-text); font: inherit; text-decoration: none; cursor: pointer;
+}
+.tn-share button:hover, .tn-share a:hover { border-color: var(--tn-tape); }
