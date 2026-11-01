@@ -212,6 +212,13 @@
         "name": "Tools",
         "items": [
           {
+            "icon": "📚",
+            "name": "Server guides",
+            "desc": "Commands and concepts for server work",
+            "path": "/learn",
+            "login": false
+          },
+          {
             "icon": "🎓",
             "name": "Linux certification practice",
             "desc": "Practice questions with explanations, mock exams and a review list for Linux Master Level 2.",
@@ -503,6 +510,10 @@
     "cert": {
       "name": "Linux certification",
       "desc": "Linux Master Level 2 practice and mock exams"
+    },
+    "learn": {
+      "name": "Server guides",
+      "desc": "Commands and concepts for server work"
     }
   },
   "home": {
@@ -957,6 +968,18 @@
     "trial_after": "Full mock exams and all questions come with a pass.",
     "only_wrong": "Show wrong answers only",
     "all_correct": "All correct!",
-    "no_answer": "You did not answer this one."
+    "no_answer": "You did not answer this one.",
+    "book_title": "Need a textbook?",
+    "book_desc": "Use a textbook to strengthen weak subjects as you practice.",
+    "book_link": "See Linux Master books on Coupang",
+    "affiliate_note": "As a Coupang Partners participant, this site earns a commission from this link."
+  },
+  "learn": {
+    "meta_title": "Linux and server guides | TerminalNexus",
+    "meta_desc": "Practical guides on subnets, RAID, cron, permissions, nginx, disks, systemd, SSH and log analysis. Written in Korean.",
+    "title": "Linux and server guides",
+    "subtitle": "Common server topics with command examples. Articles are in Korean.",
+    "try_tool": "Try {{name}}",
+    "more": "More guides"
   }
 }

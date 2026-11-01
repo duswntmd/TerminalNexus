@@ -73,3 +73,9 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* 사전 렌더링 본문: 스크립트가 뜨기 전이나 스크립트 없는 환경에서만 보인다 */
+.pr-page { max-width: 760px; margin: 0 auto; padding: 2rem 1rem; color: var(--tn-text); line-height: 1.7; }
+.pr-page a { color: var(--tn-blue); }
+.pr-page pre { overflow-x: auto; }
+.tn-ad { margin-top: 1.75rem; min-height: 100px; }

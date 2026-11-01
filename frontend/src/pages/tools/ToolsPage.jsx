@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { ChmodTool, CronTool, NginxTool, RaidTool, SubnetTool, TransferTool } from './ToolPanels';
 import { EncodeTool, HashTool, JsonTool, JwtTool, RegexTool, TimestampTool } from './DevToolPanels';
+import AdSlot from '../../components/AdSlot';
 import './Tools.css';
 
 const TOOLS = [
@@ -89,6 +90,7 @@ const ToolDetail = ({ tool }) => {
           ))}
         </section>
       )}
+      <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_TOOL} />
       <nav className="tl-others" aria-label={t('tools.others')}>
         {TOOLS.filter((x) => x.id !== id).map((x) => <Link key={x.id} to={`/tools/${x.id}`}>{t(`tools.${x.id}.name`)}</Link>)}
       </nav>

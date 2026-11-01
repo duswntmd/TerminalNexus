@@ -6,6 +6,9 @@ import { useAuth } from '../../context/AuthContext';
 import { authJson, postJson, publicFetch } from './certApi';
 import './Cert.css';
 
+// 쿠팡 파트너스 링크. .env에 설정해야 교재 안내가 보인다
+const BOOK_URL = import.meta.env.VITE_COUPANG_CERT_URL;
+
 const IMP_SCRIPT = 'https://cdn.iamport.kr/js/iamport.payment-1.2.0.js';
 
 const loadImp = () => new Promise((resolve, reject) => {
@@ -176,6 +179,14 @@ const CertPage = () => {
             </section>
           )}
 
+          {BOOK_URL && (
+            <section className="ct-panel">
+              <h2>{t('cert.book_title')}</h2>
+              <p>{t('cert.book_desc')}</p>
+              <a href={BOOK_URL} target="_blank" rel="sponsored noopener noreferrer">{t('cert.book_link')}</a>
+              <p className="ct-note">{t('cert.affiliate_note')}</p>
+            </section>
+          )}
           <p className="ct-note">{t('cert.disclaimer')}</p>
         </>
       )}
