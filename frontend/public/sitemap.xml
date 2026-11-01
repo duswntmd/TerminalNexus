@@ -25,6 +25,30 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://tnhub.kr/tools/json</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/tools/encode</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/tools/jwt</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/tools/timestamp</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/tools/regex</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tnhub.kr/tools/hash</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://tnhub.kr/tools/subnet</loc>
     <priority>0.7</priority>
   </url>

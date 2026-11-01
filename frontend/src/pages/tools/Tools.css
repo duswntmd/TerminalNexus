@@ -25,6 +25,9 @@
 .tl-card-name { font-weight: 700; }
 .tl-card-desc { color: var(--tn-text-2); font-size: 0.85rem; line-height: 1.5; }
 
+.tl-group { margin-bottom: 1.5rem; }
+.tl-group h2 { font-size: 1.05rem; margin: 0 0 0.65rem; }
+
 .tl-promo {
   display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; padding: 1rem 1.15rem;
   border: 1px dashed var(--tn-line); border-radius: var(--tn-radius-lg); color: var(--tn-text); text-decoration: none; font-weight: 600;
@@ -43,6 +46,15 @@
 .tl-field input:focus, .tl-field select:focus { outline: none; border-color: var(--tn-tape); }
 .tl-pair > div { display: grid; grid-template-columns: 1fr 96px; gap: 0.4rem; }
 .tl-mono { font-family: var(--tn-mono) !important; }
+.tl-area {
+  width: 100%; padding: 0.65rem 0.75rem; border-radius: var(--tn-radius); resize: vertical;
+  border: 1px solid var(--tn-line); background: var(--tn-bg-deep); color: var(--tn-text); font: 0.88rem/1.6 var(--tn-mono);
+}
+.tl-area:focus { outline: none; border-color: var(--tn-tape); }
+.tl-gap { margin-top: 0.85rem; }
+.tl-wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.tl-mark { background: var(--tn-tape); color: var(--tn-tape-ink); border-radius: 2px; }
+.tl-ok { color: var(--tn-led); font-size: 0.9rem; margin: 0.25rem 0 0.75rem; }
 
 .tl-result { margin: 0.5rem 0 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem; }
 .tl-result > div { background: var(--tn-bg-deep); border-radius: var(--tn-radius); padding: 0.65rem 0.85rem; min-width: 0; }
