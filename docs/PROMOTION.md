@@ -2,6 +2,7 @@
 
 돈을 쓰지 않고 사람을 데려오는 방법을 효과가 오래가는 순서로 정리했다.
 공개 게시는 운영자 이름으로 나가므로 사람이 내용을 확인하고 올린다. 같은 글을 여러 곳에 반복해서 올리지 않는다.
+실명, 이메일, 지역, 직장, 집 네트워크 정보는 어떤 글에도 넣지 않는다.
 
 ## 자동으로 되는 것
 
@@ -45,8 +46,8 @@
 제목: 라즈베리파이 한 대로 웹서비스를 운영하면서 배운 것
 
 ```
-집에 있는 라즈베리파이로 Spring Boot, React, MySQL, Jenkins, nginx를 올려 개인 사이트를 운영하고 있습니다.
-비용은 전기세와 도메인 정도인데, 직접 운영해 보니 책으로는 몰랐던 일이 많았습니다.
+라즈베리파이 한 대로 Spring Boot, React, MySQL, Jenkins, nginx를 올려 개인 사이트를 운영하고 있습니다.
+직접 운영해 보니 책으로는 몰랐던 일이 많았습니다.
 
 - 사이트를 만들어도 검색엔진에는 모든 페이지가 같은 제목의 빈 화면으로 보였습니다.
   빌드할 때 페이지별 HTML을 생성해서 해결했습니다.
@@ -85,7 +86,7 @@ https://tnhub.kr/tools
 제목: What I learned running a full web app on a single Raspberry Pi
 
 ```
-I run a Spring Boot, React and MySQL site from a Raspberry Pi at home, with Jenkins deploying on every push.
+I run a Spring Boot, React and MySQL site from a single Raspberry Pi, with Jenkins deploying on every push.
 Three surprises so far: crawlers saw every page as the same empty shell until I generated HTML at build time,
 a disabled sanitizer in my editor allowed stored XSS, and a trailing-slash redirect nearly broke my canonicals.
 

@@ -57,3 +57,5 @@ backend.log
 curl_result.txt
 p_payments*.json
 
+# 서버 내부 정보가 있는 운영 기록
+SECURITY_LOG.md

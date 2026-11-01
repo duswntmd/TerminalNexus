@@ -24,7 +24,7 @@
 완료할 때마다 체크하고 dev에 커밋한다. main 병합(=운영 배포)은 사용자 승인 후에만.
 
 - [x] 1. 로또 내 번호 저장 + 토요일 결과 알림 (가짜 추첨 서버로 1·2·5등 알림까지 검증)
-  - 메일을 켜려면 서버에 `/home/ubuntu/.tn_mail.env`를 만들면 됨 (없으면 사이트 안 알림만 동작)
+  - 메일을 켜려면 서버에 서버의 메일 환경 파일를 만들면 됨 (없으면 사이트 안 알림만 동작)
     내용: `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD`,
     `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `LOTTO_MAIL_FROM`
   - 서버 `domain/lotto`: 번호 저장(1인 20개), 새 회차 반영 시 알림 생성, 메일은 SMTP 설정 있을 때만
@@ -94,4 +94,3 @@
 ## 사용자가 직접 해야 할 일 (보안)
 - MySQL `tn` 계정 비밀번호 변경 (새 값을 먼저 Jenkins Credential `DB_PASSWORD`에 넣은 뒤 요청하면 서버 쪽 변경)
 - Gemini API 키 2개 폐기·재발급, 운영 관리자 비밀번호 변경, Jenkins 관리자 비밀번호 확인
-- 공유기 포트포워딩에서 3306·8080 제거 (서버 방화벽으로 이미 차단됨)

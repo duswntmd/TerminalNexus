@@ -304,7 +304,8 @@
     "host": "집 서버 랙의 라즈베리파이에서 운영 중",
     "sitemap": "사이트 맵",
     "site": "사이트",
-    "operator": "운영"
+    "operator": "운영",
+    "about": "사이트 소개"
   },
   "notfound": {
     "title": "페이지를 찾을 수 없음",

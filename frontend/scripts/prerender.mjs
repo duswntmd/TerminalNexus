@@ -33,7 +33,7 @@ const crumbs = (items) => ({
 });
 
 const siteLinks = `<nav>${links([
-  ['/learn', ko.learn.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/guide', '사이트 소개'], ['/privacy', '개인정보처리방침'],
+  ['/learn', ko.learn.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/about', '사이트 소개와 운영 원칙'], ['/guide', '기능 안내'], ['/privacy', '개인정보처리방침'],
 ])}</nav>`;
 
 const pages = [];
@@ -118,7 +118,14 @@ add({
   body: `<h1>로또 6/45 당첨번호</h1><p>${esc(ko.lotto.subtitle || '')}</p><p>회차별 당첨번호, 번호 통계, 내 번호 확인, 번호 생성 기능을 제공합니다. 로또 추첨은 무작위이며 어떤 도구도 당첨을 보장하지 않습니다.</p>`,
 });
 
-add({ url: '/guide', title: '사이트 소개 | TerminalNexus', desc: '터미널넥서스에서 이용할 수 있는 기능을 소개합니다.', body: `<h1>사이트 소개</h1>${ko.guide.groups.map((g) => `<h2>${esc(g.name || g.title || '')}</h2><ul>${g.items.map((i) => `<li>${link(i.path, i.name)}: ${esc(i.desc)}</li>`).join('')}</ul>`).join('')}` });
+add({
+  url: '/about',
+  title: ko.about.meta_title,
+  desc: ko.about.meta_desc,
+  body: `<h1>${esc(ko.about.title)}</h1><p>${esc(ko.about.intro)}</p>${ko.about.sections.map((s) => `<h2>${esc(s.h)}</h2><p>${esc(s.p)}</p>`).join('')}`,
+});
+
+add({ url: '/guide', title: '기능 안내 | TerminalNexus', desc: '터미널넥서스에서 이용할 수 있는 기능을 소개합니다.', body: `<h1>기능 안내</h1>${ko.guide.groups.map((g) => `<h2>${esc(g.name || g.title || '')}</h2><ul>${g.items.map((i) => `<li>${link(i.path, i.name)}: ${esc(i.desc)}</li>`).join('')}</ul>`).join('')}` });
 
 for (const item of ALL_NAV.filter((n) => !n.login && !pages.some((p) => p.url === n.path))) {
   const nav = ko.nav[item.key];

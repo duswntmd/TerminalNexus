@@ -304,7 +304,8 @@
     "host": "Served from a Raspberry Pi in a home rack",
     "sitemap": "Site map",
     "site": "Site",
-    "operator": "Run by"
+    "operator": "Run by",
+    "about": "About"
   },
   "notfound": {
     "title": "Page not found",
