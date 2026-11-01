@@ -26,6 +26,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import MovieIcon from '@mui/icons-material/Movie';
 
 import { Editor } from '@toast-ui/react-editor';
+import { sanitizeHtml } from '../../util/sanitizeHtml';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
