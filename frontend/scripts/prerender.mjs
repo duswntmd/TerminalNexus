@@ -33,7 +33,7 @@ const crumbs = (items) => ({
 });
 
 const siteLinks = `<nav>${links([
-  ['/learn', ko.learn.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/about', '사이트 소개와 운영 원칙'], ['/guide', '기능 안내'], ['/privacy', '개인정보처리방침'],
+  ['/learn', ko.learn.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/about', '사이트 소개와 운영 원칙'], ['/guide', '기능 안내'], ['/privacy', '개인정보처리방침'], ['/terms', '이용약관'],
 ])}</nav>`;
 
 const pages = [];
@@ -124,6 +124,20 @@ add({
   desc: ko.about.meta_desc,
   body: `<h1>${esc(ko.about.title)}</h1><p>${esc(ko.about.intro)}</p>${ko.about.sections.map((s) => `<h2>${esc(s.h)}</h2><p>${esc(s.p)}</p>`).join('')}`,
 });
+
+// 약관류는 화면 코드의 한국어 본문을 그대로 옮긴다
+const legalBody = (file) => {
+  const src = fs.readFileSync(path.join(ROOT, 'src/pages', file), 'utf8');
+  const ko = src.slice(src.indexOf('const KO_CONTENT'), src.indexOf('const EN_CONTENT'));
+  return [...ko.matchAll(/<Typography\s+variant="(\w+)"[^>]*>([\s\S]*?)<\/Typography>/g)].map(([, variant, text]) => {
+    const tag = { h4: 'h1', h6: 'h2' }[variant] || 'p';
+    const clean = text.replace(/\{' '\}/g, ' ').trim().replace(/\s+/g, ' ');
+    return `<${tag}>${clean}</${tag}>`;
+  }).join('');
+};
+
+add({ url: '/privacy', title: '개인정보처리방침 | TerminalNexus', desc: 'TerminalNexus의 개인정보처리방침입니다.', body: legalBody('PrivacyPolicyPage.jsx') });
+add({ url: '/terms', title: '이용약관 | TerminalNexus', desc: 'TerminalNexus의 이용약관입니다.', body: legalBody('TermsOfServicePage.jsx') });
 
 add({ url: '/guide', title: '기능 안내 | TerminalNexus', desc: '터미널넥서스에서 이용할 수 있는 기능을 소개합니다.', body: `<h1>기능 안내</h1>${ko.guide.groups.map((g) => `<h2>${esc(g.name || g.title || '')}</h2><ul>${g.items.map((i) => `<li>${link(i.path, i.name)}: ${esc(i.desc)}</li>`).join('')}</ul>`).join('')}` });
 
