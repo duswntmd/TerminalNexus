@@ -205,6 +205,13 @@
             "desc": "Rocky Linux 9.6 셸을 브라우저에서 체험해요. dnf·systemctl·firewall-cmd까지 실제처럼 연습할 수 있어요.",
             "path": "/play/linux",
             "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders 정보",
+            "desc": "탈출형 슈터 ARC Raiders의 맵 7종, 적(ARC) 검색, 업데이트 기록과 초보자 팁을 공식 자료 기준으로 정리한 비공식 정보.",
+            "path": "/games/arc-raiders",
+            "login": false
           }
         ]
       },
@@ -510,6 +517,10 @@
     "learn": {
       "name": "리눅스·서버 학습",
       "desc": "서버 작업에 바로 쓰는 명령어와 개념 정리"
+    },
+    "arcraiders": {
+      "name": "ARC Raiders 정보",
+      "desc": "맵·적·업데이트를 정리한 비공식 게임 정보"
     }
   },
   "home": {
@@ -1014,5 +1025,39 @@
         "p": "틀린 내용을 발견하면 개인정보처리방침의 문의처로 알려 주세요. 확인되면 고칩니다."
       }
     ]
+  },
+  "arc": {
+    "disclaimer": "이 페이지는 Embark Studios와 관련 없는 비공식 팬 정보입니다. 공식 로고와 이미지를 쓰지 않았고, 게임 이름과 상표는 각 권리자의 것입니다. 정보는 공식 공지와 매체 자료를 확인일 기준으로 직접 정리했으며, 업데이트로 달라질 수 있습니다.",
+    "byline": "정리 에고수 · 정보 확인일 {{date}}",
+    "checked": "정보 확인일 {{date}}",
+    "sources": "출처",
+    "tabs": "ARC Raiders 정보 메뉴",
+    "facts_title": "게임 개요",
+    "loop_title": "한 판의 흐름 (탈출형 루프)",
+    "systems_title": "핵심 시스템",
+    "tips_title": "초보자 팁",
+    "maps_title": "맵 목록 (추가 순서)",
+    "conditions_title": "맵 조건 (특수 판)",
+    "added": "추가 {{date}}",
+    "keys": "알려진 열쇠:",
+    "keys_hint": "열쇠 목록은 Dexerto 위키 기준이며 공식 목록이 아닙니다. 새 맵의 열쇠는 아직 확인하지 못했습니다.",
+    "arc_title": "ARC(적) 목록",
+    "arc_hint": "위협도와 장갑은 Dexerto 위키의 분류(2026-04-28)이고 공식 수치가 아닙니다. 형태는 공식·매체 설명을 바탕으로 한 참고 분류입니다. 확인하지 못한 값은 '확인 필요'로 두었습니다.",
+    "search": "이름이나 설명으로 검색",
+    "all": "전체",
+    "count": "{{total}}종 중 {{n}}종",
+    "empty": "조건에 맞는 ARC가 없습니다.",
+    "col_name": "이름",
+    "col_type": "형태",
+    "col_threat": "위협도",
+    "col_armor": "장갑",
+    "col_since": "등장",
+    "col_desc": "설명",
+    "updates_title": "업데이트 기록",
+    "kind_major": "대형 업데이트",
+    "kind_patch": "패치",
+    "kind_event": "발표·이벤트",
+    "report": "틀린 정보를 발견하면 알려 주세요.",
+    "report_link": "문의 방법 보기"
   }
 }

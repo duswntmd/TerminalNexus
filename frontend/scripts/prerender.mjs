@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ARTICLES } from '../src/content/articles.js';
 import { ALL_NAV } from '../src/nav.js';
+import * as AR from '../src/content/arcRaiders.js';
 
 const SITE = 'https://tnhub.kr';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -140,6 +141,38 @@ add({ url: '/privacy', title: '개인정보처리방침 | TerminalNexus', desc: 
 add({ url: '/terms', title: '이용약관 | TerminalNexus', desc: 'TerminalNexus의 이용약관입니다.', body: legalBody('TermsOfServicePage.jsx') });
 
 add({ url: '/guide', title: '기능 안내 | TerminalNexus', desc: '터미널넥서스에서 이용할 수 있는 기능을 소개합니다.', body: `<h1>기능 안내</h1>${ko.guide.groups.map((g) => `<h2>${esc(g.name || g.title || '')}</h2><ul>${g.items.map((i) => `<li>${link(i.path, i.name)}: ${esc(i.desc)}</li>`).join('')}</ul>`).join('')}` });
+
+// ARC Raiders 비공식 정보: 하위 페이지마다 데이터 전체를 본문으로 넣는다
+const arcSrc = (ids) => ids.map((id) => link(AR.SOURCES[id].url, AR.SOURCES[id].name)).join(', ');
+const arcFoot = (ids) => `<p>정보 확인일 ${AR.CHECKED} · 출처: ${arcSrc([...new Set(ids)])}</p>`;
+const arcBody = {
+  '': () => `<h2>게임 개요</h2><ul>${AR.FACTS.map((f) => `<li>${esc(f.k)}: ${esc(f.v)}${f.note ? ` (${esc(f.note)})` : ''}</li>`).join('')}</ul>${arcFoot(AR.FACTS.flatMap((f) => f.src))}
+<h2>한 판의 흐름 (탈출형 루프)</h2><ol>${AR.LOOP.map((l) => `<li>${esc(l.step)}: ${esc(l.text)}</li>`).join('')}</ol>
+<h2>핵심 시스템</h2>${AR.SYSTEMS.map((s) => `<h3>${esc(s.name)}</h3><p>${esc(s.text)}</p>`).join('')}${arcFoot(AR.SYSTEMS.flatMap((s) => s.src))}
+<h2>초보자 팁</h2>${AR.TIPS.map((t) => `<h3>${esc(t.h)}</h3><p>${esc(t.p)}</p>`).join('')}${arcFoot(AR.TIPS.flatMap((t) => t.src))}`,
+  maps: () => `<h2>맵 목록</h2>${AR.MAPS.map((m) => `<h3>${esc(m.name)} (${esc(m.ko)})</h3><p>추가 ${m.added} · ${esc(m.update)}. ${esc(m.text)}${m.keys.length ? ` 알려진 열쇠: ${esc(m.keys.join(', '))}` : ''}</p>`).join('')}${arcFoot(AR.MAPS.flatMap((m) => m.src))}
+<h2>맵 조건</h2><ul>${AR.CONDITIONS.map((c) => `<li>${esc(c.name)}: ${esc(c.text)}</li>`).join('')}</ul>${arcFoot(AR.CONDITIONS.flatMap((c) => c.src))}`,
+  arc: () => `<h2>ARC(적) 목록</h2><table><thead><tr><th>이름</th><th>형태</th><th>위협도</th><th>장갑</th><th>등장</th><th>설명</th></tr></thead><tbody>${AR.ARC.map((a) => `<tr><td>${esc(a.name)}</td><td>${esc(a.type)}</td><td>${esc(a.threat)}</td><td>${esc(a.armor)}</td><td>${esc(a.since)}</td><td>${esc(a.text)}</td></tr>`).join('')}</tbody></table>
+<p>${esc(ko.arc.arc_hint)}</p>${arcFoot(AR.ARC.flatMap((a) => a.src))}`,
+  updates: () => `<h2>업데이트 기록</h2><ul>${[...AR.UPDATES].reverse().map((u) => `<li>${u.date} ${esc(u.name)}: ${esc(u.text)}</li>`).join('')}</ul>${arcFoot(AR.UPDATES.flatMap((u) => u.src))}`,
+};
+for (const pg of AR.ARC_PAGES) {
+  const url = pg.id ? `/games/arc-raiders/${pg.id}` : '/games/arc-raiders';
+  add({
+    url,
+    lastmod: AR.CHECKED,
+    title: `${pg.title} | TerminalNexus`,
+    desc: pg.desc,
+    type: 'article',
+    body: `<article><p>${esc(ko.arc.disclaimer)}</p><h1>${esc(pg.title)}</h1><p>${esc(pg.desc)}</p><p>정리 에고수 · 정보 확인일 ${AR.CHECKED}</p>
+${links(AR.ARC_PAGES.filter((x) => x !== pg).map((x) => [x.id ? `/games/arc-raiders/${x.id}` : '/games/arc-raiders', x.title]))}
+${arcBody[pg.id]()}</article>`,
+    jsonLd: [
+      { '@context': 'https://schema.org', '@type': 'Article', headline: pg.title, description: pg.desc, dateModified: AR.CHECKED, inLanguage: 'ko', url: SITE + url, about: { '@type': 'VideoGame', name: 'ARC Raiders' }, author: { '@type': 'Person', name: '에고수', url: `${SITE}/about` }, publisher: { '@type': 'Organization', name: 'TerminalNexus', logo: { '@type': 'ImageObject', url: `${SITE}/favicon-192.png` } } },
+      crumbs([['ARC Raiders 정보', '/games/arc-raiders'], ...(pg.id ? [[pg.short, url]] : [])]),
+    ],
+  });
+}
 
 for (const item of ALL_NAV.filter((n) => !n.login && !pages.some((p) => p.url === n.path))) {
   const nav = ko.nav[item.key];

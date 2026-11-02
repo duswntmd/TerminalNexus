@@ -18,6 +18,7 @@ export const NAV_GROUPS = [
       { key: 'terminalhack', path: '/play/terminalhack', glyph: '?' },
       { key: 'hackermode', path: '/play/hackermode', glyph: '>' },
       { key: 'linux', path: '/play/linux', glyph: '~' },
+      { key: 'arcraiders', path: '/games/arc-raiders', glyph: 'AR' },
     ],
   },
   {
