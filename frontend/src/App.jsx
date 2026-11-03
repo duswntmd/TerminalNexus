@@ -24,6 +24,7 @@ import HackerModePage from "./pages/play/HackerModePage";
 import TerminalHackPage from "./pages/play/TerminalHackPage";
 import StockPage from "./pages/play/stock/StockPage";
 import JanggiPage from "./pages/play/janggi/JanggiPage";
+import ChessPage from "./pages/play/chess/ChessPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
@@ -171,6 +172,7 @@ const AppContent = () => {
           <Route path="/play/terminalhack" element={<><NavMeta id="terminalhack" path="/play/terminalhack" /><TerminalHackPage /></>} />
           <Route path="/play/stock" element={<StockPage />} />
           <Route path="/play/janggi" element={<JanggiPage />} />
+          <Route path="/play/chess" element={<ChessPage />} />
           <Route path="/play/linux" element={<><NavMeta id="linux" path="/play/linux" /><RockyLinuxPage /></>} />
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />

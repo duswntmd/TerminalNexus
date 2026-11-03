@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { WHITE, colorOf, typeOf } from './engine.js';
+import { GLYPH } from './helpers.js';
 
 const S = 100; // 칸 크기 (viewBox 단위)
 const FILES = 'abcdefgh';
-// 속이 찬 글리프를 두 색 모두에 쓰고 색칠로 구분. FE0E: 이모지 대신 글자 모양으로 표시
-export const GLYPH = ['', '♟︎', '♞︎', '♝︎', '♜︎', '♛︎', '♚︎'];
 
 /**
  * 체스판 (SVG). 클릭 이동과 드래그(마우스·터치) 모두 지원
@@ -19,6 +18,9 @@ const ChessBoard = ({ board, flipped = false, legal = [], lastMove = null, check
   const [selected, setSelected] = useState(null);
   const [drag, setDrag] = useState(null); // { from, x, y, moved, toggle }
   const svgRef = useRef(null);
+  // 빠른 드래그는 다시 그리기 전에 pointerup 이 올 수 있어 최신 값을 ref 로 읽는다
+  const dragRef = useRef(null);
+  dragRef.current = drag;
 
   // 판이 바뀌면(수를 두면) 선택 해제
   useEffect(() => {
@@ -62,25 +64,30 @@ const ChessBoard = ({ board, flipped = false, legal = [], lastMove = null, check
     if (movable.has(sq)) {
       e.preventDefault();
       svgRef.current.setPointerCapture?.(e.pointerId);
-      setDrag({ from: sq, ...p, moved: false, toggle: selected === sq });
+      dragRef.current = { from: sq, ...p, moved: false, toggle: selected === sq };
+      setDrag(dragRef.current);
       setSelected(sq);
     } else setSelected(null);
   };
 
   const onPointerMove = (e) => {
-    if (!drag) return;
+    const cur = dragRef.current;
+    if (!cur) return;
     const p = pointer(e);
-    const start = xy(drag.from);
-    const moved = drag.moved || Math.hypot(p.x - (start.x + S / 2), p.y - (start.y + S / 2)) > S * 0.25;
-    setDrag({ ...drag, ...p, moved });
+    const start = xy(cur.from);
+    const moved = cur.moved || Math.hypot(p.x - (start.x + S / 2), p.y - (start.y + S / 2)) > S * 0.25;
+    dragRef.current = { ...cur, ...p, moved };
+    setDrag(dragRef.current);
   };
 
   const onPointerUp = (e) => {
-    if (!drag) return;
+    const cur = dragRef.current;
+    if (!cur) return;
     const sq = sqAt(pointer(e));
-    const { from, moved, toggle } = drag;
+    const { from, toggle } = cur;
+    dragRef.current = null;
     setDrag(null);
-    if (moved && sq !== from) {
+    if (sq !== from) { // 다른 칸에서 놓으면 드래그 이동
       if (sq != null && targetsOf(from).includes(sq)) {
         setSelected(null);
         onMove?.(from, sq);

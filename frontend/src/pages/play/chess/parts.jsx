@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WHITE, BLACK, QUEEN, ROOK, BISHOP, KNIGHT, typeOf } from './engine.js';
-import { GLYPH } from './ChessBoard.jsx';
-
-export const colorKey = (c) => (c === WHITE ? 'white' : 'black');
-export const colorFromName = (name) => (name === 'WHITE' ? WHITE : name === 'BLACK' ? BLACK : null);
+import { WHITE, QUEEN, ROOK, BISHOP, KNIGHT, typeOf } from './engine.js';
+import { GLYPH, PIECE_KEY, colorKey } from './helpers.js';
 
 /** 대국자 카드: 색 표시, 이름, 잡은 기물, 기물 점수 우세 */
 export const PlayerCard = ({ color, name, sub, isTurn, captured = [], advantage = 0 }) => {
@@ -63,9 +60,9 @@ export const PromotionPicker = ({ color, onPick, onCancel }) => {
         <p className="ch-overlay-title">{t('chess.promo_title')}</p>
         <div className="ch-promo">
           {[QUEEN, ROOK, BISHOP, KNIGHT].map((tp) => (
-            <button key={tp} type="button" className={`ch-promo-btn ${colorKey(color)}`} onClick={() => onPick(tp)} title={t(`chess.pieces.${'  nbrq'[tp]}`)}>
+            <button key={tp} type="button" className={`ch-promo-btn ${colorKey(color)}`} onClick={() => onPick(tp)} title={t(`chess.pieces.${PIECE_KEY[tp]}`)}>
               <span aria-hidden="true">{GLYPH[tp]}</span>
-              <small>{t(`chess.pieces.${' pnbrqk'[tp]}`)}</small>
+              <small>{t(`chess.pieces.${PIECE_KEY[tp]}`)}</small>
             </button>
           ))}
         </div>

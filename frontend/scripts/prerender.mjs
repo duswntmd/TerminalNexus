@@ -141,6 +141,17 @@ add({ url: '/terms', title: '이용약관 | TerminalNexus', desc: 'TerminalNexus
 
 add({ url: '/guide', title: '기능 안내 | TerminalNexus', desc: '터미널넥서스에서 이용할 수 있는 기능을 소개합니다.', body: `<h1>기능 안내</h1>${ko.guide.groups.map((g) => `<h2>${esc(g.name || g.title || '')}</h2><ul>${g.items.map((i) => `<li>${link(i.path, i.name)}: ${esc(i.desc)}</li>`).join('')}</ul>`).join('')}` });
 
+// 체스: 화면 문구(ko.chess)로 규칙 설명까지 본문에 넣는다
+add({
+  url: '/play/chess',
+  title: ko.chess.meta_title,
+  desc: ko.chess.meta_desc,
+  body: `<h1>${esc(ko.chess.title)}</h1><p>${esc(ko.chess.meta_desc)}</p>
+<h2>${esc(ko.chess.modes.ai)} · ${esc(ko.chess.modes.local)} · ${esc(ko.chess.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/chess').desc)}</p>
+<h2>${esc(ko.chess.rules_title)}</h2><ul>${ko.chess.rules.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`,
+  jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.chess.title, description: ko.chess.meta_desc, url: `${SITE}/play/chess`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
+});
+
 for (const item of ALL_NAV.filter((n) => !n.login && !pages.some((p) => p.url === n.path))) {
   const nav = ko.nav[item.key];
   add({ url: item.path, title: `${nav.name} | TerminalNexus`, desc: nav.desc, body: `<h1>${esc(nav.name)}</h1><p>${esc(nav.desc)}</p>` });
