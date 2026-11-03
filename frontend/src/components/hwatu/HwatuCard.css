@@ -1,0 +1,27 @@
+/* 화투 카드 (HwatuCard.jsx) */
+.hw-card {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  font-family: var(--tn-font);
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: visible;
+}
+
+.hw-face { fill: #7d1d1d; }
+.hw-inner { fill: #f7f0df; }
+.hw-back { fill: #a3231f; stroke: #5e1210; stroke-width: 1; }
+
+.hw-kind rect { fill: #6b7280; }
+.hw-kind text { fill: #fff; }
+.hw-kind.k-gwang rect { fill: #d62839; }
+.hw-kind.k-yeol rect { fill: #e07b00; }
+.hw-kind.k-tti.r-hong rect { fill: #d62839; }
+.hw-kind.k-tti.r-cheong rect { fill: #2563c9; }
+.hw-kind.k-tti.r-cho rect { fill: #3f8f3a; }
+.hw-kind.k-tti.r-plain rect { fill: #8a5a44; }
+.hw-kind.k-pi rect { fill: #8c94a1; }
+.hw-kind.k-ssang rect { fill: #1d2026; }
+.hw-kind.k-ssang text { fill: #f2c230; }
