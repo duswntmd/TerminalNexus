@@ -139,5 +139,10 @@ export const ARC_PAGES = [
   { id: '', title: 'ARC Raiders 아크 레이더스 정보 정리', short: '개요', desc: 'ARC Raiders의 출시 정보, 가격 정책, 탈출형 게임 방식, 스페란차·워크숍·익스페디션 시스템과 초보자 팁을 공식 자료 기준으로 정리했습니다.' },
   { id: 'maps', title: 'ARC Raiders 맵 7종과 맵 조건 정리', short: '맵', desc: 'Dam Battlegrounds부터 Pendola Pass까지 ARC Raiders 맵 7개의 추가 시기, 특징, 알려진 열쇠와 맵 조건을 표로 정리했습니다.' },
   { id: 'arc', title: 'ARC Raiders 적(ARC) 종류 검색', short: '적(ARC)', desc: 'ARC Raiders에 나오는 ARC 기계 적 23종을 이름, 형태, 위협도, 장갑, 등장 업데이트로 검색하고 거를 수 있습니다.' },
+  { id: 'weapons', title: 'ARC Raiders 무기 26종 목록과 제작 단계', short: '무기', desc: 'ARC Raiders 무기 26종을 종류, 탄약, 희귀도, 워크숍 제작 단계, 상인 판매 여부로 검색하고 거를 수 있습니다.' },
+  { id: 'items', title: 'ARC Raiders 재료 데이터베이스', short: '재료', desc: 'ARC Raiders 재료 38종의 희귀도, 판매가, 묶음 수, 재활용 결과와 쓰이는 곳(워크숍, 퀘스트, ARC 드롭)을 정리했습니다.' },
+  { id: 'workshop', title: 'ARC Raiders 워크숍 업그레이드 재료 정리', short: '워크숍', desc: 'ARC Raiders 워크숍 작업대 9종의 단계별 업그레이드 재료와 단계별 제작품을 정리했습니다.' },
+  { id: 'traders', title: 'ARC Raiders 상인 6명 정리', short: '상인', desc: 'ARC Raiders 스페란차 상인 Celeste, Shani, Tian Wen, Lance, Apollo, Nomadic Envoys가 파는 물건과 맡은 퀘스트를 정리했습니다.' },
+  { id: 'quests', title: 'ARC Raiders 퀘스트 목록과 보상', short: '퀘스트', desc: 'ARC Raiders 퀘스트 50개의 의뢰인, 맵, 제출 물품, 보상을 검색하고 상인·맵별로 거를 수 있습니다.' },
   { id: 'updates', title: 'ARC Raiders 업데이트 기록', short: '업데이트', desc: 'ARC Raiders 출시부터 Frozen Trail 2.0, 2.3.0 패치까지 주요 업데이트를 날짜순으로 정리했습니다.' },
 ];

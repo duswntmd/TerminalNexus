@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { ARTICLES } from '../src/content/articles.js';
 import { ALL_NAV } from '../src/nav.js';
 import * as AR from '../src/content/arcRaiders.js';
+import * as DB from '../src/content/arcRaidersDb.js';
 
 const SITE = 'https://tnhub.kr';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -145,6 +146,10 @@ add({ url: '/guide', title: '기능 안내 | TerminalNexus', desc: '터미널넥
 // ARC Raiders 비공식 정보: 하위 페이지마다 데이터 전체를 본문으로 넣는다
 const arcSrc = (ids) => ids.map((id) => link(AR.SOURCES[id].url, AR.SOURCES[id].name)).join(', ');
 const arcFoot = (ids) => `<p>정보 확인일 ${AR.CHECKED} · 출처: ${arcSrc([...new Set(ids)])}</p>`;
+const qty = (list) => list.map(([n, name]) => `${name} ×${n}`).join(', ');
+const recycleText = (i) => (i.recycle === null ? '재활용 불가' : i.recycle ? qty(i.recycle) : '확인 필요');
+const dbLink = (id, name) => (id === 'page' ? link(DB.wikiUrl(name), `ARC Raiders Wiki: ${name}`) : link(DB.DB_SOURCES[id].url, DB.DB_SOURCES[id].name));
+const dbFoot = (ids, name) => `<p>정보 확인일 ${DB.DB_CHECKED} · 출처: ${[...new Set(ids)].map((id) => dbLink(id, name)).join(', ')}. ${esc(ko.arc.db_license)}</p>`;
 const arcBody = {
   '': () => `<h2>게임 개요</h2><ul>${AR.FACTS.map((f) => `<li>${esc(f.k)}: ${esc(f.v)}${f.note ? ` (${esc(f.note)})` : ''}</li>`).join('')}</ul>${arcFoot(AR.FACTS.flatMap((f) => f.src))}
 <h2>한 판의 흐름 (탈출형 루프)</h2><ol>${AR.LOOP.map((l) => `<li>${esc(l.step)}: ${esc(l.text)}</li>`).join('')}</ol>
@@ -152,8 +157,18 @@ const arcBody = {
 <h2>초보자 팁</h2>${AR.TIPS.map((t) => `<h3>${esc(t.h)}</h3><p>${esc(t.p)}</p>`).join('')}${arcFoot(AR.TIPS.flatMap((t) => t.src))}`,
   maps: () => `<h2>맵 목록</h2>${AR.MAPS.map((m) => `<h3>${esc(m.name)} (${esc(m.ko)})</h3><p>추가 ${m.added} · ${esc(m.update)}. ${esc(m.text)}${m.keys.length ? ` 알려진 열쇠: ${esc(m.keys.join(', '))}` : ''}</p>`).join('')}${arcFoot(AR.MAPS.flatMap((m) => m.src))}
 <h2>맵 조건</h2><ul>${AR.CONDITIONS.map((c) => `<li>${esc(c.name)}: ${esc(c.text)}</li>`).join('')}</ul>${arcFoot(AR.CONDITIONS.flatMap((c) => c.src))}`,
-  arc: () => `<h2>ARC(적) 목록</h2><table><thead><tr><th>이름</th><th>형태</th><th>위협도</th><th>장갑</th><th>등장</th><th>설명</th></tr></thead><tbody>${AR.ARC.map((a) => `<tr><td>${esc(a.name)}</td><td>${esc(a.type)}</td><td>${esc(a.threat)}</td><td>${esc(a.armor)}</td><td>${esc(a.since)}</td><td>${esc(a.text)}</td></tr>`).join('')}</tbody></table>
+  arc: () => `<h2>ARC(적) 목록</h2><table><thead><tr><th>이름</th><th>형태</th><th>위협도</th><th>장갑</th><th>등장</th><th>설명</th></tr></thead><tbody>${AR.ARC.map((a) => `<tr><td>${link(`/games/arc-raiders/arc/${DB.slugify(a.name)}`, a.name)}</td><td>${esc(a.type)}</td><td>${esc(a.threat)}</td><td>${esc(a.armor)}</td><td>${esc(a.since)}</td><td>${esc(a.text)}</td></tr>`).join('')}</tbody></table>
 <p>${esc(ko.arc.arc_hint)}</p>${arcFoot(AR.ARC.flatMap((a) => a.src))}`,
+  weapons: () => `<h2>무기 목록</h2><table><thead><tr><th>이름</th><th>종류</th><th>탄약</th><th>희귀도</th><th>제작</th></tr></thead><tbody>${DB.WEAPONS.map((w) => `<tr><td>${esc(w.name)}</td><td>${esc(DB.WEAPON_CLASS_KO[w.cls])}</td><td>${esc(w.ammo)}</td><td>${esc(w.rarity ? DB.RARITY_KO[w.rarity] : '확인 필요')}</td><td>${esc(w.craft || '제작 목록에 없음')}${w.shop ? ' · Tian Wen 판매' : ''}</td></tr>`).join('')}</tbody></table>
+<p>${esc(ko.arc.weapons_hint)}</p>${dbFoot(['wWeapons', 'dxWeapons', 'wWorkshop'])}`,
+  items: () => `<h2>재료 목록</h2><table><thead><tr><th>이름</th><th>분류</th><th>희귀도</th><th>판매가</th><th>재활용하면</th></tr></thead><tbody>${DB.ITEMS.map((i) => `<tr><td>${link(`/games/arc-raiders/items/${i.slug}`, i.name)}</td><td>${esc(DB.ITEM_CATS[i.cat])}</td><td>${esc(DB.RARITY_KO[i.rarity])}</td><td>${i.sell}</td><td>${esc(recycleText(i))}</td></tr>`).join('')}</tbody></table>
+<p>${esc(ko.arc.items_hint)}</p>${dbFoot(['wItems', 'wWorkshop', 'dx'])}`,
+  workshop: () => `<h2>워크숍 작업대</h2>${DB.STATIONS.map((s) => `<h3>${esc(s.name)} (${s.levels}단계)</h3><p>${esc(s.text)}</p>${s.up.some((lv) => lv.length) ? `<ul>${s.up.map((lv, i) => `<li>${i + 1}단계 재료: ${esc(qty(lv) || '없음')}${s.crafts[i]?.length ? ` / 제작품: ${esc(s.crafts[i].join(', '))}` : ''}</li>`).join('')}</ul>` : ''}`).join('')}
+<p>${esc(ko.arc.workshop_hint)}</p>${dbFoot(['wWorkshop', 'gfinity'])}`,
+  traders: () => `<h2>상인</h2>${DB.TRADERS.map((t) => `<h3>${esc(t.name)} (${esc(t.role)})</h3><p>파는 물건: ${esc(t.sells)}. 결제: ${esc(t.pay)}.${t.note ? ` ${esc(t.note)}` : ''}</p>`).join('')}
+<p>${esc(ko.arc.traders_hint)}</p>${dbFoot(['wTraders'])}`,
+  quests: () => `<h2>퀘스트 목록</h2>${DB.QUESTS.map((x) => `<h3 id="${x.slug}">${esc(x.name)}</h3><p>의뢰인 ${esc(x.giver)} · 맵 ${esc(x.maps.length ? x.maps.map((m) => DB.QUEST_MAPS[m]).join(', ') : '제한 없음')} · 제출 ${esc(qty(x.turnIn) || '없음')} · 보상 ${esc(qty(x.reward))}</p>`).join('')}
+<p>${esc(ko.arc.quests_hint)}</p>${dbFoot(['wQuests', 'dxQuests', 'shack'])}`,
   updates: () => `<h2>업데이트 기록</h2><ul>${[...AR.UPDATES].reverse().map((u) => `<li>${u.date} ${esc(u.name)}: ${esc(u.text)}</li>`).join('')}</ul>${arcFoot(AR.UPDATES.flatMap((u) => u.src))}`,
 };
 for (const pg of AR.ARC_PAGES) {
@@ -172,6 +187,38 @@ ${arcBody[pg.id]()}</article>`,
       crumbs([['ARC Raiders 정보', '/games/arc-raiders'], ...(pg.id ? [[pg.short, url]] : [])]),
     ],
   });
+}
+
+const arcArticle = (url, title, desc, crumb, body) => add({
+  url,
+  lastmod: DB.DB_CHECKED,
+  title: `${title} | TerminalNexus`,
+  desc,
+  type: 'article',
+  body: `<article><p>${esc(ko.arc.disclaimer)}</p><p>${link(crumb[1], crumb[0])}</p><h1>${esc(title)}</h1><p>${esc(desc)}</p>${body}</article>`,
+  jsonLd: [crumbs([['ARC Raiders 정보', '/games/arc-raiders'], crumb, [title, url]])],
+});
+const usesHtml = (name) => {
+  const u = DB.itemUses(name);
+  const sec = (h, list) => (list.length ? `<h3>${h}</h3><ul>${list.map((x) => `<li>${x}</li>`).join('')}</ul>` : '');
+  return sec('떨어뜨리는 ARC', u.droppedBy.map((a) => link(`/games/arc-raiders/arc/${a.slug}`, a.name)))
+    + sec('워크숍 업그레이드 재료', u.upgrades.map((x) => `${esc(x.station.name)} ${x.level}단계 ×${x.qty}`))
+    + sec('퀘스트 제출 물품', u.turnIns.map((x) => `${link(`/games/arc-raiders/quests#${x.slug}`, x.name)} (${esc(x.giver)})`))
+    + sec('퀘스트 보상', u.rewards.map((x) => `${link(`/games/arc-raiders/quests#${x.slug}`, x.name)} (${esc(x.giver)})`))
+    + sec('재활용하면 이 재료가 나오는 것', u.recycledFrom.map((x) => link(`/games/arc-raiders/items/${x.slug}`, x.name)));
+};
+for (const i of DB.ITEMS) {
+  const m = DB.itemMeta(i);
+  arcArticle(`/games/arc-raiders/items/${i.slug}`, m.title, m.desc, ['재료 목록', '/games/arc-raiders/items'],
+    `<ul><li>분류: ${esc(DB.ITEM_CATS[i.cat])}</li><li>희귀도: ${esc(DB.RARITY_KO[i.rarity])} (${i.rarity})</li><li>판매가: ${i.sell} 코인</li><li>묶음: ${i.stack}</li><li>재활용하면: ${esc(recycleText(i))}</li>${i.craft ? `<li>참고: ${esc(i.craft)}</li>` : ''}${i.note ? `<li>출처 차이: ${esc(i.note)}</li>` : ''}</ul>
+<h2>얻는 곳과 쓰이는 곳</h2>${usesHtml(i.name)}${dbFoot(i.src, i.name)}`);
+}
+for (const a of DB.ARC_LIST) {
+  const m = DB.arcMeta(a);
+  const d = a.detail;
+  arcArticle(`/games/arc-raiders/arc/${a.slug}`, m.title, m.desc, ['ARC(적) 목록', '/games/arc-raiders/arc'],
+    `<ul><li>형태: ${esc(a.type)}</li><li>위협도: ${esc(a.threat)}</li><li>장갑: ${esc(a.armor)}</li><li>등장: ${esc(a.since)}</li>${a.text ? `<li>설명: ${esc(a.text)}</li>` : ''}${d ? `<li>약점: ${esc(d.weak)}</li><li>행동: ${esc(d.act)}</li><li>드롭: ${esc(d.drops.join(', '))}${d.note ? ` (${esc(d.note)})` : ''}</li>` : ''}</ul>
+${d ? '' : `<p>${esc(ko.arc.arc_unverified)}</p>`}${d ? dbFoot(['page', 'dxEnemy', 'wArc'], a.name) : `<p>정보 확인일 ${AR.CHECKED} · 출처: ${link(AR.SOURCES.dxArc.url, AR.SOURCES.dxArc.name)}</p>`}`);
 }
 
 for (const item of ALL_NAV.filter((n) => !n.login && !pages.some((p) => p.url === n.path))) {

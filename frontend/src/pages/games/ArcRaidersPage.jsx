@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import {
   ARC, ARC_PAGES, ARC_TYPES, CHECKED, CONDITIONS, FACTS, LOOP, MAPS, SOURCES, SYSTEMS, TIPS, UPDATES, UPDATE_KINDS,
 } from '../../content/arcRaiders';
+import { BASE, arcMeta, findArc, findItem, itemMeta, slugify } from '../../content/arcRaidersDb';
+import { ArcDetail, ItemDetail, Items, Quests, Traders, Weapons, Workshop } from './ArcRaidersDb';
 import AdSlot from '../../components/AdSlot';
 import ShareBar from '../../components/ShareBar';
 import './ArcRaiders.css';
 
-const BASE = '/games/arc-raiders';
 
 // 항목별 출처 링크 묶음
 const Src = ({ ids, note }) => (
@@ -154,7 +155,7 @@ const Enemies = () => {
           <tbody>
             {rows.map((a) => (
               <tr key={a.name}>
-                <td data-label={t('arc.col_name')}><strong>{a.name}</strong></td>
+                <td data-label={t('arc.col_name')}><Link to={`${BASE}/arc/${slugify(a.name)}`}><strong>{a.name}</strong></Link></td>
                 <td data-label={t('arc.col_type')}>{a.type}</td>
                 <td data-label={t('arc.col_threat')}>{a.threat}</td>
                 <td data-label={t('arc.col_armor')}>{a.armor}</td>
@@ -203,38 +204,48 @@ const Updates = () => {
   );
 };
 
-const VIEWS = { '': Overview, maps: Maps, arc: Enemies, updates: Updates };
+const VIEWS = { '': Overview, maps: Maps, arc: Enemies, weapons: Weapons, items: Items, workshop: Workshop, traders: Traders, quests: Quests, updates: Updates };
+
+// 상세 페이지: /items/:slug, /arc/:slug
+const DETAILS = {
+  items: { find: findItem, meta: itemMeta, View: ({ data }) => <ItemDetail item={data} /> },
+  arc: { find: findArc, meta: arcMeta, View: ({ data }) => <ArcDetail arc={data} /> },
+};
 
 const ArcRaidersPage = () => {
   const { t } = useTranslation();
-  const { section = '' } = useParams();
+  const { section = '', slug } = useParams();
   const page = ARC_PAGES.find((p) => p.id === section);
+  const kind = slug ? DETAILS[section] : null;
+  const data = kind?.find(slug);
   if (!page) return <Navigate to={BASE} replace />;
+  if (slug && !data) return <Navigate to={`${BASE}/${section}`} replace />;
+  const head = data ? { ...page, ...kind.meta(data) } : page;
   const View = VIEWS[page.id];
-  const path = page.id ? `${BASE}/${page.id}` : BASE;
+  const path = (page.id ? `${BASE}/${page.id}` : BASE) + (slug ? `/${slug}` : '');
   return (
     <div className="ar-page">
       <Helmet>
-        <title>{`${page.title} | TerminalNexus`}</title>
-        <meta name="description" content={page.desc} />
+        <title>{`${head.title} | TerminalNexus`}</title>
+        <meta name="description" content={head.desc} />
         <link rel="canonical" href={`https://tnhub.kr${path}`} />
       </Helmet>
       <p className="ar-notice" role="note">{t('arc.disclaimer')}</p>
       <header className="ar-head">
         <span className="ar-mark" aria-hidden="true">AR</span>
         <div>
-          <h1>{page.title}</h1>
-          <p>{page.desc}</p>
+          <h1>{head.title}</h1>
+          <p>{head.desc}</p>
           <p className="ar-meta">{t('arc.byline', { date: CHECKED })}</p>
         </div>
       </header>
       <nav className="ar-tabs" aria-label={t('arc.tabs')}>
         {ARC_PAGES.map((p) => (
-          <NavLink key={p.id} to={p.id ? `${BASE}/${p.id}` : BASE} end>{p.short}</NavLink>
+          <NavLink key={p.id} to={p.id ? `${BASE}/${p.id}` : BASE} end={!p.id}>{p.short}</NavLink>
         ))}
       </nav>
-      <View />
-      <ShareBar path={path} text={page.title} />
+      {data ? <kind.View data={data} /> : <View />}
+      <ShareBar path={path} text={head.title} />
       <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_ARTICLE} />
       <p className="ar-more">{t('arc.report')} <Link to="/about">{t('arc.report_link')}</Link></p>
     </div>

@@ -1,4 +1,4 @@
-.ar-page { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 5rem; color: var(--tn-text); }
+.ar-page { width: 100%; min-width: 0; box-sizing: border-box; max-width: 960px; margin: 0 auto; padding: 2rem 1rem 5rem; color: var(--tn-text); }
 .ar-page a { color: var(--tn-blue); }
 
 .ar-notice {
@@ -87,18 +87,52 @@
 
 .ar-more { margin-top: 1.5rem; font-size: 0.85rem; color: var(--tn-text-3); }
 
+/* 데이터베이스 화면 */
+.ar-filters.four { grid-template-columns: 1fr auto auto auto; }
+.ar-dim { color: var(--tn-text-3); }
+.ar-num { font-family: var(--tn-mono); text-align: right; }
+.ar-crumb { margin: 0 0 0.85rem; font-size: 0.88rem; }
+.ar-rar { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: 1px solid currentColor; }
+.ar-rar.r-common { color: var(--tn-text-2); }
+.ar-rar.r-uncommon { color: var(--tn-led); }
+.ar-rar.r-rare { color: var(--tn-blue); }
+.ar-rar.r-epic { color: #c79bff; }
+.ar-rar.r-legendary { color: var(--tn-tape); }
+.ar-table td small { display: block; }
+.ar-table a, .ar-uses a, .ar-quests a, .ar-station a { text-decoration: none; }
+.ar-table a:hover, .ar-uses a:hover, .ar-quests a:hover, .ar-station a:hover { text-decoration: underline; }
+.ar-detail h2 { margin-top: 1.5rem; }
+.ar-uses h3 { font-size: 0.95rem; margin: 1rem 0 0.35rem; color: var(--tn-text-2); }
+.ar-uses ul, ul.ar-uses { margin: 0; padding-left: 1.2rem; line-height: 1.8; }
+.ar-jump { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+.ar-jump a { padding: 0.3rem 0.65rem; border: 1px solid var(--tn-line); border-radius: 999px; font-size: 0.82rem; color: var(--tn-text-2) !important; text-decoration: none; }
+.ar-jump a:hover { border-color: var(--tn-tape); color: var(--tn-tape) !important; }
+.ar-station { margin-bottom: 0.85rem; }
+.ar-station .ar-table { font-size: 0.85rem; }
+.ar-station .ar-table td:first-child { text-align: center; }
+.ar-mono { font: 700 0.8rem/1 var(--tn-mono); color: var(--tn-tape); }
+.ar-quests { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.65rem; }
+.ar-quests .ar-card-top { gap: 0.5rem; align-items: flex-start; }
+.ar-quests p { margin: 0.3rem 0 0; font-size: 0.88rem; }
+.ar-quests b, .ar-card b { color: var(--tn-text); margin-right: 0.25rem; }
+.ar-page [id] { scroll-margin-top: calc(var(--tn-header-h) + 12px); }
+.ar-quests li:target, .ar-table tr:target, .ar-station:target { outline: 2px solid var(--tn-tape); outline-offset: 2px; }
+
 @media (max-width: 640px) {
   .ar-facts > div { grid-template-columns: 1fr; }
   .ar-facts dt { padding-bottom: 0.35rem; }
   .ar-facts dd { padding-top: 0.35rem; }
-  .ar-filters { grid-template-columns: 1fr 1fr; }
+  .ar-filters, .ar-filters.four { grid-template-columns: 1fr 1fr; }
+  .ar-filters.four input { grid-column: 1 / -1; }
+  .ar-quests { grid-template-columns: 1fr; }
   .ar-filters input { grid-column: 1 / -1; }
   .ar-mark { width: 40px; height: 40px; font-size: 0.9rem; }
   /* 적 표는 좁은 화면에서 카드 형태로 */
-  .ar-arc thead { display: none; }
-  .ar-arc, .ar-arc tbody, .ar-arc tr, .ar-arc td { display: block; width: 100%; }
-  .ar-arc tr { padding: 0.6rem 0.8rem; border-top: 1px solid var(--tn-line-soft); }
-  .ar-arc tr:first-child { border-top: 0; }
-  .ar-arc td { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.5rem; padding: 0.2rem 0; border: 0; white-space: normal !important; }
-  .ar-arc td::before { content: attr(data-label); color: var(--tn-text-3); font-size: 0.8rem; }
+  .ar-arc thead, .ar-stack thead { display: none; }
+  .ar-arc, .ar-arc tbody, .ar-arc tr, .ar-arc td, .ar-stack, .ar-stack tbody, .ar-stack tr, .ar-stack td { display: block; width: 100%; }
+  .ar-arc tr, .ar-stack tr { padding: 0.6rem 0.8rem; border-top: 1px solid var(--tn-line-soft); }
+  .ar-arc tr:first-child, .ar-stack tr:first-child { border-top: 0; }
+  .ar-arc td, .ar-stack td { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.5rem; padding: 0.2rem 0; border: 0; white-space: normal !important; text-align: left; }
+  .ar-arc td::before, .ar-stack td::before { content: attr(data-label); color: var(--tn-text-3); font-size: 0.8rem; }
 }
+.ar-stack td > .ar-rar, .ar-stack td > .ar-dim { justify-self: start; }
