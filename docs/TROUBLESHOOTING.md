@@ -12,6 +12,10 @@
 | 2 | [Nginx 502 Bad Gateway](#2-nginx-502-bad-gateway) | WebSocket 설정 오류 | 2026-01-24 | ✅ 해결 |
 | 3 | [WebSocket SecurityError (HTTPS)](#3-websocket-securityerror-https) | WS/WSS 프로토콜 불일치 | 2026-01-24 | ✅ 해결 |
 | 4 | [Nginx 404/405 API 라우팅 실패](#4-nginx-404405-api-라우팅-실패) | Nginx proxy 설정 누락 | 2026-01-11 | ✅ 해결 |
+| 5 | [검색엔진에 모든 페이지가 빈 화면으로 수집](#5-검색엔진에-모든-페이지가-빈-화면으로-수집) | SPA 원본 HTML에 본문 없음 | 2026-11-01 | ✅ 해결 |
+| 6 | [사전 렌더링 페이지가 전부 301](#6-사전-렌더링-페이지가-전부-301) | 폴더형 파일에 nginx가 슬래시 추가 | 2026-11-01 | ✅ 해결 |
+| 7 | [화면을 옮겨도 제목이 바뀌지 않음](#7-화면을-옮겨도-제목이-바뀌지-않음) | react-helmet-async 2.x와 React 19 비호환 | 2026-11-01 | ✅ 해결 |
+| 8 | [게시판 저장형 XSS](#8-게시판-저장형-xss) | 뷰어 HTML 정화가 꺼져 있음 | 2026-11-01 | ✅ 해결 |
 
 ---
 
@@ -228,6 +232,81 @@ location ~ ^/(user|login|oauth2|logout|jwt|cookie|display|download|upload)(/|$) 
 
 ---
 
+## 5. 검색엔진에 모든 페이지가 빈 화면으로 수집
+
+### 📅 발생일: 2026-11-01
+
+### 증상
+- 애드센스 거절: "게시자 콘텐츠가 없는 화면", "가치가 별로 없는 콘텐츠"
+- Search Console에서 발견된 페이지가 5개뿐
+
+### 원인
+React 단일 페이지 앱이라 서버가 주는 원본 HTML은 어느 주소든 같은 제목에 빈 `<div id="root">`였다. 브라우저에서는 정상으로 보여서 알아채기 어려웠다.
+
+```bash
+curl -s https://tnhub.kr/tools/subnet | grep -o "<title>[^<]*"   # 모든 주소가 같은 제목
+```
+
+### 해결
+빌드 뒤 `frontend/scripts/prerender.mjs`가 공개 페이지마다 제목, 설명, canonical, 본문을 넣은 HTML을 만든다. `sitemap.xml`과 `rss.xml`도 같은 목록으로 생성한다.
+
+### 예방
+- 공개 페이지를 추가하면 `prerender.mjs`에도 등록한다.
+- SEO 점검은 브라우저가 아니라 curl로 원본 HTML을 본다.
+
+---
+
+## 6. 사전 렌더링 페이지가 전부 301
+
+### 📅 발생일: 2026-11-01
+
+### 증상
+`/tools/json` 요청이 `/tools/json/`으로 301 리다이렉트되어 canonical 주소와 어긋남
+
+### 원인
+처음에 `tools/json/index.html`처럼 폴더로 만들었다. nginx는 폴더를 가리키는 주소에 끝 슬래시를 붙여 리다이렉트한다.
+
+### 해결
+`tools/json.html` 파일로 만들고 `try_files $uri $uri.html $uri/ /index.html;`로 제공한다. HTML 캐시 방지는 응답 형식으로 판단하는 `map`으로 바꿔 location마다 반복하지 않게 했다.
+
+### 예방
+nginx 변경은 운영 전에 다른 포트의 임시 인스턴스로 실제 요청을 보내 확인한다. `nginx -t`는 문법만 본다.
+
+---
+
+## 7. 화면을 옮겨도 제목이 바뀌지 않음
+
+### 📅 발생일: 2026-11-01
+
+### 증상
+첫 화면의 제목, 설명, canonical이 다른 화면으로 이동해도 그대로 남음
+
+### 원인
+react-helmet-async 2.0.5는 React 19를 지원하지 않는다 (peerDependencies가 React 18까지). 3.0으로 올리자 정적 태그와 새 태그가 함께 남아 canonical이 두 개가 됐다.
+
+### 해결
+3.0으로 올리고, `src/seoTags.js`가 React가 같은 태그를 넣는 순간 정적 태그를 지운다.
+
+---
+
+## 8. 게시판 저장형 XSS
+
+### 📅 발생일: 2026-11-01
+
+### 증상
+게시글 본문의 `onerror` 속성, `<script>`, `javascript:` 링크가 읽기 화면에 그대로 들어감
+
+### 원인
+유튜브 임베드를 살리려고 뷰어의 HTML 정화를 `customHTMLSanitizer={(html) => html}`로 꺼 두었다. 로그인 토큰이 localStorage에 있어 계정 탈취로 이어질 수 있었다.
+
+### 해결
+`src/util/sanitizeHtml.js`에서 DOMPurify로 정화하고 iframe은 유튜브 임베드 주소만 허용한다. 글을 읽을 때 정화하므로 이미 저장된 글도 보호된다. 운영 게시글을 검사했을 때 악성 코드는 없었다.
+
+### 예방
+안전장치를 끄는 방식으로 기능 문제를 풀지 않는다. 보안 기능은 실제 공격 문자열로 시험한다.
+
+---
+
 ## 🛡️ 서버 정기 점검 체크리스트
 
 월 1회 이상 아래 항목을 점검하여 장애를 예방하세요.
@@ -260,4 +339,4 @@ echo "=== Jenkins 상태 ==="
 sudo systemctl status jenkins --no-pager -l
 ```
 
-> **💡 Tip:** 위 스크립트를 `/home/ubuntu/health-check.sh`로 저장해두면 `bash health-check.sh` 한 줄로 전체 점검 가능!
+> **💡 Tip:** 위 스크립트를 서버에 `health-check.sh`로 저장해두면 `bash health-check.sh` 한 줄로 전체 점검 가능!

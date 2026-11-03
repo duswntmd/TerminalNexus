@@ -13,11 +13,13 @@ export const NAV_GROUPS = [
     items: [
       { key: 'stock', path: '/play/stock', glyph: '$' },
       { key: 'janggi', path: '/play/janggi', glyph: '將' },
+      { key: 'chess', path: '/play/chess', glyph: '♞' },
       { key: 'forge', path: '/forge', login: true, glyph: '+' },
       { key: 'typeracer', path: '/play/typeracer', glyph: 'Aa' },
       { key: 'terminalhack', path: '/play/terminalhack', glyph: '?' },
       { key: 'hackermode', path: '/play/hackermode', glyph: '>' },
       { key: 'linux', path: '/play/linux', glyph: '~' },
+      { key: 'arcraiders', path: '/games/arc-raiders', glyph: 'AR' },
     ],
   },
   {

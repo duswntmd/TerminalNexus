@@ -11,6 +11,7 @@
     "hackermode": "📟 Hacker Mode",
     "terminalhack": "🔐 Terminal Hack",
     "janggi": "♟️ Janggi",
+    "chess": "♞ Chess",
     "about": "About",
     "community": "Community",
     "play": "Play",
@@ -172,6 +173,13 @@
             "login": false
           },
           {
+            "icon": "♞",
+            "name": "Chess",
+            "desc": "Play a three-level AI, a friend on the same screen, or other people online in real time. Castling, en passant, promotion and draw rules are supported.",
+            "path": "/play/chess",
+            "login": false
+          },
+          {
             "icon": "⚒️",
             "name": "Forge",
             "desc": "Upgrade your weapon to the highest level — it might break. Records go to the hall of fame.",
@@ -251,6 +259,67 @@
             "name": "Weather",
             "desc": "See hourly and weekly weather for your location right on the home page.",
             "path": "/",
+            "login": false
+          }
+        ]
+      },
+      {
+        "name": "Play",
+        "items": [
+          {
+            "icon": "📈",
+            "name": "Stock Simulator",
+            "desc": "Trade virtual stocks with live-moving prices using virtual money. Order book, charts and a profit ranking.",
+            "path": "/play/stock",
+            "login": false
+          },
+          {
+            "icon": "♟️",
+            "name": "Janggi",
+            "desc": "Play Korean chess against the AI, with a friend on one screen, or online in real time.",
+            "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "⚒️",
+            "name": "Forge",
+            "desc": "Upgrade your weapon to the highest level — it might break. Records go to the hall of fame.",
+            "path": "/forge",
+            "login": true
+          },
+          {
+            "icon": "⌨️",
+            "name": "TypeRacer",
+            "desc": "Type Linux and Git commands fast and accurately. Top 10 leaderboard.",
+            "path": "/play/typeracer",
+            "login": false
+          },
+          {
+            "icon": "📟",
+            "name": "Hacker Mode",
+            "desc": "Mash any key and code pours out like a movie hacker's terminal.",
+            "path": "/play/hackermode",
+            "login": false
+          },
+          {
+            "icon": "🔐",
+            "name": "Terminal Hack",
+            "desc": "Find the password among candidates hidden in a memory dump, using letter-match hints.",
+            "path": "/play/terminalhack",
+            "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "Linux Lab",
+            "desc": "Try a Rocky Linux 9.6 shell in your browser. Practice dnf, systemctl and firewall-cmd like the real thing.",
+            "path": "/play/linux",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders Info",
+            "desc": "Unofficial ARC Raiders database: 26 weapons, 38 materials, 50 quests, workshop upgrades, traders, ARC weak points, maps and updates, all searchable and cross-linked with sources and check dates.",
+            "path": "/games/arc-raiders",
             "login": false
           }
         ]
@@ -469,6 +538,10 @@
       "name": "Janggi",
       "desc": "Korean chess vs AI or friends online"
     },
+    "chess": {
+      "name": "Chess",
+      "desc": "Play chess vs AI, a friend or online"
+    },
     "forge": {
       "name": "Forge",
       "desc": "Enhance a weapon up to +20. It may break"
@@ -515,6 +588,10 @@
     "learn": {
       "name": "Server guides",
       "desc": "Commands and concepts for server work"
+    },
+    "arcraiders": {
+      "name": "ARC Raiders Info",
+      "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
     }
   },
   "home": {
@@ -979,7 +1056,8 @@
     "title": "Linux and server guides",
     "subtitle": "Common server topics with command examples. Articles are in Korean.",
     "try_tool": "Try {{name}}",
-    "more": "More guides"
+    "more": "More guides",
+    "byline": "By Egosu · {{date}}"
   },
   "share": {
     "label": "Share",
@@ -993,6 +1071,10 @@
     "title": "About and editorial principles",
     "intro": "TerminalNexus is for people learning and running Linux servers. It is self-hosted on a single Raspberry Pi, and the problems met along the way become guides and tools.",
     "sections": [
+      {
+        "h": "Who runs this site",
+        "p": "Built and run by Egosu, who writes up what is learned from running servers first-hand."
+      },
       {
         "h": "What we offer",
         "p": "Server guides, developer and infra tools, Linux Master Level 2 practice questions, lottery results and terminal-themed mini games."
@@ -1014,5 +1096,274 @@
         "p": "If you find a mistake, please use the contact in the Privacy Policy. Confirmed errors are corrected."
       }
     ]
+  },
+  "chess": {
+    "title": "Chess",
+    "meta_title": "Chess - TerminalNexus | Play vs AI or online",
+    "meta_desc": "Play chess against a three-level AI, with a friend on one screen, or online in real time. Castling, en passant, promotion, draw rules and SAN notation.",
+    "board_label": "Chess board",
+    "modes": {
+      "ai": "vs AI",
+      "local": "2 players",
+      "online": "Online"
+    },
+    "white": "White",
+    "black": "Black",
+    "you": "You",
+    "ai_name": "AI ({{level}})",
+    "captured": "Captured pieces",
+    "moves_title": "Moves ({{count}})",
+    "no_moves": "No moves yet.",
+    "promo_title": "Choose a piece to promote to",
+    "loading": "Loading…",
+    "entering": "Joining the room…",
+    "login_needed": "Log in to play online.",
+    "pieces": {
+      "p": "Pawn",
+      "n": "Knight",
+      "b": "Bishop",
+      "r": "Rook",
+      "q": "Queen",
+      "k": "King"
+    },
+    "setup": {
+      "ai_title": "Play vs AI",
+      "local_title": "Two players, one screen",
+      "local_desc": "White and Black take turns on one device. Use Flip board to switch the view each turn.",
+      "my_color": "My color",
+      "white": "White",
+      "white_desc": "Moves first",
+      "black": "Black",
+      "black_desc": "Moves second",
+      "random": "Random",
+      "random_desc": "Pick for me",
+      "level": "AI level"
+    },
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "For beginners",
+      "normal": "Normal",
+      "normal_desc": "Punishes mistakes",
+      "hard": "Hard",
+      "hard_desc": "Calculates deeply"
+    },
+    "status": {
+      "your_turn": "Your move",
+      "ai_turn": "AI's move",
+      "thinking": "AI is thinking…",
+      "turn": "{{color}} to move",
+      "check": "Check!",
+      "opp_turn": "Opponent's move",
+      "spectating": "Watching · {{color}} to move",
+      "waiting_opponent": "Waiting for an opponent… (you can share the room link)",
+      "waiting_host": "Waiting for the host to start…",
+      "ready_host": "Your opponent is here. Start the game."
+    },
+    "actions": {
+      "start": "Start game",
+      "undo": "Undo",
+      "flip": "Flip board",
+      "resign": "Resign",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on",
+      "new_game": "New game",
+      "close": "Close",
+      "draw_offer": "Offer draw",
+      "accept": "Accept",
+      "decline": "Decline",
+      "leave": "Leave",
+      "rematch": "Rematch (swap colors)",
+      "send": "Send",
+      "create": "Create room",
+      "enter": "Join",
+      "watch": "Watch",
+      "login": "Log in"
+    },
+    "confirm": {
+      "resign": "Resign this game?",
+      "leave": "Leaving during a game counts as a loss. Leave anyway?"
+    },
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "draw": "Draw",
+      "white_wins": "White wins",
+      "black_wins": "Black wins"
+    },
+    "reason": {
+      "checkmate": "Checkmate",
+      "stalemate": "Stalemate (no legal moves)",
+      "threefold": "Threefold repetition",
+      "fifty": "Fifty-move rule",
+      "insufficient": "Insufficient material",
+      "resign": "Resignation",
+      "leave": "Opponent left",
+      "agreement": "Draw by agreement"
+    },
+    "draw": {
+      "offered_by_me": "You offered a draw. Waiting for a reply…",
+      "offered_by_opp": "Your opponent offers a draw."
+    },
+    "lobby": {
+      "rooms": "Rooms ({{count}})",
+      "empty": "No open rooms. Create one on the right.",
+      "create_title": "Create a room",
+      "title_ph": "Room title (optional)",
+      "empty_seat": "open",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Finished"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "Say hello.",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_left": "The host left, so the room was closed.",
+      "host_closed": "The host closed the room."
+    },
+    "error": {
+      "generic": "The request could not be processed.",
+      "connecting": "Connecting to the server. Please try again shortly.",
+      "illegal_move": "That move is not legal.",
+      "not_your_turn": "It is your opponent's move.",
+      "not_playing": "No game in progress.",
+      "not_player": "You are not a player in this game.",
+      "host_only": "Only the host can do that.",
+      "not_waiting": "The game has already started or ended.",
+      "need_opponent": "An opponent must join first.",
+      "no_draw_offer": "There is no draw offer.",
+      "not_finished": "Only possible after the game ends.",
+      "room_not_found": "Room not found.",
+      "user_not_found": "User not found."
+    },
+    "rules_title": "Chess rules in brief",
+    "rules": [
+      [
+        "King",
+        "One square in any direction, never onto an attacked square"
+      ],
+      [
+        "Queen",
+        "Any distance along ranks, files and diagonals"
+      ],
+      [
+        "Rook · Bishop",
+        "Rook along ranks and files, bishop along diagonals, any distance"
+      ],
+      [
+        "Knight",
+        "Moves in an L shape and jumps over pieces"
+      ],
+      [
+        "Pawn",
+        "One square forward (two from its start), captures diagonally forward, promotes to queen, rook, bishop or knight on the last rank"
+      ],
+      [
+        "Castling",
+        "King and rook have not moved, squares between are empty, the king is not in check and does not pass through an attacked square"
+      ],
+      [
+        "En passant",
+        "Right after an enemy pawn advances two squares, an adjacent pawn may capture it on the square it passed"
+      ],
+      [
+        "Draws",
+        "Stalemate, threefold repetition, fifty moves without a pawn move or capture, insufficient material, or agreement online"
+      ]
+    ]
+  },
+  "arc": {
+    "disclaimer": "This is unofficial fan information, not affiliated with Embark Studios. No official logos or images are used; the game name and trademarks belong to their owners. Facts were compiled from official notices and media as of the check date and may change with updates.",
+    "byline": "Compiled by 에고수 · Checked {{date}}",
+    "checked": "Checked {{date}}",
+    "sources": "Sources",
+    "tabs": "ARC Raiders info menu",
+    "facts_title": "Overview",
+    "loop_title": "How a raid works (extraction loop)",
+    "systems_title": "Core systems",
+    "tips_title": "Beginner tips",
+    "maps_title": "Maps (in order added)",
+    "conditions_title": "Map conditions",
+    "added": "Added {{date}}",
+    "keys": "Known keys:",
+    "keys_hint": "Key lists come from the Dexerto wiki, not an official list. Keys for newer maps are not verified yet.",
+    "arc_title": "ARC enemy list",
+    "arc_hint": "Threat and armor follow the Dexerto wiki classification (2026-04-28), not official numbers. Type is a reference grouping based on official and media descriptions. Unverified values are marked '확인 필요' (needs checking).",
+    "search": "Search by name or description",
+    "all": "All",
+    "count": "{{n}} of {{total}}",
+    "empty": "No ARC matches these filters.",
+    "col_name": "Name",
+    "col_type": "Type",
+    "col_threat": "Threat",
+    "col_armor": "Armor",
+    "col_since": "Added in",
+    "col_desc": "Notes",
+    "updates_title": "Update history",
+    "kind_major": "Major update",
+    "kind_patch": "Patch",
+    "kind_event": "Announcement",
+    "report": "Found something wrong? Let us know.",
+    "report_link": "How to contact",
+    "weapons_title": "Weapons",
+    "col_class": "Class",
+    "col_ammo": "Ammo",
+    "col_rarity": "Rarity",
+    "col_craft": "Crafted at",
+    "col_shop": "Trader",
+    "not_in_list": "Not in craft list",
+    "weapons_hint": "Class and ammo follow the community wiki; rarity follows the Dexerto wiki. 'Crafted at' is the bench and level from the workshop craft list; some weapons also need a blueprint. 'Trader' only marks whether Tian Wen's shop list includes it.",
+    "items_title": "Materials",
+    "col_cat": "Category",
+    "sort": "Sort",
+    "sort_default": "Default",
+    "sort_sell": "Highest value",
+    "col_sell": "Value",
+    "col_stack": "Stack",
+    "col_recycle": "Recycles into",
+    "no_recycle": "Cannot be recycled",
+    "items_hint": "Values are in-game coins. Categories follow the community wiki. Materials whose values differ between sources (e.g. Durable Cloth, Complex Gun Parts) are left out.",
+    "db_license": "Community wiki text is CC BY-SA 4.0; game content belongs to Embark Studios. Facts were checked and rewritten in Korean here.",
+    "dropped_by": "Dropped by",
+    "used_upgrade": "Workshop upgrades",
+    "used_quest": "Quest hand-ins",
+    "reward_of": "Quest rewards",
+    "recycled_from": "Recycled from",
+    "no_uses": "No uses found within the data on this site.",
+    "coins": "coins",
+    "note": "Note",
+    "diff": "Source differences",
+    "where_used": "Sources and uses",
+    "uses_hint": "Found automatically within this site's workshop, 50 quests and 12 ARC entries. It may not list every use in the game.",
+    "weak": "Weak points",
+    "act": "Behaviour",
+    "drops": "Drops",
+    "arc_unverified": "Weak points and drops for this ARC are not yet confirmed by two sources, so they are left out.",
+    "part_needed": "Where {{part}} is needed",
+    "workshop_title": "Workshop benches",
+    "levels": "{{n}} levels",
+    "col_level": "Level",
+    "col_upgrade": "Upgrade materials",
+    "col_crafts": "Unlocked crafts",
+    "workshop_hint": "Upgrade costs follow the community wiki Workshop page and match Gfinity up to Gunsmith 3 / Refiner 2. Crafts are representative items per level; some need a blueprint.",
+    "traders_title": "Traders",
+    "sells": "Sells:",
+    "pay": "Payment:",
+    "quests_n": "{{n}} quests on this site",
+    "see_quests": "See quests",
+    "traders_hint": "Trader stock changes with updates. Based on each trader's community wiki page (October 2026 revisions).",
+    "quests_title": "Quests",
+    "quest_search": "Search quest or item",
+    "col_giver": "Giver",
+    "col_map": "Map",
+    "any_map": "Any map",
+    "col_turnin": "Hand in:",
+    "no_turnin": "None",
+    "col_reward": "Rewards:",
+    "quests_hint": "Only the 50 quests verified verbatim from the community wiki table are listed; the full game has more and they will be added once checked. In-raid objective steps are not included. Givers were cross-checked with Dexerto."
   }
 }

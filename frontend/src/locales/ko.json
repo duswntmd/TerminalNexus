@@ -11,6 +11,7 @@
     "hackermode": "📟 해커 모드",
     "terminalhack": "🔐 터미널 해킹",
     "janggi": "♟️ 장기",
+    "chess": "♞ 체스",
     "about": "소개",
     "community": "커뮤니티",
     "play": "게임/체험",
@@ -172,6 +173,13 @@
             "login": false
           },
           {
+            "icon": "♞",
+            "name": "체스",
+            "desc": "세 단계 AI와 대국하거나, 한 화면에서 친구와 두거나, 온라인으로 다른 사람과 실시간 대국해요. 캐슬링·앙파상·승진 등 공식 규칙을 지원해요.",
+            "path": "/play/chess",
+            "login": false
+          },
+          {
             "icon": "⚒️",
             "name": "강화",
             "desc": "무기를 강화해 최고 단계에 도전하세요. 실패하면 파괴될 수도 있어요. 명예의 전당에 기록이 남아요.",
@@ -251,6 +259,67 @@
             "name": "날씨",
             "desc": "메인 화면에서 현재 위치의 시간별·주간 날씨를 바로 볼 수 있어요.",
             "path": "/",
+            "login": false
+          }
+        ]
+      },
+      {
+        "name": "플레이",
+        "items": [
+          {
+            "icon": "📈",
+            "name": "모의 주식",
+            "desc": "가상 머니로 실시간 시세가 움직이는 가상 종목을 사고팔아요. 호가창·차트·수익률 랭킹까지.",
+            "path": "/play/stock",
+            "login": false
+          },
+          {
+            "icon": "♟️",
+            "name": "장기",
+            "desc": "AI와 대국하거나, 한 화면에서 친구와 두거나, 온라인으로 다른 사람과 실시간 대국해요.",
+            "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "⚒️",
+            "name": "강화",
+            "desc": "무기를 강화해 최고 단계에 도전하세요. 실패하면 파괴될 수도 있어요. 명예의 전당에 기록이 남아요.",
+            "path": "/forge",
+            "login": true
+          },
+          {
+            "icon": "⌨️",
+            "name": "타자 게임",
+            "desc": "리눅스·Git 명령어를 빠르고 정확하게 입력해 타수를 겨뤄요. Top 10 리더보드 제공.",
+            "path": "/play/typeracer",
+            "login": false
+          },
+          {
+            "icon": "📟",
+            "name": "해커 모드",
+            "desc": "아무 키나 두드리면 영화 속 해커처럼 코드가 쏟아지는 연출용 터미널이에요.",
+            "path": "/play/hackermode",
+            "login": false
+          },
+          {
+            "icon": "🔐",
+            "name": "터미널 해킹",
+            "desc": "글자 더미 속 암호 후보 중 정답을 찾는 추리 게임. 일치하는 글자 수를 힌트로 맞혀요.",
+            "path": "/play/terminalhack",
+            "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "리눅스 실습",
+            "desc": "Rocky Linux 9.6 셸을 브라우저에서 체험해요. dnf·systemctl·firewall-cmd까지 실제처럼 연습할 수 있어요.",
+            "path": "/play/linux",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders 정보",
+            "desc": "탈출형 슈터 ARC Raiders의 무기 26종, 재료 38종, 퀘스트 50개, 워크숍 업그레이드, 상인, 적(ARC) 약점과 맵·업데이트를 검색하고 서로 연결해 볼 수 있는 비공식 정보. 항목마다 출처와 확인일을 표시했어요.",
+            "path": "/games/arc-raiders",
             "login": false
           }
         ]
@@ -464,6 +533,10 @@
       "name": "장기",
       "desc": "AI와 두거나, 친구와 온라인 대국"
     },
+    "chess": {
+      "name": "체스",
+      "desc": "AI·친구·온라인으로 두는 체스"
+    },
     "forge": {
       "name": "강화",
       "desc": "무기를 +20까지. 실패하면 파괴될 수도"
@@ -510,6 +583,10 @@
     "learn": {
       "name": "리눅스·서버 학습",
       "desc": "서버 작업에 바로 쓰는 명령어와 개념 정리"
+    },
+    "arcraiders": {
+      "name": "ARC Raiders 정보",
+      "desc": "맵·적·무기·재료·퀘스트를 정리한 비공식 게임 정보"
     }
   },
   "home": {
@@ -974,7 +1051,8 @@
     "title": "리눅스·서버 학습",
     "subtitle": "서버를 다룰 때 자주 만나는 주제를 명령어 예제와 함께 정리했어요.",
     "try_tool": "{{name}} 사용해 보기",
-    "more": "다른 글"
+    "more": "다른 글",
+    "byline": "글 에고수 · {{date}}"
   },
   "share": {
     "label": "공유",
@@ -988,6 +1066,10 @@
     "title": "사이트 소개와 운영 원칙",
     "intro": "TerminalNexus는 리눅스와 서버를 배우고 다루는 사람을 위한 사이트입니다. 라즈베리파이 한 대로 직접 운영하며, 그 과정에서 겪은 문제와 해결 방법을 글과 도구로 정리합니다.",
     "sections": [
+      {
+        "h": "운영자",
+        "p": "닉네임 에고수가 만들고 운영합니다. 서버를 직접 다루며 배운 내용을 글로 남깁니다."
+      },
       {
         "h": "제공하는 것",
         "p": "서버 학습 글, 개발·인프라 도구, 리눅스마스터 2급 연습 문제, 로또 당첨번호 조회, 터미널 테마의 미니게임을 제공합니다."
@@ -1009,5 +1091,274 @@
         "p": "틀린 내용을 발견하면 개인정보처리방침의 문의처로 알려 주세요. 확인되면 고칩니다."
       }
     ]
+  },
+  "chess": {
+    "title": "체스",
+    "meta_title": "체스 - TerminalNexus | AI·온라인 체스",
+    "meta_desc": "세 단계 AI와 대국하거나 친구와 한 화면에서, 또는 온라인으로 실시간 체스를 두세요. 캐슬링, 앙파상, 승진, 무승부 규칙과 기보(SAN)를 지원합니다.",
+    "board_label": "체스판",
+    "modes": {
+      "ai": "AI 대국",
+      "local": "2인 대국",
+      "online": "온라인"
+    },
+    "white": "백",
+    "black": "흑",
+    "you": "나",
+    "ai_name": "AI ({{level}})",
+    "captured": "잡은 기물",
+    "moves_title": "기보 ({{count}}수)",
+    "no_moves": "아직 둔 수가 없습니다.",
+    "promo_title": "승진할 기물을 고르세요",
+    "loading": "불러오는 중…",
+    "entering": "방에 들어가는 중…",
+    "login_needed": "온라인 대국은 로그인 후 이용할 수 있어요.",
+    "pieces": {
+      "p": "폰",
+      "n": "나이트",
+      "b": "비숍",
+      "r": "룩",
+      "q": "퀸",
+      "k": "킹"
+    },
+    "setup": {
+      "ai_title": "AI와 대국",
+      "local_title": "한 화면에서 둘이 대국",
+      "local_desc": "한 기기에서 백과 흑을 번갈아 둡니다. 판 뒤집기로 차례마다 시점을 바꿀 수 있어요.",
+      "my_color": "내 색",
+      "white": "백",
+      "white_desc": "먼저 둠",
+      "black": "흑",
+      "black_desc": "나중에 둠",
+      "random": "무작위",
+      "random_desc": "색을 무작위로",
+      "level": "AI 난이도"
+    },
+    "levels": {
+      "easy": "쉬움",
+      "easy_desc": "처음 배우는 분께",
+      "normal": "보통",
+      "normal_desc": "실수를 노려요",
+      "hard": "어려움",
+      "hard_desc": "수를 깊게 읽어요"
+    },
+    "status": {
+      "your_turn": "내 차례입니다",
+      "ai_turn": "AI 차례",
+      "thinking": "AI가 수를 생각하는 중…",
+      "turn": "{{color}} 차례",
+      "check": "체크!",
+      "opp_turn": "상대 차례",
+      "spectating": "관전 중 · {{color}} 차례",
+      "waiting_opponent": "상대를 기다리는 중… (방 주소를 공유해도 됩니다)",
+      "waiting_host": "방장이 시작하기를 기다리는 중…",
+      "ready_host": "상대가 들어왔습니다. 대국을 시작하세요."
+    },
+    "actions": {
+      "start": "대국 시작",
+      "undo": "무르기",
+      "flip": "판 뒤집기",
+      "resign": "기권",
+      "sound_off": "소리 끄기",
+      "sound_on": "소리 켜기",
+      "new_game": "새 대국",
+      "close": "닫기",
+      "draw_offer": "무승부 제안",
+      "accept": "수락",
+      "decline": "거절",
+      "leave": "나가기",
+      "rematch": "다시 두기 (색 교체)",
+      "send": "전송",
+      "create": "방 만들기",
+      "enter": "입장",
+      "watch": "관전",
+      "login": "로그인"
+    },
+    "confirm": {
+      "resign": "기권하시겠습니까?",
+      "leave": "대국 중에 나가면 기권패 처리됩니다. 나가시겠습니까?"
+    },
+    "result": {
+      "win": "승리!",
+      "lose": "패배",
+      "draw": "무승부",
+      "white_wins": "백 승리",
+      "black_wins": "흑 승리"
+    },
+    "reason": {
+      "checkmate": "체크메이트",
+      "stalemate": "스테일메이트 (둘 수 있는 수가 없음)",
+      "threefold": "3회 동일 국면",
+      "fifty": "50수 규칙",
+      "insufficient": "기물 부족",
+      "resign": "기권",
+      "leave": "상대 퇴장",
+      "agreement": "합의 무승부"
+    },
+    "draw": {
+      "offered_by_me": "무승부를 제안했습니다. 상대 응답을 기다리는 중…",
+      "offered_by_opp": "상대가 무승부를 제안했습니다."
+    },
+    "lobby": {
+      "rooms": "대국 방 ({{count}})",
+      "empty": "열린 방이 없습니다. 오른쪽에서 방을 만들어 보세요.",
+      "create_title": "방 만들기",
+      "title_ph": "방 제목 (선택)",
+      "empty_seat": "빈자리",
+      "status": {
+        "WAITING": "대기 중",
+        "PLAYING": "대국 중",
+        "FINISHED": "종료"
+      }
+    },
+    "chat": {
+      "title": "대화",
+      "empty": "인사를 건네 보세요.",
+      "ph": "메시지 입력"
+    },
+    "closed": {
+      "host_left": "방장이 나가 방이 닫혔습니다.",
+      "host_closed": "방장이 방을 닫았습니다."
+    },
+    "error": {
+      "generic": "요청을 처리하지 못했습니다.",
+      "connecting": "서버에 연결 중입니다. 잠시 후 다시 시도하세요.",
+      "illegal_move": "둘 수 없는 수입니다.",
+      "not_your_turn": "상대 차례입니다.",
+      "not_playing": "진행 중인 대국이 아닙니다.",
+      "not_player": "대국자가 아닙니다.",
+      "host_only": "방장만 할 수 있습니다.",
+      "not_waiting": "이미 진행 중이거나 끝난 대국입니다.",
+      "need_opponent": "상대가 입장해야 시작할 수 있습니다.",
+      "no_draw_offer": "무승부 제안이 없습니다.",
+      "not_finished": "대국이 끝난 뒤에만 가능합니다.",
+      "room_not_found": "방을 찾을 수 없습니다.",
+      "user_not_found": "사용자를 찾을 수 없습니다."
+    },
+    "rules_title": "체스 규칙 간단 정리",
+    "rules": [
+      [
+        "킹",
+        "모든 방향으로 한 칸. 공격받는 칸으로는 갈 수 없습니다"
+      ],
+      [
+        "퀸",
+        "가로·세로·대각선으로 원하는 만큼"
+      ],
+      [
+        "룩·비숍",
+        "룩은 가로·세로, 비숍은 대각선으로 원하는 만큼"
+      ],
+      [
+        "나이트",
+        "L자로 이동하며 다른 기물을 뛰어넘습니다"
+      ],
+      [
+        "폰",
+        "앞으로 한 칸(처음에는 두 칸), 잡을 때는 앞 대각선. 끝 줄에 닿으면 퀸·룩·비숍·나이트로 승진"
+      ],
+      [
+        "캐슬링",
+        "킹과 룩이 한 번도 움직이지 않았고 사이가 비었으며, 킹이 체크 중이 아니고 지나는 칸이 공격받지 않을 때"
+      ],
+      [
+        "앙파상",
+        "두 칸 전진한 상대 폰을 바로 다음 수에 옆 폰이 지나간 칸으로 잡기"
+      ],
+      [
+        "무승부",
+        "스테일메이트, 3회 동일 국면, 50수 동안 폰 이동·잡기 없음, 체크메이트할 기물 부족, 온라인 합의"
+      ]
+    ]
+  },
+  "arc": {
+    "disclaimer": "이 페이지는 Embark Studios와 관련 없는 비공식 팬 정보입니다. 공식 로고와 이미지를 쓰지 않았고, 게임 이름과 상표는 각 권리자의 것입니다. 정보는 공식 공지와 매체 자료를 확인일 기준으로 직접 정리했으며, 업데이트로 달라질 수 있습니다.",
+    "byline": "정리 에고수 · 정보 확인일 {{date}}",
+    "checked": "정보 확인일 {{date}}",
+    "sources": "출처",
+    "tabs": "ARC Raiders 정보 메뉴",
+    "facts_title": "게임 개요",
+    "loop_title": "한 판의 흐름 (탈출형 루프)",
+    "systems_title": "핵심 시스템",
+    "tips_title": "초보자 팁",
+    "maps_title": "맵 목록 (추가 순서)",
+    "conditions_title": "맵 조건 (특수 판)",
+    "added": "추가 {{date}}",
+    "keys": "알려진 열쇠:",
+    "keys_hint": "열쇠 목록은 Dexerto 위키 기준이며 공식 목록이 아닙니다. 새 맵의 열쇠는 아직 확인하지 못했습니다.",
+    "arc_title": "ARC(적) 목록",
+    "arc_hint": "위협도와 장갑은 Dexerto 위키의 분류(2026-04-28)이고 공식 수치가 아닙니다. 형태는 공식·매체 설명을 바탕으로 한 참고 분류입니다. 확인하지 못한 값은 '확인 필요'로 두었습니다.",
+    "search": "이름이나 설명으로 검색",
+    "all": "전체",
+    "count": "{{total}}종 중 {{n}}종",
+    "empty": "조건에 맞는 ARC가 없습니다.",
+    "col_name": "이름",
+    "col_type": "형태",
+    "col_threat": "위협도",
+    "col_armor": "장갑",
+    "col_since": "등장",
+    "col_desc": "설명",
+    "updates_title": "업데이트 기록",
+    "kind_major": "대형 업데이트",
+    "kind_patch": "패치",
+    "kind_event": "발표·이벤트",
+    "report": "틀린 정보를 발견하면 알려 주세요.",
+    "report_link": "문의 방법 보기",
+    "weapons_title": "무기 목록",
+    "col_class": "종류",
+    "col_ammo": "탄약",
+    "col_rarity": "희귀도",
+    "col_craft": "제작",
+    "col_shop": "상인 판매",
+    "not_in_list": "제작 목록에 없음",
+    "weapons_hint": "종류·탄약은 커뮤니티 위키, 희귀도는 Dexerto 위키 기준입니다. 제작 칸은 워크숍 제작 목록에 있는 작업대와 단계이며, 설계도가 필요한 무기도 있습니다. 상인 판매는 Tian Wen 판매 목록에 이름이 있는지만 표시합니다.",
+    "items_title": "재료 목록",
+    "col_cat": "분류",
+    "sort": "정렬",
+    "sort_default": "기본",
+    "sort_sell": "판매가 높은 순",
+    "col_sell": "판매가",
+    "col_stack": "묶음",
+    "col_recycle": "재활용하면",
+    "no_recycle": "재활용 불가",
+    "items_hint": "판매가 단위는 게임 속 코인입니다. 분류는 커뮤니티 위키의 구분을 따랐습니다. 출처끼리 값이 다른 재료(Durable Cloth, Complex Gun Parts 등)는 싣지 않았습니다.",
+    "db_license": "커뮤니티 위키 본문은 CC BY-SA 4.0이며, 게임 자료의 권리는 Embark Studios에 있습니다. 이 페이지는 사실을 확인해 한국어로 다시 정리했습니다.",
+    "dropped_by": "떨어뜨리는 ARC",
+    "used_upgrade": "워크숍 업그레이드 재료",
+    "used_quest": "퀘스트 제출 물품",
+    "reward_of": "퀘스트 보상",
+    "recycled_from": "재활용하면 이 재료가 나오는 것",
+    "no_uses": "이 사이트에 정리한 범위 안에서는 쓰이는 곳을 찾지 못했습니다.",
+    "coins": "코인",
+    "note": "참고",
+    "diff": "출처 차이",
+    "where_used": "얻는 곳과 쓰이는 곳",
+    "uses_hint": "이 사이트에 정리한 워크숍, 퀘스트 50개, ARC 12종 범위에서 자동으로 찾은 목록입니다. 게임 안의 모든 용도는 아닐 수 있습니다.",
+    "weak": "약점",
+    "act": "행동",
+    "drops": "드롭",
+    "arc_unverified": "이 ARC의 약점과 드롭은 아직 두 출처로 확인하지 못해 싣지 않았습니다.",
+    "part_needed": "{{part}}이(가) 필요한 곳",
+    "workshop_title": "워크숍 작업대",
+    "levels": "{{n}}단계",
+    "col_level": "단계",
+    "col_upgrade": "업그레이드 재료",
+    "col_crafts": "이 단계에서 열리는 제작품",
+    "workshop_hint": "업그레이드 재료는 커뮤니티 위키 Workshop 문서 기준이며, Gunsmith 3·Refiner 2까지는 Gfinity 정리와도 일치합니다. 제작품은 단계별 대표 항목이고, 일부는 설계도가 있어야 만들 수 있습니다.",
+    "traders_title": "상인",
+    "sells": "파는 물건:",
+    "pay": "결제:",
+    "quests_n": "이 사이트의 퀘스트 {{n}}개",
+    "see_quests": "퀘스트 보기",
+    "traders_hint": "상인 판매 목록은 업데이트마다 바뀝니다. 상인별 커뮤니티 위키 문서(2026년 10월 수정본)를 기준으로 했습니다.",
+    "quests_title": "퀘스트 목록",
+    "quest_search": "퀘스트 이름이나 아이템으로 검색",
+    "col_giver": "의뢰인",
+    "col_map": "맵",
+    "any_map": "맵 제한 없음",
+    "col_turnin": "제출:",
+    "no_turnin": "없음",
+    "col_reward": "보상:",
+    "quests_hint": "커뮤니티 위키 표에서 원문으로 확인한 50개만 실었습니다. 위키 기준 전체 퀘스트는 이보다 많으며, 나머지는 확인한 뒤 추가합니다. 현장에서 해야 할 세부 목표는 싣지 않았습니다. 의뢰인은 Dexerto 목록과 대조했습니다."
   }
 }

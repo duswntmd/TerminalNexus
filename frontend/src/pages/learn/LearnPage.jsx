@@ -57,6 +57,7 @@ const LearnArticle = ({ article }) => {
       <header className="ln-head">
         <h1>{article.title}</h1>
         <p>{article.desc}</p>
+        <p className="ln-meta">{t('learn.byline', { date: article.date })}</p>
       </header>
       <div className="ln-body">
         {article.body.map((block, i) => <Block key={i} block={block} />)}

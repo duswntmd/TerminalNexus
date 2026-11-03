@@ -1,5 +1,7 @@
 # 🍎 과일 효능 AI - RAG 시스템
 
+> 사용 모델: `gemini-2.5-flash-lite` (`FruitRAGService.java`). 로그인한 사용자만 이용할 수 있습니다.
+
 Gemini AI를 활용한 RAG(Retrieval-Augmented Generation) 기반 과일 효능 검색 시스템입니다.
 
 ## 📋 개요
