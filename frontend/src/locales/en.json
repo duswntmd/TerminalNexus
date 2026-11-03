@@ -11,6 +11,7 @@
     "hackermode": "📟 Hacker Mode",
     "terminalhack": "🔐 Terminal Hack",
     "janggi": "♟️ Janggi",
+    "chess": "♞ Chess",
     "about": "About",
     "community": "Community",
     "play": "Play",
@@ -169,6 +170,13 @@
             "name": "Janggi",
             "desc": "Play Korean chess against the AI, with a friend on one screen, or online in real time.",
             "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "♞",
+            "name": "Chess",
+            "desc": "Play a three-level AI, a friend on the same screen, or other people online in real time. Castling, en passant, promotion and draw rules are supported.",
+            "path": "/play/chess",
             "login": false
           },
           {
@@ -468,6 +476,10 @@
     "janggi": {
       "name": "Janggi",
       "desc": "Korean chess vs AI or friends online"
+    },
+    "chess": {
+      "name": "Chess",
+      "desc": "Play chess vs AI, a friend or online"
     },
     "forge": {
       "name": "Forge",
@@ -1018,6 +1030,185 @@
         "h": "Reporting errors",
         "p": "If you find a mistake, please use the contact in the Privacy Policy. Confirmed errors are corrected."
       }
+    ]
+  },
+  "chess": {
+    "title": "Chess",
+    "meta_title": "Chess - TerminalNexus | Play vs AI or online",
+    "meta_desc": "Play chess against a three-level AI, with a friend on one screen, or online in real time. Castling, en passant, promotion, draw rules and SAN notation.",
+    "board_label": "Chess board",
+    "modes": {
+      "ai": "vs AI",
+      "local": "2 players",
+      "online": "Online"
+    },
+    "white": "White",
+    "black": "Black",
+    "you": "You",
+    "ai_name": "AI ({{level}})",
+    "captured": "Captured pieces",
+    "moves_title": "Moves ({{count}})",
+    "no_moves": "No moves yet.",
+    "promo_title": "Choose a piece to promote to",
+    "loading": "Loading…",
+    "entering": "Joining the room…",
+    "login_needed": "Log in to play online.",
+    "pieces": {
+      "p": "Pawn",
+      "n": "Knight",
+      "b": "Bishop",
+      "r": "Rook",
+      "q": "Queen",
+      "k": "King"
+    },
+    "setup": {
+      "ai_title": "Play vs AI",
+      "local_title": "Two players, one screen",
+      "local_desc": "White and Black take turns on one device. Use Flip board to switch the view each turn.",
+      "my_color": "My color",
+      "white": "White",
+      "white_desc": "Moves first",
+      "black": "Black",
+      "black_desc": "Moves second",
+      "random": "Random",
+      "random_desc": "Pick for me",
+      "level": "AI level"
+    },
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "For beginners",
+      "normal": "Normal",
+      "normal_desc": "Punishes mistakes",
+      "hard": "Hard",
+      "hard_desc": "Calculates deeply"
+    },
+    "status": {
+      "your_turn": "Your move",
+      "ai_turn": "AI's move",
+      "thinking": "AI is thinking…",
+      "turn": "{{color}} to move",
+      "check": "Check!",
+      "opp_turn": "Opponent's move",
+      "spectating": "Watching · {{color}} to move",
+      "waiting_opponent": "Waiting for an opponent… (you can share the room link)",
+      "waiting_host": "Waiting for the host to start…",
+      "ready_host": "Your opponent is here. Start the game."
+    },
+    "actions": {
+      "start": "Start game",
+      "undo": "Undo",
+      "flip": "Flip board",
+      "resign": "Resign",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on",
+      "new_game": "New game",
+      "close": "Close",
+      "draw_offer": "Offer draw",
+      "accept": "Accept",
+      "decline": "Decline",
+      "leave": "Leave",
+      "rematch": "Rematch (swap colors)",
+      "send": "Send",
+      "create": "Create room",
+      "enter": "Join",
+      "watch": "Watch",
+      "login": "Log in"
+    },
+    "confirm": {
+      "resign": "Resign this game?",
+      "leave": "Leaving during a game counts as a loss. Leave anyway?"
+    },
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "draw": "Draw",
+      "white_wins": "White wins",
+      "black_wins": "Black wins"
+    },
+    "reason": {
+      "checkmate": "Checkmate",
+      "stalemate": "Stalemate (no legal moves)",
+      "threefold": "Threefold repetition",
+      "fifty": "Fifty-move rule",
+      "insufficient": "Insufficient material",
+      "resign": "Resignation",
+      "leave": "Opponent left",
+      "agreement": "Draw by agreement"
+    },
+    "draw": {
+      "offered_by_me": "You offered a draw. Waiting for a reply…",
+      "offered_by_opp": "Your opponent offers a draw."
+    },
+    "lobby": {
+      "rooms": "Rooms ({{count}})",
+      "empty": "No open rooms. Create one on the right.",
+      "create_title": "Create a room",
+      "title_ph": "Room title (optional)",
+      "empty_seat": "open",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Finished"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "Say hello.",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_left": "The host left, so the room was closed.",
+      "host_closed": "The host closed the room."
+    },
+    "error": {
+      "generic": "The request could not be processed.",
+      "connecting": "Connecting to the server. Please try again shortly.",
+      "illegal_move": "That move is not legal.",
+      "not_your_turn": "It is your opponent's move.",
+      "not_playing": "No game in progress.",
+      "not_player": "You are not a player in this game.",
+      "host_only": "Only the host can do that.",
+      "not_waiting": "The game has already started or ended.",
+      "need_opponent": "An opponent must join first.",
+      "no_draw_offer": "There is no draw offer.",
+      "not_finished": "Only possible after the game ends.",
+      "room_not_found": "Room not found.",
+      "user_not_found": "User not found."
+    },
+    "rules_title": "Chess rules in brief",
+    "rules": [
+      [
+        "King",
+        "One square in any direction, never onto an attacked square"
+      ],
+      [
+        "Queen",
+        "Any distance along ranks, files and diagonals"
+      ],
+      [
+        "Rook · Bishop",
+        "Rook along ranks and files, bishop along diagonals, any distance"
+      ],
+      [
+        "Knight",
+        "Moves in an L shape and jumps over pieces"
+      ],
+      [
+        "Pawn",
+        "One square forward (two from its start), captures diagonally forward, promotes to queen, rook, bishop or knight on the last rank"
+      ],
+      [
+        "Castling",
+        "King and rook have not moved, squares between are empty, the king is not in check and does not pass through an attacked square"
+      ],
+      [
+        "En passant",
+        "Right after an enemy pawn advances two squares, an adjacent pawn may capture it on the square it passed"
+      ],
+      [
+        "Draws",
+        "Stalemate, threefold repetition, fifty moves without a pawn move or capture, insufficient material, or agreement online"
+      ]
     ]
   }
 }
