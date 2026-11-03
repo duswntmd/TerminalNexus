@@ -262,6 +262,67 @@
             "login": false
           }
         ]
+      },
+      {
+        "name": "Play",
+        "items": [
+          {
+            "icon": "📈",
+            "name": "Stock Simulator",
+            "desc": "Trade virtual stocks with live-moving prices using virtual money. Order book, charts and a profit ranking.",
+            "path": "/play/stock",
+            "login": false
+          },
+          {
+            "icon": "♟️",
+            "name": "Janggi",
+            "desc": "Play Korean chess against the AI, with a friend on one screen, or online in real time.",
+            "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "⚒️",
+            "name": "Forge",
+            "desc": "Upgrade your weapon to the highest level — it might break. Records go to the hall of fame.",
+            "path": "/forge",
+            "login": true
+          },
+          {
+            "icon": "⌨️",
+            "name": "TypeRacer",
+            "desc": "Type Linux and Git commands fast and accurately. Top 10 leaderboard.",
+            "path": "/play/typeracer",
+            "login": false
+          },
+          {
+            "icon": "📟",
+            "name": "Hacker Mode",
+            "desc": "Mash any key and code pours out like a movie hacker's terminal.",
+            "path": "/play/hackermode",
+            "login": false
+          },
+          {
+            "icon": "🔐",
+            "name": "Terminal Hack",
+            "desc": "Find the password among candidates hidden in a memory dump, using letter-match hints.",
+            "path": "/play/terminalhack",
+            "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "Linux Lab",
+            "desc": "Try a Rocky Linux 9.6 shell in your browser. Practice dnf, systemctl and firewall-cmd like the real thing.",
+            "path": "/play/linux",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders Info",
+            "desc": "Unofficial ARC Raiders database: 26 weapons, 38 materials, 50 quests, workshop upgrades, traders, ARC weak points, maps and updates, all searchable and cross-linked with sources and check dates.",
+            "path": "/games/arc-raiders",
+            "login": false
+          }
+        ]
       }
     ],
     "start_title": "Getting started",
@@ -527,6 +588,10 @@
     "learn": {
       "name": "Server guides",
       "desc": "Commands and concepts for server work"
+    },
+    "arcraiders": {
+      "name": "ARC Raiders Info",
+      "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
     }
   },
   "home": {
@@ -1210,5 +1275,95 @@
         "Stalemate, threefold repetition, fifty moves without a pawn move or capture, insufficient material, or agreement online"
       ]
     ]
+  },
+  "arc": {
+    "disclaimer": "This is unofficial fan information, not affiliated with Embark Studios. No official logos or images are used; the game name and trademarks belong to their owners. Facts were compiled from official notices and media as of the check date and may change with updates.",
+    "byline": "Compiled by 에고수 · Checked {{date}}",
+    "checked": "Checked {{date}}",
+    "sources": "Sources",
+    "tabs": "ARC Raiders info menu",
+    "facts_title": "Overview",
+    "loop_title": "How a raid works (extraction loop)",
+    "systems_title": "Core systems",
+    "tips_title": "Beginner tips",
+    "maps_title": "Maps (in order added)",
+    "conditions_title": "Map conditions",
+    "added": "Added {{date}}",
+    "keys": "Known keys:",
+    "keys_hint": "Key lists come from the Dexerto wiki, not an official list. Keys for newer maps are not verified yet.",
+    "arc_title": "ARC enemy list",
+    "arc_hint": "Threat and armor follow the Dexerto wiki classification (2026-04-28), not official numbers. Type is a reference grouping based on official and media descriptions. Unverified values are marked '확인 필요' (needs checking).",
+    "search": "Search by name or description",
+    "all": "All",
+    "count": "{{n}} of {{total}}",
+    "empty": "No ARC matches these filters.",
+    "col_name": "Name",
+    "col_type": "Type",
+    "col_threat": "Threat",
+    "col_armor": "Armor",
+    "col_since": "Added in",
+    "col_desc": "Notes",
+    "updates_title": "Update history",
+    "kind_major": "Major update",
+    "kind_patch": "Patch",
+    "kind_event": "Announcement",
+    "report": "Found something wrong? Let us know.",
+    "report_link": "How to contact",
+    "weapons_title": "Weapons",
+    "col_class": "Class",
+    "col_ammo": "Ammo",
+    "col_rarity": "Rarity",
+    "col_craft": "Crafted at",
+    "col_shop": "Trader",
+    "not_in_list": "Not in craft list",
+    "weapons_hint": "Class and ammo follow the community wiki; rarity follows the Dexerto wiki. 'Crafted at' is the bench and level from the workshop craft list; some weapons also need a blueprint. 'Trader' only marks whether Tian Wen's shop list includes it.",
+    "items_title": "Materials",
+    "col_cat": "Category",
+    "sort": "Sort",
+    "sort_default": "Default",
+    "sort_sell": "Highest value",
+    "col_sell": "Value",
+    "col_stack": "Stack",
+    "col_recycle": "Recycles into",
+    "no_recycle": "Cannot be recycled",
+    "items_hint": "Values are in-game coins. Categories follow the community wiki. Materials whose values differ between sources (e.g. Durable Cloth, Complex Gun Parts) are left out.",
+    "db_license": "Community wiki text is CC BY-SA 4.0; game content belongs to Embark Studios. Facts were checked and rewritten in Korean here.",
+    "dropped_by": "Dropped by",
+    "used_upgrade": "Workshop upgrades",
+    "used_quest": "Quest hand-ins",
+    "reward_of": "Quest rewards",
+    "recycled_from": "Recycled from",
+    "no_uses": "No uses found within the data on this site.",
+    "coins": "coins",
+    "note": "Note",
+    "diff": "Source differences",
+    "where_used": "Sources and uses",
+    "uses_hint": "Found automatically within this site's workshop, 50 quests and 12 ARC entries. It may not list every use in the game.",
+    "weak": "Weak points",
+    "act": "Behaviour",
+    "drops": "Drops",
+    "arc_unverified": "Weak points and drops for this ARC are not yet confirmed by two sources, so they are left out.",
+    "part_needed": "Where {{part}} is needed",
+    "workshop_title": "Workshop benches",
+    "levels": "{{n}} levels",
+    "col_level": "Level",
+    "col_upgrade": "Upgrade materials",
+    "col_crafts": "Unlocked crafts",
+    "workshop_hint": "Upgrade costs follow the community wiki Workshop page and match Gfinity up to Gunsmith 3 / Refiner 2. Crafts are representative items per level; some need a blueprint.",
+    "traders_title": "Traders",
+    "sells": "Sells:",
+    "pay": "Payment:",
+    "quests_n": "{{n}} quests on this site",
+    "see_quests": "See quests",
+    "traders_hint": "Trader stock changes with updates. Based on each trader's community wiki page (October 2026 revisions).",
+    "quests_title": "Quests",
+    "quest_search": "Search quest or item",
+    "col_giver": "Giver",
+    "col_map": "Map",
+    "any_map": "Any map",
+    "col_turnin": "Hand in:",
+    "no_turnin": "None",
+    "col_reward": "Rewards:",
+    "quests_hint": "Only the 50 quests verified verbatim from the community wiki table are listed; the full game has more and they will be added once checked. In-raid objective steps are not included. Givers were cross-checked with Dexerto."
   }
 }

@@ -262,6 +262,67 @@
             "login": false
           }
         ]
+      },
+      {
+        "name": "플레이",
+        "items": [
+          {
+            "icon": "📈",
+            "name": "모의 주식",
+            "desc": "가상 머니로 실시간 시세가 움직이는 가상 종목을 사고팔아요. 호가창·차트·수익률 랭킹까지.",
+            "path": "/play/stock",
+            "login": false
+          },
+          {
+            "icon": "♟️",
+            "name": "장기",
+            "desc": "AI와 대국하거나, 한 화면에서 친구와 두거나, 온라인으로 다른 사람과 실시간 대국해요.",
+            "path": "/play/janggi",
+            "login": false
+          },
+          {
+            "icon": "⚒️",
+            "name": "강화",
+            "desc": "무기를 강화해 최고 단계에 도전하세요. 실패하면 파괴될 수도 있어요. 명예의 전당에 기록이 남아요.",
+            "path": "/forge",
+            "login": true
+          },
+          {
+            "icon": "⌨️",
+            "name": "타자 게임",
+            "desc": "리눅스·Git 명령어를 빠르고 정확하게 입력해 타수를 겨뤄요. Top 10 리더보드 제공.",
+            "path": "/play/typeracer",
+            "login": false
+          },
+          {
+            "icon": "📟",
+            "name": "해커 모드",
+            "desc": "아무 키나 두드리면 영화 속 해커처럼 코드가 쏟아지는 연출용 터미널이에요.",
+            "path": "/play/hackermode",
+            "login": false
+          },
+          {
+            "icon": "🔐",
+            "name": "터미널 해킹",
+            "desc": "글자 더미 속 암호 후보 중 정답을 찾는 추리 게임. 일치하는 글자 수를 힌트로 맞혀요.",
+            "path": "/play/terminalhack",
+            "login": false
+          },
+          {
+            "icon": "🐧",
+            "name": "리눅스 실습",
+            "desc": "Rocky Linux 9.6 셸을 브라우저에서 체험해요. dnf·systemctl·firewall-cmd까지 실제처럼 연습할 수 있어요.",
+            "path": "/play/linux",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders 정보",
+            "desc": "탈출형 슈터 ARC Raiders의 무기 26종, 재료 38종, 퀘스트 50개, 워크숍 업그레이드, 상인, 적(ARC) 약점과 맵·업데이트를 검색하고 서로 연결해 볼 수 있는 비공식 정보. 항목마다 출처와 확인일을 표시했어요.",
+            "path": "/games/arc-raiders",
+            "login": false
+          }
+        ]
       }
     ],
     "start_title": "시작하는 방법",
@@ -522,6 +583,10 @@
     "learn": {
       "name": "리눅스·서버 학습",
       "desc": "서버 작업에 바로 쓰는 명령어와 개념 정리"
+    },
+    "arcraiders": {
+      "name": "ARC Raiders 정보",
+      "desc": "맵·적·무기·재료·퀘스트를 정리한 비공식 게임 정보"
     }
   },
   "home": {
@@ -1205,5 +1270,95 @@
         "스테일메이트, 3회 동일 국면, 50수 동안 폰 이동·잡기 없음, 체크메이트할 기물 부족, 온라인 합의"
       ]
     ]
+  },
+  "arc": {
+    "disclaimer": "이 페이지는 Embark Studios와 관련 없는 비공식 팬 정보입니다. 공식 로고와 이미지를 쓰지 않았고, 게임 이름과 상표는 각 권리자의 것입니다. 정보는 공식 공지와 매체 자료를 확인일 기준으로 직접 정리했으며, 업데이트로 달라질 수 있습니다.",
+    "byline": "정리 에고수 · 정보 확인일 {{date}}",
+    "checked": "정보 확인일 {{date}}",
+    "sources": "출처",
+    "tabs": "ARC Raiders 정보 메뉴",
+    "facts_title": "게임 개요",
+    "loop_title": "한 판의 흐름 (탈출형 루프)",
+    "systems_title": "핵심 시스템",
+    "tips_title": "초보자 팁",
+    "maps_title": "맵 목록 (추가 순서)",
+    "conditions_title": "맵 조건 (특수 판)",
+    "added": "추가 {{date}}",
+    "keys": "알려진 열쇠:",
+    "keys_hint": "열쇠 목록은 Dexerto 위키 기준이며 공식 목록이 아닙니다. 새 맵의 열쇠는 아직 확인하지 못했습니다.",
+    "arc_title": "ARC(적) 목록",
+    "arc_hint": "위협도와 장갑은 Dexerto 위키의 분류(2026-04-28)이고 공식 수치가 아닙니다. 형태는 공식·매체 설명을 바탕으로 한 참고 분류입니다. 확인하지 못한 값은 '확인 필요'로 두었습니다.",
+    "search": "이름이나 설명으로 검색",
+    "all": "전체",
+    "count": "{{total}}종 중 {{n}}종",
+    "empty": "조건에 맞는 ARC가 없습니다.",
+    "col_name": "이름",
+    "col_type": "형태",
+    "col_threat": "위협도",
+    "col_armor": "장갑",
+    "col_since": "등장",
+    "col_desc": "설명",
+    "updates_title": "업데이트 기록",
+    "kind_major": "대형 업데이트",
+    "kind_patch": "패치",
+    "kind_event": "발표·이벤트",
+    "report": "틀린 정보를 발견하면 알려 주세요.",
+    "report_link": "문의 방법 보기",
+    "weapons_title": "무기 목록",
+    "col_class": "종류",
+    "col_ammo": "탄약",
+    "col_rarity": "희귀도",
+    "col_craft": "제작",
+    "col_shop": "상인 판매",
+    "not_in_list": "제작 목록에 없음",
+    "weapons_hint": "종류·탄약은 커뮤니티 위키, 희귀도는 Dexerto 위키 기준입니다. 제작 칸은 워크숍 제작 목록에 있는 작업대와 단계이며, 설계도가 필요한 무기도 있습니다. 상인 판매는 Tian Wen 판매 목록에 이름이 있는지만 표시합니다.",
+    "items_title": "재료 목록",
+    "col_cat": "분류",
+    "sort": "정렬",
+    "sort_default": "기본",
+    "sort_sell": "판매가 높은 순",
+    "col_sell": "판매가",
+    "col_stack": "묶음",
+    "col_recycle": "재활용하면",
+    "no_recycle": "재활용 불가",
+    "items_hint": "판매가 단위는 게임 속 코인입니다. 분류는 커뮤니티 위키의 구분을 따랐습니다. 출처끼리 값이 다른 재료(Durable Cloth, Complex Gun Parts 등)는 싣지 않았습니다.",
+    "db_license": "커뮤니티 위키 본문은 CC BY-SA 4.0이며, 게임 자료의 권리는 Embark Studios에 있습니다. 이 페이지는 사실을 확인해 한국어로 다시 정리했습니다.",
+    "dropped_by": "떨어뜨리는 ARC",
+    "used_upgrade": "워크숍 업그레이드 재료",
+    "used_quest": "퀘스트 제출 물품",
+    "reward_of": "퀘스트 보상",
+    "recycled_from": "재활용하면 이 재료가 나오는 것",
+    "no_uses": "이 사이트에 정리한 범위 안에서는 쓰이는 곳을 찾지 못했습니다.",
+    "coins": "코인",
+    "note": "참고",
+    "diff": "출처 차이",
+    "where_used": "얻는 곳과 쓰이는 곳",
+    "uses_hint": "이 사이트에 정리한 워크숍, 퀘스트 50개, ARC 12종 범위에서 자동으로 찾은 목록입니다. 게임 안의 모든 용도는 아닐 수 있습니다.",
+    "weak": "약점",
+    "act": "행동",
+    "drops": "드롭",
+    "arc_unverified": "이 ARC의 약점과 드롭은 아직 두 출처로 확인하지 못해 싣지 않았습니다.",
+    "part_needed": "{{part}}이(가) 필요한 곳",
+    "workshop_title": "워크숍 작업대",
+    "levels": "{{n}}단계",
+    "col_level": "단계",
+    "col_upgrade": "업그레이드 재료",
+    "col_crafts": "이 단계에서 열리는 제작품",
+    "workshop_hint": "업그레이드 재료는 커뮤니티 위키 Workshop 문서 기준이며, Gunsmith 3·Refiner 2까지는 Gfinity 정리와도 일치합니다. 제작품은 단계별 대표 항목이고, 일부는 설계도가 있어야 만들 수 있습니다.",
+    "traders_title": "상인",
+    "sells": "파는 물건:",
+    "pay": "결제:",
+    "quests_n": "이 사이트의 퀘스트 {{n}}개",
+    "see_quests": "퀘스트 보기",
+    "traders_hint": "상인 판매 목록은 업데이트마다 바뀝니다. 상인별 커뮤니티 위키 문서(2026년 10월 수정본)를 기준으로 했습니다.",
+    "quests_title": "퀘스트 목록",
+    "quest_search": "퀘스트 이름이나 아이템으로 검색",
+    "col_giver": "의뢰인",
+    "col_map": "맵",
+    "any_map": "맵 제한 없음",
+    "col_turnin": "제출:",
+    "no_turnin": "없음",
+    "col_reward": "보상:",
+    "quests_hint": "커뮤니티 위키 표에서 원문으로 확인한 50개만 실었습니다. 위키 기준 전체 퀘스트는 이보다 많으며, 나머지는 확인한 뒤 추가합니다. 현장에서 해야 할 세부 목표는 싣지 않았습니다. 의뢰인은 Dexerto 목록과 대조했습니다."
   }
 }
