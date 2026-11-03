@@ -1,0 +1,46 @@
+/* 화투 카드: 폭은 --hw-w 로 정하고 높이는 비율(60:92)로 따라감. is-down 을 빼면 뒤집히며 공개 */
+.hw-card {
+  --hw-w: 64px;
+  display: inline-block;
+  width: var(--hw-w);
+  aspect-ratio: 60 / 92;
+  perspective: 600px;
+  flex: none;
+  vertical-align: middle;
+}
+
+.hw-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.3, 1.15);
+}
+
+.hw-card.is-down .hw-inner { transform: rotateY(180deg); }
+
+.hw-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.hw-back { transform: rotateY(180deg); }
+
+.hw-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hw-card.is-hl .hw-face {
+  box-shadow: 0 0 0 3px var(--tn-tape, #f2c230), 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hw-inner { transition: none; }
+}

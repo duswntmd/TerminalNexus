@@ -154,6 +154,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/typeracer/**").authenticated()
                                                 .requestMatchers("/api/janggi/**").authenticated() // 실시간 온라인 장기 API (로그인 필수!)
                                                 .requestMatchers("/api/chess/**").authenticated() // 실시간 온라인 체스 API (장기와 같이 로그인 필수)
+                                                .requestMatchers("/api/seotda/**").authenticated() // 실시간 온라인 섯다 API (로그인 필수)
                                                 .requestMatchers(HttpMethod.GET, "/api/stock/prices", "/api/stock/market", "/api/stock/ticks/**", "/api/stock/leaderboard", "/api/stock/news", "/api/stock/orderbook/**", "/api/stock/candles/**", "/api/stock/detail/**").permitAll()
                                                 .requestMatchers("/api/stock/**").authenticated()
                                                 .requestMatchers("/api/lotto/my", "/api/lotto/my/**").authenticated() // 내 번호·알림
