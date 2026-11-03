@@ -2,6 +2,28 @@
 
 이어서 작업할 때 먼저 읽는 문서입니다. 작업은 `dev`에서 하고, 운영 배포는 `main` 병합으로 합니다.
 
+## 진행 중 (2026-11-03)
+
+운영은 `main` `2df726c`(체스, ARC Raiders 정보 포함)이고 `dev`와 같은 내용이다.
+
+섯다와 화투(고스톱 맞고)를 별도 세션에서 각자의 worktree 브랜치로 만드는 중이다.
+
+| 게임 | 브랜치 | worktree | 주소 | 시험 포트 |
+|---|---|---|---|---|
+| 섯다 | `claude/seotda-game` | `.claude/worktrees/seotda-game` | `/play/seotda` | 18084, 5180 |
+| 고스톱 맞고 | `claude/gostop-game` | `.claude/worktrees/gostop-game` | `/play/gostop` | 18085, 5181 |
+
+두 세션이 끝나면 할 일:
+1. 각 브랜치의 커밋과 검증 결과를 확인한다 (족보·점수 단위 테스트, AI 자동 대전, build).
+2. 화투 카드 그림이 `frontend/src/components/hwatu/`에 두 벌 생기면 하나로 합친다.
+3. `dev`에 하나씩 병합한다. `nav.js`, `locales`, `prerender.mjs`, `App.jsx`가 겹치므로 양쪽 내용을 모두 살린다.
+4. 빌드 후 로컬에서 두 게임을 한 판씩 확인하고 배포한다.
+
+두 게임의 원칙:
+- 가상 포인트만 쓰고 충전, 환전, 결제는 없다.
+- 페이지에 광고(`AdSlot`)를 넣지 않는다.
+- 카드 그림은 직접 그린 SVG만 쓴다.
+
 ## 켜기 전 준비가 필요한 기능
 
 ### 자격증 이용권 결제 (`CERT_PAYMENT_ENABLED`, 기본 `false`)
