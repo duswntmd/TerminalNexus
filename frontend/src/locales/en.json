@@ -180,6 +180,13 @@
             "login": false
           },
           {
+            "icon": "🎴",
+            "name": "Go-Stop Matgo",
+            "desc": "Play two-player Hwatu Go-Stop against a two-level AI or online, with ppeok, bombs, shaking, go/stop and pibak settlement. Virtual points only.",
+            "path": "/play/gostop",
+            "login": false
+          },
+          {
             "icon": "⚒️",
             "name": "Forge",
             "desc": "Upgrade your weapon to the highest level — it might break. Records go to the hall of fame.",
@@ -212,6 +219,20 @@
             "name": "Linux Lab",
             "desc": "Try a Rocky Linux 9.6 shell in your browser. Practice dnf, systemctl and firewall-cmd like the real thing.",
             "path": "/play/linux",
+            "login": false
+          },
+          {
+            "icon": "🎴",
+            "name": "Seotda",
+            "desc": "Two-card seotda with 20 hand-drawn hwatu cards. Play 1-3 computer opponents or 2-4 people in an online room. Virtual points only, with no cash value.",
+            "path": "/play/seotda",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders Info",
+            "desc": "Unofficial ARC Raiders database: 26 weapons, 38 materials, 50 quests, workshop upgrades, traders, ARC weak points, maps and updates, all searchable and cross-linked with sources and check dates.",
+            "path": "/games/arc-raiders",
             "login": false
           }
         ]
@@ -542,6 +563,10 @@
       "name": "Chess",
       "desc": "Play chess vs AI, a friend or online"
     },
+    "gostop": {
+      "name": "Go-Stop",
+      "desc": "Hwatu Matgo vs AI or online (virtual points)"
+    },
     "forge": {
       "name": "Forge",
       "desc": "Enhance a weapon up to +20. It may break"
@@ -592,6 +617,10 @@
     "arcraiders": {
       "name": "ARC Raiders Info",
       "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
+    },
+    "seotda": {
+      "name": "Seotda",
+      "desc": "Two-card Korean seotda against the computer or people"
     }
   },
   "home": {
@@ -1276,6 +1305,325 @@
       ]
     ]
   },
+  "gostop": {
+    "title": "Go-Stop Matgo",
+    "meta_title": "Go-Stop Matgo - TerminalNexus | Hwatu card game vs AI & online",
+    "meta_desc": "Play two-player Hwatu Go-Stop (Matgo) against a two-level AI or online. Supports ppeok, jjok, ttadak, bombs, shaking, go/stop and pibak/gwangbak/meongbak settlement. Virtual points only, with no cash value.",
+    "modes": {
+      "ai": "vs AI",
+      "online": "Online"
+    },
+    "virtual_notice": "This game uses virtual points only. Points have no cash value, and there is no top-up, cash-out, payment or item sale.",
+    "you": "You",
+    "ai_name": "AI ({{level}})",
+    "loading": "Loading…",
+    "entering": "Entering room…",
+    "login_needed": "Please log in to play online.",
+    "levels": {
+      "easy": "Normal",
+      "easy_desc": "Takes the obvious matches",
+      "hard": "Hard",
+      "hard_desc": "Weighs unseen cards and go/stop"
+    },
+    "setup": {
+      "title": "1:1 Matgo vs AI",
+      "level": "AI level"
+    },
+    "points_now": "{{n}}P",
+    "points_rule": "{{per}}P per point · refilled to {{start}}P if you run out",
+    "points_unit": "{{n}} pts",
+    "refilled": "You ran out of points, so we refilled you to {{n}}P.",
+    "carry_notice": "Nagari: this game scores ×{{x}}",
+    "deck": "Deck",
+    "floor": "Table",
+    "floor_empty": "The table is empty",
+    "my_hand": "My hand",
+    "opp_hand": "Opponent has {{n}} cards",
+    "captured_of": "{{name}} captured",
+    "no_score": "No points yet",
+    "last_turn": "{{name}}:",
+    "played": "Played",
+    "flipped": "Flipped",
+    "took": "took {{n}}",
+    "took_none": "took nothing",
+    "choose_prompt": "Two cards of this month are on the table. Tap the one to take.",
+    "hint_select": "Tap a card to select it, tap again to play. A green dot means it matches the table.",
+    "kinds": {
+      "gwang": "Bright",
+      "yeol": "Animal",
+      "tti": "Ribbon",
+      "pi": "Junk"
+    },
+    "gukjin": {
+      "label": "Sake cup (Sep animal):",
+      "auto": "Auto",
+      "yeol": "Animal",
+      "pi": "Double junk"
+    },
+    "score_items": {
+      "ogwang": "5 brights",
+      "sagwang": "4 brights",
+      "samgwang": "3 brights",
+      "bisamgwang": "3 brights w/ rain",
+      "hongdan": "Red poems",
+      "cheongdan": "Blue ribbons",
+      "chodan": "Grass ribbons",
+      "tti": "Ribbons",
+      "godori": "Godori",
+      "yeol": "Animals",
+      "pi": "Junk"
+    },
+    "badge": {
+      "go": "{{n}} go",
+      "shake": "Shake {{n}}",
+      "ppeok": "Ppeok {{n}}",
+      "dummy": "Flips {{n}}"
+    },
+    "events": {
+      "ppeok": "Ppeok!",
+      "jjok": "Jjok!",
+      "ttadak": "Ttadak!",
+      "sweep": "Sweep!",
+      "bomb": "Bomb!",
+      "shake": "Shake!",
+      "go": "{{n}} Go!",
+      "stop": "Stop!",
+      "eatppeok": "Took the ppeok!",
+      "jappeok": "Own ppeok!",
+      "chongtong": "Chongtong!",
+      "nagari": "Nagari",
+      "steal_got": "stole {{n}} junk",
+      "steal_lost": "lost {{n}} junk"
+    },
+    "gostop": {
+      "title": "Go or Stop?",
+      "desc": "You have {{score}} points. Go to keep playing, or Stop to end with this score. ({{go}} go so far)",
+      "go": "Go {{n}}",
+      "stop": "Stop"
+    },
+    "status": {
+      "your_turn": "Your turn",
+      "ai_turn": "AI's turn…",
+      "opp_turn": "Opponent's turn",
+      "choose": "Choose a card to take",
+      "gostop": "Choose go or stop",
+      "ended": "Game over",
+      "waiting_opponent": "Waiting for an opponent… (you can share the room link)",
+      "waiting_host": "Waiting for the host to start…",
+      "ready_host": "Your opponent is here. Start the game."
+    },
+    "actions": {
+      "start": "Start",
+      "play": "Play",
+      "shake": "Shake & play (×2)",
+      "bomb": "Bomb (play all 3)",
+      "flip": "Flip only",
+      "next_game": "Next game",
+      "view_board": "View table",
+      "show_result": "Show result",
+      "quit": "Quit",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on",
+      "leave": "Leave",
+      "create": "Create room",
+      "enter": "Join",
+      "send": "Send",
+      "login": "Log in"
+    },
+    "confirm": {
+      "quit": "Quit this game? (no points change)",
+      "leave": "Leaving mid-game counts as a loss (no score). Leave?"
+    },
+    "result": {
+      "wins": "{{name}} wins",
+      "nagari": "Nagari (draw)"
+    },
+    "reason": {
+      "stop": "Ended with Stop",
+      "chongtong": "Chongtong (4 of a month)",
+      "ppeok3": "Three ppeoks",
+      "nagari": "Nobody scored before the cards ran out",
+      "leave": "The opponent left"
+    },
+    "settle": {
+      "base": "Base score",
+      "final": "Final",
+      "go_bonus": "{{n}} go bonus",
+      "nagari_next": "The next game scores ×{{x}}.",
+      "mul": {
+        "carry": "Nagari multiplier",
+        "go": "3+ go",
+        "shake": "Shake / bomb",
+        "pibak": "Pibak",
+        "gwangbak": "Gwangbak",
+        "meongbak": "Meongbak",
+        "gobak": "Gobak"
+      }
+    },
+    "lobby": {
+      "rooms": "Matgo rooms ({{count}})",
+      "empty": "No open rooms. Create one.",
+      "create_title": "Create a room",
+      "title_ph": "Room title (optional)",
+      "empty_seat": "Empty seat",
+      "full": "Full",
+      "no_watch": "No spectators, so hands stay hidden. The host starts once two players are in.",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Finished"
+      }
+    },
+    "online": {
+      "totals": "Room totals:"
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "Say hello.",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_left": "The host left and the room closed.",
+      "host_closed": "The host closed the room."
+    },
+    "error": {
+      "generic": "The request could not be processed.",
+      "connecting": "Connecting to the server. Try again shortly.",
+      "illegal_action": "That move is not allowed.",
+      "not_your_turn": "It's your opponent's turn.",
+      "not_playing": "No game in progress.",
+      "not_player": "You are not a player.",
+      "host_only": "Only the host can do that.",
+      "not_waiting": "The game is already running.",
+      "need_opponent": "An opponent must join first.",
+      "room_full": "The room is full.",
+      "room_not_found": "Room not found.",
+      "user_not_found": "User not found."
+    },
+    "rules_title": "Matgo rules used here (rules vary by region and site)",
+    "rules": [
+      {
+        "h": "Flow",
+        "items": [
+          [
+            "Deal",
+            "Each player gets 10 cards, 8 go face up on the table and 20 form the deck. If 4 of one month land on the table, the deck is reshuffled"
+          ],
+          [
+            "Turn",
+            "Play a card from your hand, then flip the top of the deck. Matching months on the table are captured; if two cards of that month are there, you choose one"
+          ],
+          [
+            "First player",
+            "Random for the first game, then the previous winner"
+          ]
+        ]
+      },
+      {
+        "h": "Special cases",
+        "items": [
+          [
+            "Ppeok",
+            "If your played card matched one card and the flip is the same month, all three stay on the table. Whoever later takes them with the fourth card steals 1 junk (2 if it was their own ppeok)"
+          ],
+          [
+            "Jjok",
+            "If your played card matched nothing and the flip is the same month, take both and steal 1 junk"
+          ],
+          [
+            "Ttadak",
+            "Play onto two of the same month and flip the fourth: take all four and steal 1 junk"
+          ],
+          [
+            "Sweep",
+            "Clearing the table steals 1 junk (not on the final flip)"
+          ],
+          [
+            "Shake",
+            "Show three of a month that is not on the table when you play one. Doubles your score if you win"
+          ],
+          [
+            "Bomb",
+            "With three of a month in hand and one on the table, play all three, take four and steal 1 junk. Doubles like a shake and gives you two flip-only turns"
+          ],
+          [
+            "Chongtong",
+            "Four of a month in the starting hand wins immediately for 10 points"
+          ],
+          [
+            "Three ppeoks",
+            "Making three ppeoks in one game wins for 7 points"
+          ],
+          [
+            "Nagari",
+            "If nobody wins before the cards run out, it's a draw and the next game scores double (up to ×8)"
+          ],
+          [
+            "Stealing",
+            "Single junk is taken first, then double junk"
+          ]
+        ]
+      },
+      {
+        "h": "Scoring",
+        "items": [
+          [
+            "Brights",
+            "3 brights 3, with the rain bright 2, 4 brights 4, 5 brights 15"
+          ],
+          [
+            "Ribbons",
+            "Red poems, blue and grass ribbons 3 each; 5 ribbons 1 plus 1 per extra. The December ribbon is not part of any set"
+          ],
+          [
+            "Animals",
+            "Godori (birds of Feb, Apr, Aug) 5; 5 animals 1 plus 1 per extra"
+          ],
+          [
+            "Junk",
+            "10 junk 1 plus 1 per extra. November and December double junk count as 2"
+          ],
+          [
+            "Sake cup",
+            "The September animal counts as an animal or double junk. By default it counts whichever scores more, and you can fix it under your captures. For the loser it automatically avoids penalties"
+          ]
+        ]
+      },
+      {
+        "h": "Go/Stop and settlement",
+        "items": [
+          [
+            "Go/Stop",
+            "At 7 points or more choose Go (continue) or Stop (end). After a Go you are asked again only when your score rises. With no cards left you stop automatically"
+          ],
+          [
+            "Go multiplier",
+            "1 go +1, 2 go +2; from 3 go, (score + go count) is doubled for 3 go, ×4 for 4 go, and so on"
+          ],
+          [
+            "Pibak",
+            "Winner scored with junk and the loser has 7 or fewer junk: ×2"
+          ],
+          [
+            "Gwangbak",
+            "Winner scored with brights and the loser has none: ×2"
+          ],
+          [
+            "Meongbak",
+            "Winner scored with animals and the loser has none: ×2"
+          ],
+          [
+            "Gobak",
+            "A player who called Go and then lost: ×2"
+          ],
+          [
+            "Points",
+            "vs AI exchanges 100 virtual points per score point. They have no cash value, with no top-up, cash-out or payment, and are refilled to 10,000P if you run out. Online keeps a score total inside the room"
+          ]
+        ]
+      }
+    ]
+  },
   "arc": {
     "disclaimer": "This is unofficial fan information, not affiliated with Embark Studios. No official logos or images are used; the game name and trademarks belong to their owners. Facts were compiled from official notices and media as of the check date and may change with updates.",
     "byline": "Compiled by 에고수 · Checked {{date}}",
@@ -1365,5 +1713,271 @@
     "no_turnin": "None",
     "col_reward": "Rewards:",
     "quests_hint": "Only the 50 quests verified verbatim from the community wiki table are listed; the full game has more and they will be added once checked. In-raid objective steps are not included. Givers were cross-checked with Dexerto."
+  },
+  "seotda": {
+    "title": "Seotda",
+    "meta_title": "Seotda - TerminalNexus | Free two-card seotda (AI & online)",
+    "meta_desc": "Play two-card seotda against 1-3 computer players or 2-4 people online. Full hand rankings from 3-8 Gwang-ttaeng to Mangtong, special hands (Amhaeng-eosa, Ttaeng-jabi, Gusa) and die/check/call/bbing/half betting. Virtual points only.",
+    "notice": "Virtual points only, with no cash value. There is no top-up, cash-out, payment or item sale, and points are refilled if you lose them all.",
+    "modes": {
+      "ai": "vs AI",
+      "online": "Online"
+    },
+    "table_label": "Seotda table",
+    "you": "You",
+    "ai_name": "CPU {{n}}",
+    "dealer": "Lead",
+    "pot": "Pot",
+    "carry": "Carried {{n}}P",
+    "to_call": "Call {{n}}P",
+    "cap": "Per-player cap {{n}}P",
+    "points": "{{n}}P",
+    "my_points": "My points",
+    "folded": "Died",
+    "hidden": "Hidden",
+    "loading": "Loading…",
+    "entering": "Entering the room…",
+    "login_needed": "Please log in to play seotda online.",
+    "setup": {
+      "ai_title": "Play the computer",
+      "ai_count": "Opponents",
+      "ai_count_n": "{{n}}",
+      "level": "Computer strength",
+      "ante": "Ante {{n}}P · one betting round starting from the lead",
+      "points_desc": "Points are stored only in this browser."
+    },
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "Calls often, rarely raises",
+      "normal": "Normal",
+      "normal_desc": "Weighs pot odds",
+      "hard": "Hard",
+      "hard_desc": "Reads table size and raises"
+    },
+    "acts": {
+      "die": "Die",
+      "check": "Check",
+      "call": "Call",
+      "bbing": "Bbing",
+      "half": "Half"
+    },
+    "act_desc": {
+      "die": "Give up this hand",
+      "check": "Pass without paying",
+      "call": "Match the bet",
+      "bbing": "Raise by one ante",
+      "half": "Raise by half the pot"
+    },
+    "actions": {
+      "start": "Start",
+      "next": "Next hand",
+      "setup": "Settings",
+      "refill": "Refill points",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on",
+      "close": "Close",
+      "leave": "Leave",
+      "create": "Create room",
+      "enter": "Join",
+      "watch": "Watch",
+      "login": "Log in",
+      "send": "Send",
+      "deal": "Deal"
+    },
+    "status": {
+      "your_turn": "Your turn. Choose an action.",
+      "thinking": "{{name}} is thinking…",
+      "turn": "{{name}}'s turn",
+      "waiting_players": "Waiting for players… (2-4 players, you can share the room link)",
+      "waiting_host": "Waiting for the host to deal…",
+      "ready_host": "Players are here. Deal the cards.",
+      "spectating": "Spectating",
+      "broke": "You have fewer points than the ante. Refill to start.",
+      "ai_refilled": "{{name}} ran out of points and was refilled."
+    },
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "tie": "Tie · pot split",
+      "redo": "Replay",
+      "redo_desc": "{{name}}'s {{hand}} forces a replay. The {{pot}}P pot carries over.",
+      "fold_desc": "Everyone else died, so {{name}} takes the pot.",
+      "show_desc": "{{name}} · {{hand}}",
+      "winner": "{{name}} wins",
+      "change": "This hand {{n}}P"
+    },
+    "hands": {
+      "gwang38": "3-8 Gwang-ttaeng",
+      "gwang13": "1-3 Gwang-ttaeng",
+      "gwang18": "1-8 Gwang-ttaeng",
+      "jangttaeng": "Jang-ttaeng (10 pair)",
+      "ttaeng": "{{n}} Ttaeng",
+      "bbingttaeng": "Bbing-ttaeng (1 pair)",
+      "ali": "Ali",
+      "doksa": "Doksa",
+      "gubbing": "Gu-bbing",
+      "jangbbing": "Jang-bbing",
+      "jangsa": "Jang-sa",
+      "seryuk": "Se-ryuk",
+      "gabo": "Gabo (9)",
+      "kkut": "{{n}} kkut",
+      "mangtong": "Mangtong (0)",
+      "amhaeng": "Amhaeng-eosa",
+      "ttaengjabi": "Ttaeng-jabi",
+      "gusa": "Gusa",
+      "mgusa": "Meongteongguri Gusa"
+    },
+    "special_on": "active",
+    "special_as": "counts as {{n}} kkut",
+    "special_hint": {
+      "amhaeng": "Beats 1-3/1-8 Gwang-ttaeng if one appears, otherwise 1 kkut",
+      "ttaengjabi": "Beats 1-9 Ttaeng (not 10) if one appears, otherwise Mangtong",
+      "gusa": "Replay if every remaining opponent has Ali or lower, otherwise 3 kkut",
+      "mgusa": "Replay if every remaining opponent has 9 Ttaeng or lower, otherwise 3 kkut"
+    },
+    "log_title": "Hand log",
+    "log_empty": "Nothing yet.",
+    "log": {
+      "deal": "Hand {{n}} · lead {{name}} · pot {{pot}}P",
+      "act": "{{name}} {{act}}",
+      "act_pay": "{{name}} {{act}} ({{pay}}P)"
+    },
+    "ranks_title": "Hand ranking (top is strongest)",
+    "ranks": [
+      [
+        "3-8 Gwang-ttaeng",
+        "March gwang + August gwang"
+      ],
+      [
+        "Gwang-ttaeng",
+        "1-3 (January + March gwang) and 1-8 (January + August gwang), equal strength"
+      ],
+      [
+        "Ttaeng",
+        "Two cards of the same month. 10 (Jang-ttaeng) > 9 > … > 1 (Bbing-ttaeng)"
+      ],
+      [
+        "Ali",
+        "1 + 2"
+      ],
+      [
+        "Doksa",
+        "1 + 4"
+      ],
+      [
+        "Gu-bbing",
+        "1 + 9"
+      ],
+      [
+        "Jang-bbing",
+        "1 + 10"
+      ],
+      [
+        "Jang-sa",
+        "4 + 10"
+      ],
+      [
+        "Se-ryuk",
+        "4 + 6"
+      ],
+      [
+        "Kkut",
+        "Last digit of the two months added. Gabo (9) > 8 > … > 1 > Mangtong (0)"
+      ]
+    ],
+    "rules_title": "Seotda rules used on this site",
+    "rules": [
+      [
+        "Cards",
+        "Two hwatu cards for each month 1-10, 20 in total. The first card of January, March and August is a gwang (光); the first card of other months is a yeolkkut."
+      ],
+      [
+        "Play",
+        "Everyone pays the ante and gets two cards, then one betting round goes around starting from the lead. After a raise, the others respond again."
+      ],
+      [
+        "Betting",
+        "Die (fold), Check (pass when nothing is owed), Call (match), Bbing (raise by one ante when nobody has raised), Half (call, then raise by half the pot, rounded up to 10P)."
+      ],
+      [
+        "Raise limits",
+        "Each player may raise (bbing or half) once per hand. A player can put in at most what the shortest stack had at the start of the hand, so everyone can always call."
+      ],
+      [
+        "Showdown",
+        "Players who did not die show their cards and the strongest hand takes the pot. If only one player remains, they take it without showing."
+      ],
+      [
+        "Ties",
+        "Equal hands split the pot evenly. Any leftover point goes to the player closest to the lead."
+      ],
+      [
+        "Amhaeng-eosa",
+        "April yeolkkut + July yeolkkut. Ranks just below 3-8 Gwang-ttaeng when a 1-3 or 1-8 Gwang-ttaeng is in the showdown, otherwise 1 kkut."
+      ],
+      [
+        "Ttaeng-jabi",
+        "March gwang + July yeolkkut. Ranks just below Jang-ttaeng when a 1-9 Ttaeng is in the showdown (cannot beat Jang-ttaeng or Gwang-ttaeng), otherwise Mangtong."
+      ],
+      [
+        "Gusa",
+        "4 + 9 (other than Meongteongguri). Replay if the best other hand is Ali or lower, otherwise 3 kkut."
+      ],
+      [
+        "Meongteongguri Gusa",
+        "April yeolkkut + September yeolkkut. Replay if the best other hand is 9 Ttaeng or lower, otherwise 3 kkut."
+      ],
+      [
+        "Replay",
+        "The pot carries over to the next hand and the lead stays. Everyone pays the ante again and plays."
+      ],
+      [
+        "Lead",
+        "The winner of a hand leads the next hand and acts first."
+      ],
+      [
+        "Points",
+        "Virtual points only. You start with 10,000P and can refill when you have less than the ante. Computer players are refilled automatically."
+      ]
+    ],
+    "lobby": {
+      "rooms": "Seotda rooms ({{count}})",
+      "empty": "No open rooms. Create one.",
+      "create_title": "Create a room",
+      "title_ph": "Room title (optional)",
+      "players": "{{n}}/4 players",
+      "room_points": "Each player gets 10,000P that is used only in this room.",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Hand over"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "Say hello.",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_left": "The host left and the room was closed.",
+      "host_closed": "The host closed the room."
+    },
+    "confirm": {
+      "leave": "Leaving during a hand counts as dying. Leave anyway?"
+    },
+    "error": {
+      "generic": "The request could not be processed.",
+      "connecting": "Connecting to the server. Try again in a moment.",
+      "illegal_action": "You cannot do that now.",
+      "not_your_turn": "It is not your turn.",
+      "not_playing": "No hand in progress.",
+      "not_player": "You are not a player.",
+      "host_only": "Only the host can do that.",
+      "already_playing": "A hand is already in progress.",
+      "need_players": "At least two players are needed.",
+      "room_full": "The room is full (4 players).",
+      "room_not_found": "Room not found.",
+      "user_not_found": "User not found."
+    }
   }
 }

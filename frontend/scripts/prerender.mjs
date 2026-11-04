@@ -154,6 +154,29 @@ add({
   jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.chess.title, description: ko.chess.meta_desc, url: `${SITE}/play/chess`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
 });
 
+// 고스톱 맞고: 채택한 규칙 전체를 본문에 넣는다
+add({
+  url: '/play/gostop',
+  title: ko.gostop.meta_title,
+  desc: ko.gostop.meta_desc,
+  body: `<h1>${esc(ko.gostop.title)}</h1><p>${esc(ko.gostop.meta_desc)}</p><p>${esc(ko.gostop.virtual_notice)}</p>
+<h2>${esc(ko.gostop.modes.ai)} · ${esc(ko.gostop.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/gostop').desc)}</p>
+<h2>${esc(ko.gostop.rules_title)}</h2>${ko.gostop.rules.map((s) => `<h3>${esc(s.h)}</h3><ul>${s.items.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`).join('')}`,
+  jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.gostop.title, description: ko.gostop.meta_desc, url: `${SITE}/play/gostop`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
+});
+
+// 섯다: 족보와 채택한 규칙을 본문에 넣는다
+add({
+  url: '/play/seotda',
+  title: ko.seotda.meta_title,
+  desc: ko.seotda.meta_desc,
+  body: `<h1>${esc(ko.seotda.title)}</h1><p>${esc(ko.seotda.meta_desc)}</p><p>${esc(ko.seotda.notice)}</p>
+<h2>${esc(ko.seotda.modes.ai)} · ${esc(ko.seotda.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/seotda').desc)}</p>
+<h2>${esc(ko.seotda.ranks_title)}</h2><ol>${ko.seotda.ranks.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ol>
+<h2>${esc(ko.seotda.rules_title)}</h2><ul>${ko.seotda.rules.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`,
+  jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.seotda.title, description: ko.seotda.meta_desc, url: `${SITE}/play/seotda`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
+});
+
 // ARC Raiders 비공식 정보: 하위 페이지마다 데이터 전체를 본문으로 넣는다
 const arcSrc = (ids) => ids.map((id) => link(AR.SOURCES[id].url, AR.SOURCES[id].name)).join(', ');
 const arcFoot = (ids) => `<p>정보 확인일 ${AR.CHECKED} · 출처: ${arcSrc([...new Set(ids)])}</p>`;
