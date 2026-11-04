@@ -1,10 +1,10 @@
 import React from 'react';
-import './HwatuCard.css';
+import './SeotdaCard.css';
 
 /*
- * 화투 카드 그림 (직접 그린 SVG, 외부 이미지 없음). 섯다·고스톱 등이 함께 쓴다.
+ * 섯다용 화투 카드 그림 (직접 그린 SVG, 외부 이미지 없음). 뒤집기 연출 포함.
  * 카드 번호는 섯다 엔진과 같다: 월 = id/2 + 1, 짝수 id 가 그 달의 특별한 패(1·3·8월 광, 나머지 열끗).
- * 고스톱처럼 한 달에 4장이 필요하면 month/kind 를 직접 넘긴다.
+ * 고스톱 48장 번호로는 (id >> 1) * 4 + (id % 2) 에 해당한다 (공용 카드로 합칠 때 사용).
  */
 
 const KIND_OF = (id) => {
@@ -127,7 +127,7 @@ const GEESE = () => (
 );
 
 const Back = () => (
-  <svg className="hw-svg" viewBox="0 0 60 92" aria-hidden="true">
+  <svg className="sdc-svg" viewBox="0 0 60 92" aria-hidden="true">
     <rect x="1" y="1" width="58" height="90" rx="6" fill="#8e1b26" stroke="#5c0f17" strokeWidth="2" />
     <rect x="6" y="6" width="48" height="80" rx="4" fill="none" stroke="#e6b65c" strokeWidth="1" opacity="0.7" />
     {[0, 1, 2, 3].map((r) => [0, 1, 2].map((c) => (
@@ -142,16 +142,16 @@ const Back = () => (
  * @param {boolean} highlight 강조 테두리
  * @param {string} label 접근성 이름 (없으면 "N월 광" 식으로 만듦)
  */
-const HwatuCard = ({ id, month: monthProp, kind: kindProp, faceDown = false, highlight = false, className = '', label }) => {
+const SeotdaCard = ({ id, month: monthProp, kind: kindProp, faceDown = false, highlight = false, className = '', label }) => {
   const month = monthProp ?? (id >> 1) + 1;
   const kind = kindProp ?? KIND_OF(id);
   const name = label || `${month}월 ${{ gwang: '광', yeol: '열끗', tti: '띠' }[kind]}`;
 
   return (
-    <span className={`hw-card${faceDown ? ' is-down' : ''}${highlight ? ' is-hl' : ''} ${className}`} role="img" aria-label={faceDown ? '화투 뒷면' : name}>
-      <span className="hw-inner">
-        <span className="hw-face hw-front">
-          <svg className="hw-svg" viewBox="0 0 60 92" aria-hidden="true">
+    <span className={`sdc-card${faceDown ? ' is-down' : ''}${highlight ? ' is-hl' : ''} ${className}`} role="img" aria-label={faceDown ? '화투 뒷면' : name}>
+      <span className="sdc-inner">
+        <span className="sdc-face sdc-front">
+          <svg className="sdc-svg" viewBox="0 0 60 92" aria-hidden="true">
             <rect x="1" y="1" width="58" height="90" rx="6" fill="#f6efe0" stroke="#2a2a2a" strokeWidth="2" />
             {PLANT[month]()}
             {kind === 'gwang' && HERO[month]()}
@@ -173,10 +173,10 @@ const HwatuCard = ({ id, month: monthProp, kind: kindProp, faceDown = false, hig
             )}
           </svg>
         </span>
-        <span className="hw-face hw-back"><Back /></span>
+        <span className="sdc-face sdc-back"><Back /></span>
       </span>
     </span>
   );
 };
 
-export default HwatuCard;
+export default SeotdaCard;
