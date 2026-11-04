@@ -372,3 +372,19 @@
   .gs-group-name { font-size: 0.68rem; }
   .gs-banner { font-size: 1.1rem; }
 }
+
+.gs-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  padding: 10px 16px;
+  border-radius: var(--tn-radius);
+  background: var(--tn-panel-2);
+  border: 1px solid var(--tn-line);
+  color: var(--tn-text);
+  font-weight: 700;
+  z-index: 50;
+}
