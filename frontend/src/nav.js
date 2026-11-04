@@ -15,6 +15,7 @@ export const NAV_GROUPS = [
       { key: 'janggi', path: '/play/janggi', glyph: '將' },
       { key: 'chess', path: '/play/chess', glyph: '♞' },
       { key: 'gostop', path: '/play/gostop', glyph: '花' },
+      { key: 'seotda', path: '/play/seotda', glyph: '光' },
       { key: 'forge', path: '/forge', login: true, glyph: '+' },
       { key: 'typeracer', path: '/play/typeracer', glyph: 'Aa' },
       { key: 'terminalhack', path: '/play/terminalhack', glyph: '?' },

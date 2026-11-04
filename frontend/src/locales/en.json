@@ -220,6 +220,20 @@
             "desc": "Try a Rocky Linux 9.6 shell in your browser. Practice dnf, systemctl and firewall-cmd like the real thing.",
             "path": "/play/linux",
             "login": false
+          },
+          {
+            "icon": "🎴",
+            "name": "Seotda",
+            "desc": "Two-card seotda with 20 hand-drawn hwatu cards. Play 1-3 computer opponents or 2-4 people in an online room. Virtual points only, with no cash value.",
+            "path": "/play/seotda",
+            "login": false
+          },
+          {
+            "icon": "🤖",
+            "name": "ARC Raiders Info",
+            "desc": "Unofficial ARC Raiders database: 26 weapons, 38 materials, 50 quests, workshop upgrades, traders, ARC weak points, maps and updates, all searchable and cross-linked with sources and check dates.",
+            "path": "/games/arc-raiders",
+            "login": false
           }
         ]
       },
@@ -603,6 +617,10 @@
     "arcraiders": {
       "name": "ARC Raiders Info",
       "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
+    },
+    "seotda": {
+      "name": "Seotda",
+      "desc": "Two-card Korean seotda against the computer or people"
     }
   },
   "home": {
@@ -1695,5 +1713,271 @@
     "no_turnin": "None",
     "col_reward": "Rewards:",
     "quests_hint": "Only the 50 quests verified verbatim from the community wiki table are listed; the full game has more and they will be added once checked. In-raid objective steps are not included. Givers were cross-checked with Dexerto."
+  },
+  "seotda": {
+    "title": "Seotda",
+    "meta_title": "Seotda - TerminalNexus | Free two-card seotda (AI & online)",
+    "meta_desc": "Play two-card seotda against 1-3 computer players or 2-4 people online. Full hand rankings from 3-8 Gwang-ttaeng to Mangtong, special hands (Amhaeng-eosa, Ttaeng-jabi, Gusa) and die/check/call/bbing/half betting. Virtual points only.",
+    "notice": "Virtual points only, with no cash value. There is no top-up, cash-out, payment or item sale, and points are refilled if you lose them all.",
+    "modes": {
+      "ai": "vs AI",
+      "online": "Online"
+    },
+    "table_label": "Seotda table",
+    "you": "You",
+    "ai_name": "CPU {{n}}",
+    "dealer": "Lead",
+    "pot": "Pot",
+    "carry": "Carried {{n}}P",
+    "to_call": "Call {{n}}P",
+    "cap": "Per-player cap {{n}}P",
+    "points": "{{n}}P",
+    "my_points": "My points",
+    "folded": "Died",
+    "hidden": "Hidden",
+    "loading": "Loading…",
+    "entering": "Entering the room…",
+    "login_needed": "Please log in to play seotda online.",
+    "setup": {
+      "ai_title": "Play the computer",
+      "ai_count": "Opponents",
+      "ai_count_n": "{{n}}",
+      "level": "Computer strength",
+      "ante": "Ante {{n}}P · one betting round starting from the lead",
+      "points_desc": "Points are stored only in this browser."
+    },
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "Calls often, rarely raises",
+      "normal": "Normal",
+      "normal_desc": "Weighs pot odds",
+      "hard": "Hard",
+      "hard_desc": "Reads table size and raises"
+    },
+    "acts": {
+      "die": "Die",
+      "check": "Check",
+      "call": "Call",
+      "bbing": "Bbing",
+      "half": "Half"
+    },
+    "act_desc": {
+      "die": "Give up this hand",
+      "check": "Pass without paying",
+      "call": "Match the bet",
+      "bbing": "Raise by one ante",
+      "half": "Raise by half the pot"
+    },
+    "actions": {
+      "start": "Start",
+      "next": "Next hand",
+      "setup": "Settings",
+      "refill": "Refill points",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on",
+      "close": "Close",
+      "leave": "Leave",
+      "create": "Create room",
+      "enter": "Join",
+      "watch": "Watch",
+      "login": "Log in",
+      "send": "Send",
+      "deal": "Deal"
+    },
+    "status": {
+      "your_turn": "Your turn. Choose an action.",
+      "thinking": "{{name}} is thinking…",
+      "turn": "{{name}}'s turn",
+      "waiting_players": "Waiting for players… (2-4 players, you can share the room link)",
+      "waiting_host": "Waiting for the host to deal…",
+      "ready_host": "Players are here. Deal the cards.",
+      "spectating": "Spectating",
+      "broke": "You have fewer points than the ante. Refill to start.",
+      "ai_refilled": "{{name}} ran out of points and was refilled."
+    },
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "tie": "Tie · pot split",
+      "redo": "Replay",
+      "redo_desc": "{{name}}'s {{hand}} forces a replay. The {{pot}}P pot carries over.",
+      "fold_desc": "Everyone else died, so {{name}} takes the pot.",
+      "show_desc": "{{name}} · {{hand}}",
+      "winner": "{{name}} wins",
+      "change": "This hand {{n}}P"
+    },
+    "hands": {
+      "gwang38": "3-8 Gwang-ttaeng",
+      "gwang13": "1-3 Gwang-ttaeng",
+      "gwang18": "1-8 Gwang-ttaeng",
+      "jangttaeng": "Jang-ttaeng (10 pair)",
+      "ttaeng": "{{n}} Ttaeng",
+      "bbingttaeng": "Bbing-ttaeng (1 pair)",
+      "ali": "Ali",
+      "doksa": "Doksa",
+      "gubbing": "Gu-bbing",
+      "jangbbing": "Jang-bbing",
+      "jangsa": "Jang-sa",
+      "seryuk": "Se-ryuk",
+      "gabo": "Gabo (9)",
+      "kkut": "{{n}} kkut",
+      "mangtong": "Mangtong (0)",
+      "amhaeng": "Amhaeng-eosa",
+      "ttaengjabi": "Ttaeng-jabi",
+      "gusa": "Gusa",
+      "mgusa": "Meongteongguri Gusa"
+    },
+    "special_on": "active",
+    "special_as": "counts as {{n}} kkut",
+    "special_hint": {
+      "amhaeng": "Beats 1-3/1-8 Gwang-ttaeng if one appears, otherwise 1 kkut",
+      "ttaengjabi": "Beats 1-9 Ttaeng (not 10) if one appears, otherwise Mangtong",
+      "gusa": "Replay if every remaining opponent has Ali or lower, otherwise 3 kkut",
+      "mgusa": "Replay if every remaining opponent has 9 Ttaeng or lower, otherwise 3 kkut"
+    },
+    "log_title": "Hand log",
+    "log_empty": "Nothing yet.",
+    "log": {
+      "deal": "Hand {{n}} · lead {{name}} · pot {{pot}}P",
+      "act": "{{name}} {{act}}",
+      "act_pay": "{{name}} {{act}} ({{pay}}P)"
+    },
+    "ranks_title": "Hand ranking (top is strongest)",
+    "ranks": [
+      [
+        "3-8 Gwang-ttaeng",
+        "March gwang + August gwang"
+      ],
+      [
+        "Gwang-ttaeng",
+        "1-3 (January + March gwang) and 1-8 (January + August gwang), equal strength"
+      ],
+      [
+        "Ttaeng",
+        "Two cards of the same month. 10 (Jang-ttaeng) > 9 > … > 1 (Bbing-ttaeng)"
+      ],
+      [
+        "Ali",
+        "1 + 2"
+      ],
+      [
+        "Doksa",
+        "1 + 4"
+      ],
+      [
+        "Gu-bbing",
+        "1 + 9"
+      ],
+      [
+        "Jang-bbing",
+        "1 + 10"
+      ],
+      [
+        "Jang-sa",
+        "4 + 10"
+      ],
+      [
+        "Se-ryuk",
+        "4 + 6"
+      ],
+      [
+        "Kkut",
+        "Last digit of the two months added. Gabo (9) > 8 > … > 1 > Mangtong (0)"
+      ]
+    ],
+    "rules_title": "Seotda rules used on this site",
+    "rules": [
+      [
+        "Cards",
+        "Two hwatu cards for each month 1-10, 20 in total. The first card of January, March and August is a gwang (光); the first card of other months is a yeolkkut."
+      ],
+      [
+        "Play",
+        "Everyone pays the ante and gets two cards, then one betting round goes around starting from the lead. After a raise, the others respond again."
+      ],
+      [
+        "Betting",
+        "Die (fold), Check (pass when nothing is owed), Call (match), Bbing (raise by one ante when nobody has raised), Half (call, then raise by half the pot, rounded up to 10P)."
+      ],
+      [
+        "Raise limits",
+        "Each player may raise (bbing or half) once per hand. A player can put in at most what the shortest stack had at the start of the hand, so everyone can always call."
+      ],
+      [
+        "Showdown",
+        "Players who did not die show their cards and the strongest hand takes the pot. If only one player remains, they take it without showing."
+      ],
+      [
+        "Ties",
+        "Equal hands split the pot evenly. Any leftover point goes to the player closest to the lead."
+      ],
+      [
+        "Amhaeng-eosa",
+        "April yeolkkut + July yeolkkut. Ranks just below 3-8 Gwang-ttaeng when a 1-3 or 1-8 Gwang-ttaeng is in the showdown, otherwise 1 kkut."
+      ],
+      [
+        "Ttaeng-jabi",
+        "March gwang + July yeolkkut. Ranks just below Jang-ttaeng when a 1-9 Ttaeng is in the showdown (cannot beat Jang-ttaeng or Gwang-ttaeng), otherwise Mangtong."
+      ],
+      [
+        "Gusa",
+        "4 + 9 (other than Meongteongguri). Replay if the best other hand is Ali or lower, otherwise 3 kkut."
+      ],
+      [
+        "Meongteongguri Gusa",
+        "April yeolkkut + September yeolkkut. Replay if the best other hand is 9 Ttaeng or lower, otherwise 3 kkut."
+      ],
+      [
+        "Replay",
+        "The pot carries over to the next hand and the lead stays. Everyone pays the ante again and plays."
+      ],
+      [
+        "Lead",
+        "The winner of a hand leads the next hand and acts first."
+      ],
+      [
+        "Points",
+        "Virtual points only. You start with 10,000P and can refill when you have less than the ante. Computer players are refilled automatically."
+      ]
+    ],
+    "lobby": {
+      "rooms": "Seotda rooms ({{count}})",
+      "empty": "No open rooms. Create one.",
+      "create_title": "Create a room",
+      "title_ph": "Room title (optional)",
+      "players": "{{n}}/4 players",
+      "room_points": "Each player gets 10,000P that is used only in this room.",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Hand over"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "Say hello.",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_left": "The host left and the room was closed.",
+      "host_closed": "The host closed the room."
+    },
+    "confirm": {
+      "leave": "Leaving during a hand counts as dying. Leave anyway?"
+    },
+    "error": {
+      "generic": "The request could not be processed.",
+      "connecting": "Connecting to the server. Try again in a moment.",
+      "illegal_action": "You cannot do that now.",
+      "not_your_turn": "It is not your turn.",
+      "not_playing": "No hand in progress.",
+      "not_player": "You are not a player.",
+      "host_only": "Only the host can do that.",
+      "already_playing": "A hand is already in progress.",
+      "need_players": "At least two players are needed.",
+      "room_full": "The room is full (4 players).",
+      "room_not_found": "Room not found.",
+      "user_not_found": "User not found."
+    }
   }
 }
