@@ -132,7 +132,7 @@
   position: relative;
   display: inline-block;
   width: var(--sd-w, 56px);
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 103.2 / 168.2; /* 공용 화투 그림(Wikimedia SVG Hwatu) 비율 */
   perspective: 600px;
   flex: none;
   vertical-align: middle;
@@ -152,6 +152,7 @@
 
 .sd-card-face {
   position: absolute;
+  overflow: hidden;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -160,6 +161,7 @@
 }
 
 .sd-card-back { transform: rotateY(180deg); }
+.sd-card-face .hw-card { height: 100%; }
 .sd-card.is-picked { transform: translateY(-6px); }
 .sd-card.is-picked .sd-card-face { box-shadow: 0 0 0 2px var(--tn-tape), 0 6px 14px rgba(0, 0, 0, 0.45); }
 .sd-card.is-dim { opacity: 0.4; }
