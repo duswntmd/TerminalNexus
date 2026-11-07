@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import HwatuCard from '../../../components/hwatu/HwatuCard.jsx';
 import { monthOf } from '../../../components/hwatu/cards.js';
@@ -49,39 +49,56 @@ export const CapturedArea = ({ captured, gukjin, onGukjin, label, compact = fals
   );
 };
 
-/** 바닥 패: 같은 월끼리 겹쳐 보인다. highlight: 강조할 카드, onPick: 고르기 */
+// 바닥 자리: 5칸 × 3줄, 가운데는 뒷패. 가운데에 가까운 자리부터 채운다
+const SLOTS = [[2, 2], [2, 4], [1, 3], [3, 3], [1, 2], [1, 4], [3, 2], [3, 4], [2, 1], [2, 5], [1, 1], [1, 5], [3, 1], [3, 5]];
+
+/**
+ * 바닥 패: 같은 월끼리 한 자리에 겹쳐 놓고, 월마다 자리를 고정한다(실제 맞고 화면처럼).
+ * highlight: 강조할 카드, pickable/onPick: 고르기, last: 방금 놓인 카드
+ */
 export const Floor = ({ floor, ppeokOwner = {}, highlight = [], pickable = [], onPick, deckCount, last }) => {
   const { t } = useTranslation();
-  const groups = [];
-  const index = {};
+  const slotRef = useRef(new Map()); // 월 → 자리 번호
+  const byMonth = new Map();
   floor.forEach((id) => {
     const m = monthOf(id);
-    if (index[m] === undefined) { index[m] = groups.length; groups.push({ m, cards: [] }); }
-    groups[index[m]].cards.push(id);
+    if (!byMonth.has(m)) byMonth.set(m, []);
+    byMonth.get(m).push(id);
   });
+  const slots = slotRef.current;
+  for (const m of [...slots.keys()]) if (!byMonth.has(m)) slots.delete(m);
+  for (const m of byMonth.keys()) {
+    if (slots.has(m)) continue;
+    const used = new Set(slots.values());
+    const free = SLOTS.findIndex((_, i) => !used.has(i));
+    slots.set(m, free < 0 ? SLOTS.length - 1 : free);
+  }
   return (
-    <div className="gs-floor-wrap">
-      <div className="gs-deck" title={t('gostop.deck')}>
+    <div className="gs-floor" aria-label={t('gostop.floor')}>
+      <div className="gs-deck" style={{ gridRow: 2, gridColumn: 3 }} title={t('gostop.deck')}>
         <div className="gs-deck-card"><HwatuCard back /></div>
-        <span>{deckCount}</span>
+        <span className="gs-deck-count">{deckCount}</span>
       </div>
-      <div className="gs-floor" aria-label={t('gostop.floor')}>
-        {groups.length === 0 && <span className="gs-empty">{t('gostop.floor_empty')}</span>}
-        {groups.map(({ m, cards }) => (
-          <div key={m} className={`gs-stack${ppeokOwner[m] !== undefined ? ' is-ppeok' : ''}`}>
-            {cards.map((id) => {
+      {[...byMonth.entries()].map(([m, cards]) => {
+        const [row, col] = SLOTS[slots.get(m)];
+        const ppeok = ppeokOwner[m] !== undefined;
+        return (
+          <div key={m} className={`gs-stack n${cards.length}${ppeok ? ' is-ppeok' : ''}${cards.some((c) => pickable.includes(c)) ? ' is-choosing' : ''}`} style={{ gridRow: row, gridColumn: col }}>
+            {cards.map((id, i) => {
               const canPick = pickable.includes(id);
               const cls = `gs-floor-card${highlight.includes(id) ? ' is-match' : ''}${canPick ? ' is-pick' : ''}${last && last.includes(id) ? ' is-new' : ''}`;
+              const style = { '--i': i };
               return canPick ? (
-                <button key={id} type="button" className={cls} onClick={() => onPick(id)}><HwatuCard id={id} /></button>
+                <button key={id} type="button" className={cls} style={style} onClick={() => onPick(id)}><HwatuCard id={id} /></button>
               ) : (
-                <div key={id} className={cls}><HwatuCard id={id} /></div>
+                <div key={id} className={cls} style={style}><HwatuCard id={id} /></div>
               );
             })}
-            {ppeokOwner[m] !== undefined && <span className="gs-ppeok-tag">{t('gostop.events.ppeok')}</span>}
+            {ppeok && <span className="gs-ppeok-tag">{t('gostop.events.ppeok')}</span>}
           </div>
-        ))}
-      </div>
+        );
+      })}
+      {byMonth.size === 0 && <span className="gs-empty gs-floor-empty">{t('gostop.floor_empty')}</span>}
     </div>
   );
 };
@@ -131,6 +148,11 @@ export const Settlement = ({ result, names, delta, children }) => {
           </table>
         )}
         {result.winner == null && <p className="gs-hint">{t('gostop.settle.nagari_next', { x: result.nextCarry })}</p>}
+        {result.bonus && result.bonus.some((b) => b > 0) && (
+          <p className="gs-hint">
+            {result.bonus.map((b, i) => (b > 0 ? t('gostop.settle.ppeok_bonus', { name: names[i], n: b }) : null)).filter(Boolean).join(' · ')}
+          </p>
+        )}
         {delta != null && (
           <p className={`gs-delta${delta >= 0 ? ' up' : ' down'}`}>{delta >= 0 ? '+' : ''}{delta.toLocaleString()}P</p>
         )}

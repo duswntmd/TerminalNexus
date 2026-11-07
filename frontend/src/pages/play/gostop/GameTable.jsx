@@ -141,6 +141,9 @@ const GameTable = ({ view, me, names, canAct, onAction, onGukjin, banner, status
         ))}
         {flipAct && <button type="button" className="gs-btn" onClick={() => act(flipAct)}>{t('gostop.actions.flip')}</button>}
       </div>
+      {forCard.some((a) => a.type === 'bomb') && <p className="gs-hint center">{t('gostop.hint_bomb')}</p>}
+      {forCard.some((a) => a.shake) && <p className="gs-hint center">{t('gostop.hint_shake')}</p>}
+      {flipAct && <p className="gs-hint center">{t('gostop.hint_flip')}</p>}
     </div>
   );
 };

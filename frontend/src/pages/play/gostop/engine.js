@@ -1,4 +1,5 @@
-// 고스톱 맞고(2인) 규칙 엔진 — 화면과 분리된 순수 함수. 서버(GostopEngine.java)도 같은 규칙을 따른다.
+// 고스톱 맞고(2인) 규칙 엔진 — 화면과 분리된 순수 함수. 채택 규칙과 출처는 RULES.md.
+// 서버(GostopGame.java)도 같은 규칙을 따른다.
 // 상태는 평범한 객체이고 applyAction은 새 상태를 돌려준다(입력 상태는 바꾸지 않음).
 import { CARDS, GWANG, YEOL, TTI, PI, monthOf } from '../../../components/hwatu/cards.js';
 
@@ -8,6 +9,10 @@ export const WIN_SCORE = 7;
 export const CHONGTONG_SCORE = 10;
 export const PPEOK3_SCORE = 7;
 export const PIBAK_MAX = 7; // 패자 피가 이 장수 이하면 피박
+export const MEONGTTA_MIN = 7; // 열끗 이 장수 이상이면 멍따
+export const FIRST_PPEOK_BONUS = 3; // 첫뻑
+export const YEON_PPEOK_BONUS = 6; // 연뻑 (첫 차례·두 번째 차례 연속 뻑)
+export const CARRY_MAX = 16; // 나가리 배수 상한
 export const GUKJIN_ID = 32; // 9월 열끗
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
@@ -30,6 +35,9 @@ const clone = (s) => ({
   dummy: s.dummy.slice(),
   shakes: s.shakes.slice(),
   ppeok: s.ppeok.slice(),
+  ppeokRun: s.ppeokRun.slice(),
+  turns: s.turns.slice(),
+  bonus: s.bonus.slice(),
   goCount: s.goCount.slice(),
   goScore: s.goScore.slice(),
   gukjin: s.gukjin.slice(),
@@ -41,17 +49,13 @@ const clone = (s) => ({
 const monthCount = (cards, month) => cards.filter((c) => monthOf(c) === month).length;
 
 /**
- * 새 판. 바닥에 같은 월 4장이 깔리면 다시 섞고, 손에 같은 월 4장(총통)이 있으면 바로 끝난다.
- * deck은 배열 끝이 맨 위(pop으로 뒤집음).
+ * 새 판. 손에 같은 월 4장(총통)이면 바로 승리, 바닥에 같은 월 4장이면 나가리,
+ * 바닥에 같은 월 3장은 자연뻑(가져가는 사람이 피 1장).
+ * deck은 배열 끝이 맨 위(pop으로 뒤집음). 덱 0~9 선 손패, 10~19 후 손패, 20~27 바닥.
  */
 export const newGame = ({ first = 0, rng = Math.random, carry = 1, deck: fixedDeck = null } = {}) => {
-  let deck;
-  let floor;
-  for (;;) {
-    deck = fixedDeck ? fixedDeck.slice() : shuffle(range(48), rng);
-    floor = deck.slice(20, 28);
-    if (fixedDeck || !range(12).some((m) => monthCount(floor, m + 1) === 4)) break;
-  }
+  const deck = fixedDeck ? fixedDeck.slice() : shuffle(range(48), rng);
+  const floor = deck.slice(20, 28);
   const hands = [deck.slice(0, 10), deck.slice(10, 20)];
   if (first === 1) hands.reverse();
   const state = {
@@ -62,10 +66,13 @@ export const newGame = ({ first = 0, rng = Math.random, carry = 1, deck: fixedDe
     dummy: [0, 0],
     shakes: [0, 0],
     ppeok: [0, 0],
+    ppeokRun: [0, 0], // 첫 차례부터 연속으로 뻑을 한 횟수 (첫뻑·연뻑)
+    turns: [0, 0], // 각자 마친 차례 수
+    bonus: [0, 0], // 첫뻑·연뻑으로 상대에게 받을 점수
     goCount: [0, 0],
     goScore: [0, 0],
     gukjin: [null, null], // null: 자동, 'yeol' | 'pi': 고정
-    ppeokOwner: {}, // 월 → 뻑을 싼 사람
+    ppeokOwner: {}, // 월 → 뻑을 싼 사람 (-1: 처음부터 바닥에 깔린 자연뻑)
     first,
     turn: first,
     turnNo: 0,
@@ -82,8 +89,18 @@ export const newGame = ({ first = 0, rng = Math.random, carry = 1, deck: fixedDe
       state.phase = 'end';
       state.result = { winner: p, reason: 'chongtong', month: m + 1 };
       state.events.push({ type: 'chongtong', player: p, month: m + 1 });
-      break;
+      return state;
     }
+  }
+  for (let m = 1; m <= 12; m += 1) {
+    const n = monthCount(floor, m);
+    if (n === 4) {
+      state.phase = 'end';
+      state.result = { winner: null, reason: 'nagari', floor4: m };
+      state.events.push({ type: 'floor4', month: m });
+      return state;
+    }
+    if (n === 3) state.ppeokOwner[m] = -1;
   }
   return state;
 };
@@ -180,7 +197,7 @@ const steal = (s, p, n, events) => {
   if (got) events.push({ type: 'steal', player: p, count: got });
 };
 
-/** 뻑 더미(3장)를 가져갈 때 피 뺏기: 남의 뻑 1장, 자기 뻑(자뻑) 2장 */
+/** 뻑 더미(3장)를 가져갈 때 피 뺏기: 남의 뻑·자연뻑 1장, 자기 뻑(자뻑) 2장 */
 const takeStack = (s, pd, month) => {
   const owner = s.ppeokOwner[month];
   if (owner === undefined) return;
@@ -301,27 +318,35 @@ const flipStep = (s, pd) => {
   const f = s.deck.pop();
   const fm = monthOf(f);
   pd.flipped = f;
+  pd.lastFlip = s.deck.length === 0; // 마지막 차례: 뻑·쪽·따닥·쓸 인정 안 함
   s.events.push({ type: 'flip', player: pd.player, card: f });
 
   if (pd.played != null && !pd.bomb && fm === pd.month) {
     if (pd.m === 0) {
       // 쪽: 낸 패가 바닥에 깔렸는데 같은 월이 뒤집힘
       pd.takes.push(pd.placed, f);
-      pd.steal += 1;
-      s.events.push({ type: 'jjok', player: pd.player });
+      if (!pd.lastFlip) {
+        pd.steal += 1;
+        s.events.push({ type: 'jjok', player: pd.player });
+      }
     } else if (pd.m === 1) {
       // 뻑: 세 장이 바닥에 남는다
       pd.takes = pd.takes.filter((c) => c !== pd.played && c !== pd.handPair);
       s.floor.push(pd.played, f);
-      s.ppeokOwner[pd.month] = pd.player;
-      s.ppeok[pd.player] += 1;
-      s.events.push({ type: 'ppeok', player: pd.player, month: pd.month, count: s.ppeok[pd.player] });
+      if (!pd.lastFlip) {
+        s.ppeokOwner[pd.month] = pd.player;
+        s.ppeok[pd.player] += 1;
+        pd.ppeok = true;
+        s.events.push({ type: 'ppeok', player: pd.player, month: pd.month, count: s.ppeok[pd.player] });
+      }
     } else if (pd.m === 2) {
       // 따닥: 바닥 두 장 + 낸 패 + 뒤집은 패
       const rest = s.floor.filter((c) => monthOf(c) === pd.month && !pd.takes.includes(c));
       pd.takes.push(...rest, f);
-      pd.steal += 1;
-      s.events.push({ type: 'ttadak', player: pd.player });
+      if (!pd.lastFlip) {
+        pd.steal += 1;
+        s.events.push({ type: 'ttadak', player: pd.player });
+      }
     }
     return endTurn(s, pd);
   }
@@ -363,6 +388,14 @@ const endTurn = (s, pd) => {
   s.last = { player: p, played: pd.played, flipped: pd.flipped, took: takes };
   s.turnNo += 1;
 
+  // 첫뻑·연뻑: 자기 첫 차례부터 연속으로 뻑을 하면 상대에게 점수를 바로 받는다
+  if (pd.ppeok && s.ppeokRun[p] === s.turns[p]) {
+    s.ppeokRun[p] += 1;
+    if (s.ppeokRun[p] === 1) { s.bonus[p] += FIRST_PPEOK_BONUS; s.events.push({ type: 'firstppeok', player: p, points: FIRST_PPEOK_BONUS }); }
+    else if (s.ppeokRun[p] === 2) { s.bonus[p] += YEON_PPEOK_BONUS; s.events.push({ type: 'yeonppeok', player: p, points: YEON_PPEOK_BONUS }); }
+  }
+  s.turns[p] += 1;
+
   if (s.ppeok[p] >= 3) return finish(s, { winner: p, reason: 'ppeok3' });
 
   const sc = playerScore(s, p).total;
@@ -398,33 +431,34 @@ const finish = (s, result) => {
 
 /**
  * 판 결과 계산. 패자 국진이 자동이면 박을 피하는 쪽으로 센다.
- * 반환: { winner, reason, base, score, goCount, multipliers: [[key, x]], final }
+ * 반환: { winner, reason, base, score, goCount, multipliers: [[key, x]], final, bonus: [첫뻑·연뻑 점수], nextCarry }
  */
 export const settle = (state) => {
   const r = state.result;
   if (!r) return null;
   const carry = state.carry || 1;
+  const bonus = (state.bonus || [0, 0]).slice();
   const muls = [];
   if (carry > 1) muls.push(['carry', carry]);
-  if (r.reason === 'nagari') return { winner: null, reason: 'nagari', base: 0, final: 0, multipliers: muls, nextCarry: carry * 2 };
+  if (r.reason === 'nagari') return { winner: null, reason: r.floor4 ? 'floor4' : 'nagari', base: 0, final: 0, multipliers: muls, bonus, nextCarry: Math.min(carry * 2, CARRY_MAX) };
   const w = r.winner;
   const l = 1 - w;
   if (r.reason === 'chongtong' || r.reason === 'ppeok3') {
     const base = r.reason === 'chongtong' ? CHONGTONG_SCORE : PPEOK3_SCORE;
-    return { winner: w, reason: r.reason, base, score: null, goCount: 0, multipliers: muls, final: base * carry, nextCarry: 1 };
+    return { winner: w, reason: r.reason, base, score: null, goCount: 0, multipliers: muls, final: base * carry, bonus, nextCarry: 1 };
   }
   const ws = playerScore(state, w);
   const go = state.goCount[w];
   const base = ws.total + go;
   if (go >= 3) muls.push(['go', 2 ** (go - 2)]);
   if (state.shakes[w]) muls.push(['shake', 2 ** state.shakes[w]]);
+  if (ws.counts.yeol >= MEONGTTA_MIN) muls.push(['meongtta', 2]);
 
   const bak = (g) => {
     const ls = scoreOf(state.captured[l], g);
     const list = [];
     if (ws.pi > 0 && ls.counts.pi <= PIBAK_MAX) list.push(['pibak', 2]);
     if (ws.gwang > 0 && ls.counts.gwang === 0) list.push(['gwangbak', 2]);
-    if (ws.yeol > 0 && ls.counts.yeol === 0) list.push(['meongbak', 2]);
     return list;
   };
   let baks = bak(state.gukjin[l] || 'yeol');
@@ -435,7 +469,7 @@ export const settle = (state) => {
   muls.push(...baks);
   if (state.goCount[l] > 0) muls.push(['gobak', 2]);
   const final = muls.reduce((n, [, x]) => n * x, base);
-  return { winner: w, reason: 'stop', base, score: ws, goCount: go, multipliers: muls, final, nextCarry: 1 };
+  return { winner: w, reason: 'stop', base, score: ws, goCount: go, multipliers: muls, final, bonus, nextCarry: 1 };
 };
 
 /* ───────────── 보기 제한 (AI·온라인용) ───────────── */
@@ -453,3 +487,11 @@ export const limboCards = (s) => (s.pending ? [...new Set([s.pending.chooseCard,
 
 /** 카드 48장 보존 확인 (시험용) */
 export const allCards = (s) => [...s.deck, ...s.floor, ...s.hands[0], ...s.hands[1], ...s.captured[0], ...s.captured[1], ...limboCards(s)];
+
+/** 판 결과로 p가 얻는(음수면 잃는) 점수: 승패 점수 + 첫뻑·연뻑 보너스 차이 */
+export const netScore = (st, p) => {
+  if (!st) return 0;
+  const win = st.winner == null ? 0 : (st.winner === p ? 1 : -1) * st.final;
+  const b = st.bonus || [0, 0];
+  return win + b[p] - b[1 - p];
+};

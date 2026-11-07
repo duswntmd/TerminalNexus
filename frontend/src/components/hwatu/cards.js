@@ -41,3 +41,19 @@ export const cardOf = (id) => CARDS[id];
 
 export const MONTH_NAMES_KO = ['송학', '매조', '벚꽃', '흑싸리', '난초', '모란', '홍싸리', '공산', '국화', '단풍', '오동', '비'];
 export const MONTH_NAMES_EN = ['Pine', 'Plum', 'Cherry', 'Wisteria', 'Iris', 'Peony', 'Bush clover', 'Moon', 'Chrysanthemum', 'Maple', 'Paulownia', 'Rain'];
+
+const KIND_KO = { gwang: '광', yeol: '열끗', tti: '띠', pi: '피' };
+const RIBBON_KO = { hong: '홍단', cheong: '청단', cho: '초단', plain: '띠' };
+
+/** 앞면 그림 주소 (public/hwatu, 출처는 LICENSE.md) */
+export const cardImage = (id) => `/hwatu/${String(id).padStart(2, '0')}.svg`;
+
+/** 화면 읽기용 이름 (예: 1월 광, 2월 홍단, 11월 쌍피) */
+export const cardLabel = (id) => {
+  const c = CARDS[id];
+  if (!c) return '화투 뒷면';
+  if (c.kind === PI) return `${c.month}월 ${c.pi === 2 ? '쌍피' : '피'}`;
+  if (c.ribbon) return `${c.month}월 ${RIBBON_KO[c.ribbon]}`;
+  if (c.gukjin) return `${c.month}월 열끗(국진)`;
+  return `${c.month}월 ${KIND_KO[c.kind]}`;
+};

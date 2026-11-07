@@ -5,6 +5,7 @@ import java.util.*;
 
 /**
  * 고스톱 맞고(2인) 규칙 엔진 — 프론트 frontend/src/pages/play/gostop/engine.js 와 같은 규칙.
+ * 채택 규칙과 출처는 frontend/src/pages/play/gostop/RULES.md.
  * 패는 서버만 알고, 화면에는 viewFor(seat)로 상대 손패와 덱 순서를 가린 상태만 보낸다.
  * 카드 번호 0~47, 월 = id / 4 + 1 (frontend/src/components/hwatu/cards.js 와 같은 순서)
  * 이 객체는 스레드 안전하지 않다. 방(GostopRoom)이 synchronized로 감싼다.
@@ -16,6 +17,10 @@ public class GostopGame {
     public static final int PPEOK3_SCORE = 7;
     public static final int PIBAK_MAX = 7;
     public static final int GUKJIN_ID = 32;
+    public static final int MEONGTTA_MIN = 7;
+    public static final int FIRST_PPEOK_BONUS = 3;
+    public static final int YEON_PPEOK_BONUS = 6;
+    public static final int CARRY_MAX = 16;
 
     static final int GWANG = 0, YEOL = 1, TTI = 2, PI = 3;
     static final int[] KIND = new int[48];
@@ -65,10 +70,13 @@ public class GostopGame {
     final int[] dummy = new int[2];
     final int[] shakes = new int[2];
     final int[] ppeok = new int[2];
+    final int[] ppeokRun = new int[2]; // 첫 차례부터 연속 뻑 횟수
+    final int[] turns = new int[2];    // 각자 마친 차례 수
+    final int[] bonus = new int[2];    // 첫뻑·연뻑으로 받을 점수
     final int[] goCount = new int[2];
     final int[] goScore = new int[2];
     final String[] gukjin = new String[2]; // null 자동, "yeol", "pi"
-    final Map<Integer, Integer> ppeokOwner = new HashMap<>();
+    final Map<Integer, Integer> ppeokOwner = new HashMap<>(); // 월 → 뻑 싼 사람 (-1: 자연뻑)
     int first;
     int turn;
     int turnNo;
@@ -80,6 +88,7 @@ public class GostopGame {
     Integer resultWinner;
     String resultReason;
     Integer resultMonth;
+    boolean floor4;
 
     static class Pending {
         int player;
@@ -93,6 +102,8 @@ public class GostopGame {
         Integer handPair;
         Integer flipped;
         boolean bomb;
+        boolean lastFlip;
+        boolean ppeok;
         Integer chooseCard;
         List<Integer> options;
     }
@@ -114,18 +125,11 @@ public class GostopGame {
 
     private static final Random RNG = new SecureRandom();
 
-    /** 새 판. 바닥에 같은 월 4장이면 다시 섞고, 손에 4장(총통)이면 바로 끝 */
+    /** 새 판. 손에 4장(총통)이면 바로 승리, 바닥에 4장이면 나가리, 바닥 3장은 자연뻑 */
     public static GostopGame newGame(int first, int carry) {
-        List<Integer> d;
-        for (;;) {
-            d = new ArrayList<>();
-            for (int i = 0; i < 48; i++) d.add(i);
-            Collections.shuffle(d, RNG);
-            List<Integer> fl = d.subList(20, 28);
-            boolean four = false;
-            for (int m = 1; m <= 12; m++) if (monthCount(fl, m) == 4) four = true;
-            if (!four) break;
-        }
+        List<Integer> d = new ArrayList<>();
+        for (int i = 0; i < 48; i++) d.add(i);
+        Collections.shuffle(d, RNG);
         return fromDeck(d, first, carry);
     }
 
@@ -151,6 +155,16 @@ public class GostopGame {
                 }
             }
         }
+        for (int m = 1; m <= 12; m++) {
+            int n = monthCount(g.floor, m);
+            if (n == 4) {
+                g.floor4 = true;
+                g.event("floor4", null, Map.of("month", m));
+                g.finish(null, "nagari");
+                return g;
+            }
+            if (n == 3) g.ppeokOwner.put(m, -1);
+        }
         return g;
     }
 
@@ -161,6 +175,15 @@ public class GostopGame {
         g.hands.get(1).addAll(hand1);
         g.floor = new ArrayList<>(floor);
         g.deck = new ArrayList<>(deck);
+        return g;
+    }
+
+    /** 시험용: 먹은 패만 정해 둔 채 winner가 스톱한 판 */
+    public static GostopGame finishedForTest(List<Integer> cap0, List<Integer> cap1, int winner) {
+        GostopGame g = custom(List.of(), List.of(), List.of(), List.of());
+        g.captured.get(0).addAll(cap0);
+        g.captured.get(1).addAll(cap1);
+        g.finish(winner, "stop");
         return g;
     }
 
@@ -413,27 +436,35 @@ public class GostopGame {
         int f = deck.remove(deck.size() - 1);
         int fm = monthOf(f);
         pd.flipped = f;
+        pd.lastFlip = deck.isEmpty(); // 마지막 차례: 뻑·쪽·따닥·쓸 인정 안 함
         event("flip", pd.player, Map.of("card", f));
 
         if (pd.played != null && !pd.bomb && fm == pd.month) {
             if (pd.m == 0) {
                 pd.takes.add(pd.placed);
                 pd.takes.add(f);
-                pd.steal++;
-                event("jjok", pd.player, null);
+                if (!pd.lastFlip) {
+                    pd.steal++;
+                    event("jjok", pd.player, null);
+                }
             } else if (pd.m == 1) {
                 pd.takes.remove(pd.played);
                 pd.takes.remove(pd.handPair);
                 floor.add(pd.played);
                 floor.add(f);
-                ppeokOwner.put(pd.month, pd.player);
-                ppeok[pd.player]++;
-                event("ppeok", pd.player, Map.of("month", pd.month, "count", ppeok[pd.player]));
+                if (!pd.lastFlip) {
+                    ppeokOwner.put(pd.month, pd.player);
+                    ppeok[pd.player]++;
+                    pd.ppeok = true;
+                    event("ppeok", pd.player, Map.of("month", pd.month, "count", ppeok[pd.player]));
+                }
             } else if (pd.m == 2) {
                 for (int c : ofMonth(floor, pd.month)) if (!pd.takes.contains(c)) pd.takes.add(c);
                 pd.takes.add(f);
-                pd.steal++;
-                event("ttadak", pd.player, null);
+                if (!pd.lastFlip) {
+                    pd.steal++;
+                    event("ttadak", pd.player, null);
+                }
             }
             endTurn(pd);
             return;
@@ -501,6 +532,19 @@ public class GostopGame {
         last = l;
         turnNo++;
 
+        // 첫뻑·연뻑: 자기 첫 차례부터 연속으로 뻑을 하면 상대에게 점수를 바로 받는다
+        if (pd.ppeok && ppeokRun[p] == turns[p]) {
+            ppeokRun[p]++;
+            if (ppeokRun[p] == 1) {
+                bonus[p] += FIRST_PPEOK_BONUS;
+                event("firstppeok", p, Map.of("points", FIRST_PPEOK_BONUS));
+            } else if (ppeokRun[p] == 2) {
+                bonus[p] += YEON_PPEOK_BONUS;
+                event("yeonppeok", p, Map.of("points", YEON_PPEOK_BONUS));
+            }
+        }
+        turns[p]++;
+
         if (ppeok[p] >= 3) {
             finish(p, "ppeok3");
             return;
@@ -562,11 +606,13 @@ public class GostopGame {
         r.put("goCount", 0);
         r.put("score", null);
         r.put("nextCarry", 1);
+        r.put("bonus", bonus.clone());
         switch (resultReason) {
             case "nagari" -> {
+                if (floor4) r.put("reason", "floor4");
                 r.put("base", 0);
                 r.put("final", 0);
-                r.put("nextCarry", carry * 2);
+                r.put("nextCarry", Math.min(carry * 2, CARRY_MAX));
                 return r;
             }
             case "leave" -> {
@@ -590,6 +636,7 @@ public class GostopGame {
         int base = ws.total() + go;
         if (go >= 3) muls.add(List.of("go", 1 << (go - 2)));
         if (shakes[w] > 0) muls.add(List.of("shake", 1 << shakes[w]));
+        if (ws.yeolCount() >= MEONGTTA_MIN) muls.add(List.of("meongtta", 2));
         List<List<Object>> baks = baks(ws, l, gukjin[l] == null ? "yeol" : gukjin[l]);
         if (gukjin[l] == null && captured.get(l).contains(GUKJIN_ID)) {
             List<List<Object>> alt = baks(ws, l, "pi");
@@ -611,8 +658,16 @@ public class GostopGame {
         List<List<Object>> list = new ArrayList<>();
         if (ws.pi() > 0 && ls.piCount() <= PIBAK_MAX) list.add(List.of("pibak", 2));
         if (ws.gwang() > 0 && ls.gwangCount() == 0) list.add(List.of("gwangbak", 2));
-        if (ws.yeol() > 0 && ls.yeolCount() == 0) list.add(List.of("meongbak", 2));
         return list;
+    }
+
+    /** 판 결과로 seat가 얻는(음수면 잃는) 점수: 승패 점수 + 첫뻑·연뻑 보너스 차이 */
+    public static int netScore(Map<String, Object> settle, int seat) {
+        Integer w = (Integer) settle.get("winner");
+        int fin = (Integer) settle.get("final");
+        int win = w == null ? 0 : (w == seat ? fin : -fin);
+        int[] b = (int[]) settle.get("bonus");
+        return win + b[seat] - b[1 - seat];
     }
 
     public Integer getResultWinner() {
@@ -645,6 +700,9 @@ public class GostopGame {
         v.put("dummy", dummy.clone());
         v.put("shakes", shakes.clone());
         v.put("ppeok", ppeok.clone());
+        v.put("ppeokRun", ppeokRun.clone());
+        v.put("turns", turns.clone());
+        v.put("bonus", bonus.clone());
         v.put("goCount", goCount.clone());
         v.put("goScore", goScore.clone());
         v.put("gukjin", Arrays.asList(gukjin.clone()));
@@ -672,6 +730,7 @@ public class GostopGame {
             res.put("winner", resultWinner);
             res.put("reason", resultReason);
             res.put("month", resultMonth);
+            if (floor4) res.put("floor4", true);
             v.put("result", res);
         } else {
             v.put("result", null);
