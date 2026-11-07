@@ -10,54 +10,62 @@
   line-height: 1.5;
 }
 
-.sd-layout { grid-template-columns: minmax(0, 620px) minmax(260px, 1fr); }
+.sd-layout { grid-template-columns: minmax(0, 640px) minmax(260px, 1fr); }
 
 @media (max-width: 860px) {
   .sd-layout { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* 판 */
+/* ── 판: 나는 아래, 상대는 왼쪽·위·오른쪽에 둘러앉음 ── */
 .sd-table {
+  --sd-opp-w: 40px;
+  --sd-me-w: 74px;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas:
+    "l t r"
+    "l c r"
+    "m m m";
+  gap: 10px;
   padding: 14px;
-  border-radius: var(--tn-radius-lg);
-  background: radial-gradient(ellipse at 50% 45%, #22573d 0%, #173f2c 60%, #11301f 100%);
-  border: 1px solid var(--tn-line);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-  min-height: 420px;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, #1f5a3c 0%, #174630 55%, #10311f 100%);
+  border: 6px solid #3b2a1c;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 20px 50px rgba(0, 0, 0, 0.45);
+  min-height: 460px;
   box-sizing: border-box;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 
-.sd-opps {
-  --sdc-w: 44px;
-  display: grid;
-  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-  gap: 8px;
-}
+/* 상대 1명: 위 가운데를 넓게 */
+.sd-table.sd-opps-1 { grid-template-areas: "t t t" "c c c" "m m m"; }
+.sd-table.sd-opps-2 { grid-template-areas: "l c r" "l c r" "m m m"; }
+
+.sd-area-l { grid-area: l; align-self: center; }
+.sd-area-t { grid-area: t; }
+.sd-area-r { grid-area: r; align-self: center; }
+.sd-area-m { grid-area: m; }
+.sd-center { grid-area: c; }
 
 .sd-seat {
   min-width: 0;
-  padding: 8px;
-  border-radius: var(--tn-radius);
-  background: rgba(0, 0, 0, 0.28);
+  padding: 8px 6px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.08);
   text-align: center;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
-.sd-seat.is-me {
-  --sdc-w: 76px;
-  padding: 10px 12px 12px;
-}
+.sd-seat.is-me { padding: 10px 12px 12px; }
 
 .sd-seat.is-turn {
   border-color: var(--tn-tape);
-  box-shadow: 0 0 0 1px rgba(242, 194, 48, 0.4);
+  box-shadow: 0 0 0 1px rgba(242, 194, 48, 0.45), 0 0 18px rgba(242, 194, 48, 0.18);
 }
 
 .sd-seat.is-win {
@@ -65,8 +73,8 @@
   box-shadow: 0 0 0 2px rgba(61, 220, 132, 0.55), 0 0 24px rgba(61, 220, 132, 0.25);
 }
 
-.sd-seat.is-folded .sd-cards { opacity: 0.35; filter: grayscale(0.7); }
-.sd-seat.is-out { opacity: 0.6; }
+.sd-seat.is-folded .sd-cards { opacity: 0.35; filter: grayscale(0.8); }
+.sd-seat.is-out { opacity: 0.55; }
 
 .sd-seat-head {
   display: flex;
@@ -78,7 +86,7 @@
 
 .sd-seat-name {
   font-weight: 700;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -96,7 +104,7 @@
 
 .sd-seat-chips {
   font-family: var(--tn-mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: var(--tn-text-2);
   margin: 2px 0 6px;
 }
@@ -104,19 +112,82 @@
 .sd-cards {
   display: flex;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
+  --sd-w: var(--sd-opp-w);
 }
 
-.sd-seat.is-me .sd-cards { gap: 10px; }
+.sd-seat.is-me .sd-cards { gap: 10px; --sd-w: var(--sd-me-w); }
 
-/* 패 돌리기: 가운데에서 날아오는 연출 */
+/* 상대 패는 손에 쥔 것처럼 살짝 겹쳐 펼침 (3장도 좁은 자리에 들어가게) */
+.sd-seat:not(.is-me) .sd-deal + .sd-deal { margin-left: calc(var(--sd-w) * -0.3); }
+
+.sd-sitout {
+  font-size: 0.74rem;
+  color: var(--tn-text-3);
+  padding: 10px 0;
+}
+
+/* 카드: 공용 화투 그림을 앞뒤로 겹쳐 뒤집기 */
+.sd-card {
+  position: relative;
+  display: inline-block;
+  width: var(--sd-w, 56px);
+  aspect-ratio: 103.2 / 168.2; /* 공용 화투 그림(Wikimedia SVG Hwatu) 비율 */
+  perspective: 600px;
+  flex: none;
+  vertical-align: middle;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.sd-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.3, 1.15);
+}
+
+.sd-card.is-down .sd-card-inner { transform: rotateY(180deg); }
+
+.sd-card-face {
+  position: absolute;
+  overflow: hidden;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.sd-card-back { transform: rotateY(180deg); }
+.sd-card-face .hw-card { height: 100%; }
+.sd-card.is-picked { transform: translateY(-6px); }
+.sd-card.is-picked .sd-card-face { box-shadow: 0 0 0 2px var(--tn-tape), 0 6px 14px rgba(0, 0, 0, 0.45); }
+.sd-card.is-dim { opacity: 0.4; }
+
+.sd-card-tag {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--tn-blue);
+  color: #0b1a2c;
+  white-space: nowrap;
+}
+
+/* 패 돌리기: 판 가운데에서 날아오는 연출 */
 .sd-deal {
   display: inline-block;
-  animation: sd-deal 0.38s ease-out both;
+  animation: sd-deal 0.4s ease-out both;
 }
 
 @keyframes sd-deal {
-  from { opacity: 0; transform: translateY(60px) scale(0.6) rotate(-8deg); }
+  from { opacity: 0; transform: translateY(50px) scale(0.6) rotate(-8deg); }
   to { opacity: 1; transform: none; }
 }
 
@@ -126,77 +197,96 @@
   justify-content: center;
   align-items: center;
   gap: 2px 6px;
-  min-height: 1.4em;
-  margin-top: 6px;
+  min-height: 1.5em;
+  margin-top: 8px;
 }
 
 .sd-hand {
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--tn-tape);
   overflow-wrap: anywhere;
+  animation: sd-fade 0.3s ease both;
 }
 
 .sd-seat.is-me .sd-hand { font-size: 1.05rem; }
 
-.sd-last {
-  font-size: 0.76rem;
-  color: var(--tn-text-2);
+.sd-bubble {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--tn-text);
 }
+
+.sd-bubble.is-die { color: var(--tn-red); }
 
 .sd-payout {
   font-family: var(--tn-mono);
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--tn-led);
-}
-
-.sd-hint-small {
-  margin-top: 2px;
-  font-size: 0.74rem;
-  color: var(--tn-text-3);
+  animation: sd-fade 0.3s ease both;
 }
 
 .sd-center {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 90px;
+  min-width: 0;
+  min-height: 120px;
 }
 
-.sd-pot-label { font-size: 0.78rem; color: var(--tn-text-2); }
+.sd-center-tags { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-bottom: 4px; }
+
+.sd-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--tn-text-2);
+}
+
+.sd-tag.is-redo { border-color: var(--tn-tape); color: var(--tn-tape); }
+.sd-pot-label { font-size: 0.74rem; color: var(--tn-text-2); }
 
 .sd-pot {
   font-family: var(--tn-mono);
-  font-size: 1.7rem;
+  font-size: 1.55rem;
   font-weight: 800;
   color: #fff;
 }
 
-.sd-center-sub {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2px 10px;
-  font-size: 0.74rem;
-  color: var(--tn-text-3);
+.sd-phase {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--tn-tape);
 }
+
+.sd-center-sub { font-size: 0.7rem; color: var(--tn-text-3); }
 
 .sd-status {
-  margin: 8px 0 0;
-  font-size: 0.88rem;
+  margin: 6px 0 0;
+  font-size: 0.82rem;
   color: var(--tn-text);
+  overflow-wrap: anywhere;
 }
 
-/* 베팅 버튼: 손가락으로 누르기 쉽게 크게 */
+/* 베팅 버튼 6개: 손가락으로 누르기 쉽게 크게 */
 .sd-actions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
   margin-top: 12px;
+}
+
+@media (max-width: 560px) {
+  .sd-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .sd-act {
@@ -205,7 +295,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-height: 58px;
+  min-height: 56px;
   padding: 6px 4px;
   border-radius: var(--tn-radius);
   border: 1px solid var(--tn-line);
@@ -218,29 +308,81 @@
 
 .sd-act b { font-size: 1rem; }
 .sd-act small { font-size: 0.68rem; color: var(--tn-text-3); overflow-wrap: anywhere; }
-.sd-act:disabled { opacity: 0.35; cursor: not-allowed; }
+.sd-act:disabled { opacity: 0.32; cursor: not-allowed; }
 .sd-act:active:not(:disabled) { transform: translateY(1px); }
-.sd-act-die:not(:disabled) { color: var(--tn-red); }
-.sd-act-half:not(:disabled), .sd-act-bbing:not(:disabled) { border-color: var(--tn-tape); }
-.sd-act-half:not(:disabled) b, .sd-act-bbing:not(:disabled) b { color: var(--tn-tape); }
+.sd-act-die:not(:disabled) b { color: var(--tn-red); }
+.sd-act-bbing:not(:disabled), .sd-act-ddadang:not(:disabled), .sd-act-quarter:not(:disabled), .sd-act-half:not(:disabled) { border-color: rgba(242, 194, 48, 0.6); }
+.sd-act-bbing:not(:disabled) b, .sd-act-ddadang:not(:disabled) b, .sd-act-quarter:not(:disabled) b, .sd-act-half:not(:disabled) b { color: var(--tn-tape); }
+
+.sd-hint-line {
+  margin: 8px 0 0;
+  min-height: 1em;
+  font-size: 0.8rem;
+  color: var(--tn-text-3);
+  text-align: center;
+}
+
+/* 3장 섯다: 공개할 패·승부 패 고르기 */
+.sd-chooser {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--tn-radius-lg);
+  border: 1px solid var(--tn-tape);
+  background: var(--tn-panel);
+  --sd-w: 52px;
+}
+
+.sd-chooser-title { margin: 0 0 10px; font-weight: 700; font-size: 0.92rem; text-align: center; }
+.sd-chooser-cards { display: flex; justify-content: center; gap: 16px; }
+
+.sd-pick-card, .sd-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: var(--tn-radius);
+  border: 1px solid var(--tn-line);
+  background: var(--tn-bg);
+  color: var(--tn-text);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sd-pick-card:hover, .sd-option:hover { border-color: var(--tn-tape); }
+
+.sd-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  --sd-w: 40px;
+}
+
+.sd-option-cards { display: flex; gap: 4px; }
+.sd-option b { font-size: 0.86rem; overflow-wrap: anywhere; }
+.sd-option small { font-size: 0.68rem; color: var(--tn-led); }
+.sd-option.is-best { border-color: var(--tn-led); }
 
 .sd-after { margin-top: 12px; }
 
-/* 결과 */
+/* 결과: 패를 모두 뒤집은 뒤 나타남 (지연은 인라인 animation-delay) */
 .sd-overlay {
   position: absolute;
   inset: 0;
+  z-index: 3;
   display: grid;
   place-items: center;
   padding: 12px;
   background: rgba(10, 12, 15, 0.5);
   box-sizing: border-box;
-  animation: sd-fade 0.3s ease 0.9s both; /* 패가 뒤집힌 뒤에 뜸 */
+  animation: sd-fade 0.3s ease both;
 }
 
 @keyframes sd-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; visibility: hidden; }
+  to { opacity: 1; visibility: visible; }
 }
 
 .sd-overlay-box {
@@ -270,12 +412,7 @@
   overflow-wrap: anywhere;
 }
 
-.sd-result-change {
-  margin: 10px 0 14px;
-  font-family: var(--tn-mono);
-  font-weight: 700;
-}
-
+.sd-result-change { margin: 10px 0 14px; font-family: var(--tn-mono); font-weight: 700; }
 .sd-result-change.up { color: var(--tn-led); }
 .sd-result-change.down { color: var(--tn-red); }
 
@@ -283,6 +420,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 8px;
+  margin-top: 10px;
 }
 
 /* 사이드 */
@@ -295,16 +433,11 @@
   color: var(--tn-text-2);
 }
 
-.sd-points-row strong {
-  font-family: var(--tn-mono);
-  font-size: 1.2rem;
-  color: var(--tn-text);
-}
-
+.sd-points-row strong { font-family: var(--tn-mono); font-size: 1.2rem; color: var(--tn-text); }
 .sd-warn { margin: 0; color: var(--tn-red); font-size: 0.86rem; }
 
 .sd-log {
-  max-height: 200px;
+  max-height: 220px;
   overflow-y: auto;
   margin: 0;
   padding-left: 22px;
@@ -324,14 +457,16 @@
 .sd-ranks b { color: var(--tn-text); }
 
 @media (max-width: 420px) {
-  .sd-table { padding: 10px; gap: 10px; min-height: 380px; }
-  .sd-opps { --sdc-w: 36px; gap: 6px; }
-  .sd-seat { padding: 6px 4px; }
-  .sd-seat.is-me { --sdc-w: 70px; }
-  .sd-pot { font-size: 1.4rem; }
-  .sd-actions { gap: 6px; }
+  .sd-table { --sd-opp-w: 28px; --sd-me-w: 66px; padding: 10px 8px; gap: 8px; border-width: 4px; border-radius: 22px; min-height: 420px; }
+  .sd-seat { padding: 6px 3px; }
+  .sd-seat-name { font-size: 0.76rem; }
+  .sd-pot { font-size: 1.3rem; }
+  .sd-chooser { --sd-w: 46px; }
+  .sd-options { --sd-w: 32px; gap: 6px; }
+  .sd-option { padding: 6px 4px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sd-deal, .sd-overlay { animation: none; }
+  .sd-deal, .sd-overlay, .sd-hand, .sd-payout { animation-duration: 0.01ms; }
+  .sd-card-inner { transition: none; }
 }

@@ -37,7 +37,7 @@ const SeotdaPage = () => {
                 className={`ch-tab${mode === m ? ' is-active' : ''}`}
                 onClick={() => setParams({ mode: m })}
               >
-                {t(`seotda.modes.${m}`)}
+                {t(`seotda.tabs.${m}`)}
               </button>
             ))}
           </div>

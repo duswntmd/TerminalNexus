@@ -224,7 +224,7 @@
           {
             "icon": "🎴",
             "name": "Seotda",
-            "desc": "Two-card seotda with 20 hand-drawn hwatu cards. Play 1-3 computer opponents or 2-4 people in an online room. Virtual points only, with no cash value.",
+            "desc": "Two-card and three-card seotda with 20 hwatu cards, played by the real rules: two betting rounds (bbing, call, ddadang, quarter, half), special hands (Amhaeng-eosa, Ttaeng-jabi, Gusa) and replays on ties. Play 1-3 computer opponents or 2-4 people online. Virtual points only, with no cash value.",
             "path": "/play/seotda",
             "login": false
           },
@@ -620,7 +620,7 @@
     },
     "seotda": {
       "name": "Seotda",
-      "desc": "Two-card Korean seotda against the computer or people"
+      "desc": "Two- and three-card seotda against the computer or people"
     }
   },
   "home": {
@@ -1741,61 +1741,87 @@
   },
   "seotda": {
     "title": "Seotda",
-    "meta_title": "Seotda - TerminalNexus | Free two-card seotda (AI & online)",
-    "meta_desc": "Play two-card seotda against 1-3 computer players or 2-4 people online. Full hand rankings from 3-8 Gwang-ttaeng to Mangtong, special hands (Amhaeng-eosa, Ttaeng-jabi, Gusa) and die/check/call/bbing/half betting. Virtual points only.",
+    "meta_title": "Seotda - TerminalNexus | Free two- and three-card seotda (AI & online)",
+    "meta_desc": "Play two-card or three-card seotda against 1-3 computer players or 2-4 people online. Full hand rankings from 3-8 Gwang-ttaeng to Mangtong, special hands (Amhaeng-eosa, Ttaeng-jabi, Gusa, Meongteongguri Gusa), bbing/call/ddadang/quarter/half betting and tie replays. Virtual points only.",
     "notice": "Virtual points only, with no cash value. There is no top-up, cash-out, payment or item sale, and points are refilled if you lose them all.",
-    "modes": {
+    "tabs": {
       "ai": "vs AI",
       "online": "Online"
+    },
+    "modes": {
+      "two": "Two-card",
+      "three": "Three-card"
+    },
+    "mode_desc": {
+      "two": "1 card → bet → 1 card → bet → show",
+      "three": "Show 1 of 2 → bet → 1 more → bet → pick 2 of 3"
     },
     "table_label": "Seotda table",
     "you": "You",
     "ai_name": "CPU {{n}}",
     "dealer": "Lead",
+    "dealer_desc": "Lead: receives cards first and bets first this hand. The winner of the last hand takes the lead.",
     "pot": "Pot",
-    "carry": "Carried {{n}}P",
-    "to_call": "Call {{n}}P",
-    "cap": "Per-player cap {{n}}P",
+    "cap": "Max {{n}}P",
     "points": "{{n}}P",
     "my_points": "My points",
-    "folded": "Died",
-    "hidden": "Hidden",
+    "sit_out": "Sitting out",
+    "opened": "Shown",
+    "redo_hand": "Replay",
+    "month_card": "Month {{n}}",
+    "best_now": "Best now: {{name}}",
+    "recommended": "Strongest",
+    "open_title": "Choose one card to show everyone",
+    "open_this": "Show this",
+    "select_title": "Choose the two cards to play",
     "loading": "Loading…",
     "entering": "Entering the room…",
     "login_needed": "Please log in to play seotda online.",
+    "phase": {
+      "open": "Choose a card to show",
+      "bet1": "First betting round",
+      "bet2": "Second betting round",
+      "select": "Choose your two cards"
+    },
     "setup": {
       "ai_title": "Play the computer",
+      "mode": "Game",
       "ai_count": "Opponents",
       "ai_count_n": "{{n}}",
       "level": "Computer strength",
-      "ante": "Ante {{n}}P · one betting round starting from the lead",
+      "ante": "Ante {{n}}P · clockwise from the lead",
       "points_desc": "Points are stored only in this browser."
     },
     "levels": {
       "easy": "Easy",
       "easy_desc": "Calls often, rarely raises",
       "normal": "Normal",
-      "normal_desc": "Weighs pot odds",
+      "normal_desc": "Weighs pot and odds",
       "hard": "Hard",
-      "hard_desc": "Reads table size and raises"
+      "hard_desc": "Calculates more, wobbles less"
     },
     "acts": {
       "die": "Die",
       "check": "Check",
       "call": "Call",
       "bbing": "Bbing",
+      "ddadang": "Ddadang",
+      "quarter": "Quarter",
       "half": "Half"
     },
-    "act_desc": {
-      "die": "Give up this hand",
-      "check": "Pass without paying",
-      "call": "Match the bet",
-      "bbing": "Raise by one ante",
-      "half": "Raise by half the pot"
+    "act_short": {
+      "die": "Fold",
+      "check": "Pass",
+      "call": "Match",
+      "bbing": "One ante",
+      "ddadang": "2× call",
+      "quarter": "Pot 1/4",
+      "half": "Pot 1/2"
     },
     "actions": {
       "start": "Start",
       "next": "Next hand",
+      "redo": "Start replay",
       "setup": "Settings",
       "refill": "Refill points",
       "sound_off": "Sound off",
@@ -1810,9 +1836,14 @@
       "deal": "Deal"
     },
     "status": {
-      "your_turn": "Your turn. Choose an action.",
+      "your_turn": "Your turn. Choose a bet.",
       "thinking": "{{name}} is thinking…",
       "turn": "{{name}}'s turn",
+      "choosing": "Choosing",
+      "choose_open": "Choose a card to show.",
+      "choose_pick": "Choose your two cards.",
+      "waiting_choice": "Others are choosing…",
+      "sitting_out": "You sit out this replay.",
       "waiting_players": "Waiting for players… (2-4 players, you can share the room link)",
       "waiting_host": "Waiting for the host to deal…",
       "ready_host": "Players are here. Deal the cards.",
@@ -1823,12 +1854,11 @@
     "result": {
       "win": "You win!",
       "lose": "You lose",
-      "tie": "Tie · pot split",
       "redo": "Replay",
-      "redo_desc": "{{name}}'s {{hand}} forces a replay. The {{pot}}P pot carries over.",
+      "redo_desc": "{{name}}'s {{hand}}! {{names}} replay with the {{pot}}P pot left in.",
+      "tie_desc": "Tie at {{hand}}. {{names}} replay with the {{pot}}P pot left in.",
       "fold_desc": "Everyone else died, so {{name}} takes the pot.",
-      "show_desc": "{{name}} · {{hand}}",
-      "winner": "{{name}} wins",
+      "winner": "{{name}} wins {{hand}}",
       "change": "This hand {{n}}P"
     },
     "hands": {
@@ -1855,15 +1885,19 @@
     "special_on": "active",
     "special_as": "counts as {{n}} kkut",
     "special_hint": {
-      "amhaeng": "Beats 1-3/1-8 Gwang-ttaeng if one appears, otherwise 1 kkut",
-      "ttaengjabi": "Beats 1-9 Ttaeng (not 10) if one appears, otherwise Mangtong",
-      "gusa": "Replay if every remaining opponent has Ali or lower, otherwise 3 kkut",
-      "mgusa": "Replay if every remaining opponent has 9 Ttaeng or lower, otherwise 3 kkut"
+      "amhaeng": "Amhaeng-eosa: beats 1-3/1-8 Gwang-ttaeng if one appears, otherwise 1 kkut",
+      "ttaengjabi": "Ttaeng-jabi: beats 1-9 Ttaeng (not 10) if one appears, otherwise Mangtong",
+      "gusa": "Gusa: replay if every remaining opponent has Ali or lower, otherwise 3 kkut",
+      "mgusa": "Meongteongguri Gusa: replay if every remaining opponent has 9 Ttaeng or lower, otherwise 3 kkut"
     },
     "log_title": "Hand log",
     "log_empty": "Nothing yet.",
     "log": {
-      "deal": "Hand {{n}} · lead {{name}} · pot {{pot}}P",
+      "deal": "Hand {{n}} · lead {{name}} · antes {{pot}}P",
+      "redo_deal": "Hand {{n}} (replay) · lead {{name}} · carried {{pot}}P",
+      "round": "── Betting round {{n}} ──",
+      "open": "{{name}} showed a card",
+      "select": "{{name}} chose two cards",
       "act": "{{name}} {{act}}",
       "act_pay": "{{name}} {{act}} ({{pay}}P)"
     },
@@ -1874,8 +1908,8 @@
         "March gwang + August gwang"
       ],
       [
-        "Gwang-ttaeng",
-        "1-3 (January + March gwang) and 1-8 (January + August gwang), equal strength"
+        "1-8 / 1-3 Gwang-ttaeng",
+        "January gwang + August gwang / January gwang + March gwang (equal)"
       ],
       [
         "Ttaeng",
@@ -1910,59 +1944,74 @@
         "Last digit of the two months added. Gabo (9) > 8 > … > 1 > Mangtong (0)"
       ]
     ],
-    "rules_title": "Seotda rules used on this site",
-    "rules": [
-      [
-        "Cards",
-        "Two hwatu cards for each month 1-10, 20 in total. The first card of January, March and August is a gwang (光); the first card of other months is a yeolkkut."
-      ],
-      [
-        "Play",
-        "Everyone pays the ante and gets two cards, then one betting round goes around starting from the lead. After a raise, the others respond again."
-      ],
-      [
-        "Betting",
-        "Die (fold), Check (pass when nothing is owed), Call (match), Bbing (raise by one ante when nobody has raised), Half (call, then raise by half the pot, rounded up to 10P)."
-      ],
-      [
-        "Raise limits",
-        "Each player may raise (bbing or half) once per hand. A player can put in at most what the shortest stack had at the start of the hand, so everyone can always call."
-      ],
-      [
-        "Showdown",
-        "Players who did not die show their cards and the strongest hand takes the pot. If only one player remains, they take it without showing."
-      ],
-      [
-        "Ties",
-        "Equal hands split the pot evenly. Any leftover point goes to the player closest to the lead."
-      ],
+    "specials_title": "Special hands",
+    "specials": [
       [
         "Amhaeng-eosa",
-        "April yeolkkut + July yeolkkut. Ranks just below 3-8 Gwang-ttaeng when a 1-3 or 1-8 Gwang-ttaeng is in the showdown, otherwise 1 kkut."
+        "April yeolkkut + July yeolkkut. Beats 1-8/1-3 Gwang-ttaeng (not 3-8). Otherwise 1 kkut"
       ],
       [
         "Ttaeng-jabi",
-        "March gwang + July yeolkkut. Ranks just below Jang-ttaeng when a 1-9 Ttaeng is in the showdown (cannot beat Jang-ttaeng or Gwang-ttaeng), otherwise Mangtong."
+        "March gwang + July yeolkkut. Beats 1-9 Ttaeng (not Jang-ttaeng or Gwang-ttaeng). Otherwise Mangtong"
       ],
       [
         "Gusa",
-        "4 + 9 (other than Meongteongguri). Replay if the best other hand is Ali or lower, otherwise 3 kkut."
+        "4 + 9. Replay if the best remaining hand is Ali or lower. Otherwise 3 kkut"
       ],
       [
         "Meongteongguri Gusa",
-        "April yeolkkut + September yeolkkut. Replay if the best other hand is 9 Ttaeng or lower, otherwise 3 kkut."
+        "April yeolkkut + September yeolkkut. Replay if the best remaining hand is 9 Ttaeng or lower. Otherwise 3 kkut"
+      ]
+    ],
+    "rules_title": "Seotda rules used on this site (with sources)",
+    "rules": [
+      [
+        "Cards",
+        "Two cards from each hwatu month 1-10 without the pi cards, 20 in total. January, March and August have a gwang and a ribbon (August: gwang and yeolkkut); other months have a yeolkkut and a ribbon."
+      ],
+      [
+        "Two-card",
+        "Everyone pays the ante, gets one card from the lead onward, bets, gets a second card, bets again, and the remaining players show their cards from the lead onward."
+      ],
+      [
+        "Three-card",
+        "Everyone gets two cards and shows one of them to all, bets, gets a third card, bets again, then picks two of the three cards for the showdown."
+      ],
+      [
+        "Betting",
+        "Check and bbing (one ante) are allowed while nobody has bet in the round; ddadang (twice the call) once someone has bet. Quarter calls and adds a quarter of the pot, half calls and adds half the pot (rounded up to 10P)."
+      ],
+      [
+        "End of a round",
+        "A round ends when everyone except the last raiser has called or died (or everyone checked if nobody bet). Anyone who checked or called cannot raise again in that round."
+      ],
+      [
+        "Max",
+        "Nobody can put in more in one hand than the shortest stack had at the start, so everyone can always call."
+      ],
+      [
+        "Showdown",
+        "If only one player remains, they take the pot without showing. The winner leads the next hand. The first lead is random."
+      ],
+      [
+        "Ties",
+        "If two or more players tie, the pot stays and only the tied players replay."
       ],
       [
         "Replay",
-        "The pot carries over to the next hand and the lead stays. Everyone pays the ante again and plays."
+        "A Gusa replay includes everyone still in the showdown; a tie replay only the tied players. No ante; the carried pot is played as two-card seotda, and players who died do not come back."
       ],
       [
-        "Lead",
-        "The winner of a hand leads the next hand and acts first."
+        "Not used",
+        "Ttaeng bonus payments, pot-size (pull) bets, rejoining a replay after dying and regional variants (e.g. Jang-ttaeng over Gwang-ttaeng) are not used."
+      ],
+      [
+        "Sources",
+        "Cross-checked with Namuwiki (Seotda, Hwatu cards), Korean Wikipedia (Seotda) and the Hangame Sinmatgo mobile guide (2026-11-07)."
       ],
       [
         "Points",
-        "Virtual points only. You start with 10,000P and can refill when you have less than the ante. Computer players are refilled automatically."
+        "Virtual points only. You start with 10,000P; the ante is 100P. You can refill when you have less than the ante. Computer players are refilled automatically."
       ]
     ],
     "lobby": {
@@ -1971,7 +2020,7 @@
       "create_title": "Create a room",
       "title_ph": "Room title (optional)",
       "players": "{{n}}/4 players",
-      "room_points": "Each player gets 10,000P that is used only in this room.",
+      "room_points": "Each player gets 10,000P that is used only in this room. If you do not act within 45 seconds you die (card choices are made automatically).",
       "status": {
         "WAITING": "Waiting",
         "PLAYING": "Playing",
@@ -1996,7 +2045,7 @@
       "illegal_action": "You cannot do that now.",
       "not_your_turn": "It is not your turn.",
       "not_playing": "No hand in progress.",
-      "not_player": "You are not a player.",
+      "not_player": "You are not in this hand.",
       "host_only": "Only the host can do that.",
       "already_playing": "A hand is already in progress.",
       "need_players": "At least two players are needed.",

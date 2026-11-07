@@ -11,7 +11,8 @@ import java.util.Map;
 /**
  * 실시간 온라인 섯다 DTO
  * 오류와 결과는 화면에서 번역하도록 코드(예: not_your_turn, showdown)로 보낸다.
- * 다른 사람의 패는 승부에서 공개될 때만 cards 에 넣고, 내 패는 myCards(REST) 또는 HAND 이벤트(개인 큐)로만 보낸다.
+ * 다른 사람의 패는 3장 섯다에서 스스로 공개한 1장(openCard)과 승부에서 공개될 때(cards)만 넣고,
+ * 내 패는 myCards(REST) 또는 HAND 이벤트(개인 큐)로만 보낸다.
  */
 public class SeotdaDTO {
 
@@ -20,6 +21,7 @@ public class SeotdaDTO {
     @AllArgsConstructor
     public static class CreateRoomRequest {
         private String title;
+        private String mode; // two, three
     }
 
     @Data
@@ -30,6 +32,7 @@ public class SeotdaDTO {
         private String roomId;
         private String title;
         private String host;
+        private String mode;
         private List<String> players;
         private String status; // WAITING, PLAYING, FINISHED
     }
@@ -42,11 +45,16 @@ public class SeotdaDTO {
         private String nick;
         private int chips;
         private int contrib;
-        private boolean inHand;   // 이번 판에 패를 받았는지
+        private boolean inHand;      // 이번 판에 패를 받았는지
         private boolean folded;
-        private boolean raised;
-        private String last;      // 마지막 행동 (die, check, call, bbing, half)
-        private List<Integer> cards; // 공개된 패만
+        private boolean canRaise;
+        private boolean acted;
+        private String last;         // 마지막 행동
+        private int cardCount;       // 받은 패 수
+        private boolean opened;      // 3장: 공개할 패를 골랐는지
+        private Integer openCard;    // 3장: 공개한 패
+        private List<Integer> cards; // 승부에서 공개된 패 (전부)
+        private List<Integer> pick;  // 3장: 승부에 쓴 2장의 위치
     }
 
     @Data
@@ -64,11 +72,14 @@ public class SeotdaDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Result {
-        private String type; // fold, showdown, redo
+        private String type;   // fold, showdown, redo
+        private String reason; // fold, showdown, tie, gusa, mgusa
         private List<Integer> winners;
+        private List<Integer> participants; // 재경기 참가 자리
         private Map<Integer, Integer> payouts;
         private List<Integer> reveal;
         private Integer redoSeat;
+        private int carry;
     }
 
     @Data
@@ -79,16 +90,24 @@ public class SeotdaDTO {
         private String roomId;
         private String title;
         private String host;
+        private String mode;       // 방의 방식: two, three
+        private String playMode;   // 이번 판 진행 방식 (재경기는 two)
+        private boolean redo;      // 이번 판이 재경기인지
+        private boolean nextIsRedo;
         private String status;
+        private String phase;      // open, bet, select, done
+        private int round;         // 1구, 2구
+        private boolean roundBet;
         private int handNo;
-        private int ante;
+        private int unit;
         private int cap;
         private int level;
         private int pot;
         private int carry;
         private int dealer;
-        private int turn;          // 차례인 자리 번호, 없으면 -1
-        private long turnEndsAt;   // 차례 제한 시각 (epoch ms), 없으면 0
+        private int turn;          // 베팅 차례인 자리, 없으면 -1
+        private List<Integer> pending; // 패를 골라야 하는 자리
+        private long turnEndsAt;   // 제한 시각 (epoch ms), 없으면 0
         private List<SeatState> seats;
         private List<LogEntry> log;
         private Result result;
@@ -100,10 +119,12 @@ public class SeotdaDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Action {
-        public enum Type { START, BET, CHAT, LEAVE }
+        public enum Type { START, BET, OPEN, SELECT, CHAT, LEAVE }
 
         private Type type;
-        private String bet; // die, check, call, bbing, half
+        private String bet;         // die, check, call, bbing, ddadang, quarter, half
+        private Integer card;       // OPEN: 0 또는 1
+        private List<Integer> pick; // SELECT: 3장 중 2장의 위치
         private String text;
     }
 

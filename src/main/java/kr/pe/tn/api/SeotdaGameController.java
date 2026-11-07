@@ -85,11 +85,10 @@ public class SeotdaGameController {
         try {
             SeotdaRoom room = roomService.getRoom(roomId);
             switch (action.getType()) {
-                case START -> {
-                    room.start(nick);
-                    roomService.sendHands(room);
-                }
+                case START -> room.start(nick);
                 case BET -> room.bet(nick, action.getBet());
+                case OPEN -> room.open(nick, action.getCard());
+                case SELECT -> room.select(nick, action.getPick());
                 case LEAVE -> {
                     if (room.leave(nick)) {
                         roomService.removeRoom(roomId);
