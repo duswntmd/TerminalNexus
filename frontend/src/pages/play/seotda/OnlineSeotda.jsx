@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Client } from '@stomp/stompjs';
-import { classify, resolve } from './engine.js';
 import { playSound } from '../janggi/sound.js';
-import { TableView, ActionBar, ResultOverlay, HandLog, RankTable } from './parts.jsx';
-import { fmt, handName, handResult, handHint, resultTitleKey, onlineActions, logLine } from './helpers.js';
+import { TableView, ActionBar, OpenPicker, SelectPicker, ResultOverlay, HandLog, RankTable } from './parts.jsx';
+import {
+  REVEAL_GAP, handResult, myHandText, handHint, selectOptions, seatCards, resultTitleKey, resultLines,
+  resolveRevealed, onlineActions, logLine,
+} from './helpers.js';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchWithAccessRaw } from '../../../util/fetchUtil';
 
@@ -16,6 +18,7 @@ const Lobby = ({ onEnter }) => {
   const { t } = useTranslation();
   const [rooms, setRooms] = useState([]);
   const [title, setTitle] = useState('');
+  const [mode, setMode] = useState('two');
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
@@ -35,7 +38,7 @@ const Lobby = ({ onEnter }) => {
     const res = await fetchWithAccessRaw('/api/seotda/room', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, mode }),
     });
     setCreating(false);
     if (res.ok) onEnter((await res.json()).roomId);
@@ -54,7 +57,7 @@ const Lobby = ({ onEnter }) => {
                 <div style={{ minWidth: 0 }}>
                   <div className="ch-room-title">{r.title}</div>
                   <div className="ch-room-meta">
-                    {t('seotda.lobby.players', { n: r.players.length })} · {r.players.join(', ')} · {t(`seotda.lobby.status.${r.status}`)}
+                    {t(`seotda.modes.${r.mode}`)} · {t('seotda.lobby.players', { n: r.players.length })} · {t(`seotda.lobby.status.${r.status}`)}
                   </div>
                 </div>
                 <button type="button" className="ch-btn" onClick={() => onEnter(r.roomId)}>
@@ -69,6 +72,13 @@ const Lobby = ({ onEnter }) => {
       <form className="ch-panel ch-setup" onSubmit={create}>
         <h3 className="ch-section-title" style={{ margin: 0 }}>{t('seotda.lobby.create_title')}</h3>
         <input className="ch-input" placeholder={t('seotda.lobby.title_ph')} value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} />
+        <div className="ch-choices">
+          {['two', 'three'].map((k) => (
+            <button key={k} type="button" className={`ch-choice${mode === k ? ' is-active' : ''}`} onClick={() => setMode(k)}>
+              {t(`seotda.modes.${k}`)} <small>{t(`seotda.mode_desc.${k}`)}</small>
+            </button>
+          ))}
+        </div>
         <p className="ch-hint" style={{ margin: 0 }}>{t('seotda.lobby.room_points')}</p>
         <button type="submit" className="ch-btn primary" disabled={creating}>{t('seotda.actions.create')}</button>
       </form>
@@ -76,7 +86,7 @@ const Lobby = ({ onEnter }) => {
   );
 };
 
-/** 남은 차례 시간 (초) */
+/** 남은 제한 시간 (초) */
 const useCountdown = (endsAt) => {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -96,6 +106,7 @@ const Room = ({ roomId, me, onExit }) => {
   const [input, setInput] = useState('');
   const [toast, setToast] = useState(null);
   const [resultOpen, setResultOpen] = useState(true);
+  const [startChips, setStartChips] = useState({ handNo: 0, chips: 0 });
   const clientRef = useRef(null);
   const prevRef = useRef(null);
   const chatRef = useRef(null);
@@ -117,7 +128,7 @@ const Room = ({ roomId, me, onExit }) => {
     if (st.myCards) setMine({ handNo: st.handNo, cards: st.myCards });
     if (prev && prev.status !== 'FINISHED' && st.status === 'FINISHED') {
       setResultOpen(true);
-      playSound('win');
+      setTimeout(() => playSound('win'), (st.result?.reveal?.length || 0) * REVEAL_GAP);
     } else if (prev && (st.log.length !== prev.log.length || st.handNo !== prev.handNo)) playSound('move');
   }, []);
 
@@ -167,6 +178,14 @@ const Room = ({ roomId, me, onExit }) => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
   }, [chat]);
 
+  // 판이 시작될 때 내 포인트(학교 내기 전)를 기억해 결과에서 증감을 보여 준다
+  const mySeatNow = room ? room.seats.findIndex((s) => s.nick === me) : -1;
+  useEffect(() => {
+    if (!room || mySeatNow < 0 || room.status !== 'PLAYING' || room.redo || startChips.handNo === room.handNo) return;
+    const s = room.seats[mySeatNow];
+    setStartChips({ handNo: room.handNo, chips: s.chips + s.contrib }); // 낸 돈을 되돌리면 판 시작 때 포인트
+  }, [room, mySeatNow, startChips.handNo]);
+
   const remaining = useCountdown(room?.status === 'PLAYING' ? room.turnEndsAt : 0);
 
   const send = (action) => {
@@ -177,90 +196,105 @@ const Room = ({ roomId, me, onExit }) => {
 
   if (!room) return <p className="ch-empty">{t('seotda.entering')}</p>;
 
-  const mySeat = room.seats.findIndex((s) => s.nick === me);
+  const mySeat = mySeatNow;
   const isHost = room.host === me;
   const playing = room.status === 'PLAYING';
   const res = room.status === 'FINISHED' ? room.result : null;
   const names = room.seats.map((s) => `${s.nick}${s.nick === room.host ? ' 👑' : ''}`);
-  const myCards = mySeat >= 0 && room.seats[mySeat]?.inHand && mine.handNo === room.handNo ? mine.cards : null;
-
-  // 공개된 패로 화면에서도 승부를 다시 계산 (서버와 같은 규칙)
-  const revealed = res ? (res.reveal || []).filter((i) => room.seats[i]?.cards) : [];
-  const resolved = revealed.length >= 2 ? resolve(revealed.map((i) => ({ seat: i, cards: room.seats[i].cards }))) : null;
+  const meSeat = mySeat >= 0 ? room.seats[mySeat] : null;
+  const myCards = meSeat?.inHand && mine.handNo === room.handNo ? mine.cards : null;
+  const resolved = res ? resolveRevealed(room) : null;
+  const revealOrder = res?.reveal || [];
+  const pending = room.pending || [];
+  const myPending = playing && mySeat >= 0 && pending.includes(mySeat);
 
   const seats = room.seats.map((s, i) => {
-    const cards = s.cards || (i === mySeat ? myCards : null);
+    const revealIndex = revealOrder.indexOf(i);
+    const known = s.cards || (i === mySeat ? myCards : null);
     const hand = resolved?.hands[i];
-    const myHand = i === mySeat && myCards ? classify(myCards[0], myCards[1]) : null;
+    const myOpenIndex = i === mySeat && known && s.openCard != null ? known.indexOf(s.openCard) : null;
     return {
       key: s.nick,
-      order: (i - room.dealer + room.seats.length) % room.seats.length,
       name: names[i],
       chips: s.chips,
       inHand: s.inHand,
-      cards,
-      open: !!cards,
       folded: s.folded,
       last: s.last,
-      isTurn: playing && room.turn === i,
+      isTurn: playing && room.phase === 'bet' && room.turn === i,
+      choosing: playing && pending.includes(i),
       isDealer: s.inHand && room.dealer === i,
+      cards: seatCards({
+        cards: known,
+        count: s.cardCount,
+        openCard: s.openCard,
+        openIndex: myOpenIndex,
+        pick: res ? s.pick : null,
+        revealed: revealIndex >= 0,
+        mine: i === mySeat,
+        tag: t('seotda.opened'),
+      }),
+      revealIndex,
+      handText: hand && revealIndex >= 0 ? handResult(t, hand, res.type === 'redo') : i === mySeat && myCards ? myHandText(t, myCards, null) : '',
       win: !!res && res.winners.includes(i),
       payout: res?.payouts?.[i] || 0,
-      handText: hand ? handResult(t, hand, res.type === 'redo') : myHand ? handName(t, myHand) : '',
-      hint: myHand && !res ? handHint(t, myHand) : '',
     };
   });
 
-  const acts = playing && room.turn === mySeat ? onlineActions(room, mySeat) : [];
+  const acts = playing && room.phase === 'bet' && room.turn === mySeat ? onlineActions(room, mySeat) : [];
+  const timer = remaining != null ? ` (${remaining}s)` : '';
   let status;
-  if (playing) {
+  if (playing && room.phase === 'bet') {
     const who = room.turn === mySeat ? t('seotda.status.your_turn') : t('seotda.status.turn', { name: names[room.turn] });
-    status = `${mySeat < 0 ? `${t('seotda.status.spectating')} · ` : ''}${who}${remaining != null ? ` (${remaining}s)` : ''}`;
+    status = `${mySeat < 0 ? `${t('seotda.status.spectating')} · ` : ''}${who}${timer}`;
+  } else if (playing) {
+    status = `${myPending ? t(room.phase === 'open' ? 'seotda.status.choose_open' : 'seotda.status.choose_pick') : t('seotda.status.waiting_choice')}${timer}`;
   } else if (room.seats.length < 2) status = t('seotda.status.waiting_players');
   else status = t(isHost ? 'seotda.status.ready_host' : 'seotda.status.waiting_host');
 
   let title = '';
   let lines = [];
   if (res) {
-    const key = resultTitleKey(res, mySeat);
-    title = key ? t(`seotda.result.${key}`) : res.winners.map((w) => t('seotda.result.winner', { name: names[w] })).join(', ');
-    if (res.type === 'fold') lines = [t('seotda.result.fold_desc', { name: names[res.winners[0]] })];
-    else if (res.type === 'redo' && resolved) {
-      lines = [t('seotda.result.redo_desc', { name: names[res.redoSeat], hand: handName(t, resolved.hands[res.redoSeat]), pot: fmt(room.carry) })];
-    } else if (resolved) {
-      lines = res.winners.map((w) => `${t('seotda.result.winner', { name: names[w] })} · ${handResult(t, resolved.hands[w])}`);
-    }
+    const key = resultTitleKey(res, meSeat?.inHand ? mySeat : -1);
+    title = key ? t(`seotda.result.${key}`) : t('seotda.result.winner', { name: names[res.winners[0]], hand: '' });
+    lines = resultLines(t, res, resolved?.hands || {}, names, res.carry);
   }
-  const myContrib = mySeat >= 0 && room.seats[mySeat].inHand ? room.seats[mySeat].contrib : 0;
-  const change = res && mySeat >= 0 && room.seats[mySeat].inHand ? (res.payouts?.[mySeat] || 0) - myContrib : null;
+  // 재경기 판은 처음 판의 시작 포인트와 비교
+  const change = res && res.type !== 'redo' && meSeat?.inHand && startChips.handNo > 0 && (startChips.handNo === room.handNo || room.redo)
+    ? meSeat.chips - startChips.chips : null;
 
   const leave = () => {
-    if (playing && mySeat >= 0 && room.seats[mySeat].inHand && !window.confirm(t('seotda.confirm.leave'))) return;
+    if (playing && meSeat?.inHand && !window.confirm(t('seotda.confirm.leave'))) return;
     send({ type: 'LEAVE' });
     onExit();
   };
 
   const canDeal = isHost && !playing && room.seats.length >= 2;
-  const dealBtn = canDeal && <button type="button" className="ch-btn primary" onClick={() => send({ type: 'START' })}>{t(res ? 'seotda.actions.next' : 'seotda.actions.deal')}</button>;
+  const dealLabel = room.nextIsRedo ? 'seotda.actions.redo' : res ? 'seotda.actions.next' : 'seotda.actions.deal';
+  const dealBtn = canDeal && <button type="button" className="ch-btn primary" onClick={() => send({ type: 'START' })}>{t(dealLabel)}</button>;
+  const view = { mode: room.mode, redo: room.redo, phase: playing ? room.phase : null, round: room.round, pot: room.pot, cap: room.cap, handNo: room.handNo, seats };
+  const canBet = playing && room.phase === 'bet' && meSeat?.inHand && !meSeat.folded;
 
   return (
     <>
       <div className="ch-layout sd-layout">
         <div>
-          <TableView seats={seats} mySeat={mySeat} pot={room.pot} carry={room.carry} cap={playing ? room.cap : 0} dealKey={room.handNo} status={status}>
+          <TableView view={view} mySeat={mySeat} status={status}>
             {res && resultOpen && (
-              <ResultOverlay title={title} lines={lines} change={change} onClose={() => setResultOpen(false)}>
+              <ResultOverlay title={title} lines={lines} change={change} delay={revealOrder.length * REVEAL_GAP + 300} onClose={() => setResultOpen(false)}>
                 {dealBtn}
               </ResultOverlay>
             )}
           </TableView>
-          {playing && mySeat >= 0 && room.seats[mySeat].inHand && <ActionBar acts={acts} onAct={(bet) => send({ type: 'BET', bet })} />}
+          {canBet && <ActionBar acts={acts} onAct={(bet) => send({ type: 'BET', bet })} />}
+          {canBet && myCards && <p className="sd-hint-line">{handHint(t, myCards)}</p>}
+          {myPending && room.phase === 'open' && myCards && <OpenPicker cards={myCards} onPick={(card) => send({ type: 'OPEN', card })} />}
+          {myPending && room.phase === 'select' && myCards?.length === 3 && <SelectPicker options={selectOptions(t, myCards)} onPick={(pick) => send({ type: 'SELECT', pick })} />}
         </div>
 
         <div className="ch-side">
           <div className="ch-panel">
             <h3 className="ch-section-title">{room.title}</h3>
-            <p className="ch-status">{t('seotda.lobby.players', { n: room.seats.length })}</p>
+            <p className="ch-status">{t(`seotda.modes.${room.mode}`)} · {t('seotda.lobby.players', { n: room.seats.length })}</p>
             <div className="ch-actions" style={{ marginTop: 12 }}>
               {dealBtn}
               <button type="button" className="ch-btn" onClick={leave}>{t('seotda.actions.leave')}</button>
@@ -279,7 +313,7 @@ const Room = ({ roomId, me, onExit }) => {
             </form>
           </div>
 
-          <HandLog lines={room.log.map((e) => logLine(t, e, names))} />
+          <HandLog lines={(room.log || []).map((e) => logLine(t, e, names))} />
           <RankTable />
         </div>
       </div>

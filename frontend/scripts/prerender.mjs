@@ -171,8 +171,9 @@ add({
   title: ko.seotda.meta_title,
   desc: ko.seotda.meta_desc,
   body: `<h1>${esc(ko.seotda.title)}</h1><p>${esc(ko.seotda.meta_desc)}</p><p>${esc(ko.seotda.notice)}</p>
-<h2>${esc(ko.seotda.modes.ai)} · ${esc(ko.seotda.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/seotda').desc)}</p>
+<h2>${esc(ko.seotda.modes.two)} · ${esc(ko.seotda.modes.three)}</h2><ul>${['two', 'three'].map((m) => `<li>${esc(ko.seotda.modes[m])}: ${esc(ko.seotda.mode_desc[m])}</li>`).join('')}</ul><h2>${esc(ko.seotda.tabs.ai)} · ${esc(ko.seotda.tabs.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/seotda').desc)}</p>
 <h2>${esc(ko.seotda.ranks_title)}</h2><ol>${ko.seotda.ranks.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ol>
+<h2>${esc(ko.seotda.specials_title)}</h2><ul>${ko.seotda.specials.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>
 <h2>${esc(ko.seotda.rules_title)}</h2><ul>${ko.seotda.rules.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`,
   jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.seotda.title, description: ko.seotda.meta_desc, url: `${SITE}/play/seotda`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
 });

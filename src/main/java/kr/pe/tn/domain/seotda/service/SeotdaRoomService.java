@@ -43,7 +43,7 @@ public class SeotdaRoomService {
         roomMap.values().removeIf(r -> r.getHost().equals(hostNick) && r.getStatus() != SeotdaRoom.Status.PLAYING);
         String raw = req.getTitle() == null ? "" : req.getTitle().strip();
         String title = raw.isEmpty() ? hostNick : raw.substring(0, Math.min(raw.length(), 40));
-        SeotdaRoom room = new SeotdaRoom(title, hostNick);
+        SeotdaRoom room = new SeotdaRoom(title, hostNick, req.getMode());
         roomMap.put(room.getRoomId(), room);
         return room;
     }
@@ -52,13 +52,14 @@ public class SeotdaRoomService {
         roomMap.remove(roomId);
     }
 
-    /** 공개 상태는 방 전체에, 새 판의 패는 각자에게만 보낸다 */
+    /** 공개 상태는 방 전체에, 각자의 패는 본인에게만 보낸다 (패가 판 도중에도 늘어나므로 매번) */
     public void broadcast(SeotdaRoom room) {
         messagingTemplate.convertAndSend("/topic/seotda/room/" + room.getRoomId(),
                 SeotdaDTO.Event.builder().type(SeotdaDTO.Event.Type.STATE).state(room.toState(null)).build());
+        sendHands(room);
     }
 
-    public void sendHands(SeotdaRoom room) {
+    private void sendHands(SeotdaRoom room) {
         for (String nick : room.handPlayers()) {
             messagingTemplate.convertAndSendToUser(nick, "/queue/seotda",
                     SeotdaDTO.Event.builder().type(SeotdaDTO.Event.Type.HAND)
