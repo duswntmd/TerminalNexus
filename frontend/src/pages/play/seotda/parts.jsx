@@ -23,7 +23,7 @@ export const Card = ({ id, up, delay = 0, picked = false, dim = false, tag }) =>
   return (
     <span className={cls.join(' ')}>
       <span className="sd-card-inner">
-        <span className="sd-card-face sd-card-front">{id != null && <HwatuCard id={toHwatuId(id)} />}</span>
+        <span className="sd-card-face sd-card-front">{id != null && <HwatuCard id={toHwatuId(id)} marks={false} />}</span>
         <span className="sd-card-face sd-card-back"><HwatuCard back /></span>
       </span>
       {tag && <span className="sd-card-tag">{tag}</span>}

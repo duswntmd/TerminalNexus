@@ -470,3 +470,6 @@
   .sd-deal, .sd-overlay, .sd-hand, .sd-payout { animation-duration: 0.01ms; }
   .sd-card-inner { transition: none; }
 }
+
+.sd-credit { margin: 14px 0 0; font-size: 0.78rem; color: var(--tn-text-3); }
+.sd-credit a { color: inherit; }
