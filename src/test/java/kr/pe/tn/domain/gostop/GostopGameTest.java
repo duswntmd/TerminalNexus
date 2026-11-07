@@ -58,6 +58,72 @@ class GostopGameTest {
         assertTrue(g.capturedOf(0).containsAll(List.of(0, 1, 2, 3)));
     }
 
+    /** 손패 0~19, 바닥 20~27 자리에 floor를 두는 덱 (손패에 같은 월 4장이 몰리지 않게) */
+    private static List<Integer> deckWithFloor(List<Integer> floor) {
+        List<Integer> rest = new ArrayList<>();
+        for (int i = 0; i < 48; i++) if (!floor.contains(i)) rest.add(i);
+        List<Integer> hand = new ArrayList<>();
+        for (int m = 0; m < 12 && hand.size() < 20; m++) {
+            int added = 0;
+            for (int c : rest) if (c / 4 == m && added < 2) { hand.add(c); added++; }
+        }
+        List<Integer> d = new ArrayList<>(hand.subList(0, 20));
+        d.addAll(floor);
+        for (int c : rest) if (!d.contains(c)) d.add(c);
+        return d;
+    }
+
+    @Test
+    void floorFourIsNagariAndThreeIsNaturalPpeok() {
+        GostopGame g = GostopGame.fromDeck(deckWithFloor(List.of(0, 1, 2, 3, 4, 8, 12, 16)), 0, 1);
+        assertTrue(g.isEnded());
+        assertEquals("floor4", g.settle().get("reason"));
+        assertEquals(2, g.settle().get("nextCarry"));
+
+        g = GostopGame.fromDeck(deckWithFloor(List.of(0, 1, 2, 4, 8, 12, 16, 20)), 0, 1);
+        assertFalse(g.isEnded());
+        assertEquals(48, new HashSet<>(g.allCards()).size());
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> owner = (Map<Integer, Integer>) g.viewFor(0).get("ppeokOwner");
+        assertEquals(-1, owner.get(1));
+    }
+
+    @Test
+    void firstAndYeonPpeokBonus() {
+        GostopGame g = GostopGame.custom(List.of(3, 7, 40), List.of(44, 45), List.of(2, 6), List.of(46, 47, 5, 41, 0));
+        g.apply(Action.play(3));
+        assertTrue(has(g, "firstppeok"));
+        g.apply(Action.play(44));
+        g.apply(Action.play(7));
+        assertTrue(has(g, "yeonppeok"));
+        @SuppressWarnings("unchecked")
+        int[] bonus = (int[]) g.viewFor(0).get("bonus");
+        assertArrayEquals(new int[]{9, 0}, bonus);
+    }
+
+    @Test
+    void lastFlipIgnoresJjokAndPpeok() {
+        GostopGame g = GostopGame.custom(List.of(2), List.of(44), List.of(6), List.of(3));
+        g.apply(Action.play(2));
+        assertFalse(has(g, "jjok"));
+        g = GostopGame.custom(List.of(3), List.of(44), List.of(2), List.of(0));
+        g.apply(Action.play(3));
+        assertFalse(has(g, "ppeok"));
+    }
+
+    @Test
+    void meongttaInsteadOfMeongbak() {
+        // 열끗 7장: 고도리 5 + 열끗 3 = 8점, 멍따 ×2 (패자 열끗 유무와 상관없음)
+        Map<String, Object> st = GostopGame.finishedForTest(List.of(4, 12, 29, 16, 20, 24, 36), List.of(40, 45), 0).settle();
+        assertEquals(8, st.get("base"));
+        assertEquals(16, st.get("final"));
+        // 열끗 5장, 패자 열끗 0장 → 멍박 없음, 광박만
+        st = GostopGame.finishedForTest(List.of(0, 8, 28, 4, 12, 29, 16, 20), List.of(2), 0).settle();
+        assertEquals(18, st.get("final"));
+        assertEquals(18, GostopGame.netScore(st, 0));
+        assertEquals(-18, GostopGame.netScore(st, 1));
+    }
+
     @Test
     void rejectsIllegal() {
         GostopGame g = GostopGame.custom(List.of(3), List.of(44), List.of(2), List.of(45));

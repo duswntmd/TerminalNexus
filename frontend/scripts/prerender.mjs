@@ -161,7 +161,8 @@ add({
   desc: ko.gostop.meta_desc,
   body: `<h1>${esc(ko.gostop.title)}</h1><p>${esc(ko.gostop.meta_desc)}</p><p>${esc(ko.gostop.virtual_notice)}</p>
 <h2>${esc(ko.gostop.modes.ai)} · ${esc(ko.gostop.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/gostop').desc)}</p>
-<h2>${esc(ko.gostop.rules_title)}</h2>${ko.gostop.rules.map((s) => `<h3>${esc(s.h)}</h3><ul>${s.items.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`).join('')}`,
+<h2>${esc(ko.gostop.rules_title)}</h2>${ko.gostop.rules.map((s) => `<h3>${esc(s.h)}</h3><ul>${s.items.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`).join('')}
+<p>${link('https://commons.wikimedia.org/wiki/Category:SVG_Hwatu', ko.gostop.card_credit)}</p>`,
   jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.gostop.title, description: ko.gostop.meta_desc, url: `${SITE}/play/gostop`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
 });
 

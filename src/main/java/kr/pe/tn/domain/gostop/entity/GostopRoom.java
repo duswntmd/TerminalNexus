@@ -24,7 +24,7 @@ public class GostopRoom {
     private Status status = Status.WAITING;
     private GostopGame game;
     private Map<String, Object> settlement;
-    private final int[] totals = new int[2]; // 방 누적 점수
+    private final int[] totals = new int[2]; // 방 누적 점수 (승패 점수 + 첫뻑·연뻑, 잃으면 음수)
     private int nextFirst = -1;
     private int nextCarry = 1;
     private long seq;
@@ -96,9 +96,9 @@ public class GostopRoom {
     private void finishGame() {
         settlement = game.settle();
         Integer w = game.getResultWinner();
-        if (w != null) totals[w] += (Integer) settlement.get("final");
+        for (int i = 0; i < 2; i++) totals[i] += GostopGame.netScore(settlement, i);
         nextFirst = w != null ? w : game.getFirst();
-        nextCarry = Math.min((Integer) settlement.get("nextCarry"), 8);
+        nextCarry = (Integer) settlement.get("nextCarry");
         status = Status.FINISHED;
     }
 

@@ -1393,7 +1393,10 @@
       "chongtong": "Chongtong!",
       "nagari": "Nagari",
       "steal_got": "stole {{n}} junk",
-      "steal_lost": "lost {{n}} junk"
+      "steal_lost": "lost {{n}} junk",
+      "firstppeok": "First-turn ppeok! +3",
+      "yeonppeok": "Back-to-back ppeok! +6",
+      "floor4": "Four of a month on the table · Nagari"
     },
     "gostop": {
       "title": "Go or Stop?",
@@ -1443,7 +1446,8 @@
       "chongtong": "Chongtong (4 of a month)",
       "ppeok3": "Three ppeoks",
       "nagari": "Nobody scored before the cards ran out",
-      "leave": "The opponent left"
+      "leave": "The opponent left",
+      "floor4": "Four cards of one month were dealt to the table"
     },
     "settle": {
       "base": "Base score",
@@ -1456,9 +1460,10 @@
         "shake": "Shake / bomb",
         "pibak": "Pibak",
         "gwangbak": "Gwangbak",
-        "meongbak": "Meongbak",
-        "gobak": "Gobak"
-      }
+        "gobak": "Gobak",
+        "meongtta": "Meongtta"
+      },
+      "ppeok_bonus": "{{name}} ppeok bonus +{{n}}"
     },
     "lobby": {
       "rooms": "Matgo rooms ({{count}})",
@@ -1500,22 +1505,26 @@
       "room_not_found": "Room not found.",
       "user_not_found": "User not found."
     },
-    "rules_title": "Matgo rules used here (rules vary by region and site)",
+    "rules_title": "Matgo rules used here (cross-checked with Namu Wiki and others; rules vary by region and site)",
     "rules": [
       {
-        "h": "Flow",
+        "h": "Cards and flow",
         "items": [
           [
             "Deal",
-            "Each player gets 10 cards, 8 go face up on the table and 20 form the deck. If 4 of one month land on the table, the deck is reshuffled"
+            "Each player gets 10 cards, 8 go face up on the table and 20 form the deck. No bonus cards"
           ],
           [
             "Turn",
-            "Play a card from your hand, then flip the top of the deck. Matching months on the table are captured; if two cards of that month are there, you choose one"
+            "Play a card, then flip the top of the deck. A matching month on the table is captured; with two of that month you choose one; with three you take all"
           ],
           [
             "First player",
-            "Random for the first game, then the previous winner"
+            "Random for the first game, then the previous winner. A nagari keeps the same first player"
+          ],
+          [
+            "Opening table",
+            "Four of a month on the opening table is a nagari; three is a natural ppeok (whoever takes it with the fourth card gets 1 junk)"
           ]
         ]
       },
@@ -1524,48 +1533,52 @@
         "items": [
           [
             "Ppeok",
-            "If your played card matched one card and the flip is the same month, all three stay on the table. Whoever later takes them with the fourth card steals 1 junk (2 if it was their own ppeok)"
+            "If your played card matched one card and the flip is the same month, the three stay on the table. Taking someone else's ppeok earns 1 junk; taking your own earns 2"
+          ],
+          [
+            "First/second-turn ppeok",
+            "A ppeok on your first turn earns 3 points from the opponent, and another on your second turn earns 6 more, regardless of the result"
+          ],
+          [
+            "Three ppeoks",
+            "Three ppeoks in one game win immediately for 7 points"
           ],
           [
             "Jjok",
-            "If your played card matched nothing and the flip is the same month, take both and steal 1 junk"
+            "Your played card matched nothing and the flip is the same month: take both and 1 junk"
           ],
           [
             "Ttadak",
-            "Play onto two of the same month and flip the fourth: take all four and steal 1 junk"
+            "Play onto two of the same month and flip the fourth: take all four and 1 junk"
           ],
           [
             "Sweep",
-            "Clearing the table steals 1 junk (not on the final flip)"
+            "Clearing the table earns 1 junk"
+          ],
+          [
+            "Last turn",
+            "Ppeok, jjok, ttadak and sweep do not count on the turn that flips the last deck card"
           ],
           [
             "Shake",
-            "Show three of a month that is not on the table when you play one. Doubles your score if you win"
+            "Show three of a month that is not on the table when you play one. ×2 if you win"
           ],
           [
             "Bomb",
-            "With three of a month in hand and one on the table, play all three, take four and steal 1 junk. Doubles like a shake and gives you two flip-only turns"
+            "With three of a month in hand and one on the table, play all three, take four and 1 junk. ×2 like a shake, plus two flip-only turns"
           ],
           [
             "Chongtong",
             "Four of a month in the starting hand wins immediately for 10 points"
           ],
           [
-            "Three ppeoks",
-            "Making three ppeoks in one game wins for 7 points"
-          ],
-          [
-            "Nagari",
-            "If nobody wins before the cards run out, it's a draw and the next game scores double (up to ×8)"
-          ],
-          [
             "Stealing",
-            "Single junk is taken first, then double junk"
+            "Single junk is given first, then double junk"
           ]
         ]
       },
       {
-        "h": "Scoring",
+        "h": "Scoring (7 points to win)",
         "items": [
           [
             "Brights",
@@ -1573,7 +1586,7 @@
           ],
           [
             "Ribbons",
-            "Red poems, blue and grass ribbons 3 each; 5 ribbons 1 plus 1 per extra. The December ribbon is not part of any set"
+            "Red poems (Jan-Mar), blue (Jun, Sep, Oct) and grass (Apr, May, Jul) 3 each; 5 ribbons 1 plus 1 per extra. The December ribbon is not part of a set"
           ],
           [
             "Animals",
@@ -1585,7 +1598,7 @@
           ],
           [
             "Sake cup",
-            "The September animal counts as an animal or double junk. By default it counts whichever scores more, and you can fix it under your captures. For the loser it automatically avoids penalties"
+            "The September animal counts as an animal or double junk: whichever scores more by default, or fixed with the buttons under your captures. For the loser it avoids pibak"
           ]
         ]
       },
@@ -1594,11 +1607,11 @@
         "items": [
           [
             "Go/Stop",
-            "At 7 points or more choose Go (continue) or Stop (end). After a Go you are asked again only when your score rises. With no cards left you stop automatically"
+            "At 7 points or more choose Go or Stop. After a Go you are asked again only when your score rises"
           ],
           [
-            "Go multiplier",
-            "1 go +1, 2 go +2; from 3 go, (score + go count) is doubled for 3 go, ×4 for 4 go, and so on"
+            "Go",
+            "1 go +1, 2 go +2; from 3 go, add the go count and then ×2 for 3 go, ×4 for 4 go, and so on"
           ],
           [
             "Pibak",
@@ -1609,12 +1622,20 @@
             "Winner scored with brights and the loser has none: ×2"
           ],
           [
-            "Meongbak",
-            "Winner scored with animals and the loser has none: ×2"
+            "Meongtta",
+            "Winner has 7 or more animals: ×2 (meongbak is a 3-player rule and is not used)"
           ],
           [
             "Gobak",
-            "A player who called Go and then lost: ×2"
+            "A player who called Go and then lost pays ×2"
+          ],
+          [
+            "Nagari",
+            "If nobody wins before the cards run out, the next game is ×2, doubling again on repeats (up to ×16)"
+          ],
+          [
+            "Order",
+            "Add set points and go bonuses first, then apply multipliers"
           ],
           [
             "Points",
@@ -1622,7 +1643,11 @@
           ]
         ]
       }
-    ]
+    ],
+    "hint_bomb": "Bomb: play all three of this month to take four cards and 1 junk. ×2 if you win, plus two flip-only turns.",
+    "hint_shake": "Shake: show three of a month as you play one. ×2 if you win.",
+    "hint_flip": "Flip-only turn from your bomb: flip the deck instead of playing a card.",
+    "card_credit": "Card art: Wikimedia Commons 'SVG Hwatu' (Spenĉjo, Marcus Richert, Louie Mantia Jr.), CC BY-SA 4.0"
   },
   "arc": {
     "disclaimer": "This is unofficial fan information, not affiliated with Embark Studios. No official logos or images are used; the game name and trademarks belong to their owners. Facts were compiled from official notices and media as of the check date and may change with updates.",
