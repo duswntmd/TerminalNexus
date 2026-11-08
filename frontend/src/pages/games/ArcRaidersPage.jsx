@@ -7,6 +7,7 @@ import {
 } from '../../content/arcRaiders';
 import { BASE, arcMeta, findArc, findItem, itemMeta, slugify } from '../../content/arcRaidersDb';
 import { ArcDetail, ItemDetail, Items, Quests, Traders, Weapons, Workshop } from './ArcRaidersDb';
+import { LiveEvents, LiveItems, LiveTraders, LiveTrials, NeededItems, NowStrip, UpgradePlanner } from './ArcRaidersLive';
 import AdSlot from '../../components/AdSlot';
 import ShareBar from '../../components/ShareBar';
 import './ArcRaiders.css';
@@ -37,6 +38,7 @@ const Overview = () => {
   const { t } = useTranslation();
   return (
     <>
+      <NowStrip />
       <section className="ar-sec">
         <h2>{t('arc.facts_title')}</h2>
         <dl className="ar-facts">
@@ -204,7 +206,7 @@ const Updates = () => {
   );
 };
 
-const VIEWS = { '': Overview, maps: Maps, arc: Enemies, weapons: Weapons, items: Items, workshop: Workshop, traders: Traders, quests: Quests, updates: Updates };
+const VIEWS = { '': Overview, live: LiveEvents, shop: LiveTraders, db: LiveItems, trials: LiveTrials, upgrade: UpgradePlanner, needed: NeededItems, maps: Maps, arc: Enemies, weapons: Weapons, items: Items, workshop: Workshop, traders: Traders, quests: Quests, updates: Updates };
 
 // 상세 페이지: /items/:slug, /arc/:slug
 const DETAILS = {
@@ -236,12 +238,12 @@ const ArcRaidersPage = () => {
         <div>
           <h1>{head.title}</h1>
           <p>{head.desc}</p>
-          <p className="ar-meta">{t('arc.byline', { date: CHECKED })}</p>
+          <p className="ar-meta">{page.live ? '실시간 데이터 · 출처 MetaForge (metaforge.app/arc-raiders)' : t('arc.byline', { date: CHECKED })}</p>
         </div>
       </header>
       <nav className="ar-tabs" aria-label={t('arc.tabs')}>
         {ARC_PAGES.map((p) => (
-          <NavLink key={p.id} to={p.id ? `${BASE}/${p.id}` : BASE} end={!p.id}>{p.short}</NavLink>
+          <NavLink key={p.id} to={p.id ? `${BASE}/${p.id}` : BASE} end={!p.id} className={p.live ? 'is-live' : undefined}>{p.short}</NavLink>
         ))}
       </nav>
       {data ? <kind.View data={data} /> : <View />}

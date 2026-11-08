@@ -186,6 +186,7 @@ const qty = (list) => list.map(([n, name]) => `${name} ×${n}`).join(', ');
 const recycleText = (i) => (i.recycle === null ? '재활용 불가' : i.recycle ? qty(i.recycle) : '확인 필요');
 const dbLink = (id, name) => (id === 'page' ? link(DB.wikiUrl(name), `ARC Raiders Wiki: ${name}`) : link(DB.DB_SOURCES[id].url, DB.DB_SOURCES[id].name));
 const dbFoot = (ids, name) => `<p>정보 확인일 ${DB.DB_CHECKED} · 출처: ${[...new Set(ids)].map((id) => dbLink(id, name)).join(', ')}. ${esc(ko.arc.db_license)}</p>`;
+const liveFoot = `<p>실시간 데이터 출처: ${link('https://metaforge.app/arc-raiders', 'MetaForge (metaforge.app/arc-raiders)')}. MetaForge 팀과 커뮤니티가 모은 비공식 정보입니다.</p>`;
 const arcBody = {
   '': () => `<h2>게임 개요</h2><ul>${AR.FACTS.map((f) => `<li>${esc(f.k)}: ${esc(f.v)}${f.note ? ` (${esc(f.note)})` : ''}</li>`).join('')}</ul>${arcFoot(AR.FACTS.flatMap((f) => f.src))}
 <h2>한 판의 흐름 (탈출형 루프)</h2><ol>${AR.LOOP.map((l) => `<li>${esc(l.step)}: ${esc(l.text)}</li>`).join('')}</ol>
@@ -205,6 +206,12 @@ const arcBody = {
 <p>${esc(ko.arc.traders_hint)}</p>${dbFoot(['wTraders'])}`,
   quests: () => `<h2>퀘스트 목록</h2>${DB.QUESTS.map((x) => `<h3 id="${x.slug}">${esc(x.name)}</h3><p>의뢰인 ${esc(x.giver)} · 맵 ${esc(x.maps.length ? x.maps.map((m) => DB.QUEST_MAPS[m]).join(', ') : '제한 없음')} · 제출 ${esc(qty(x.turnIn) || '없음')} · 보상 ${esc(qty(x.reward))}</p>`).join('')}
 <p>${esc(ko.arc.quests_hint)}</p>${dbFoot(['wQuests', 'dxQuests', 'shack'])}`,
+  live: () => `<h2>맵 조건 일정</h2><p>Night Raid, Electromagnetic Storm, ARC Frigate, Matriarch, Harvester 같은 맵 조건이 맵마다 따로 돌아갑니다. 이 페이지는 서버 지역(아시아, 북미, 유럽, 오세아니아, 남미)별로 지금 진행 중인 조건과 다음 시작 시각을 1초 단위로 보여 줍니다.</p>${liveFoot}`,
+  shop: () => `<h2>상인 재고</h2><p>Apollo, Celeste, Lance, Shani, Tian Wen이 지금 파는 물건과 구매가·판매가를 보여 줍니다.</p>${liveFoot}`,
+  db: () => `<h2>아이템 데이터베이스</h2><p>외형 아이템을 뺀 모든 아이템을 이름, 분류, 희귀도로 검색하고 판매가나 무게당 가치 순으로 정렬합니다.</p>${liveFoot}`,
+  trials: () => `<h2>주간 과제</h2><p>이번 주 진행 중인 주간 과제(Weekly Trials)와 끝나는 시각, 다음 주 예정 과제를 보여 줍니다. 완료한 과제를 체크해 둘 수 있습니다.</p>${liveFoot}`,
+  upgrade: () => `<h2>작업대 업그레이드 계산기</h2><p>작업대 9종(Scrappy, Gunsmith, Gear Bench, Medical Lab, Explosives Station, Utility Station, Refiner, Research Station, Outpost)의 지금 단계를 고르면 최고 단계까지 남은 재료를 합산합니다.</p>${liveFoot}`,
+  needed: () => `<h2>퀘스트 필요 아이템</h2><p>끝낸 퀘스트를 체크하면 남은 퀘스트에 제출할 아이템을 합산합니다. 체크 상태는 브라우저에 저장됩니다.</p>${liveFoot}`,
   updates: () => `<h2>업데이트 기록</h2><ul>${[...AR.UPDATES].reverse().map((u) => `<li>${u.date} ${esc(u.name)}: ${esc(u.text)}</li>`).join('')}</ul>${arcFoot(AR.UPDATES.flatMap((u) => u.src))}`,
 };
 for (const pg of AR.ARC_PAGES) {

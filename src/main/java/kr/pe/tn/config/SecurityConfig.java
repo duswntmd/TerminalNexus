@@ -160,6 +160,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/stock/**").authenticated()
                                                 .requestMatchers("/api/lotto/my", "/api/lotto/my/**").authenticated() // 내 번호·알림
                                                 .requestMatchers(HttpMethod.GET, "/api/lotto/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/arc/**").permitAll() // ARC Raiders 실시간 정보 (MetaForge 중계)
+                                                .requestMatchers(HttpMethod.GET, "/api/lol/**").permitAll() // LoL 전적 검색 (Riot API 중계)
                                                 .requestMatchers(HttpMethod.GET, "/api/cert/exam", "/api/cert/practice").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/cert/check", "/api/cert/order/webhook").permitAll()
                                                 .requestMatchers("/api/cert/**").authenticated()

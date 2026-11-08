@@ -618,6 +618,10 @@
       "name": "ARC Raiders Info",
       "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
     },
+    "lol": {
+      "name": "LoL Stats",
+      "desc": "League of Legends summoner match history, ranks and champions"
+    },
     "seotda": {
       "name": "Seotda",
       "desc": "Two- and three-card seotda against the computer or people"

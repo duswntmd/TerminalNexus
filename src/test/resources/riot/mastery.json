@@ -1,0 +1,122 @@
+[
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 902,
+  "championLevel": 60,
+  "championPoints": 390690,
+  "lastPlayTime": 1793688000000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 32,
+  "championLevel": 50,
+  "championPoints": 1603077,
+  "lastPlayTime": 1791441600000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 154,
+  "championLevel": 48,
+  "championPoints": 1875865,
+  "lastPlayTime": 1792737600000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 14,
+  "championLevel": 39,
+  "championPoints": 257042,
+  "lastPlayTime": 1794033600000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 246,
+  "championLevel": 30,
+  "championPoints": 1514648,
+  "lastPlayTime": 1793860800000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 19,
+  "championLevel": 36,
+  "championPoints": 1580622,
+  "lastPlayTime": 1793256000000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 82,
+  "championLevel": 15,
+  "championPoints": 278019,
+  "lastPlayTime": 1793342400000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 74,
+  "championLevel": 23,
+  "championPoints": 798351,
+  "lastPlayTime": 1791268800000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 432,
+  "championLevel": 59,
+  "championPoints": 576933,
+  "lastPlayTime": 1792219200000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ },
+ {
+  "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+  "championId": 33,
+  "championLevel": 33,
+  "championPoints": 1975161,
+  "lastPlayTime": 1792219200000,
+  "championPointsSinceLastLevel": 1,
+  "championPointsUntilNextLevel": 1,
+  "markRequiredForNextLevel": 1,
+  "tokensEarned": 0,
+  "championSeasonMilestone": 0
+ }
+]

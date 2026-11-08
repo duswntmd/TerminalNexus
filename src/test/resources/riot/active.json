@@ -1,0 +1,327 @@
+{
+ "gameId": 7499999999,
+ "mapId": 11,
+ "gameMode": "CLASSIC",
+ "gameType": "MATCHED",
+ "gameQueueConfigId": 420,
+ "participants": [
+  {
+   "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+   "teamId": 100,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 432,
+   "profileIconId": 1,
+   "riotId": "Hide on bush#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8112,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8100,
+    "perkSubStyle": 8300
+   }
+  },
+  {
+   "puuid": "test-puuid-player-01xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 100,
+   "spell1Id": 4,
+   "spell2Id": 11,
+   "championId": 9,
+   "profileIconId": 1,
+   "riotId": "T1 Gumayusi#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8351,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8300,
+    "perkSubStyle": 8000
+   }
+  },
+  {
+   "puuid": "test-puuid-player-02xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 100,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 112,
+   "profileIconId": 1,
+   "riotId": "역천괴#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8005,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8000,
+    "perkSubStyle": 8400
+   }
+  },
+  {
+   "puuid": "test-puuid-player-03xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 100,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 893,
+   "profileIconId": 1,
+   "riotId": "Faker 팬#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8437,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8400,
+    "perkSubStyle": 8200
+   }
+  },
+  {
+   "puuid": "test-puuid-player-04xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 100,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 51,
+   "profileIconId": 1,
+   "riotId": "정글 차이#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8214,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8200,
+    "perkSubStyle": 8100
+   }
+  },
+  {
+   "puuid": "test-puuid-player-05xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 200,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 201,
+   "profileIconId": 1,
+   "riotId": "탑신병자#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8112,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8100,
+    "perkSubStyle": 8300
+   }
+  },
+  {
+   "puuid": "test-puuid-player-06xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 200,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 67,
+   "profileIconId": 1,
+   "riotId": "서폿은 나#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8351,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8300,
+    "perkSubStyle": 8000
+   }
+  },
+  {
+   "puuid": "test-puuid-player-07xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 200,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 25,
+   "profileIconId": 1,
+   "riotId": "미드 갱 와줘#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8005,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8000,
+    "perkSubStyle": 8400
+   }
+  },
+  {
+   "puuid": "test-puuid-player-08xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 200,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 114,
+   "profileIconId": 1,
+   "riotId": "블루 먹어도 됨#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8437,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8400,
+    "perkSubStyle": 8200
+   }
+  },
+  {
+   "puuid": "test-puuid-player-09xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "teamId": 200,
+   "spell1Id": 4,
+   "spell2Id": 14,
+   "championId": 103,
+   "profileIconId": 1,
+   "riotId": "똥손 원딜#KR1",
+   "bot": false,
+   "gameCustomizationObjects": [],
+   "perks": {
+    "perkIds": [
+     8214,
+     8139,
+     8138,
+     8135,
+     8226,
+     8210,
+     5008,
+     5008,
+     5002
+    ],
+    "perkStyle": 8200,
+    "perkSubStyle": 8100
+   }
+  }
+ ],
+ "observers": {
+  "encryptionKey": "x"
+ },
+ "platformId": "KR",
+ "bannedChampions": [
+  {
+   "championId": 427,
+   "teamId": 100,
+   "pickTurn": 1
+  },
+  {
+   "championId": 7,
+   "teamId": 100,
+   "pickTurn": 2
+  },
+  {
+   "championId": 17,
+   "teamId": 100,
+   "pickTurn": 3
+  },
+  {
+   "championId": 350,
+   "teamId": 100,
+   "pickTurn": 4
+  },
+  {
+   "championId": 166,
+   "teamId": 100,
+   "pickTurn": 5
+  },
+  {
+   "championId": 804,
+   "teamId": 200,
+   "pickTurn": 6
+  },
+  {
+   "championId": 800,
+   "teamId": 200,
+   "pickTurn": 7
+  },
+  {
+   "championId": 34,
+   "teamId": 200,
+   "pickTurn": 8
+  },
+  {
+   "championId": 222,
+   "teamId": 200,
+   "pickTurn": 9
+  },
+  {
+   "championId": 800,
+   "teamId": 200,
+   "pickTurn": 10
+  }
+ ],
+ "gameStartTime": 0,
+ "gameLength": 0
+}

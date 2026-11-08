@@ -1,0 +1,1292 @@
+{
+ "metadata": {
+  "dataVersion": "2",
+  "matchId": "KR_7400000008",
+  "participants": [
+   "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+   "test-puuid-player-01xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-02xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-03xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-04xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-05xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-06xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-07xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-08xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-player-09xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "test-puuid-arena-0yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "test-puuid-arena-1yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "test-puuid-arena-2yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "test-puuid-arena-3yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "test-puuid-arena-4yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "test-puuid-arena-5yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+  ]
+ },
+ "info": {
+  "endOfGameResult": "GameComplete",
+  "gameCreation": 1793975940000,
+  "gameDuration": 1951,
+  "gameEndTimestamp": 1793977951000,
+  "gameId": 7400000008,
+  "gameMode": "CHERRY",
+  "gameName": "teambuilder-match",
+  "gameStartTimestamp": 1793976000000,
+  "gameType": "MATCHED_GAME",
+  "gameVersion": "16.22.1.123",
+  "mapId": 11,
+  "participants": [
+   {
+    "puuid": "test-puuid-hide-on-bush-0000000000000000000000000000000000000000000000000000000000",
+    "riotIdGameName": "Hide on bush",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid0",
+    "championId": 432,
+    "championName": "Bard",
+    "champLevel": 16,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "TOP",
+    "win": true,
+    "kills": 6,
+    "deaths": 4,
+    "assists": 7,
+    "totalMinionsKilled": 91,
+    "neutralMinionsKilled": 7,
+    "goldEarned": 7031,
+    "totalDamageDealtToChampions": 39510,
+    "totalDamageTaken": 27769,
+    "visionScore": 28,
+    "wardsPlaced": 25,
+    "visionWardsBoughtInGame": 6,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 6695,
+    "item1": 3153,
+    "item2": 3065,
+    "item3": 3110,
+    "item4": 3165,
+    "item5": 3006,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 3,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8351,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 1,
+    "placement": 1
+   },
+   {
+    "puuid": "test-puuid-player-01xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "T1 Gumayusi",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid1",
+    "championId": 777,
+    "championName": "Yone",
+    "champLevel": 13,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "JUNGLE",
+    "win": true,
+    "kills": 3,
+    "deaths": 4,
+    "assists": 18,
+    "totalMinionsKilled": 125,
+    "neutralMinionsKilled": 35,
+    "goldEarned": 17034,
+    "totalDamageDealtToChampions": 48902,
+    "totalDamageTaken": 21594,
+    "visionScore": 79,
+    "wardsPlaced": 21,
+    "visionWardsBoughtInGame": 3,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 326616,
+    "item1": 3085,
+    "item2": 6653,
+    "item3": 6672,
+    "item4": 3158,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 11,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8351,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8000,
+       "selections": [
+        {
+         "perk": 9101,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 1,
+    "placement": 1
+   },
+   {
+    "puuid": "test-puuid-player-02xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "역천괴",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid2",
+    "championId": 142,
+    "championName": "Zoe",
+    "champLevel": 15,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "MIDDLE",
+    "win": false,
+    "kills": 1,
+    "deaths": 11,
+    "assists": 16,
+    "totalMinionsKilled": 147,
+    "neutralMinionsKilled": 2,
+    "goldEarned": 16226,
+    "totalDamageDealtToChampions": 29058,
+    "totalDamageTaken": 11403,
+    "visionScore": 25,
+    "wardsPlaced": 25,
+    "visionWardsBoughtInGame": 0,
+    "largestMultiKill": 3,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3158,
+    "item1": 3139,
+    "item2": 6665,
+    "item3": 3102,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 21,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8437,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 2,
+    "placement": 7
+   },
+   {
+    "puuid": "test-puuid-player-03xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "Faker 팬",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid3",
+    "championId": 222,
+    "championName": "Jinx",
+    "champLevel": 18,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "BOTTOM",
+    "win": false,
+    "kills": 14,
+    "deaths": 7,
+    "assists": 16,
+    "totalMinionsKilled": 33,
+    "neutralMinionsKilled": 8,
+    "goldEarned": 15803,
+    "totalDamageDealtToChampions": 13806,
+    "totalDamageTaken": 10355,
+    "visionScore": 36,
+    "wardsPlaced": 7,
+    "visionWardsBoughtInGame": 3,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3089,
+    "item1": 667112,
+    "item2": 663060,
+    "item3": 3142,
+    "item4": 667101,
+    "item5": 3020,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 14,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8112,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8306,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 2,
+    "placement": 7
+   },
+   {
+    "puuid": "test-puuid-player-04xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "정글 차이",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid4",
+    "championId": 29,
+    "championName": "Twitch",
+    "champLevel": 12,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "UTILITY",
+    "win": false,
+    "kills": 1,
+    "deaths": 4,
+    "assists": 8,
+    "totalMinionsKilled": 199,
+    "neutralMinionsKilled": 1,
+    "goldEarned": 18748,
+    "totalDamageDealtToChampions": 16729,
+    "totalDamageTaken": 11960,
+    "visionScore": 39,
+    "wardsPlaced": 9,
+    "visionWardsBoughtInGame": 7,
+    "largestMultiKill": 5,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3004,
+    "item1": 663172,
+    "item2": 3009,
+    "item3": 663058,
+    "item4": 2503,
+    "item5": 6699,
+    "item6": 3364,
+    "summoner1Id": 4,
+    "summoner2Id": 21,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8200,
+       "selections": [
+        {
+         "perk": 8214,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 3,
+    "placement": 8
+   },
+   {
+    "puuid": "test-puuid-player-05xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "탑신병자",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid5",
+    "championId": 102,
+    "championName": "Shyvana",
+    "champLevel": 11,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "TOP",
+    "win": false,
+    "kills": 8,
+    "deaths": 4,
+    "assists": 3,
+    "totalMinionsKilled": 219,
+    "neutralMinionsKilled": 11,
+    "goldEarned": 13889,
+    "totalDamageDealtToChampions": 44127,
+    "totalDamageTaken": 43446,
+    "visionScore": 9,
+    "wardsPlaced": 27,
+    "visionWardsBoughtInGame": 0,
+    "largestMultiKill": 3,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3157,
+    "item1": 3748,
+    "item2": 3036,
+    "item3": 326621,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 7,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8112,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8306,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 3,
+    "placement": 8
+   },
+   {
+    "puuid": "test-puuid-player-06xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "서폿은 나",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid6",
+    "championId": 127,
+    "championName": "Lissandra",
+    "champLevel": 16,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "JUNGLE",
+    "win": true,
+    "kills": 6,
+    "deaths": 3,
+    "assists": 10,
+    "totalMinionsKilled": 75,
+    "neutralMinionsKilled": 135,
+    "goldEarned": 10071,
+    "totalDamageDealtToChampions": 9539,
+    "totalDamageTaken": 30256,
+    "visionScore": 60,
+    "wardsPlaced": 14,
+    "visionWardsBoughtInGame": 8,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 328020,
+    "item1": 3020,
+    "item2": 667101,
+    "item3": 0,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 11,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8437,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8000,
+       "selections": [
+        {
+         "perk": 9101,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 4,
+    "placement": 2
+   },
+   {
+    "puuid": "test-puuid-player-07xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "미드 갱 와줘",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid7",
+    "championId": 60,
+    "championName": "Elise",
+    "champLevel": 15,
+    "teamId": 100,
+    "teamPosition": "",
+    "individualPosition": "MIDDLE",
+    "win": true,
+    "kills": 3,
+    "deaths": 2,
+    "assists": 13,
+    "totalMinionsKilled": 82,
+    "neutralMinionsKilled": 8,
+    "goldEarned": 7223,
+    "totalDamageDealtToChampions": 33422,
+    "totalDamageTaken": 24509,
+    "visionScore": 10,
+    "wardsPlaced": 20,
+    "visionWardsBoughtInGame": 1,
+    "largestMultiKill": 2,
+    "gameEndedInEarlySurrender": false,
+    "item0": 2512,
+    "item1": 4645,
+    "item2": 6694,
+    "item3": 0,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 7,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8437,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8200,
+       "selections": [
+        {
+         "perk": 8224,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 4,
+    "placement": 2
+   },
+   {
+    "puuid": "test-puuid-player-08xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "블루 먹어도 됨",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid8",
+    "championId": 203,
+    "championName": "Kindred",
+    "champLevel": 15,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "BOTTOM",
+    "win": false,
+    "kills": 10,
+    "deaths": 2,
+    "assists": 3,
+    "totalMinionsKilled": 144,
+    "neutralMinionsKilled": 11,
+    "goldEarned": 8439,
+    "totalDamageDealtToChampions": 40803,
+    "totalDamageTaken": 27819,
+    "visionScore": 63,
+    "wardsPlaced": 38,
+    "visionWardsBoughtInGame": 3,
+    "largestMultiKill": 4,
+    "gameEndedInEarlySurrender": false,
+    "item0": 8010,
+    "item1": 3748,
+    "item2": 3009,
+    "item3": 323075,
+    "item4": 2525,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 14,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8112,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8446,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 5,
+    "placement": 6
+   },
+   {
+    "puuid": "test-puuid-player-09xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "riotIdGameName": "똥손 원딜",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid9",
+    "championId": 24,
+    "championName": "Jax",
+    "champLevel": 11,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "UTILITY",
+    "win": false,
+    "kills": 8,
+    "deaths": 11,
+    "assists": 11,
+    "totalMinionsKilled": 200,
+    "neutralMinionsKilled": 2,
+    "goldEarned": 10908,
+    "totalDamageDealtToChampions": 26230,
+    "totalDamageTaken": 30330,
+    "visionScore": 67,
+    "wardsPlaced": 19,
+    "visionWardsBoughtInGame": 4,
+    "largestMultiKill": 2,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3116,
+    "item1": 667101,
+    "item2": 4628,
+    "item3": 3006,
+    "item4": 323107,
+    "item5": 323109,
+    "item6": 3364,
+    "summoner1Id": 4,
+    "summoner2Id": 7,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8437,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8000,
+       "selections": [
+        {
+         "perk": 9101,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 5,
+    "placement": 6
+   },
+   {
+    "puuid": "test-puuid-arena-0yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나0",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid0",
+    "championId": 221,
+    "championName": "Zeri",
+    "champLevel": 16,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "TOP",
+    "win": true,
+    "kills": 6,
+    "deaths": 4,
+    "assists": 7,
+    "totalMinionsKilled": 91,
+    "neutralMinionsKilled": 7,
+    "goldEarned": 7031,
+    "totalDamageDealtToChampions": 39510,
+    "totalDamageTaken": 27769,
+    "visionScore": 28,
+    "wardsPlaced": 25,
+    "visionWardsBoughtInGame": 6,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 6695,
+    "item1": 3153,
+    "item2": 3065,
+    "item3": 3110,
+    "item4": 3165,
+    "item5": 3006,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 3,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8351,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 6,
+    "placement": 3
+   },
+   {
+    "puuid": "test-puuid-arena-1yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나1",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid1",
+    "championId": 200,
+    "championName": "Belveth",
+    "champLevel": 13,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "JUNGLE",
+    "win": true,
+    "kills": 3,
+    "deaths": 4,
+    "assists": 18,
+    "totalMinionsKilled": 125,
+    "neutralMinionsKilled": 35,
+    "goldEarned": 17034,
+    "totalDamageDealtToChampions": 48902,
+    "totalDamageTaken": 21594,
+    "visionScore": 79,
+    "wardsPlaced": 21,
+    "visionWardsBoughtInGame": 3,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 326616,
+    "item1": 3085,
+    "item2": 6653,
+    "item3": 6672,
+    "item4": 3158,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 11,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8351,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8000,
+       "selections": [
+        {
+         "perk": 9101,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 6,
+    "placement": 3
+   },
+   {
+    "puuid": "test-puuid-arena-2yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나2",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid2",
+    "championId": 134,
+    "championName": "Syndra",
+    "champLevel": 15,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "MIDDLE",
+    "win": false,
+    "kills": 1,
+    "deaths": 11,
+    "assists": 16,
+    "totalMinionsKilled": 147,
+    "neutralMinionsKilled": 2,
+    "goldEarned": 16226,
+    "totalDamageDealtToChampions": 29058,
+    "totalDamageTaken": 11403,
+    "visionScore": 25,
+    "wardsPlaced": 25,
+    "visionWardsBoughtInGame": 0,
+    "largestMultiKill": 3,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3158,
+    "item1": 3139,
+    "item2": 6665,
+    "item3": 3102,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 21,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8400,
+       "selections": [
+        {
+         "perk": 8437,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 7,
+    "placement": 5
+   },
+   {
+    "puuid": "test-puuid-arena-3yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나3",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid3",
+    "championId": 516,
+    "championName": "Ornn",
+    "champLevel": 18,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "BOTTOM",
+    "win": false,
+    "kills": 14,
+    "deaths": 7,
+    "assists": 16,
+    "totalMinionsKilled": 33,
+    "neutralMinionsKilled": 8,
+    "goldEarned": 15803,
+    "totalDamageDealtToChampions": 13806,
+    "totalDamageTaken": 10355,
+    "visionScore": 36,
+    "wardsPlaced": 7,
+    "visionWardsBoughtInGame": 3,
+    "largestMultiKill": 1,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3089,
+    "item1": 667112,
+    "item2": 663060,
+    "item3": 3142,
+    "item4": 667101,
+    "item5": 3020,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 14,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8112,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8306,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 7,
+    "placement": 5
+   },
+   {
+    "puuid": "test-puuid-arena-4yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나4",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid4",
+    "championId": 92,
+    "championName": "Riven",
+    "champLevel": 12,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "UTILITY",
+    "win": true,
+    "kills": 1,
+    "deaths": 4,
+    "assists": 8,
+    "totalMinionsKilled": 199,
+    "neutralMinionsKilled": 1,
+    "goldEarned": 18748,
+    "totalDamageDealtToChampions": 16729,
+    "totalDamageTaken": 11960,
+    "visionScore": 39,
+    "wardsPlaced": 9,
+    "visionWardsBoughtInGame": 7,
+    "largestMultiKill": 5,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3004,
+    "item1": 663172,
+    "item2": 3009,
+    "item3": 663058,
+    "item4": 2503,
+    "item5": 6699,
+    "item6": 3364,
+    "summoner1Id": 4,
+    "summoner2Id": 21,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8200,
+       "selections": [
+        {
+         "perk": 8214,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8126,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 8,
+    "placement": 4
+   },
+   {
+    "puuid": "test-puuid-arena-5yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "riotIdGameName": "아레나5",
+    "riotIdTagline": "KR1",
+    "summonerName": "",
+    "summonerId": "sid5",
+    "championId": 75,
+    "championName": "Nasus",
+    "champLevel": 11,
+    "teamId": 200,
+    "teamPosition": "",
+    "individualPosition": "TOP",
+    "win": true,
+    "kills": 8,
+    "deaths": 4,
+    "assists": 3,
+    "totalMinionsKilled": 219,
+    "neutralMinionsKilled": 11,
+    "goldEarned": 13889,
+    "totalDamageDealtToChampions": 44127,
+    "totalDamageTaken": 43446,
+    "visionScore": 9,
+    "wardsPlaced": 27,
+    "visionWardsBoughtInGame": 0,
+    "largestMultiKill": 3,
+    "gameEndedInEarlySurrender": false,
+    "item0": 3157,
+    "item1": 3748,
+    "item2": 3036,
+    "item3": 326621,
+    "item4": 0,
+    "item5": 0,
+    "item6": 3340,
+    "summoner1Id": 4,
+    "summoner2Id": 7,
+    "perks": {
+     "statPerks": {
+      "defense": 5001,
+      "flex": 5008,
+      "offense": 5005
+     },
+     "styles": [
+      {
+       "description": "primaryStyle",
+       "style": 8100,
+       "selections": [
+        {
+         "perk": 8112,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      },
+      {
+       "description": "subStyle",
+       "style": 8300,
+       "selections": [
+        {
+         "perk": 8306,
+         "var1": 0,
+         "var2": 0,
+         "var3": 0
+        }
+       ]
+      }
+     ]
+    },
+    "playerSubteamId": 8,
+    "placement": 4
+   }
+  ],
+  "platformId": "KR",
+  "queueId": 1700,
+  "teams": [
+   {
+    "teamId": 100,
+    "win": false,
+    "bans": [
+     {
+      "championId": 119,
+      "pickTurn": 1
+     },
+     {
+      "championId": 223,
+      "pickTurn": 2
+     },
+     {
+      "championId": 43,
+      "pickTurn": 3
+     },
+     {
+      "championId": 150,
+      "pickTurn": 4
+     },
+     {
+      "championId": 33,
+      "pickTurn": 5
+     }
+    ],
+    "objectives": {
+     "baron": {
+      "first": false,
+      "kills": 1
+     },
+     "champion": {
+      "first": false,
+      "kills": 42
+     },
+     "dragon": {
+      "first": false,
+      "kills": 2
+     },
+     "horde": {
+      "first": false,
+      "kills": 1
+     },
+     "inhibitor": {
+      "first": false,
+      "kills": 2
+     },
+     "riftHerald": {
+      "first": false,
+      "kills": 1
+     },
+     "tower": {
+      "first": false,
+      "kills": 4
+     }
+    }
+   },
+   {
+    "teamId": 200,
+    "win": true,
+    "bans": [
+     {
+      "championId": 498,
+      "pickTurn": 1
+     },
+     {
+      "championId": 19,
+      "pickTurn": 2
+     },
+     {
+      "championId": 64,
+      "pickTurn": 3
+     },
+     {
+      "championId": 134,
+      "pickTurn": 4
+     },
+     {
+      "championId": 42,
+      "pickTurn": 5
+     }
+    ],
+    "objectives": {
+     "baron": {
+      "first": false,
+      "kills": 2
+     },
+     "champion": {
+      "first": false,
+      "kills": 51
+     },
+     "dragon": {
+      "first": false,
+      "kills": 3
+     },
+     "horde": {
+      "first": false,
+      "kills": 2
+     },
+     "inhibitor": {
+      "first": false,
+      "kills": 2
+     },
+     "riftHerald": {
+      "first": false,
+      "kills": 1
+     },
+     "tower": {
+      "first": false,
+      "kills": 11
+     }
+    }
+   }
+  ],
+  "tournamentCode": ""
+ }
+}
