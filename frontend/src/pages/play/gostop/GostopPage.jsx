@@ -8,8 +8,8 @@ import OnlineGostop from './OnlineGostop.jsx';
 import './Gostop.css';
 
 const MODES = ['ai', 'online'];
-// 규칙 설명 옆 카드 예시: 광, 비광, 고도리 새, 열끗, 홍단, 청단, 초단, 비띠, 피, 쌍피, 국진
-const LEGEND = [0, 44, 4, 16, 1, 21, 13, 46, 2, 41, 32];
+// 규칙 설명 위 카드 예시: 광, 비광, 고도리 새, 열끗, 홍단, 청단, 초단, 비띠, 피, 쌍피(11·12월), 국진
+const LEGEND = [0, 44, 4, 16, 1, 21, 13, 46, 2, 41, 47, 32];
 
 /** 화투 고스톱 맞고 (AI 대전 / 온라인). 광고(AdSlot)는 넣지 않는다 */
 const GostopPage = () => {
@@ -61,6 +61,11 @@ const GostopPage = () => {
               </ul>
             </section>
           ))}
+          <p className="gs-credit">
+            <a href="https://commons.wikimedia.org/wiki/Category:SVG_Hwatu" target="_blank" rel="noopener noreferrer">{t('gostop.card_credit')}</a>
+            {' · '}
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+          </p>
         </details>
       </div>
     </div>

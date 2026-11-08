@@ -1,27 +1,37 @@
-/* 화투 카드 (HwatuCard.jsx) */
+/* 화투 카드 (HwatuCard.jsx). 원본 비율 103.2 × 168.2 */
 .hw-card {
+  position: relative;
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 2 / 3;
-  font-family: var(--tn-font);
+  aspect-ratio: 103.2 / 168.2;
   user-select: none;
   -webkit-user-select: none;
-  overflow: visible;
+  -webkit-touch-callout: none;
 }
 
-.hw-face { fill: #7d1d1d; }
-.hw-inner { fill: #f7f0df; }
-.hw-back { fill: #a3231f; stroke: #5e1210; stroke-width: 1; }
+.hw-card > img,
+.hw-card > .hw-back {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 
-.hw-kind rect { fill: #6b7280; }
-.hw-kind text { fill: #fff; }
-.hw-kind.k-gwang rect { fill: #d62839; }
-.hw-kind.k-yeol rect { fill: #e07b00; }
-.hw-kind.k-tti.r-hong rect { fill: #d62839; }
-.hw-kind.k-tti.r-cheong rect { fill: #2563c9; }
-.hw-kind.k-tti.r-cho rect { fill: #3f8f3a; }
-.hw-kind.k-tti.r-plain rect { fill: #8a5a44; }
-.hw-kind.k-pi rect { fill: #8c94a1; }
-.hw-kind.k-ssang rect { fill: #1d2026; }
-.hw-kind.k-ssang text { fill: #f2c230; }
+/* 쌍피·국진 표시: 카드 아래쪽 가운데의 작은 띠지 */
+.hw-mark {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  transform: translateX(-50%);
+  padding: 0 0.35em;
+  border-radius: 0.3em;
+  background: #1d2026;
+  color: #f2c230;
+  font: 800 clamp(7px, 22cqw, 13px) / 1.35 var(--tn-font, sans-serif);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hw-mark.is-gukjin { background: #8a5a00; color: #fff; }
+
+.hw-card { container-type: inline-size; }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { newGame, applyAction, settle, viewFor } from './engine.js';
+import { newGame, applyAction, settle, viewFor, netScore } from './engine.js';
 import { decide } from './ai.js';
 import { bannerFromEvents } from './helpers.js';
 import { Settlement } from './parts.jsx';
@@ -41,13 +41,13 @@ const AiGame = () => {
       return;
     }
     const result = settle(next);
-    const delta = result.winner == null ? 0 : (result.winner === ME ? 1 : -1) * result.final * POINT_PER_SCORE;
+    const delta = netScore(result, ME) * POINT_PER_SCORE; // 승패 점수 + 첫뻑·연뻑
     const applied = applyResult(pointsRef.current, delta);
     setPoints(applied.points);
     savePoints(applied.points);
     setOutcome({ result, delta: applied.delta, refilled: applied.refilled });
     setResultOpen(true);
-    nextRef.current = { first: result.winner ?? next.first, carry: Math.min(result.nextCarry, 8) };
+    nextRef.current = { first: result.winner ?? next.first, carry: result.nextCarry };
     playSound(result.winner == null ? 'move' : result.winner === ME ? 'win' : 'lose', sound);
     // names는 렌더마다 새 배열이라 의존성에서 뺀다
     // eslint-disable-next-line react-hooks/exhaustive-deps

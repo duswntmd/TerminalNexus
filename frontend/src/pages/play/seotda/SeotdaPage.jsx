@@ -37,7 +37,7 @@ const SeotdaPage = () => {
                 className={`ch-tab${mode === m ? ' is-active' : ''}`}
                 onClick={() => setParams({ mode: m })}
               >
-                {t(`seotda.modes.${m}`)}
+                {t(`seotda.tabs.${m}`)}
               </button>
             ))}
           </div>
@@ -53,6 +53,11 @@ const SeotdaPage = () => {
             {Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}
           </ul>
         </details>
+        <p className="sd-credit">
+          <a href="https://commons.wikimedia.org/wiki/Category:SVG_Hwatu" target="_blank" rel="noopener noreferrer">{t('gostop.card_credit')}</a>
+          {' · '}
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+        </p>
       </div>
     </div>
   );

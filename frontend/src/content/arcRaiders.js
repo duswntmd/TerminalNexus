@@ -137,6 +137,12 @@ export const UPDATE_KINDS = ['major', 'patch', 'event'];
 // 하위 페이지. 화면 탭과 정적 페이지가 함께 쓴다
 export const ARC_PAGES = [
   { id: '', title: 'ARC Raiders 아크 레이더스 정보 정리', short: '개요', desc: 'ARC Raiders의 출시 정보, 가격 정책, 탈출형 게임 방식, 스페란차·워크숍·익스페디션 시스템과 초보자 팁을 공식 자료 기준으로 정리했습니다.' },
+  { id: 'live', title: 'ARC Raiders 이벤트 타이머 (맵 조건 실시간 일정)', short: '이벤트 타이머', live: true, desc: 'ARC Raiders 맵 조건(Night Raid, ARC Frigate, Matriarch, Harvester 등)이 지금 어느 맵에서 진행 중인지, 다음은 언제 시작하는지 서버 지역별로 실시간 확인합니다.' },
+  { id: 'shop', title: 'ARC Raiders 상인 재고 실시간', short: '상인 재고', live: true, desc: 'ARC Raiders 상인 Apollo, Celeste, Lance, Shani, Tian Wen이 지금 파는 물건과 구매가·판매가를 실시간으로 확인합니다.' },
+  { id: 'db', title: 'ARC Raiders 아이템 데이터베이스와 무게당 가치', short: '아이템 DB', live: true, desc: 'ARC Raiders 아이템 전체를 이름, 분류, 희귀도로 검색하고 판매가와 무게당 가치(루트 가치) 순으로 정렬합니다.' },
+  { id: 'trials', title: 'ARC Raiders 주간 과제 (Weekly Trials) 실시간', short: '주간 과제', live: true, desc: 'ARC Raiders 이번 주 주간 과제(Weekly Trials) 목록과 남은 시간, 다음 주 예정 과제를 실시간으로 확인하고 완료한 과제를 체크합니다.' },
+  { id: 'upgrade', title: 'ARC Raiders 작업대 업그레이드 계산기', short: '작업대 계산기', live: true, desc: 'ARC Raiders 작업대(Gunsmith, Gear Bench, Medical Lab, Refiner 등) 지금 단계를 고르면 최고 단계까지 남은 업그레이드 재료를 모두 합산합니다.' },
+  { id: 'needed', title: 'ARC Raiders 퀘스트 필요 아이템 계산기', short: '필요 아이템', live: true, desc: '끝낸 ARC Raiders 퀘스트를 체크하면 남은 퀘스트와 작업대 업그레이드에 내야 하는 아이템과 개수를 합산해 보여 줍니다.' },
   { id: 'maps', title: 'ARC Raiders 맵 7종과 맵 조건 정리', short: '맵', desc: 'Dam Battlegrounds부터 Pendola Pass까지 ARC Raiders 맵 7개의 추가 시기, 특징, 알려진 열쇠와 맵 조건을 표로 정리했습니다.' },
   { id: 'arc', title: 'ARC Raiders 적(ARC) 종류 검색', short: '적(ARC)', desc: 'ARC Raiders에 나오는 ARC 기계 적 23종을 이름, 형태, 위협도, 장갑, 등장 업데이트로 검색하고 거를 수 있습니다.' },
   { id: 'weapons', title: 'ARC Raiders 무기 26종 목록과 제작 단계', short: '무기', desc: 'ARC Raiders 무기 26종을 종류, 탄약, 희귀도, 워크숍 제작 단계, 상인 판매 여부로 검색하고 거를 수 있습니다.' },

@@ -1,6 +1,6 @@
 // 고스톱 엔진 단위 시험: node src/pages/play/gostop/test/engine.test.mjs
 import assert from 'node:assert/strict';
-import { newGame, applyAction, scoreOf, settle, legalActions, allCards } from '../engine.js';
+import { newGame, applyAction, scoreOf, settle, legalActions, allCards, netScore } from '../engine.js';
 
 const range = (n) => Array.from({ length: n }, (_, i) => i);
 let passed = 0;
@@ -66,21 +66,28 @@ test('피박 (패자 피 7장 이하)', () => {
   st = settle(ended({ captured: [win, [26, 27, 30, 31, 34, 35, 38, 39]] }));
   assert.ok(!st.multipliers.some(([k]) => k === 'pibak'));
 });
-test('광박 / 멍박', () => {
+test('광박 / 멍따 (멍박은 3인 규칙이라 적용 안 함)', () => {
+  // 승자: 3광 3 + 고도리 5 + 열끗 5장 1 = 9점, 패자 광 0장 → 광박
   const st = settle(ended({ captured: [[0, 8, 28, 4, 12, 29, 16, 20], [2]] }));
   const keys = st.multipliers.map(([k]) => k);
   assert.ok(keys.includes('gwangbak'));
-  assert.ok(keys.includes('meongbak'));
-  assert.equal(st.base, 3 + 6);
-  assert.equal(st.final, 9 * 4);
-  const st2 = settle(ended({ captured: [[0, 8, 28, 4, 12, 29, 16, 20], [40, 24]] }));
-  assert.equal(st2.multipliers.length, 0);
-});
-test('패자 국진은 박을 피하는 쪽으로', () => {
-  // 승자 열끗 점수, 패자는 국진만 열끗 → 열끗으로 세면 멍박 면제
-  const st = settle(ended({ captured: [[4, 12, 29, 16, 20, 1, 5, 9], [32, ...PI10.slice(0, 7)]] }));
-  const keys = st.multipliers.map(([k]) => k);
   assert.ok(!keys.includes('meongbak'));
+  assert.ok(!keys.includes('meongtta'));
+  assert.equal(st.base, 3 + 6);
+  assert.equal(st.final, 9 * 2);
+  // 열끗 7장 → 멍따 ×2 (패자 열끗 유무와 상관없음)
+  const st2 = settle(ended({ captured: [[4, 12, 29, 16, 20, 24, 36], [40, 45]] }));
+  assert.deepEqual(st2.multipliers.map(([k]) => k), ['meongtta']);
+  assert.equal(st2.base, 5 + 3);
+  assert.equal(st2.final, 16);
+});
+test('패자 국진은 박을 피하는 쪽으로 (피박)', () => {
+  // 승자 피 점수, 패자 피 6장 + 국진 → 쌍피로 세면 8장이라 피박 면제
+  const win = [...PI10, 41, 47, 22];
+  const st = settle(ended({ captured: [win, [32, 26, 27, 30, 31, 34, 35]] }));
+  assert.ok(!st.multipliers.some(([k]) => k === 'pibak'));
+  const st2 = settle(ended({ captured: [win, [32, 26, 27, 30, 31, 34, 35]], gukjin: [null, 'yeol'] }));
+  assert.ok(st2.multipliers.some(([k]) => k === 'pibak'));
 });
 test('고 횟수 가산과 배수, 고박, 흔들기, 나가리 배수', () => {
   const cap = [[1, 5, 9, 13, 17, 25], [0, 2, 3, 4, 6, 7, 10, 11, 14, 15]]; // 홍단 3 + 초단 3 + 띠 6장 2 = 8점
@@ -93,6 +100,7 @@ test('고 횟수 가산과 배수, 고박, 흔들기, 나가리 배수', () => {
   assert.equal(settle(ended({ captured: cap, shakes: [1, 0] })).final, 8 * 2);
   assert.equal(settle(ended({ captured: cap, shakes: [2, 0] })).final, 8 * 4);
   assert.equal(settle(ended({ captured: cap, carry: 2 })).final, 8 * 2);
+  assert.equal(settle(mk({ phase: 'end', result: { winner: null, reason: 'nagari' }, carry: 16 })).nextCarry, 16); // 상한
   assert.equal(settle(ended({ captured: cap, goCount: [3, 1], shakes: [1, 0] })).final, 11 * 2 * 2 * 2);
 });
 
@@ -168,13 +176,63 @@ test('총통: 손에 같은 월 4장이면 바로 승리', () => {
   assert.equal(s.result.reason, 'chongtong');
   assert.equal(settle(s).final, 10);
 });
-test('바닥 4장이면 다시 섞기', () => {
-  for (let i = 0; i < 200; i += 1) {
-    const s = newGame();
-    const months = s.floor.map((c) => Math.floor(c / 4));
-    assert.ok(!months.some((m) => months.filter((x) => x === m).length === 4));
-    assert.equal(allCards(s).length, 48);
-  }
+test('바닥에 같은 월 4장이면 나가리, 3장이면 자연뻑', () => {
+  // 덱 순서 지정: 손패 0~19번째, 바닥 20~27번째 자리
+  const deckOf = (floor) => {
+    const rest = Array.from({ length: 48 }, (_, i) => i).filter((c) => !floor.includes(c));
+    // 손패에 같은 월 4장이 몰리지 않게 섞어서 배치
+    const hand = [];
+    for (let m = 0; m < 12 && hand.length < 20; m += 1) hand.push(...rest.filter((c) => Math.floor(c / 4) === m).slice(0, 2));
+    const others = rest.filter((c) => !hand.includes(c));
+    return [...hand.slice(0, 20), ...floor, ...others, ...hand.slice(20)];
+  };
+  let s = newGame({ deck: deckOf([0, 1, 2, 3, 4, 8, 12, 16]) });
+  assert.equal(s.result.reason, 'nagari');
+  assert.equal(settle(s).reason, 'floor4');
+  assert.equal(settle(s).nextCarry, 2);
+  s = newGame({ deck: deckOf([0, 1, 2, 4, 8, 12, 16, 20]) });
+  assert.equal(s.phase, 'play');
+  assert.equal(s.ppeokOwner[1], -1);
+  assert.equal(allCards(s).length, 48);
+  // 자연뻑을 가져가면 피 1장
+  const t = applyAction(mk({ hands: [[3, 40], [44]], floor: [0, 1, 2], deck: [45, 46], ppeokOwner: { 1: -1 }, captured: [[], [6, 7]] }), { type: 'play', card: 3 });
+  assert.ok(types(t).includes('eatppeok'));
+  assert.equal(t.captured[1].length, 1);
+});
+test('첫뻑 3점, 연뻑 6점 (판 결과와 따로)', () => {
+  // 0번이 첫 차례에 뻑
+  let s = applyAction(mk({ hands: [[3, 7, 40], [44, 45]], floor: [2, 6], deck: [46, 47, 5, 41, 0] }), { type: 'play', card: 3 });
+  assert.ok(types(s).includes('firstppeok'));
+  assert.deepEqual(s.bonus, [3, 0]);
+  s = applyAction(s, { type: 'play', card: 44 }); // 상대 차례 (뒤집기 41)
+  s = applyAction(s, { type: 'play', card: 7 }); // 두 번째 차례에도 뻑 (6 + 7 + 5)
+  assert.ok(types(s).includes('yeonppeok'));
+  assert.deepEqual(s.bonus, [9, 0]);
+  // 첫 차례가 아닌 뻑은 보너스 없음
+  let u = mk({ hands: [[3, 40], [44]], floor: [2], deck: [45, 0], turns: [1, 1] });
+  u = applyAction(u, { type: 'play', card: 3 });
+  assert.ok(types(u).includes('ppeok'));
+  assert.deepEqual(u.bonus, [0, 0]);
+  // 정산: 나가리여도 보너스는 주고받는다
+  const st = settle(mk({ phase: 'end', result: { winner: null, reason: 'nagari' }, bonus: [3, 0] }));
+  assert.equal(netScore(st, 0), 3);
+  assert.equal(netScore(st, 1), -3);
+});
+test('마지막 차례에는 뻑·쪽·따닥·쓸을 인정하지 않는다', () => {
+  // 쪽: 마지막 뒤집기
+  let s = applyAction(mk({ hands: [[2], [44]], floor: [6], deck: [3], captured: [[], [10, 11]] }), { type: 'play', card: 2 });
+  assert.ok(!types(s).includes('jjok'));
+  assert.equal(s.captured[1].length, 2);
+  assert.ok(s.captured[0].includes(3));
+  // 뻑: 마지막 뒤집기
+  s = applyAction(mk({ hands: [[3], [44]], floor: [2], deck: [0] }), { type: 'play', card: 3 });
+  assert.ok(!types(s).includes('ppeok'));
+  assert.equal(s.ppeok[0], 0);
+  // 따닥: 마지막 뒤집기
+  s = applyAction(mk({ hands: [[3], [44]], floor: [1, 2], deck: [0], captured: [[], [10]] }), { type: 'play', card: 3 });
+  s = applyAction(s, { type: 'choose', card: 1 });
+  assert.ok(!types(s).includes('ttadak'));
+  assert.equal(s.captured[1].length, 1);
 });
 test('나가리: 아무도 나지 못하고 패가 끝나면 다음 판 2배', () => {
   let s = mk({ hands: [[40], [44]], floor: [6], deck: [20, 16] });

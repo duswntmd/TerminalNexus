@@ -17,7 +17,7 @@ export const groupCaptured = (captured, gukjin) => {
 };
 
 /** 이벤트 목록 → 알림 문구 */
-const TONE = { ppeok: 'bad', jjok: 'good', ttadak: 'good', sweep: 'good', bomb: 'hot', shake: 'hot', go: 'hot', stop: 'good', eatppeok: 'good', jappeok: 'good', chongtong: 'hot', nagari: 'bad' };
+const TONE = { ppeok: 'bad', firstppeok: 'hot', yeonppeok: 'hot', jjok: 'good', ttadak: 'good', sweep: 'good', bomb: 'hot', shake: 'hot', go: 'hot', stop: 'good', eatppeok: 'good', jappeok: 'good', chongtong: 'hot', floor4: 'bad', nagari: 'bad' };
 export const bannerFromEvents = (events, t, names, me) => {
   const shown = events.filter((e) => TONE[e.type]);
   if (!shown.length) {
