@@ -44,10 +44,10 @@ const GostopPage = () => {
             ))}
           </div>
         </div>
-        <p className="gs-notice">{t('gostop.virtual_notice')}</p>
-
         {mode === 'online' ? <OnlineGostop /> : <AiGame />}
 
+        <div className="gs-below">
+        <p className="gs-notice">{t('gostop.virtual_notice')}</p>
         <details className="gs-panel gs-rules">
           <summary>{t('gostop.rules_title')}</summary>
           <div className="gs-legend" aria-hidden="true">
@@ -67,6 +67,7 @@ const GostopPage = () => {
             <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
           </p>
         </details>
+        </div>
       </div>
     </div>
   );

@@ -1362,7 +1362,8 @@
       "label": "Sake cup (Sep animal):",
       "auto": "Auto",
       "yeol": "Animal",
-      "pi": "Double junk"
+      "pi": "Double junk",
+      "short": "Sake cup: {{v}}"
     },
     "score_items": {
       "ogwang": "5 brights",
@@ -1484,7 +1485,8 @@
       }
     },
     "online": {
-      "totals": "Room totals:"
+      "totals": "Room totals:",
+      "total_mini": "Total {{n}}"
     },
     "chat": {
       "title": "Chat",
@@ -1651,7 +1653,16 @@
     "hint_bomb": "Bomb: play all three of this month to take four cards and 1 junk. ×2 if you win, plus two flip-only turns.",
     "hint_shake": "Shake: show three of a month as you play one. ×2 if you win.",
     "hint_flip": "Flip-only turn from your bomb: flip the deck instead of playing a card.",
-    "card_credit": "Card art: Wikimedia Commons 'SVG Hwatu' (Spenĉjo, Marcus Richert, Louie Mantia Jr.)"
+    "card_credit": "Card art: Wikimedia Commons 'SVG Hwatu' (Spenĉjo, Marcus Richert, Louie Mantia Jr.)",
+    "flags": {
+      "pibak_risk": "Pibak risk",
+      "pibak_chance": "Pibak chance",
+      "gwangbak_risk": "Gwangbak risk",
+      "gwangbak_chance": "Gwangbak chance",
+      "meongtta_near": "Near meongtta"
+    },
+    "choice_title": "How do you play it?",
+    "points_mini": "{{n}}P"
   },
   "arc": {
     "disclaimer": "This is unofficial fan information, not affiliated with Embark Studios. No official logos or images are used; the game name and trademarks belong to their owners. Facts were compiled from official notices and media as of the check date and may change with updates.",
