@@ -2051,6 +2051,14 @@
       "room_full": "방이 가득 찼습니다 (4명).",
       "room_not_found": "방을 찾을 수 없습니다.",
       "user_not_found": "사용자를 찾을 수 없습니다."
+    },
+    "call_cost": "콜 비용",
+    "bet_label": "베팅",
+    "banner": {
+      "redo": "{{hand}} 재경기",
+      "tie": "동점 재경기",
+      "fold": "모두 다이",
+      "win_by": "{{name}} 승"
     }
   }
 }

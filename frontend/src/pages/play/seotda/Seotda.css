@@ -1,6 +1,700 @@
-/* ── 섯다 (체스 페이지 공통 스타일 ch-* 위에 판·자리·베팅만 더함, 토큰 --tn-*) ── */
+/* ── 섯다: 실제 섯다 앱처럼 한 화면 게임판 (사이트 토큰 --tn-* 위에 판 색만 더함) ──
+ * 게임판(.sd-stage)은 머리글 아래 화면 높이를 꽉 채우고 스크롤 없이 보인다.
+ * 기록·족보·규칙·안내(.sd-below)는 그 아래에 둔다.
+ */
+.sd-page {
+  min-height: 100vh;
+  background: var(--tn-bg-deep);
+  color: var(--tn-text);
+  font-family: var(--tn-font);
+  padding: 0 0 48px; /* 머리글은 이미 문서 흐름 안에 있음 */
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ── 게임판 틀 ── */
+.sd-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--tn-header-h) - 1px);
+  height: calc(100dvh - var(--tn-header-h) - 1px);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 8px 8px;
+  box-sizing: border-box;
+  background: radial-gradient(ellipse at 50% 0%, #2b1d14 0%, #160f0b 70%);
+  overflow: hidden;
+}
+
+.sd-topbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  min-width: 0;
+}
+
+.sd-title { margin: 0; font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
+
+.sd-tabs {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.sd-tab {
+  border: 0;
+  background: transparent;
+  color: var(--tn-text-2);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.sd-tab.is-active { background: var(--tn-tape); color: var(--tn-tape-ink); }
+
+.sd-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+.sd-mypoints {
+  font-family: var(--tn-mono);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--tn-tape);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.sd-iconbtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--tn-text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* ── 판 (펠트) ── */
+.sd-table {
+  /* 카드 크기는 판 높이에 맞춤 (아래 줄이 커져 판이 줄어도 자리끼리 겹치지 않게) */
+  --sd-opp-w: clamp(40px, 15cqh, 82px);
+  --sd-me-w: clamp(56px, 18.5cqh, 100px);
+  container-type: size;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sd-felt {
+  position: absolute;
+  inset: 0;
+  border-radius: 46% / 30%;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.09) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 50%, #1f6343 0%, #17503a 50%, #0f3627 100%);
+  border: 10px solid #4a2f1c;
+  box-shadow: inset 0 0 0 3px #2c1b10, inset 0 0 50px rgba(0, 0, 0, 0.55), 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+/* ── 자리 ── */
+.sd-seat {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 34%;
+  transition: opacity 0.2s;
+}
+
+/* 데스크톱(가로 화면): 상대는 왼쪽·위·오른쪽, 나는 아래 가운데 */
+.sd-pos-t { top: 2%; left: 50%; transform: translateX(-50%); --deal-x: 0px; --deal-y: 180px; }
+.sd-pos-l { top: 46%; left: 6%; transform: translateY(-50%); --deal-x: 260px; --deal-y: 0px; }
+.sd-pos-r { top: 46%; right: 6%; transform: translateY(-50%); --deal-x: -260px; --deal-y: 0px; }
+.sd-pos-me { bottom: 2%; left: 50%; transform: translateX(-50%); --deal-x: 0px; --deal-y: -200px; max-width: 70%; }
+.sd-opps-2 .sd-pos-l, .sd-opps-2 .sd-pos-r { top: 30%; }
+
+/* 실제 앱처럼 내 자리와 양옆 자리는 아바타 옆에 패 */
+.sd-seat-hand { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.sd-pos-me, .sd-pos-l { flex-direction: row; align-items: center; gap: 10px; }
+.sd-pos-r { flex-direction: row-reverse; align-items: center; gap: 10px; }
+
+.sd-seat.is-out { opacity: 0.5; }
+
+.sd-seat-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.sd-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: #fff;
+  background: hsl(var(--hue, 200) 45% 38%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.sd-avatar.is-me { background: #8a6a12; border-color: var(--tn-tape); }
+
+.sd-seat.is-turn .sd-avatar {
+  border-color: var(--tn-tape);
+  animation: sd-turn 1s ease-in-out infinite;
+}
+
+@keyframes sd-turn {
+  50% { box-shadow: 0 0 0 5px rgba(242, 194, 48, 0.35); }
+}
+
+.sd-seat.is-turn .sd-seat-info { border-color: var(--tn-tape); }
+
+.sd-seat-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+
+.sd-seat-name {
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sd-seat-chips { font-family: var(--tn-mono); font-size: 0.72rem; color: var(--tn-tape); white-space: nowrap; }
+
+.sd-badge {
+  flex: none;
+  font-size: 0.66rem;
+  font-weight: 900;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tn-tape);
+  color: var(--tn-tape-ink);
+}
+
+/* 행동 말풍선 */
+.sd-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  animation: sd-bubble 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.sd-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #fff;
+}
+
+.sd-bubble.is-die { background: #4a4f58; color: #ffb3ad; }
+
+/* 위쪽 자리는 말풍선을 옆에 (판 밖으로 나가지 않게) */
+.sd-pos-t .sd-bubble { left: calc(100% + 8px); bottom: auto; top: 50%; transform: translateY(-50%); animation-name: sd-bubble-side; }
+.sd-pos-t .sd-bubble::after { left: -5px; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-right-color: #fff; border-left: 0; }
+.sd-pos-t .sd-bubble.is-die::after { border-right-color: #4a4f58; border-top-color: transparent; }
+.sd-pos-t .sd-bubble.is-timer::after { border-right-color: var(--tn-tape); border-top-color: transparent; }
+
+@keyframes sd-bubble-side {
+  from { opacity: 0; transform: translate(-6px, -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(0, -50%) scale(1); }
+}
+.sd-bubble.is-die::after { border-top-color: #4a4f58; }
+.sd-bubble.is-timer { background: var(--tn-tape); color: var(--tn-tape-ink); }
+.sd-bubble.is-timer::after { border-top-color: var(--tn-tape); }
+
+@keyframes sd-bubble {
+  from { opacity: 0; transform: translate(-50%, 6px) scale(0.6); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.sd-cards {
+  display: flex;
+  justify-content: center;
+  --sd-w: var(--sd-opp-w);
+}
+
+.sd-seat:not(.is-me) .sd-deal + .sd-deal { margin-left: calc(var(--sd-w) * -0.22); }
+.sd-seat:not(.is-me) .sd-cards:has(> :nth-child(3)) .sd-deal + .sd-deal { margin-left: calc(var(--sd-w) * -0.45); }
+.sd-seat.is-me .sd-cards { --sd-w: var(--sd-me-w); gap: 8px; }
+.sd-seat.is-folded .sd-cards { opacity: 0.4; filter: grayscale(0.9); }
+.sd-sitout { font-size: 0.72rem; color: var(--tn-text-3); padding: 6px 0; }
+
+/* 카드: 공용 화투 그림을 앞뒤로 겹쳐 뒤집기 */
+.sd-card {
+  position: relative;
+  display: inline-block;
+  width: var(--sd-w, 56px);
+  aspect-ratio: 103.2 / 168.2;
+  perspective: 700px;
+  flex: none;
+  transition: transform 0.25s, opacity 0.25s;
+}
+
+.sd-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.3, 1.15);
+}
+
+.sd-card.is-down .sd-card-inner { transform: rotateY(180deg); }
+
+.sd-card-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.sd-card-back { transform: rotateY(180deg); }
+.sd-card-face .hw-card { height: 100%; }
+.sd-card.is-picked { transform: translateY(-8%); }
+.sd-card.is-picked .sd-card-face { box-shadow: 0 0 0 2px var(--tn-tape), 0 8px 16px rgba(0, 0, 0, 0.5); }
+.sd-card.is-dim { opacity: 0.35; }
+
+.sd-card-tag {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  font-weight: 900;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--tn-blue);
+  color: #0b1a2c;
+  white-space: nowrap;
+}
+
+/* 패 돌리기: 판 가운데(패 더미)에서 자리로 날아옴 */
+.sd-deal {
+  display: inline-block;
+  animation: sd-deal 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes sd-deal {
+  from { opacity: 0; transform: translate(var(--deal-x, 0px), var(--deal-y, 0px)) scale(0.45) rotate(-25deg); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 족보 이름 */
+.sd-hand {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--tn-tape);
+  font-weight: 900;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  animation: sd-pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.sd-seat.is-me .sd-hand { font-size: 1rem; }
+.sd-hand em { font-style: normal; margin-left: 6px; color: var(--tn-led); font-family: var(--tn-mono); }
+.sd-hand.is-win { background: var(--tn-tape); color: var(--tn-tape-ink); box-shadow: 0 0 18px rgba(242, 194, 48, 0.6); }
+.sd-hand.is-win em { color: #0b5b2e; }
+
+.sd-seat.is-win .sd-card-face { box-shadow: 0 0 0 2px var(--tn-tape), 0 0 22px rgba(242, 194, 48, 0.55); }
+
+@keyframes sd-pop {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ── 판돈: 칩 더미 + 판돈·콜 비용 상자 ── */
+.sd-pot {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.sd-pot[hidden] { display: none; }
+
+.sd-pile {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+}
+
+.sd-stack { display: flex; flex-direction: column-reverse; }
+.sd-stack .sd-chip + .sd-chip { margin-bottom: -15px; }
+
+.sd-chip {
+  display: block;
+  width: 24px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 3px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+}
+
+.sd-chip.c100 { background: #2f6fd6; }
+.sd-chip.c500 { background: #d23b3b; }
+.sd-chip.c1k { background: #e3a812; }
+.sd-chip.c5k { background: #7b44c9; }
+.sd-chip.c10k { background: #1d1d1d; border-color: #f2c230; }
+
+.sd-potbox {
+  min-width: 132px;
+  padding: 5px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.74rem;
+}
+
+.sd-potbox div { display: flex; justify-content: space-between; gap: 10px; }
+.sd-potbox span { color: var(--tn-text-2); }
+.sd-potbox b { font-family: var(--tn-mono); color: #fff; }
+.sd-potbox div:first-child b { color: var(--tn-tape); font-size: 0.95rem; }
+
+.sd-potbox .sd-phase {
+  justify-content: center;
+  margin-bottom: 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--tn-tape);
+  white-space: nowrap;
+}
+
+/* 날아가는 칩 (자리 → 판돈, 판돈 → 이긴 사람) */
+.sd-fly {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: sd-fly 0.7s cubic-bezier(0.4, 0, 0.3, 1) both;
+}
+
+.sd-fly .sd-chip + .sd-chip { margin-left: -14px; }
+
+@keyframes sd-fly {
+  0% { left: var(--fx); top: var(--fy); opacity: 0; }
+  12% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: var(--tx); top: var(--ty); opacity: 0; }
+}
+
+/* 결과 큰 글씨 */
+.sd-banner {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 49%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 22px 6px;
+  border-radius: 16px;
+  background: rgba(10, 8, 6, 0.78);
+  border: 2px solid var(--tn-tape);
+  box-shadow: 0 0 40px rgba(242, 194, 48, 0.35);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: sd-banner 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.sd-banner strong {
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(180deg, #fff6c9 0%, #f2c230 55%, #b77a06 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+}
+
+.sd-banner span { font-size: 0.9rem; font-weight: 700; color: var(--tn-text); }
+.sd-banner.is-lose { border-color: #8c94a1; box-shadow: none; }
+.sd-banner.is-redo { border-color: var(--tn-blue); box-shadow: 0 0 40px rgba(121, 184, 255, 0.35); }
+
+@keyframes sd-banner {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── 아래 고정 줄: 상태 한 줄 + 베팅 버튼 / 고르기 / 결과 ── */
+.sd-bar {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.sd-statusline {
+  min-height: 1.2em;
+  font-size: 0.8rem;
+  color: var(--tn-text-2);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sd-betbar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.sd-bet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 54px;
+  padding: 4px 2px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, #4a3a2a 0%, #2c2118 100%);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.sd-bet b { font-size: 1rem; font-weight: 900; }
+.sd-bet small { font-family: var(--tn-mono); font-size: 0.68rem; color: #ffe08a; }
+.sd-bet:active:not(:disabled) { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 0 rgba(0, 0, 0, 0.5); }
+.sd-bet:disabled { opacity: 0.32; cursor: not-allowed; filter: grayscale(0.6); }
+.sd-bet-die:not(:disabled) { background: linear-gradient(180deg, #7c2a26 0%, #4c1714 100%); }
+.sd-bet-check:not(:disabled), .sd-bet-call:not(:disabled) { background: linear-gradient(180deg, #275a8a 0%, #163a5c 100%); }
+.sd-bet-bbing:not(:disabled), .sd-bet-ddadang:not(:disabled), .sd-bet-quarter:not(:disabled), .sd-bet-half:not(:disabled) {
+  background: linear-gradient(180deg, #b8860b 0%, #7a5606 100%);
+}
+
+.sd-bar-actions { display: flex; gap: 8px; }
+
+.sd-bigbtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, #3a3f48 0%, #262a31 100%);
+  color: var(--tn-text);
+  font: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sd-bigbtn.is-primary { background: linear-gradient(180deg, #ffd34d 0%, #e0a90f 100%); color: var(--tn-tape-ink); border-color: #b98a00; }
+.sd-bigbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 3장 섯다 고르기 (아래 줄, 베팅 줄과 비슷한 높이로 한 줄) */
+.sd-chooser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--tn-tape);
+  box-sizing: border-box;
+  --sd-w: 28px;
+}
+
+.sd-chooser-title { flex: none; max-width: 30%; font-size: 0.78rem; font-weight: 800; line-height: 1.25; }
+.sd-chooser-row { flex: 1; display: flex; justify-content: flex-end; gap: 6px; min-width: 0; }
+
+.sd-pick-card, .sd-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--tn-text);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sd-option { flex: 1 1 0; min-width: 0; max-width: 200px; }
+.sd-option-cards { display: flex; gap: 2px; flex: none; }
+.sd-option b { font-size: 0.82rem; overflow-wrap: anywhere; text-align: left; }
+.sd-option small { font-size: 0.64rem; color: var(--tn-led); font-weight: 800; }
+.sd-option.is-best { border-color: var(--tn-led); background: rgba(61, 220, 132, 0.12); }
+.sd-pick-card:hover, .sd-option:hover { border-color: var(--tn-tape); }
+
+/* 결과 줄 */
+.sd-resultbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: sd-pop 0.35s ease both;
+}
+
+.sd-resultbar-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.82rem;
+  color: var(--tn-text-2);
+}
+
+.sd-resultbar-text b { font-family: var(--tn-mono); font-size: 1rem; color: var(--tn-text); }
+.sd-resultbar-text b.up { color: var(--tn-led); }
+.sd-resultbar-text b.down { color: var(--tn-red); }
+.sd-resultbar-actions { display: flex; gap: 8px; flex: none; }
+.sd-resultbar-actions .sd-bigbtn { flex: none; min-width: 96px; }
+
+/* 설정·로비 (판 위) */
+.sd-setup {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(440px, 90%);
+  max-height: 92%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(8, 10, 12, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-sizing: border-box;
+}
+
+.sd-setup h2 { margin: 0; font-size: 1rem; }
+.sd-setup-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sd-setup-row > span { font-size: 0.82rem; color: var(--tn-text-2); white-space: nowrap; }
+.sd-setup-desc { margin: 0; font-size: 0.76rem; color: var(--tn-text-3); line-height: 1.5; }
+.sd-setup-points { font-family: var(--tn-mono); color: var(--tn-tape); font-size: 1.1rem; }
+
+.sd-seg {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.sd-seg button {
+  border: 0;
+  background: transparent;
+  color: var(--tn-text-2);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 7px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sd-seg button.is-active { background: var(--tn-tape); color: var(--tn-tape-ink); }
+.sd-warn { margin: 0; color: var(--tn-red); font-size: 0.82rem; }
+
+.sd-room-list { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
+
+.sd-room {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--tn-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sd-room b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-room span { grid-column: 1; font-size: 0.74rem; color: var(--tn-text-3); }
+.sd-room em { grid-column: 2; grid-row: 1 / 3; align-self: center; font-style: normal; font-weight: 800; color: var(--tn-tape); }
+
+/* ── 게임판 아래 ── */
+.sd-below {
+  max-width: 1100px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sd-below-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+
 .sd-notice {
-  margin: 0 0 16px;
+  margin: 0;
   padding: 10px 14px;
   border-radius: var(--tn-radius);
   border: 1px solid rgba(242, 194, 48, 0.35);
@@ -10,434 +704,8 @@
   line-height: 1.5;
 }
 
-.sd-layout { grid-template-columns: minmax(0, 640px) minmax(260px, 1fr); }
-
-@media (max-width: 860px) {
-  .sd-layout { grid-template-columns: minmax(0, 1fr); }
-}
-
-/* ── 판: 나는 아래, 상대는 왼쪽·위·오른쪽에 둘러앉음 ── */
-.sd-table {
-  --sd-opp-w: 40px;
-  --sd-me-w: 74px;
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr);
-  grid-template-areas:
-    "l t r"
-    "l c r"
-    "m m m";
-  gap: 10px;
-  padding: 14px;
-  border-radius: 28px;
-  background:
-    radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, #1f5a3c 0%, #174630 55%, #10311f 100%);
-  border: 6px solid #3b2a1c;
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 20px 50px rgba(0, 0, 0, 0.45);
-  min-height: 460px;
-  box-sizing: border-box;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* 상대 1명: 위 가운데를 넓게 */
-.sd-table.sd-opps-1 { grid-template-areas: "t t t" "c c c" "m m m"; }
-.sd-table.sd-opps-2 { grid-template-areas: "l c r" "l c r" "m m m"; }
-
-.sd-area-l { grid-area: l; align-self: center; }
-.sd-area-t { grid-area: t; }
-.sd-area-r { grid-area: r; align-self: center; }
-.sd-area-m { grid-area: m; }
-.sd-center { grid-area: c; }
-
-.sd-seat {
-  min-width: 0;
-  padding: 8px 6px;
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  text-align: center;
-  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
-}
-
-.sd-seat.is-me { padding: 10px 12px 12px; }
-
-.sd-seat.is-turn {
-  border-color: var(--tn-tape);
-  box-shadow: 0 0 0 1px rgba(242, 194, 48, 0.45), 0 0 18px rgba(242, 194, 48, 0.18);
-}
-
-.sd-seat.is-win {
-  border-color: var(--tn-led);
-  box-shadow: 0 0 0 2px rgba(61, 220, 132, 0.55), 0 0 24px rgba(61, 220, 132, 0.25);
-}
-
-.sd-seat.is-folded .sd-cards { opacity: 0.35; filter: grayscale(0.8); }
-.sd-seat.is-out { opacity: 0.55; }
-
-.sd-seat-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 0;
-}
-
-.sd-seat-name {
-  font-weight: 700;
-  font-size: 0.84rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sd-badge {
-  flex: none;
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 999px;
-  background: var(--tn-tape);
-  color: var(--tn-tape-ink);
-}
-
-.sd-seat-chips {
-  font-family: var(--tn-mono);
-  font-size: 0.72rem;
-  color: var(--tn-text-2);
-  margin: 2px 0 6px;
-}
-
-.sd-cards {
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-  --sd-w: var(--sd-opp-w);
-}
-
-.sd-seat.is-me .sd-cards { gap: 10px; --sd-w: var(--sd-me-w); }
-
-/* 상대 패는 손에 쥔 것처럼 살짝 겹쳐 펼침 (3장도 좁은 자리에 들어가게) */
-.sd-seat:not(.is-me) .sd-deal + .sd-deal { margin-left: calc(var(--sd-w) * -0.3); }
-
-.sd-sitout {
-  font-size: 0.74rem;
-  color: var(--tn-text-3);
-  padding: 10px 0;
-}
-
-/* 카드: 공용 화투 그림을 앞뒤로 겹쳐 뒤집기 */
-.sd-card {
-  position: relative;
-  display: inline-block;
-  width: var(--sd-w, 56px);
-  aspect-ratio: 103.2 / 168.2; /* 공용 화투 그림(Wikimedia SVG Hwatu) 비율 */
-  perspective: 600px;
-  flex: none;
-  vertical-align: middle;
-  transition: transform 0.2s, opacity 0.2s;
-}
-
-.sd-card-inner {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.3, 1.15);
-}
-
-.sd-card.is-down .sd-card-inner { transform: rotateY(180deg); }
-
-.sd-card-face {
-  position: absolute;
-  overflow: hidden;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: 4px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-}
-
-.sd-card-back { transform: rotateY(180deg); }
-.sd-card-face .hw-card { height: 100%; }
-.sd-card.is-picked { transform: translateY(-6px); }
-.sd-card.is-picked .sd-card-face { box-shadow: 0 0 0 2px var(--tn-tape), 0 6px 14px rgba(0, 0, 0, 0.45); }
-.sd-card.is-dim { opacity: 0.4; }
-
-.sd-card-tag {
-  position: absolute;
-  left: 50%;
-  bottom: -7px;
-  transform: translateX(-50%);
-  font-size: 0.6rem;
-  font-weight: 800;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--tn-blue);
-  color: #0b1a2c;
-  white-space: nowrap;
-}
-
-/* 패 돌리기: 판 가운데에서 날아오는 연출 */
-.sd-deal {
-  display: inline-block;
-  animation: sd-deal 0.4s ease-out both;
-}
-
-@keyframes sd-deal {
-  from { opacity: 0; transform: translateY(50px) scale(0.6) rotate(-8deg); }
-  to { opacity: 1; transform: none; }
-}
-
-.sd-seat-foot {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 2px 6px;
-  min-height: 1.5em;
-  margin-top: 8px;
-}
-
-.sd-hand {
-  font-weight: 800;
-  font-size: 0.8rem;
-  color: var(--tn-tape);
-  overflow-wrap: anywhere;
-  animation: sd-fade 0.3s ease both;
-}
-
-.sd-seat.is-me .sd-hand { font-size: 1.05rem; }
-
-.sd-bubble {
-  font-size: 0.74rem;
-  font-weight: 700;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--tn-text);
-}
-
-.sd-bubble.is-die { color: var(--tn-red); }
-
-.sd-payout {
-  font-family: var(--tn-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--tn-led);
-  animation: sd-fade 0.3s ease both;
-}
-
-.sd-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-width: 0;
-  min-height: 120px;
-}
-
-.sd-center-tags { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-bottom: 4px; }
-
-.sd-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 1px 7px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--tn-text-2);
-}
-
-.sd-tag.is-redo { border-color: var(--tn-tape); color: var(--tn-tape); }
-.sd-pot-label { font-size: 0.74rem; color: var(--tn-text-2); }
-
-.sd-pot {
-  font-family: var(--tn-mono);
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: #fff;
-}
-
-.sd-phase {
-  margin-top: 2px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--tn-tape);
-}
-
-.sd-center-sub { font-size: 0.7rem; color: var(--tn-text-3); }
-
-.sd-status {
-  margin: 6px 0 0;
-  font-size: 0.82rem;
-  color: var(--tn-text);
-  overflow-wrap: anywhere;
-}
-
-/* 베팅 버튼 6개: 손가락으로 누르기 쉽게 크게 */
-.sd-actions {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 12px;
-}
-
-@media (max-width: 560px) {
-  .sd-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-.sd-act {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-height: 56px;
-  padding: 6px 4px;
-  border-radius: var(--tn-radius);
-  border: 1px solid var(--tn-line);
-  background: var(--tn-panel-2);
-  color: var(--tn-text);
-  font: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.sd-act b { font-size: 1rem; }
-.sd-act small { font-size: 0.68rem; color: var(--tn-text-3); overflow-wrap: anywhere; }
-.sd-act:disabled { opacity: 0.32; cursor: not-allowed; }
-.sd-act:active:not(:disabled) { transform: translateY(1px); }
-.sd-act-die:not(:disabled) b { color: var(--tn-red); }
-.sd-act-bbing:not(:disabled), .sd-act-ddadang:not(:disabled), .sd-act-quarter:not(:disabled), .sd-act-half:not(:disabled) { border-color: rgba(242, 194, 48, 0.6); }
-.sd-act-bbing:not(:disabled) b, .sd-act-ddadang:not(:disabled) b, .sd-act-quarter:not(:disabled) b, .sd-act-half:not(:disabled) b { color: var(--tn-tape); }
-
-.sd-hint-line {
-  margin: 8px 0 0;
-  min-height: 1em;
-  font-size: 0.8rem;
-  color: var(--tn-text-3);
-  text-align: center;
-}
-
-/* 3장 섯다: 공개할 패·승부 패 고르기 */
-.sd-chooser {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: var(--tn-radius-lg);
-  border: 1px solid var(--tn-tape);
-  background: var(--tn-panel);
-  --sd-w: 52px;
-}
-
-.sd-chooser-title { margin: 0 0 10px; font-weight: 700; font-size: 0.92rem; text-align: center; }
-.sd-chooser-cards { display: flex; justify-content: center; gap: 16px; }
-
-.sd-pick-card, .sd-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  border-radius: var(--tn-radius);
-  border: 1px solid var(--tn-line);
-  background: var(--tn-bg);
-  color: var(--tn-text);
-  font: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.sd-pick-card:hover, .sd-option:hover { border-color: var(--tn-tape); }
-
-.sd-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  --sd-w: 40px;
-}
-
-.sd-option-cards { display: flex; gap: 4px; }
-.sd-option b { font-size: 0.86rem; overflow-wrap: anywhere; }
-.sd-option small { font-size: 0.68rem; color: var(--tn-led); }
-.sd-option.is-best { border-color: var(--tn-led); }
-
-.sd-after { margin-top: 12px; }
-
-/* 결과: 패를 모두 뒤집은 뒤 나타남 (지연은 인라인 animation-delay) */
-.sd-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  padding: 12px;
-  background: rgba(10, 12, 15, 0.5);
-  box-sizing: border-box;
-  animation: sd-fade 0.3s ease both;
-}
-
-@keyframes sd-fade {
-  from { opacity: 0; visibility: hidden; }
-  to { opacity: 1; visibility: visible; }
-}
-
-.sd-overlay-box {
-  width: min(320px, 100%);
-  box-sizing: border-box;
-  padding: 18px;
-  border-radius: var(--tn-radius-lg);
-  border: 1px solid var(--tn-line);
-  background: var(--tn-panel);
-  text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-}
-
-.sd-result-title {
-  display: block;
-  font-size: 1.6rem;
-  color: var(--tn-tape);
-  margin-bottom: 6px;
-}
-
-.sd-result-title.is-lose { color: var(--tn-text-2); }
-
-.sd-result-line {
-  margin: 2px 0;
-  font-size: 0.9rem;
-  color: var(--tn-text-2);
-  overflow-wrap: anywhere;
-}
-
-.sd-result-change { margin: 10px 0 14px; font-family: var(--tn-mono); font-weight: 700; }
-.sd-result-change.up { color: var(--tn-led); }
-.sd-result-change.down { color: var(--tn-red); }
-
-.sd-overlay-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-}
-
-/* 사이드 */
-.sd-points-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: var(--tn-text-2);
-}
-
-.sd-points-row strong { font-family: var(--tn-mono); font-size: 1.2rem; color: var(--tn-text); }
-.sd-warn { margin: 0; color: var(--tn-red); font-size: 0.86rem; }
-
 .sd-log {
-  max-height: 220px;
+  max-height: 240px;
   overflow-y: auto;
   margin: 0;
   padding-left: 22px;
@@ -446,30 +714,54 @@
   color: var(--tn-text-2);
 }
 
-.sd-ranks {
-  margin: 0;
-  padding-left: 22px;
-  font-size: 0.84rem;
-  line-height: 1.7;
-  color: var(--tn-text-2);
-}
-
+.sd-ranks { margin: 0; padding-left: 22px; font-size: 0.84rem; line-height: 1.7; color: var(--tn-text-2); }
 .sd-ranks b { color: var(--tn-text); }
+.sd-credit { margin: 0; font-size: 0.78rem; color: var(--tn-text-3); }
+.sd-credit a { color: inherit; }
+.sd-below .ch-rules { margin-top: 0; }
 
-@media (max-width: 420px) {
-  .sd-table { --sd-opp-w: 28px; --sd-me-w: 66px; padding: 10px 8px; gap: 8px; border-width: 4px; border-radius: 22px; min-height: 420px; }
-  .sd-seat { padding: 6px 3px; }
-  .sd-seat-name { font-size: 0.76rem; }
-  .sd-pot { font-size: 1.3rem; }
-  .sd-chooser { --sd-w: 46px; }
-  .sd-options { --sd-w: 32px; gap: 6px; }
-  .sd-option { padding: 6px 4px; }
+/* ── 휴대폰(세로 화면): 상대는 위쪽 둘레, 판돈은 가운데, 나는 아래 ── */
+@media (max-width: 700px) {
+  .sd-stage { padding: 0 6px 6px; }
+  .sd-table { --sd-opp-w: clamp(36px, 12.5cqh, 56px); --sd-me-w: clamp(54px, 17cqh, 80px); }
+  .sd-seat { max-width: 36%; }
+  .sd-title { font-size: 0.98rem; }
+  .sd-felt { border-radius: 40% / 18%; border-width: 7px; }
+  .sd-pos-t { top: 1%; --deal-y: 220px; }
+  .sd-pos-l { top: 24%; left: 2%; transform: none; --deal-x: 120px; --deal-y: 120px; }
+  .sd-pos-r { top: 24%; right: 2%; transform: none; --deal-x: -120px; --deal-y: 120px; }
+  .sd-opps-2 .sd-pos-l, .sd-opps-2 .sd-pos-r { top: 3%; }
+  .sd-pos-me { bottom: 1%; --deal-y: -240px; max-width: 96%; gap: 8px; }
+  .sd-pos-l, .sd-pos-r { flex-direction: column; gap: 4px; }
+  .sd-pos-me .sd-seat-info { flex-direction: column; padding: 6px 6px; border-radius: 14px; }
+  .sd-pos-me .sd-seat-text { align-items: center; }
+  .sd-pot { top: 49%; }
+  .sd-opps-3 .sd-pot { top: 54%; }
+  .sd-banner { top: 56%; padding: 4px 14px 6px; }
+  .sd-banner strong { font-size: clamp(1.3rem, 7vw, 1.8rem); }
+  .sd-seat-info { padding: 2px 8px 2px 2px; gap: 4px; }
+  .sd-avatar { width: 26px; height: 26px; font-size: 0.8rem; }
+  .sd-seat-name { font-size: 0.72rem; max-width: 64px; }
+  .sd-seat-chips { font-size: 0.66rem; }
+  .sd-hand { font-size: 0.72rem; padding: 1px 7px; }
+  .sd-chip { width: 20px; height: 17px; }
+  .sd-stack .sd-chip + .sd-chip { margin-bottom: -13px; }
+  .sd-potbox { min-width: 116px; font-size: 0.7rem; }
+  .sd-betbar { gap: 3px; }
+  .sd-bet { min-height: 50px; border-radius: 8px; }
+  .sd-bet b { font-size: 0.86rem; }
+  .sd-bet small { font-size: 0.6rem; }
+  .sd-resultbar { flex-direction: column; align-items: stretch; gap: 6px; }
+  .sd-resultbar-actions .sd-bigbtn { flex: 1; min-height: 46px; }
+  .sd-chooser { --sd-w: 24px; padding: 4px 5px; gap: 5px; }
+  .sd-chooser-title { font-size: 0.7rem; max-width: 26%; }
+  .sd-option { flex-direction: column; gap: 2px; padding: 3px 2px; }
+  .sd-option b { font-size: 0.72rem; text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sd-deal, .sd-overlay, .sd-hand, .sd-payout { animation-duration: 0.01ms; }
+  .sd-deal, .sd-hand, .sd-banner, .sd-bubble, .sd-resultbar { animation-duration: 0.01ms; }
+  .sd-fly { display: none; }
   .sd-card-inner { transition: none; }
+  .sd-seat.is-turn .sd-avatar { animation: none; }
 }
-
-.sd-credit { margin: 14px 0 0; font-size: 0.78rem; color: var(--tn-text-3); }
-.sd-credit a { color: inherit; }

@@ -2056,6 +2056,14 @@
       "room_full": "The room is full (4 players).",
       "room_not_found": "Room not found.",
       "user_not_found": "User not found."
+    },
+    "call_cost": "To call",
+    "bet_label": "Betting",
+    "banner": {
+      "redo": "{{hand}} replay",
+      "tie": "Tie replay",
+      "fold": "Everyone else died",
+      "win_by": "{{name}} wins"
     }
   }
 }
