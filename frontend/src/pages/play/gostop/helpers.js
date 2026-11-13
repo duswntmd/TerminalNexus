@@ -20,15 +20,14 @@ export const groupCaptured = (captured, gukjin) => {
 const TONE = { ppeok: 'bad', firstppeok: 'hot', yeonppeok: 'hot', jjok: 'good', ttadak: 'good', sweep: 'good', bomb: 'hot', shake: 'hot', go: 'hot', stop: 'good', eatppeok: 'good', jappeok: 'good', chongtong: 'hot', floor4: 'bad', nagari: 'bad' };
 export const bannerFromEvents = (events, t, names, me) => {
   const shown = events.filter((e) => TONE[e.type]);
+  const st = events.find((x) => x.type === 'steal');
+  const stealText = st ? t(st.player === me ? 'gostop.events.steal_got' : 'gostop.events.steal_lost', { n: st.count }) : null;
   if (!shown.length) {
-    const st = events.find((e) => e.type === 'steal');
     if (!st) return null;
-    return { text: t(st.player === me ? 'gostop.events.steal_got' : 'gostop.events.steal_lost', { n: st.count }), tone: st.player === me ? 'good' : 'bad', key: Date.now() };
+    return { text: stealText, sub: names ? names[st.player] : null, tone: st.player === me ? 'good' : 'bad', key: Date.now() };
   }
   const e = shown[shown.length - 1];
-  let text = e.type === 'go' ? t('gostop.events.go', { n: e.count }) : t(`gostop.events.${e.type}`);
-  if (e.player !== undefined && names) text = `${names[e.player]} · ${text}`;
-  const st = events.find((x) => x.type === 'steal');
-  if (st) text += ` (${t(st.player === me ? 'gostop.events.steal_got' : 'gostop.events.steal_lost', { n: st.count })})`;
-  return { text, tone: TONE[e.type], key: Date.now() };
+  const text = e.type === 'go' ? t('gostop.events.go', { n: e.count }) : t(`gostop.events.${e.type}`);
+  const sub = [e.player !== undefined && names ? names[e.player] : null, stealText].filter(Boolean).join(' · ');
+  return { text, sub: sub || null, cards: e.cards || null, tone: TONE[e.type], key: Date.now() };
 };

@@ -1,6 +1,6 @@
 # 화투 카드 그림 출처와 라이선스
 
-`frontend/public/hwatu/00.svg` ~ `47.svg`(카드 번호 = `cards.js`의 id)는 Wikimedia Commons의 한국식 화투 SVG 모음을 **내용 수정 없이** 파일 이름만 바꿔 쓴 것이다. 뒷면(`HwatuCard.jsx`의 `CardBack`)과 쌍피 표시는 이 사이트에서 직접 그렸다.
+`frontend/public/hwatu/00.svg` ~ `47.svg`(카드 번호 = `cards.js`의 id)는 Wikimedia Commons의 한국식 화투 SVG 모음을 파일 이름만 바꿔 쓰고, 아래 「수정 내역」의 색만 고친 것이다. 뒷면(`HwatuCard.jsx`의 `CardBack`)과 쌍피 표시는 이 사이트에서 직접 그렸다.
 
 - 모음: [Category:SVG Hwatu](https://commons.wikimedia.org/wiki/Category:SVG_Hwatu) (Wikipedia 「Go-Stop」 문서가 쓰는 카드)
 - 라이선스: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) (48장 모두 Commons API로 확인, 2026-11-07)
@@ -10,6 +10,13 @@
   - 바탕 그림: Louie Mantia, Jr., [Hanafuda January Hikari.svg](https://commons.wikimedia.org/wiki/File:Hanafuda_January_Hikari.svg) 등 Hanafuda SVG 모음 (CC BY-SA 4.0)
 - 동일조건변경허락(SA): 이 48개 파일(과 이를 고친 파일)은 CC BY-SA 4.0으로 다시 배포해야 한다. 사이트의 다른 코드에는 영향이 없다.
 - 화면 표시: 고스톱·섯다 페이지의 규칙 설명 아래에 출처와 라이선스를 적는다 (`gostop.card_credit`).
+
+## 수정 내역 (2026-11-12, 에고수)
+
+실제 한국 화투 사진([Hvatu kép.jpg](https://commons.wikimedia.org/wiki/File:Hvatu_k%C3%A9p.jpg), Yyyanka, CC BY-SA 4.0)과 48장을 한 장씩 비교해 다른 색을 고쳤다. 도안(선)은 바꾸지 않았다.
+
+- 5월 난초 꽃(16~19), 11월 오동 꽃(40~43): 파란색 `#1ca4da` → 보라색 `#8a4bd8`. 16번(5월 열끗)은 다리 아래 물은 파란색으로 두고 꽃만 떼어 바꿨다.
+- 4월 두견새(12), 7월 멧돼지(24), 8월 기러기(29), 10월 사슴(36): 주황 `#f79e33` → 금색 `#f3c614`.
 
 ## 파일 대응표
 
