@@ -1,20 +1,30 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Client } from '@stomp/stompjs';
 import { playSound } from '../janggi/sound.js';
-import { TableView, ActionBar, OpenPicker, SelectPicker, ResultOverlay, HandLog, RankTable } from './parts.jsx';
+import { Table, BetBar, OpenPicker, SelectPicker, ResultBar, HandLog, RankTable } from './parts.jsx';
 import {
-  REVEAL_GAP, handResult, myHandText, handHint, selectOptions, seatCards, resultTitleKey, resultLines,
-  resolveRevealed, onlineActions, logLine,
+  REVEAL_GAP, fmt, handResult, myHandText, handHint, selectOptions, seatCards, resultLines,
+  resultBanner, resolveRevealed, onlineActions, logLine,
 } from './helpers.js';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchWithAccessRaw } from '../../../util/fetchUtil';
 
 const wsUrl = () => `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws-chat/websocket`;
+const EMPTY_VIEW = { seats: [], pot: 0, handNo: 0 };
+
+/** 판 모양 틀: 위 줄(제목·탭), 판, 아래 줄 */
+const Stage = ({ topbar, right, children, bar }) => (
+  <section className="sd-stage">
+    <div className="sd-topbar">{topbar}<div className="sd-topbar-right">{right}</div></div>
+    {children}
+    <div className="sd-bar">{bar}</div>
+  </section>
+);
 
 /* ── 로비 ── */
-const Lobby = ({ onEnter }) => {
+const Lobby = ({ topbar, onEnter }) => {
   const { t } = useTranslation();
   const [rooms, setRooms] = useState([]);
   const [title, setTitle] = useState('');
@@ -32,8 +42,7 @@ const Lobby = ({ onEnter }) => {
     return () => clearInterval(timer);
   }, [load]);
 
-  const create = async (e) => {
-    e.preventDefault();
+  const create = async () => {
     setCreating(true);
     const res = await fetchWithAccessRaw('/api/seotda/room', {
       method: 'POST',
@@ -45,44 +54,44 @@ const Lobby = ({ onEnter }) => {
   };
 
   return (
-    <div className="ch-layout">
-      <div className="ch-panel">
-        <h3 className="ch-section-title">{t('seotda.lobby.rooms', { count: rooms.length })}</h3>
-        {rooms.length === 0 ? (
-          <p className="ch-empty">{t('seotda.lobby.empty')}</p>
-        ) : (
-          <div className="ch-room-list">
-            {rooms.map((r) => (
-              <div key={r.roomId} className="ch-room">
-                <div style={{ minWidth: 0 }}>
-                  <div className="ch-room-title">{r.title}</div>
-                  <div className="ch-room-meta">
-                    {t(`seotda.modes.${r.mode}`)} · {t('seotda.lobby.players', { n: r.players.length })} · {t(`seotda.lobby.status.${r.status}`)}
-                  </div>
-                </div>
-                <button type="button" className="ch-btn" onClick={() => onEnter(r.roomId)}>
-                  {r.status !== 'PLAYING' && r.players.length < 4 ? t('seotda.actions.enter') : t('seotda.actions.watch')}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <form className="ch-panel ch-setup" onSubmit={create}>
-        <h3 className="ch-section-title" style={{ margin: 0 }}>{t('seotda.lobby.create_title')}</h3>
-        <input className="ch-input" placeholder={t('seotda.lobby.title_ph')} value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} />
-        <div className="ch-choices">
-          {['two', 'three'].map((k) => (
-            <button key={k} type="button" className={`ch-choice${mode === k ? ' is-active' : ''}`} onClick={() => setMode(k)}>
-              {t(`seotda.modes.${k}`)} <small>{t(`seotda.mode_desc.${k}`)}</small>
-            </button>
-          ))}
+    <Stage
+      topbar={topbar}
+      bar={(
+        <div className="sd-bar-actions">
+          <button type="button" className="sd-bigbtn is-primary" disabled={creating} onClick={create}>{t('seotda.actions.create')}</button>
         </div>
-        <p className="ch-hint" style={{ margin: 0 }}>{t('seotda.lobby.room_points')}</p>
-        <button type="submit" className="ch-btn primary" disabled={creating}>{t('seotda.actions.create')}</button>
-      </form>
-    </div>
+      )}
+    >
+      <Table view={EMPTY_VIEW} mySeat={-1}>
+        <div className="sd-setup sd-lobby">
+          <h2>{t('seotda.lobby.rooms', { count: rooms.length })}</h2>
+          {rooms.length === 0 ? (
+            <p className="sd-setup-desc">{t('seotda.lobby.empty')}</p>
+          ) : (
+            <div className="sd-room-list">
+              {rooms.map((r) => (
+                <button key={r.roomId} type="button" className="sd-room" onClick={() => onEnter(r.roomId)}>
+                  <b>{r.title}</b>
+                  <span>{t(`seotda.modes.${r.mode}`)} · {t('seotda.lobby.players', { n: r.players.length })} · {t(`seotda.lobby.status.${r.status}`)}</span>
+                  <em>{r.status !== 'PLAYING' && r.players.length < 4 ? t('seotda.actions.enter') : t('seotda.actions.watch')}</em>
+                </button>
+              ))}
+            </div>
+          )}
+          <h2 style={{ marginTop: 14 }}>{t('seotda.lobby.create_title')}</h2>
+          <input className="ch-input" placeholder={t('seotda.lobby.title_ph')} value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} />
+          <div className="sd-setup-row">
+            <span>{t('seotda.setup.mode')}</span>
+            <div className="sd-seg">
+              {['two', 'three'].map((k) => (
+                <button key={k} type="button" className={mode === k ? 'is-active' : ''} onClick={() => setMode(k)}>{t(`seotda.modes.${k}`)}</button>
+              ))}
+            </div>
+          </div>
+          <p className="sd-setup-desc">{t('seotda.lobby.room_points')}</p>
+        </div>
+      </Table>
+    </Stage>
   );
 };
 
@@ -98,14 +107,13 @@ const useCountdown = (endsAt) => {
 };
 
 /* ── 방 ── */
-const Room = ({ roomId, me, onExit }) => {
+const Room = ({ topbar, roomId, me, onExit }) => {
   const { t } = useTranslation();
   const [room, setRoom] = useState(null);
   const [mine, setMine] = useState({ handNo: 0, cards: null });
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState('');
   const [toast, setToast] = useState(null);
-  const [resultOpen, setResultOpen] = useState(true);
   const [startChips, setStartChips] = useState({ handNo: 0, chips: 0 });
   const clientRef = useRef(null);
   const prevRef = useRef(null);
@@ -127,7 +135,6 @@ const Room = ({ roomId, me, onExit }) => {
     setRoom(st);
     if (st.myCards) setMine({ handNo: st.handNo, cards: st.myCards });
     if (prev && prev.status !== 'FINISHED' && st.status === 'FINISHED') {
-      setResultOpen(true);
       setTimeout(() => playSound('win'), (st.result?.reveal?.length || 0) * REVEAL_GAP);
     } else if (prev && (st.log.length !== prev.log.length || st.handNo !== prev.handNo)) playSound('move');
   }, []);
@@ -187,6 +194,7 @@ const Room = ({ roomId, me, onExit }) => {
   }, [room, mySeatNow, startChips.handNo]);
 
   const remaining = useCountdown(room?.status === 'PLAYING' ? room.turnEndsAt : 0);
+  const bets = useMemo(() => (room?.log || []).filter((e) => e.pay > 0), [room]);
 
   const send = (action) => {
     const c = clientRef.current;
@@ -194,7 +202,9 @@ const Room = ({ roomId, me, onExit }) => {
     c.publish({ destination: `/app/seotda/room/${roomId}/action`, body: JSON.stringify(action) });
   };
 
-  if (!room) return <p className="ch-empty">{t('seotda.entering')}</p>;
+  if (!room) {
+    return <Stage topbar={topbar} bar={<div className="sd-statusline">{t('seotda.entering')}</div>}><Table view={EMPTY_VIEW} mySeat={-1} /></Stage>;
+  }
 
   const mySeat = mySeatNow;
   const isHost = room.host === me;
@@ -207,20 +217,25 @@ const Room = ({ roomId, me, onExit }) => {
   const revealOrder = res?.reveal || [];
   const pending = room.pending || [];
   const myPending = playing && mySeat >= 0 && pending.includes(mySeat);
+  const n = room.seats.length;
 
   const seats = room.seats.map((s, i) => {
     const revealIndex = revealOrder.indexOf(i);
     const known = s.cards || (i === mySeat ? myCards : null);
     const hand = resolved?.hands[i];
     const myOpenIndex = i === mySeat && known && s.openCard != null ? known.indexOf(s.openCard) : null;
+    const isTurn = playing && room.phase === 'bet' && room.turn === i;
     return {
       key: s.nick,
+      index: i,
+      dealOrder: (i - room.dealer + n) % n,
       name: names[i],
       chips: s.chips,
       inHand: s.inHand,
       folded: s.folded,
       last: s.last,
-      isTurn: playing && room.phase === 'bet' && room.turn === i,
+      isTurn,
+      timer: isTurn || (playing && pending.includes(i)) ? remaining : null,
       choosing: playing && pending.includes(i),
       isDealer: s.inHand && room.dealer === i,
       cards: seatCards({
@@ -234,30 +249,27 @@ const Room = ({ roomId, me, onExit }) => {
         tag: t('seotda.opened'),
       }),
       revealIndex,
-      handText: hand && revealIndex >= 0 ? handResult(t, hand, res.type === 'redo') : i === mySeat && myCards ? myHandText(t, myCards, null) : '',
+      handText: hand && revealIndex >= 0 ? handResult(t, hand, res.type === 'redo') : i === mySeat && myCards && !res ? myHandText(t, myCards, null) : '',
       win: !!res && res.winners.includes(i),
       payout: res?.payouts?.[i] || 0,
     };
   });
 
-  const acts = playing && room.phase === 'bet' && room.turn === mySeat ? onlineActions(room, mySeat) : [];
-  const timer = remaining != null ? ` (${remaining}s)` : '';
-  let status;
+  const myTurn = playing && room.phase === 'bet' && room.turn === mySeat;
+  const acts = myTurn ? onlineActions(room, mySeat) : [];
+  let status = '';
   if (playing && room.phase === 'bet') {
-    const who = room.turn === mySeat ? t('seotda.status.your_turn') : t('seotda.status.turn', { name: names[room.turn] });
-    status = `${mySeat < 0 ? `${t('seotda.status.spectating')} · ` : ''}${who}${timer}`;
+    status = myTurn ? t('seotda.status.your_turn') : t('seotda.status.turn', { name: names[room.turn] });
+    if (mySeat < 0) status = `${t('seotda.status.spectating')} · ${status}`;
   } else if (playing) {
-    status = `${myPending ? t(room.phase === 'open' ? 'seotda.status.choose_open' : 'seotda.status.choose_pick') : t('seotda.status.waiting_choice')}${timer}`;
-  } else if (room.seats.length < 2) status = t('seotda.status.waiting_players');
-  else status = t(isHost ? 'seotda.status.ready_host' : 'seotda.status.waiting_host');
-
-  let title = '';
-  let lines = [];
-  if (res) {
-    const key = resultTitleKey(res, meSeat?.inHand ? mySeat : -1);
-    title = key ? t(`seotda.result.${key}`) : t('seotda.result.winner', { name: names[res.winners[0]], hand: '' });
-    lines = resultLines(t, res, resolved?.hands || {}, names, res.carry);
+    status = myPending ? '' : t('seotda.status.waiting_choice');
+  } else if (!res) {
+    status = room.seats.length < 2 ? t('seotda.status.waiting_players') : t(isHost ? 'seotda.status.ready_host' : 'seotda.status.waiting_host');
   }
+
+  const resultDelay = revealOrder.length * REVEAL_GAP + 400;
+  const lines = res ? resultLines(t, res, resolved?.hands || {}, names, res.carry) : [];
+  const banner = res ? { key: room.handNo, ...resultBanner(t, res, resolved?.hands || {}, names, meSeat?.inHand ? mySeat : -1), delay: resultDelay - 250 } : null;
   // 재경기 판은 처음 판의 시작 포인트와 비교
   const change = res && res.type !== 'redo' && meSeat?.inHand && startChips.handNo > 0 && (startChips.handNo === room.handNo || room.redo)
     ? meSeat.chips - startChips.chips : null;
@@ -270,52 +282,53 @@ const Room = ({ roomId, me, onExit }) => {
 
   const canDeal = isHost && !playing && room.seats.length >= 2;
   const dealLabel = room.nextIsRedo ? 'seotda.actions.redo' : res ? 'seotda.actions.next' : 'seotda.actions.deal';
-  const dealBtn = canDeal && <button type="button" className="ch-btn primary" onClick={() => send({ type: 'START' })}>{t(dealLabel)}</button>;
-  const view = { mode: room.mode, redo: room.redo, phase: playing ? room.phase : null, round: room.round, pot: room.pot, cap: room.cap, handNo: room.handNo, seats };
+  const dealBtn = canDeal && <button type="button" className="sd-bigbtn is-primary" onClick={() => send({ type: 'START' })}>{t(dealLabel)}</button>;
+  const leaveBtn = <button type="button" className="sd-bigbtn" onClick={leave}>{t('seotda.actions.leave')}</button>;
+  const view = { mode: room.mode, redo: room.redo, pot: room.pot, handNo: room.handNo, seats };
+  const phaseText = playing
+    ? `${t(`seotda.modes.${room.mode}`)}${room.redo ? ` · ${t('seotda.redo_hand')}` : ''} · ${t(`seotda.phase.${room.phase === 'bet' ? `bet${room.round}` : room.phase}`)}`
+    : t(`seotda.modes.${room.mode}`);
   const canBet = playing && room.phase === 'bet' && meSeat?.inHand && !meSeat.folded;
+  const info = { phase: phaseText, toCall: canBet ? room.level - meSeat.contrib : null };
+
+  let bar;
+  if (res) {
+    bar = <ResultBar lines={lines} change={change} delay={resultDelay}>{dealBtn}{leaveBtn}</ResultBar>;
+  } else if (myPending && room.phase === 'open' && myCards) {
+    bar = <OpenPicker cards={myCards} onPick={(card) => send({ type: 'OPEN', card })} />;
+  } else if (myPending && room.phase === 'select' && myCards?.length === 3) {
+    bar = <SelectPicker options={selectOptions(t, myCards)} onPick={(pick) => send({ type: 'SELECT', pick })} />;
+  } else if (canBet || (playing && meSeat?.inHand)) {
+    bar = <BetBar acts={acts} onAct={(bet) => send({ type: 'BET', bet })} disabled={!myTurn} />;
+  } else {
+    bar = <div className="sd-bar-actions">{dealBtn}{leaveBtn}</div>;
+  }
+  const hint = canBet && myCards ? handHint(t, myCards) : '';
 
   return (
     <>
-      <div className="ch-layout sd-layout">
-        <div>
-          <TableView view={view} mySeat={mySeat} status={status}>
-            {res && resultOpen && (
-              <ResultOverlay title={title} lines={lines} change={change} delay={revealOrder.length * REVEAL_GAP + 300} onClose={() => setResultOpen(false)}>
-                {dealBtn}
-              </ResultOverlay>
-            )}
-          </TableView>
-          {canBet && <ActionBar acts={acts} onAct={(bet) => send({ type: 'BET', bet })} />}
-          {canBet && myCards && <p className="sd-hint-line">{handHint(t, myCards)}</p>}
-          {myPending && room.phase === 'open' && myCards && <OpenPicker cards={myCards} onPick={(card) => send({ type: 'OPEN', card })} />}
-          {myPending && room.phase === 'select' && myCards?.length === 3 && <SelectPicker options={selectOptions(t, myCards)} onPick={(pick) => send({ type: 'SELECT', pick })} />}
-        </div>
+      <Stage
+        topbar={topbar}
+        right={<>{meSeat && <span className="sd-mypoints">{fmt(meSeat.chips)}P</span>}<button type="button" className="sd-iconbtn" onClick={leave} aria-label={t('seotda.actions.leave')}>⎋</button></>}
+        bar={<><div className="sd-statusline" aria-live="polite">{status || hint || ' '}</div>{bar}</>}
+      >
+        <Table view={view} mySeat={mySeat} info={info} banner={banner} bets={bets} payouts={res ? res.payouts : null} payDelay={resultDelay - 200} />
+      </Stage>
 
-        <div className="ch-side">
-          <div className="ch-panel">
-            <h3 className="ch-section-title">{room.title}</h3>
-            <p className="ch-status">{t(`seotda.modes.${room.mode}`)} · {t('seotda.lobby.players', { n: room.seats.length })}</p>
-            <div className="ch-actions" style={{ marginTop: 12 }}>
-              {dealBtn}
-              <button type="button" className="ch-btn" onClick={leave}>{t('seotda.actions.leave')}</button>
-            </div>
+      <div className="sd-below sd-below-grid">
+        <div className="ch-panel ch-chat">
+          <h3 className="ch-section-title" style={{ margin: 0 }}>{room.title} · {t('seotda.chat.title')}</h3>
+          <div className="ch-chat-log" ref={chatRef}>
+            {chat.length === 0 ? <p className="ch-empty" style={{ padding: 0 }}>{t('seotda.chat.empty')}</p>
+              : chat.map((c, i) => <p key={i}><b>{c.sender}</b> {c.text}</p>)}
           </div>
-
-          <div className="ch-panel ch-chat">
-            <h3 className="ch-section-title" style={{ margin: 0 }}>{t('seotda.chat.title')}</h3>
-            <div className="ch-chat-log" ref={chatRef}>
-              {chat.length === 0 ? <p className="ch-empty" style={{ padding: 0 }}>{t('seotda.chat.empty')}</p>
-                : chat.map((c, i) => <p key={i}><b>{c.sender}</b> {c.text}</p>)}
-            </div>
-            <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) { send({ type: 'CHAT', text: input }); setInput(''); } }}>
-              <input className="ch-input" value={input} maxLength={200} onChange={(e) => setInput(e.target.value)} placeholder={t('seotda.chat.ph')} />
-              <button type="submit" className="ch-btn">{t('seotda.actions.send')}</button>
-            </form>
-          </div>
-
-          <HandLog lines={(room.log || []).map((e) => logLine(t, e, names))} />
-          <RankTable />
+          <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) { send({ type: 'CHAT', text: input }); setInput(''); } }}>
+            <input className="ch-input" value={input} maxLength={200} onChange={(e) => setInput(e.target.value)} placeholder={t('seotda.chat.ph')} />
+            <button type="submit" className="ch-btn">{t('seotda.actions.send')}</button>
+          </form>
         </div>
+        <HandLog lines={(room.log || []).map((e) => logLine(t, e, names))} />
+        <RankTable />
       </div>
       {toast && <div className="ch-toast" role="alert">{toast}</div>}
     </>
@@ -323,7 +336,7 @@ const Room = ({ roomId, me, onExit }) => {
 };
 
 /** 온라인: 로그인 필요(체스와 같음), ?room= 으로 방 유지 */
-const OnlineSeotda = () => {
+const OnlineSeotda = ({ topbar }) => {
   const { t } = useTranslation();
   const { isLoggedIn, user, loading } = useAuth();
   const [params, setParams] = useSearchParams();
@@ -332,17 +345,26 @@ const OnlineSeotda = () => {
   const enter = useCallback((id) => setParams({ mode: 'online', room: id }), [setParams]);
   const exit = useCallback(() => setParams({ mode: 'online' }), [setParams]);
 
-  if (loading) return <p className="ch-empty">{t('seotda.loading')}</p>;
+  if (loading || (isLoggedIn && !user)) {
+    return <Stage topbar={topbar} bar={<div className="sd-statusline">{t('seotda.loading')}</div>}><Table view={EMPTY_VIEW} mySeat={-1} /></Stage>;
+  }
   if (!isLoggedIn) {
     return (
-      <div className="ch-panel" style={{ maxWidth: 480, margin: '0 auto', textAlign: 'center' }}>
-        <p>{t('seotda.login_needed')}</p>
-        <Link className="ch-btn primary" to={`/login?redirect=${encodeURIComponent('/play/seotda?mode=online')}`} style={{ display: 'inline-block', textDecoration: 'none' }}>{t('seotda.actions.login')}</Link>
-      </div>
+      <Stage
+        topbar={topbar}
+        bar={(
+          <div className="sd-bar-actions">
+            <Link className="sd-bigbtn is-primary" to={`/login?redirect=${encodeURIComponent('/play/seotda?mode=online')}`}>{t('seotda.actions.login')}</Link>
+          </div>
+        )}
+      >
+        <Table view={EMPTY_VIEW} mySeat={-1}>
+          <div className="sd-setup"><p className="sd-setup-desc">{t('seotda.login_needed')}</p></div>
+        </Table>
+      </Stage>
     );
   }
-  if (!user) return <p className="ch-empty">{t('seotda.loading')}</p>;
-  return roomId ? <Room roomId={roomId} me={user.nickname} onExit={exit} /> : <Lobby onEnter={enter} />;
+  return roomId ? <Room topbar={topbar} roomId={roomId} me={user.nickname} onExit={exit} /> : <Lobby topbar={topbar} onEnter={enter} />;
 };
 
 export default OnlineSeotda;

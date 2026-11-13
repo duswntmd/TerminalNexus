@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { newHand, applyAction, legalActions, pendingSeats, nextHandArgs } from './engine.js';
 import { aiAction } from './ai.js';
 import { playSound } from '../janggi/sound.js';
-import { TableView, ActionBar, OpenPicker, SelectPicker, ResultOverlay, HandLog, RankTable } from './parts.jsx';
+import { Table, BetBar, OpenPicker, SelectPicker, ResultBar, HandLog, RankTable } from './parts.jsx';
 import {
   UNIT, START_POINTS, REVEAL_GAP, fmt, handResult, myHandText, handHint, selectOptions, seatCards,
-  resultTitleKey, resultLines, logLine,
+  resultTitleKey, resultLines, resultBanner, logLine,
 } from './helpers.js';
 
 const LEVEL_KEYS = ['easy', 'normal', 'hard'];
 const MODE_KEYS = ['two', 'three'];
 const POINTS_KEY = 'tn.seotda.points';
-const AI_DELAY = 900;
+const AI_DELAY = 950;
 
 // 포인트는 이 브라우저에만 저장 (저장소를 못 쓰면 이번 방문 동안만 유지)
 const loadPoints = () => {
@@ -32,19 +32,20 @@ const savePoints = (v) => {
   }
 };
 
+const EMPTY_VIEW = { seats: [], pot: 0, handNo: 0 };
+
 /** AI 대전: 나(0번 자리) + 컴퓨터 1~3명, 2장·3장 섯다 */
-const LocalGame = () => {
+const LocalGame = ({ topbar }) => {
   const { t } = useTranslation();
   const [phase, setPhase] = useState('setup');
   const [mode, setMode] = useState('two');
-  const [aiCount, setAiCount] = useState(2);
+  const [aiCount, setAiCount] = useState(3);
   const [level, setLevel] = useState('normal');
   const [points, setPoints] = useState(loadPoints);
   const [st, setSt] = useState(null);
   const [handNo, setHandNo] = useState(0);
   const [startChips, setStartChips] = useState(0);
   const [notes, setNotes] = useState([]);
-  const [resultOpen, setResultOpen] = useState(true);
   const [sound, setSound] = useState(true);
   const soundRef = useRef(sound);
   soundRef.current = sound;
@@ -69,7 +70,6 @@ const LocalGame = () => {
     if (!args.redo) setStartChips(players[0].chips);
     setSt(newHand({ ...args, players: players.map((p, i) => ({ ...p, name: names[i] })) }));
     setHandNo((n) => n + 1);
-    setResultOpen(true);
     playSound('move', soundRef.current);
   };
 
@@ -107,7 +107,7 @@ const LocalGame = () => {
         }
         return cur;
       });
-    }, st.phase === 'bet' ? AI_DELAY : 500);
+    }, st.phase === 'bet' ? AI_DELAY : 600);
     return () => clearTimeout(tm);
   }, [st, level]);
 
@@ -129,62 +129,81 @@ const LocalGame = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [logLen, done]);
 
-  if (phase === 'setup') {
+  const bets = useMemo(() => (st ? st.log.filter((e) => e.pay > 0) : []), [st]);
+
+  const toSetup = () => { setPhase('setup'); setSt(null); };
+  const soundBtn = (
+    <button type="button" className="sd-iconbtn" onClick={() => setSound((s) => !s)} aria-label={t(sound ? 'seotda.actions.sound_off' : 'seotda.actions.sound_on')}>
+      {sound ? '🔊' : '🔇'}
+    </button>
+  );
+
+  /* ── 설정 화면 (판 위에 띄움) ── */
+  if (phase === 'setup' || !st) {
     return (
-      <div className="ch-layout">
-        <div className="ch-panel ch-setup">
-          <h3 className="ch-section-title" style={{ margin: 0 }}>{t('seotda.setup.ai_title')}</h3>
-          <div>
-            <div className="ch-field-label">{t('seotda.setup.mode')}</div>
-            <div className="ch-choices">
-              {MODE_KEYS.map((k) => (
-                <button key={k} type="button" className={`ch-choice${mode === k ? ' is-active' : ''}`} onClick={() => setMode(k)}>
-                  {t(`seotda.modes.${k}`)} <small>{t(`seotda.mode_desc.${k}`)}</small>
-                </button>
-              ))}
+      <>
+        <section className="sd-stage">
+          <div className="sd-topbar">{topbar}<div className="sd-topbar-right">{soundBtn}</div></div>
+          <Table view={EMPTY_VIEW} mySeat={-1}>
+            <div className="sd-setup">
+              <h2>{t('seotda.setup.ai_title')}</h2>
+              <div className="sd-setup-row">
+                <span>{t('seotda.setup.mode')}</span>
+                <div className="sd-seg">
+                  {MODE_KEYS.map((k) => (
+                    <button key={k} type="button" className={mode === k ? 'is-active' : ''} onClick={() => setMode(k)}>
+                      {t(`seotda.modes.${k}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="sd-setup-desc">{t(`seotda.mode_desc.${mode}`)}</p>
+              <div className="sd-setup-row">
+                <span>{t('seotda.setup.ai_count')}</span>
+                <div className="sd-seg">
+                  {[1, 2, 3].map((n) => (
+                    <button key={n} type="button" className={aiCount === n ? 'is-active' : ''} onClick={() => setAiCount(n)}>
+                      {t('seotda.setup.ai_count_n', { n })}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="sd-setup-row">
+                <span>{t('seotda.setup.level')}</span>
+                <div className="sd-seg">
+                  {LEVEL_KEYS.map((k) => (
+                    <button key={k} type="button" className={level === k ? 'is-active' : ''} onClick={() => setLevel(k)} title={t(`seotda.levels.${k}_desc`)}>
+                      {t(`seotda.levels.${k}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="sd-setup-row">
+                <span>{t('seotda.my_points')}</span>
+                <b className="sd-setup-points">{fmt(points)}P</b>
+              </div>
+              <p className="sd-setup-desc">{t('seotda.setup.ante', { n: UNIT })} · {t('seotda.setup.points_desc')}</p>
+              {points < UNIT && <p className="sd-warn">{t('seotda.status.broke')}</p>}
+            </div>
+          </Table>
+          <div className="sd-bar">
+            <div className="sd-bar-actions">
+              {points < UNIT && <button type="button" className="sd-bigbtn" onClick={refill}>{t('seotda.actions.refill')}</button>}
+              <button type="button" className="sd-bigbtn is-primary" disabled={points < UNIT} onClick={start}>{t('seotda.actions.start')}</button>
             </div>
           </div>
-          <div>
-            <div className="ch-field-label">{t('seotda.setup.ai_count')}</div>
-            <div className="ch-choices">
-              {[1, 2, 3].map((n) => (
-                <button key={n} type="button" className={`ch-choice${aiCount === n ? ' is-active' : ''}`} onClick={() => setAiCount(n)}>
-                  {t('seotda.setup.ai_count_n', { n })}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="ch-field-label">{t('seotda.setup.level')}</div>
-            <div className="ch-choices">
-              {LEVEL_KEYS.map((k) => (
-                <button key={k} type="button" className={`ch-choice${level === k ? ' is-active' : ''}`} onClick={() => setLevel(k)}>
-                  {t(`seotda.levels.${k}`)} <small>{t(`seotda.levels.${k}_desc`)}</small>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="sd-points-row">
-            <span>{t('seotda.my_points')}</span>
-            <strong>{fmt(points)}P</strong>
-          </div>
-          <p className="ch-hint" style={{ margin: 0 }}>{t('seotda.setup.ante', { n: UNIT })} · {t('seotda.setup.points_desc')}</p>
-          {points < UNIT && <p className="sd-warn">{t('seotda.status.broke')}</p>}
-          <div className="ch-actions">
-            {points < UNIT && <button type="button" className="ch-btn" onClick={refill}>{t('seotda.actions.refill')}</button>}
-            <button type="button" className="ch-btn primary" disabled={points < UNIT} onClick={start}>{t('seotda.actions.start')}</button>
-          </div>
-        </div>
-        <RankTable />
-      </div>
+        </section>
+        <div className="sd-below"><RankTable /></div>
+      </>
     );
   }
 
-  if (!st) return null;
+  /* ── 판 ── */
   const res = st.result;
   const revealOrder = res ? res.reveal : [];
   const me = st.players[0];
   const myPending = pendingSeats(st).includes(0);
+  const n = st.players.length;
 
   const seats = st.players.map((p, i) => {
     const revealIndex = revealOrder.indexOf(i);
@@ -192,6 +211,8 @@ const LocalGame = () => {
     const hand = res?.hands?.[i];
     return {
       key: p.id,
+      index: i,
+      dealOrder: (i - st.dealer + n) % n,
       name: names[i],
       chips: p.chips,
       inHand: p.inHand,
@@ -211,28 +232,29 @@ const LocalGame = () => {
         tag: t('seotda.opened'),
       }),
       revealIndex,
-      handText: hand && revealIndex >= 0 ? handResult(t, hand, res.type === 'redo') : i === 0 ? myHandText(t, p.cards, p.pick) : '',
+      handText: hand && revealIndex >= 0 ? handResult(t, hand, res.type === 'redo') : i === 0 && !res ? myHandText(t, p.cards, p.pick) : '',
       win: !!res && res.winners.includes(i),
       payout: res?.payouts?.[i] || 0,
     };
   });
 
-  const acts = st.phase === 'bet' && st.turn === 0 ? legalActions(st, 0) : [];
+  const myTurn = st.phase === 'bet' && st.turn === 0;
+  const acts = myTurn ? legalActions(st, 0) : [];
   let status = '';
-  if (st.phase === 'bet') status = st.turn === 0 ? t('seotda.status.your_turn') : t('seotda.status.thinking', { name: names[st.turn] });
-  else if (st.phase === 'open') status = myPending ? t('seotda.status.choose_open') : t('seotda.status.waiting_choice');
-  else if (st.phase === 'select') status = myPending ? t('seotda.status.choose_pick') : t('seotda.status.waiting_choice');
-  else if (!me.inHand) status = t('seotda.status.sitting_out');
+  if (st.phase === 'bet') status = myTurn ? t('seotda.status.your_turn') : t('seotda.status.thinking', { name: names[st.turn] });
+  else if (st.phase === 'open' || st.phase === 'select') status = myPending ? '' : t('seotda.status.waiting_choice');
+  if (!me.inHand && !done) status = t('seotda.status.sitting_out');
 
-  const view = { mode: st.mode, redo: st.redo, phase: st.phase, round: st.round, pot: st.pot, cap: st.cap, handNo, seats };
-  const title = res ? t(`seotda.result.${resultTitleKey(res, 0) || 'redo'}`) : '';
+  const resultDelay = revealOrder.length * REVEAL_GAP + 400;
+  const view = { mode: st.mode, redo: st.redo, pot: st.pot, handNo, seats };
+  const phaseText = st.phase !== 'done'
+    ? `${t(`seotda.modes.${st.mode}`)}${st.redo ? ` · ${t('seotda.redo_hand')}` : ''} · ${t(`seotda.phase.${st.phase === 'bet' ? `bet${st.round}` : st.phase}`)}`
+    : null;
+  const info = { phase: phaseText, toCall: st.phase === 'bet' && me.inHand && !me.folded ? st.level - me.contrib : null };
+  const banner = res ? { key: handNo, ...resultBanner(t, res, res.hands, names, 0), delay: resultDelay - 250 } : null;
   const lines = res ? resultLines(t, res, res.hands, names, res.carry) : [];
   const change = res && res.type !== 'redo' ? me.chips - startChips : null;
   const broke = done && res.type !== 'redo' && me.chips < UNIT;
-  const resultDelay = revealOrder.length * REVEAL_GAP + 300;
-  const nextBtn = broke
-    ? <button type="button" className="ch-btn" onClick={refill}>{t('seotda.actions.refill')}</button>
-    : <button type="button" className="ch-btn primary" onClick={nextHand}>{t(res?.type === 'redo' ? 'seotda.actions.redo' : 'seotda.actions.next')}</button>;
 
   const logLines = [
     t(st.redo ? 'seotda.log.redo_deal' : 'seotda.log.deal', { n: handNo, name: names[st.dealer], pot: fmt(st.pot - st.log.reduce((s, e) => s + (e.pay || 0), 0)) }),
@@ -240,37 +262,46 @@ const LocalGame = () => {
     ...st.log.map((e) => logLine(t, e, names)),
   ];
 
+  let bar;
+  if (done) {
+    bar = (
+      <ResultBar lines={lines} change={change} delay={resultDelay}>
+        {broke
+          ? <button type="button" className="sd-bigbtn" onClick={refill}>{t('seotda.actions.refill')}</button>
+          : <button type="button" className="sd-bigbtn is-primary" onClick={nextHand}>{t(res.type === 'redo' ? 'seotda.actions.redo' : 'seotda.actions.next')}</button>}
+        {res.type !== 'redo' && <button type="button" className="sd-bigbtn" onClick={toSetup}>{t('seotda.actions.setup')}</button>}
+      </ResultBar>
+    );
+  } else if (st.phase === 'open' && myPending) {
+    bar = <OpenPicker cards={me.cards} onPick={(card) => act({ type: 'open', card })} />;
+  } else if (st.phase === 'select' && myPending) {
+    bar = <SelectPicker options={selectOptions(t, me.cards)} onPick={(pick) => act({ type: 'select', pick })} />;
+  } else {
+    bar = <BetBar acts={acts} onAct={act} disabled={!myTurn} />;
+  }
+  const hint = st.phase === 'bet' && me.inHand && !me.folded ? handHint(t, me.cards) : '';
+
   return (
-    <div className="ch-layout sd-layout">
-      <div>
-        <TableView view={view} mySeat={0} status={status}>
-          {done && resultOpen && (
-            <ResultOverlay title={title} lines={lines} change={change} delay={resultDelay} onClose={() => setResultOpen(false)}>
-              {nextBtn}
-            </ResultOverlay>
-          )}
-        </TableView>
-        {st.phase === 'bet' && me.inHand && !me.folded && <ActionBar acts={acts} onAct={act} />}
-        {st.phase === 'bet' && me.inHand && !me.folded && <p className="sd-hint-line">{handHint(t, me.cards)}</p>}
-        {st.phase === 'open' && myPending && <OpenPicker cards={me.cards} onPick={(card) => act({ type: 'open', card })} />}
-        {st.phase === 'select' && myPending && <SelectPicker options={selectOptions(t, me.cards)} onPick={(pick) => act({ type: 'select', pick })} />}
-        {done && !resultOpen && <div className="ch-actions sd-after">{nextBtn}</div>}
-      </div>
-      <div className="ch-side">
-        <div className="ch-panel">
-          <div className="sd-points-row">
-            <span>{t('seotda.my_points')}</span>
-            <strong>{fmt(me.chips)}P</strong>
-          </div>
-          <div className="ch-actions" style={{ marginTop: 12 }}>
-            <button type="button" className="ch-btn" disabled={!done || res.type === 'redo'} onClick={() => { setPhase('setup'); setSt(null); }}>{t('seotda.actions.setup')}</button>
-            <button type="button" className="ch-btn" onClick={() => setSound((s) => !s)}>{t(sound ? 'seotda.actions.sound_off' : 'seotda.actions.sound_on')}</button>
+    <>
+      <section className="sd-stage">
+        <div className="sd-topbar">
+          {topbar}
+          <div className="sd-topbar-right">
+            <span className="sd-mypoints">{fmt(me.chips)}P</span>
+            {soundBtn}
           </div>
         </div>
+        <Table view={view} mySeat={0} info={info} banner={banner} bets={bets} payouts={res ? res.payouts : null} payDelay={resultDelay - 200} />
+        <div className="sd-bar">
+          <div className="sd-statusline" aria-live="polite">{status || hint || ' '}</div>
+          {bar}
+        </div>
+      </section>
+      <div className="sd-below sd-below-grid">
         <HandLog lines={logLines} />
         <RankTable />
       </div>
-    </div>
+    </>
   );
 };
 

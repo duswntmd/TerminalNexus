@@ -194,25 +194,35 @@ const Room = ({ roomId, onExit }) => {
     </button>
   );
 
+  const roomPanel = (
+    <div className="gs-panel">
+      <div className="gs-topbar">
+        <h3 className="gs-section-title" style={{ margin: 0 }}>{room.title}</h3>
+        <div className="gs-actions">
+          {startBtn}
+          {room.status === 'FINISHED' && !resultOpen && <button type="button" className="gs-btn" onClick={() => setResultOpen(true)}>{t('gostop.actions.show_result')}</button>}
+          <button type="button" className="gs-btn" onClick={leave}>{t('gostop.actions.leave')}</button>
+        </div>
+      </div>
+      <div className="gs-scoreboard" style={{ marginTop: 8 }}>
+        <span>{t('gostop.online.totals')}</span>
+        {names.map((n, i) => <span key={i}><b>{n}</b> {t('gostop.points_unit', { n: room.totals[i] })}</span>)}
+        {room.carry > 1 && <span>{t('gostop.carry_notice', { x: room.carry })}</span>}
+      </div>
+      {!g && <p className="gs-hint" style={{ marginTop: 8 }}>{status}</p>}
+    </div>
+  );
+
+  const toolbar = (
+    <>
+      <span className="gs-points-mini">{t('gostop.online.total_mini', { n: room.totals[seat] })}</span>
+      <button type="button" className="gs-iconbtn" onClick={leave}>{t('gostop.actions.leave')}</button>
+    </>
+  );
+
   return (
     <div className="gs-play">
-      <div className="gs-panel">
-        <div className="gs-topbar">
-          <h3 className="gs-section-title" style={{ margin: 0 }}>{room.title}</h3>
-          <div className="gs-actions">
-            {startBtn}
-            {room.status === 'FINISHED' && !resultOpen && <button type="button" className="gs-btn" onClick={() => setResultOpen(true)}>{t('gostop.actions.show_result')}</button>}
-            <button type="button" className="gs-btn" onClick={leave}>{t('gostop.actions.leave')}</button>
-          </div>
-        </div>
-        <div className="gs-scoreboard" style={{ marginTop: 8 }}>
-          <span>{t('gostop.online.totals')}</span>
-          {names.map((n, i) => <span key={i}><b>{n}</b> {t('gostop.points_unit', { n: room.totals[i] })}</span>)}
-          {room.carry > 1 && <span>{t('gostop.carry_notice', { x: room.carry })}</span>}
-        </div>
-        {!g && <p className="gs-hint" style={{ marginTop: 8 }}>{status}</p>}
-      </div>
-
+      {!g && roomPanel}
       {g && (
         <GameTable
           view={g}
@@ -223,6 +233,7 @@ const Room = ({ roomId, onExit }) => {
           onGukjin={(value) => sendAct({ type: 'gukjin', value })}
           banner={banner}
           status={status}
+          toolbar={toolbar}
         >
           {room.status === 'FINISHED' && room.settlement && resultOpen && (
             <Settlement result={room.settlement} names={names}>
@@ -233,6 +244,7 @@ const Room = ({ roomId, onExit }) => {
           )}
         </GameTable>
       )}
+      {g && roomPanel}
 
       <div className="gs-panel">
         <h3 className="gs-section-title">{t('gostop.chat.title')}</h3>

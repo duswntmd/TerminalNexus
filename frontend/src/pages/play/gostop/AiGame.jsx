@@ -56,7 +56,8 @@ const AiGame = () => {
   // AI 차례
   useEffect(() => {
     if (phase !== 'playing' || !game || game.phase === 'end' || game.turn !== AI) return undefined;
-    const delay = game.phase === 'play' ? 750 : 550;
+    // 내 패가 날아가는 장면(최대 3단계)이 끝난 뒤에 둔다
+    const delay = game.phase === 'play' ? 1300 : 800;
     const timer = setTimeout(() => {
       const action = decide(viewFor(game, AI), AI, level);
       commit(applyAction(game, action));
@@ -112,26 +113,26 @@ const AiGame = () => {
   else if (game.phase === 'goStop') status = t('gostop.status.gostop');
   else status = t('gostop.status.your_turn');
 
+  const toolbar = (
+    <>
+      <span className="gs-points-mini">{t('gostop.points_mini', { n: points.toLocaleString() })}</span>
+      {game.phase === 'end' && !resultOpen && <button type="button" className="gs-iconbtn" onClick={() => setResultOpen(true)}>{t('gostop.actions.show_result')}</button>}
+      <button type="button" className="gs-iconbtn" onClick={() => setSound((v) => !v)} aria-label={t(sound ? 'gostop.actions.sound_off' : 'gostop.actions.sound_on')}>{sound ? '🔊' : '🔇'}</button>
+      <button
+        type="button"
+        className="gs-iconbtn"
+        onClick={() => {
+          if (game.phase !== 'end' && !window.confirm(t('gostop.confirm.quit'))) return;
+          setPhase('setup');
+        }}
+      >
+        {t('gostop.actions.quit')}
+      </button>
+    </>
+  );
+
   return (
     <div className="gs-play">
-      <div className="gs-topbar">
-        {pointsLine}
-        <div className="gs-actions">
-          <button type="button" className="gs-btn" onClick={() => setSound((v) => !v)}>{t(sound ? 'gostop.actions.sound_off' : 'gostop.actions.sound_on')}</button>
-          {game.phase === 'end' && !resultOpen && <button type="button" className="gs-btn" onClick={() => setResultOpen(true)}>{t('gostop.actions.show_result')}</button>}
-          <button
-            type="button"
-            className="gs-btn"
-            onClick={() => {
-              if (game.phase !== 'end' && !window.confirm(t('gostop.confirm.quit'))) return;
-              setPhase('setup');
-            }}
-          >
-            {t('gostop.actions.quit')}
-          </button>
-        </div>
-      </div>
-      {game.carry > 1 && <p className="gs-hint">{t('gostop.carry_notice', { x: game.carry })}</p>}
       <GameTable
         view={game}
         me={ME}
@@ -141,6 +142,7 @@ const AiGame = () => {
         onGukjin={(value) => setGame((g) => applyAction(g, { type: 'gukjin', player: ME, value }))}
         banner={banner}
         status={status}
+        toolbar={toolbar}
       >
         {game.phase === 'end' && outcome && resultOpen && (
           <Settlement result={outcome.result} names={names} delta={outcome.delta}>

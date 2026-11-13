@@ -95,6 +95,23 @@ export const resultLines = (t, result, hands, names, carry) => {
   return [t('seotda.result.winner', { name: names[w], hand: hands[w] ? handResult(t, hands[w]) : '' })];
 };
 
+/** 결과 때 판 가운데 크게 띄우는 글 { title, sub, tone: win | lose | redo } */
+export const resultBanner = (t, result, hands, names, mySeat) => {
+  if (result.type === 'redo') {
+    if (result.reason === 'tie') {
+      const h = hands[result.participants[0]];
+      return { title: t('seotda.banner.tie'), sub: h ? handName(t, h) : '', tone: 'redo' };
+    }
+    const h = hands[result.redoSeat];
+    return { title: t('seotda.banner.redo', { hand: h ? handName(t, h) : '' }), sub: names[result.redoSeat], tone: 'redo' };
+  }
+  const w = result.winners[0];
+  const tone = w === mySeat ? 'win' : mySeat >= 0 ? 'lose' : 'win';
+  if (result.type === 'fold') return { title: t('seotda.banner.win_by', { name: names[w] }), sub: t('seotda.banner.fold'), tone };
+  const h = hands[w];
+  return { title: `${h ? handName(t, h) : ''}!`, sub: t('seotda.banner.win_by', { name: names[w] }), tone };
+};
+
 /** 서버 공개 상태 → 승부 판정 (공개된 패로 화면에서 다시 계산, 서버와 같은 규칙) */
 export const resolveRevealed = (room) => {
   const res = room.result;
