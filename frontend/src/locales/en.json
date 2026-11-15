@@ -229,6 +229,13 @@
             "login": false
           },
           {
+            "icon": "⚫",
+            "name": "Omok (Gomoku)",
+            "desc": "Five in a row on a 15-line wooden board. Pick renju, standard or free rules, then play a three-level AI, a friend on one device, or someone online in real time. Forbidden points are marked, and you can show move numbers and replay the game.",
+            "path": "/play/omok",
+            "login": false
+          },
+          {
             "icon": "🤖",
             "name": "ARC Raiders Info",
             "desc": "Unofficial ARC Raiders database: 26 weapons, 38 materials, 50 quests, workshop upgrades, traders, ARC weak points, maps and updates, all searchable and cross-linked with sources and check dates.",
@@ -625,6 +632,10 @@
     "seotda": {
       "name": "Seotda",
       "desc": "Two- and three-card seotda against the computer or people"
+    },
+    "omok": {
+      "name": "Omok (Gomoku)",
+      "desc": "Five in a row with renju rules: AI, local or online"
     }
   },
   "home": {
@@ -2076,5 +2087,226 @@
       "fold": "Everyone else died",
       "win_by": "{{name}} wins"
     }
+  },
+  "omok": {
+    "title": "Omok",
+    "meta_title": "Omok (Gomoku) - TerminalNexus | Renju-rule AI & online five in a row",
+    "meta_desc": "Free five-in-a-row on a 15-line wooden board. Choose renju (3-3, 4-4 and overline forbidden for Black), standard or free rules and play a three-level AI, a friend on one device, or someone online. Forbidden points, move numbers and game review included.",
+    "modes": {
+      "ai": "vs AI",
+      "local": "2 players",
+      "online": "Online"
+    },
+    "black": "Black",
+    "white": "White",
+    "you": "You",
+    "player_black": "Player 1",
+    "player_white": "Player 2",
+    "ai_name": "Computer ({{level}})",
+    "board_label": "Omok board",
+    "rule": {
+      "renju": "Renju",
+      "renju_desc": "Only Black is forbidden 3-3, 4-4 and overlines (6+). White is unrestricted and wins with an overline too",
+      "standard": "Standard",
+      "standard_desc": "3-3 is forbidden for both. An overline may be played but does not win",
+      "free": "Free",
+      "free_desc": "No forbidden moves. Five or more in a row wins"
+    },
+    "setup": {
+      "ai_title": "Play the computer",
+      "local_title": "Two players",
+      "local_desc": "Black and White take turns on one device. Black moves first.",
+      "rule": "Rules",
+      "my_color": "Your stones",
+      "black": "Black",
+      "black_desc": "Moves first",
+      "white": "White",
+      "white_desc": "Moves second",
+      "random": "Random",
+      "random_desc": "Either color",
+      "level": "Level"
+    },
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "Looks one move ahead",
+      "normal": "Normal",
+      "normal_desc": "Reads two moves",
+      "hard": "Hard",
+      "hard_desc": "Deep reading"
+    },
+    "status": {
+      "thinking": "The computer is thinking…",
+      "thinking_short": "thinking…",
+      "your_turn": "Your move",
+      "opp_turn": "Opponent to move",
+      "turn": "{{color}} to move",
+      "finished": "Game over",
+      "reviewing": "Reviewing (move {{ply}} of {{total}})",
+      "ready_host": "Press Start to begin",
+      "waiting_host": "Waiting for the host to start",
+      "waiting_opponent": "Waiting for an opponent",
+      "spectating": "Watching · {{color}} to move"
+    },
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "draw": "Draw",
+      "black_wins": "Black wins!",
+      "white_wins": "White wins!"
+    },
+    "reason": {
+      "five": "Five in a row on move {{count}}",
+      "full": "No moves left",
+      "resign": "Resignation",
+      "timeout": "Out of time",
+      "leave": "Left the game"
+    },
+    "forbidden": {
+      "three3": "Forbidden 3-3: this move would make two open threes",
+      "four4": "Forbidden 4-4: this move would make two fours",
+      "overline": "Forbidden overline: this move would make six or more in a row"
+    },
+    "forbidden_short": {
+      "three3": "forbidden 3-3",
+      "four4": "forbidden 4-4",
+      "overline": "forbidden overline"
+    },
+    "forbidden_hint": "✕ marks points you cannot play right now.",
+    "opts": {
+      "sound": "Sound on/off",
+      "sound_short": "Sound",
+      "numbers": "Show move numbers",
+      "numbers_short": "Numbers",
+      "confirm": "Pick a point, then confirm with the Place button (prevents mis-taps)",
+      "confirm_short": "Confirm"
+    },
+    "actions": {
+      "start": "Start",
+      "place": "Place stone",
+      "undo": "Undo",
+      "undo_request": "Ask to undo",
+      "resign": "Resign",
+      "new_game": "Settings",
+      "again": "Play again",
+      "review": "Review",
+      "rematch": "Rematch",
+      "accept": "Accept",
+      "decline": "Decline",
+      "leave": "Leave",
+      "enter": "Join",
+      "watch": "Watch",
+      "create": "Create room",
+      "send": "Send",
+      "login": "Log in"
+    },
+    "confirm": {
+      "resign": "Resign this game?",
+      "leave": "Leaving during a game counts as a loss. Leave?"
+    },
+    "moves_title": "Moves ({{count}})",
+    "no_moves": "No moves yet",
+    "review": {
+      "title": "Review",
+      "first": "First",
+      "prev": "Previous move",
+      "next": "Next move",
+      "last": "Last"
+    },
+    "undo": {
+      "requested_by_me": "Undo requested. Waiting for your opponent…",
+      "requested_by_opp": "Your opponent asks to undo",
+      "done": "A move was taken back",
+      "declined": "Your opponent declined the undo"
+    },
+    "rematch": {
+      "waiting": "Waiting for opponent…",
+      "accept": "Accept rematch",
+      "offered": "Your opponent wants a rematch"
+    },
+    "lobby": {
+      "rooms": "Rooms ({{count}})",
+      "empty": "No open rooms. Create one.",
+      "empty_seat": "Empty",
+      "create_title": "Create a room",
+      "title_ph": "Room title (blank = your nickname)",
+      "turn_time": "Time per move",
+      "seconds": "{{count}}s",
+      "status": {
+        "WAITING": "Waiting",
+        "PLAYING": "Playing",
+        "FINISHED": "Finished"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "empty": "No messages yet",
+      "ph": "Type a message"
+    },
+    "closed": {
+      "host_closed": "The host closed the room",
+      "host_left": "The host left, so the room was closed"
+    },
+    "error": {
+      "generic": "The request could not be handled",
+      "connecting": "Connecting to the server",
+      "room_not_found": "Room not found",
+      "not_your_turn": "It is not your move",
+      "occupied": "That point is taken",
+      "host_only": "Only the host can do that",
+      "need_opponent": "You need an opponent to start",
+      "not_playing": "No game in progress",
+      "not_waiting": "The game has already started",
+      "not_player": "You are not a player in this room",
+      "undo_pending": "An undo request is already pending",
+      "nothing_to_undo": "Nothing to undo",
+      "no_undo_request": "There is no undo request",
+      "not_finished": "Available after the game ends"
+    },
+    "login_needed": "Log in to play online.",
+    "loading": "Loading…",
+    "entering": "Joining…",
+    "rules_title": "Omok rules",
+    "rules": [
+      [
+        "Basics",
+        "On a 15×15 board Black moves first and players alternate. The first to line up five of their stones in a row, column or diagonal wins."
+      ],
+      [
+        "Renju",
+        "Only Black is forbidden to play 3-3, 4-4 and overlines (six or more). White has no restrictions and also wins with an overline. Black needs exactly five."
+      ],
+      [
+        "Standard",
+        "3-3 is forbidden for both players. 4-4 is allowed, and an overline may be played but does not count as a win."
+      ],
+      [
+        "Free",
+        "No forbidden moves; five or more in a row wins."
+      ],
+      [
+        "3-3",
+        "A move that makes two or more threes (lines that become an open four with one more stone). A line that is blocked so it cannot become an open four, or whose open-four point is itself forbidden, is not a three."
+      ],
+      [
+        "4-4",
+        "A move that makes two or more fours (lines that become five with one more stone), including two fours on the same line."
+      ],
+      [
+        "Five first",
+        "A move that completes five is always allowed and wins, even if it also forms a forbidden shape."
+      ],
+      [
+        "Forbidden marks",
+        "On a restricted player's turn, unplayable points are marked with ✕; tapping one explains why."
+      ],
+      [
+        "Draw",
+        "The game is drawn when the board is full or every remaining point is forbidden."
+      ],
+      [
+        "Online",
+        "Each move has a time limit (15, 30 or 60 seconds); running out loses. Undo needs the opponent's consent, and a rematch starts with colors swapped once both players press it."
+      ]
+    ]
   }
 }

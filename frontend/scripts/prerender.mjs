@@ -166,6 +166,18 @@ add({
   jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.gostop.title, description: ko.gostop.meta_desc, url: `${SITE}/play/gostop`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
 });
 
+// 오목: 규칙 선택과 금수 설명을 본문에 넣는다
+add({
+  url: '/play/omok',
+  title: ko.omok.meta_title,
+  desc: ko.omok.meta_desc,
+  body: `<h1>${esc(ko.omok.title)}</h1><p>${esc(ko.omok.meta_desc)}</p>
+<h2>${esc(ko.omok.modes.ai)} · ${esc(ko.omok.modes.local)} · ${esc(ko.omok.modes.online)}</h2><p>${esc(ko.guide.groups.flatMap((g) => g.items).find((i) => i.path === '/play/omok').desc)}</p>
+<h2>${esc(ko.omok.setup.rule)}</h2><ul>${['renju', 'standard', 'free'].map((r) => `<li>${esc(ko.omok.rule[r])}: ${esc(ko.omok.rule[`${r}_desc`])}</li>`).join('')}</ul>
+<h2>${esc(ko.omok.rules_title)}</h2><ul>${ko.omok.rules.map(([name, desc]) => `<li>${esc(name)}: ${esc(desc)}</li>`).join('')}</ul>`,
+  jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: ko.omok.title, description: ko.omok.meta_desc, url: `${SITE}/play/omok`, applicationCategory: 'GameApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } }],
+});
+
 // 섯다: 족보와 채택한 규칙을 본문에 넣는다
 add({
   url: '/play/seotda',
