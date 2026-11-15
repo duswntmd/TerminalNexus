@@ -49,8 +49,13 @@ export const MoveList = ({ moves, current, onJump }) => {
   const { t } = useTranslation();
   const ref = useRef(null);
   useEffect(() => {
-    const el = ref.current?.querySelector('.is-current');
-    if (el) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    // 목록 안에서만 스크롤한다 (scrollIntoView 는 모바일에서 페이지 전체를 밀어 올린다)
+    const list = ref.current;
+    const li = list?.querySelector('.is-current')?.parentElement;
+    if (!li) return;
+    const top = li.offsetTop;
+    if (top < list.scrollTop) list.scrollTop = top;
+    else if (top + li.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = top + li.offsetHeight - list.clientHeight;
   }, [current, moves.length]);
   return (
     <div className="om-moves">
@@ -101,8 +106,8 @@ const CONFETTI = Array.from({ length: 36 }, (_, i) => ({
 }));
 
 /** 결과 화면 (판 위에 띄움). kind: win | lose | draw | plain */
-export const ResultOverlay = ({ kind, title, reason, children }) => (
-  <div className={`om-result is-${kind}`} role="dialog" aria-label={title}>
+export const ResultOverlay = ({ kind, title, reason, at = 'center', children }) => (
+  <div className={`om-result is-${kind} at-${at}`} role="dialog" aria-label={title}>
     {kind === 'win' && (
       <div className="om-confetti" aria-hidden="true">
         {CONFETTI.map((c, i) => (

@@ -4,7 +4,7 @@ import { BLACK, WHITE, RULES, enemyOf, newGame, playMove, finishWith, replay } f
 import { playSound } from './sound.js';
 import GameScreen from './GameScreen.jsx';
 import { OptionButtons, ResultOverlay } from './parts.jsx';
-import { useOptions, useToast, useBoardInput, formatClock, colorKey } from './helpers.js';
+import { useOptions, useToast, useBoardInput, formatClock, colorKey, resultSide } from './helpers.js';
 
 const LEVELS = ['easy', 'normal', 'hard'];
 const turnAt = (n) => (n % 2 === 0 ? BLACK : WHITE);
@@ -257,7 +257,7 @@ const LocalGame = ({ mode, topbar }) => {
       )}
       notice={canPlay && Object.keys(input.forbidden).length > 0 && <p className="om-hint">{t('omok.forbidden_hint')}</p>}
       overlay={finished && resultOpen && (
-        <ResultOverlay kind={kind} title={resultTitle} reason={resultReason}>
+        <ResultOverlay kind={kind} title={resultTitle} reason={resultReason} at={resultSide(game.winLine)}>
           <button type="button" className="om-btn primary" onClick={startGame}>{t('omok.actions.again')}</button>
           <button type="button" className="om-btn" onClick={() => setResultOpen(false)}>{t('omok.actions.review')}</button>
           <button type="button" className="om-btn" onClick={newSetup}>{t('omok.actions.new_game')}</button>

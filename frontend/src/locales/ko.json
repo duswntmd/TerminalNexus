@@ -2125,7 +2125,7 @@
       "easy": "쉬움",
       "easy_desc": "한 수 앞만 봄",
       "normal": "보통",
-      "normal_desc": "두 수 앞 + 연속 4",
+      "normal_desc": "두 수 앞까지",
       "hard": "어려움",
       "hard_desc": "깊은 수읽기"
     },

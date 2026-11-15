@@ -29,6 +29,13 @@ export const formatClock = (sec) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
+/** 결과 창을 판의 어느 쪽에 띄울지: 승리한 줄을 가리지 않는 쪽 */
+export const resultSide = (winLine) => {
+  if (!winLine || !winLine.length) return 'center';
+  const avgY = winLine.reduce((sum, idx) => sum + Math.floor(idx / 15), 0) / winLine.length;
+  return avgY >= 7 ? 'top' : 'bottom';
+};
+
 export const colorKey = (c) => (c === BLACK ? 'black' : 'white');
 export const colorFromName = (name) => (name === 'BLACK' ? BLACK : name === 'WHITE' ? WHITE : null);
 

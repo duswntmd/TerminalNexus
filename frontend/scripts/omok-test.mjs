@@ -491,7 +491,7 @@ const playout = (rule, blackLevel, whiteLevel, seed, time) => {
     for (const rule of RULES) {
       tally(`${rule} 어려움 vs 쉬움`, rule, 'hard', 'easy', 12, 250, 12);
     }
-    tally('renju 보통 vs 쉬움', 'renju', 'normal', 'easy', 12, 150, 10);
+    tally('renju 보통 vs 쉬움', 'renju', 'normal', 'easy', 12, 250, 10);
     tally('renju 어려움 vs 보통', 'renju', 'hard', 'normal', 12, 400, 8);
     // 실제 설정 시간으로 둘 때 응답 시간
     const slow = tally('renju 어려움 vs 보통 (실제 생각 시간)', 'renju', 'hard', 'normal', 2, undefined, 1);

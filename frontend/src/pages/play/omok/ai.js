@@ -3,7 +3,7 @@
  *
  *  - 한 줄 모양 분류표: 놓으려는 칸 양옆 5칸씩(3^10 가지)을 미리 분류해 두고 조회 (5·열린4·4·열린3·3·2)
  *  - 쉬움: 한 수 앞만 보고 점수에 큰 무작위를 섞음
- *  - 보통: 짧은 VCF(연속 4) + 2수 알파베타
+ *  - 보통: 짧은 VCF(연속 4) + 2~4수 알파베타 (0.45초)
  *  - 어려움: VCF(연속 4로 이기는 수순) → 내 수 뒤 상대 VCF 가 생기는 수 제외
  *            → 위협 순으로 정렬한 알파베타를 시간 안에서 반복 심화. 4에 대한 응수는 깊이를 쓰지 않고 연장
  *  - 금수는 engine.js 로 정확히 판정 (렌주의 백은 흑이 막을 자리가 금수인 4로 이기는 "금수 유도"도 본다)
@@ -312,10 +312,18 @@ export class Searcher {
     const list = [];
     for (const c of info.cand) {
       if (c.my < 0) continue;
-      list.push({ idx: c.idx, key: c.my + (c.op > 0 ? c.op * 0.9 : 0) });
+      list.push({ idx: c.idx, key: c.my + (c.op > 0 ? c.op * 0.9 : 0), four: c.fours > 0 });
     }
     list.sort((a, b) => b.key - a.key);
-    return list.length > width ? list.slice(0, width) : list;
+    if (list.length <= width) return list;
+    // 폭으로 자르더라도 4를 만드는 수(강제수)는 빼지 않는다.
+    // 빠지면 상대의 반격 4를 못 보고 "이겼다"고 착각한다.
+    const out = list.slice(0, width);
+    let extra = 0;
+    for (let i = width; i < list.length && extra < 4; i += 1) {
+      if (list[i].four) { out.push(list[i]); extra += 1; }
+    }
+    return out;
   }
 
   negamax(me, depth, alpha, beta, ply) {
@@ -332,9 +340,18 @@ export class Searcher {
     } else {
       if (info.myWin4 >= 0) return WIN - ply - 2;
       if (!info.cand.length) return 0;
-      if (depth <= 0) return this.evaluate(info);
-      moves = this.ordered(info, this.width);
-      if (!moves.length) return 0; // 둘 곳이 모두 금수
+      if (depth <= 0) {
+        // 깊이가 다해도, 상대가 다음 수에 열린 4를 만들 수 있으면(열린 3이 있으면) 평가하지 않고
+        // 막는 수와 내 4만 더 읽는다 → 얕은 탐색에서도 3-3·4-3 을 놓치지 않는다
+        if (ply >= this.maxPly || !info.cand.some((c) => c.op >= 1000000)) return this.evaluate(info);
+        moves = info.cand.filter((c) => c.my >= 0 && (c.op >= 1000000 || c.fours > 0))
+          .sort((a, b) => (b.op + b.my) - (a.op + a.my));
+        if (!moves.length) return -(WIN - ply - 3);
+        forced = true;
+      } else {
+        moves = this.ordered(info, this.width);
+        if (!moves.length) return 0; // 둘 곳이 모두 금수
+      }
     }
     let best = -Infinity;
     for (const m of moves) {
@@ -374,7 +391,7 @@ const openingMove = (moves, rng) => {
 
 const LEVELS = {
   easy: { time: 0 },
-  normal: { time: 350, width: 8, depths: [2], vcfDepth: 4, vcfNodes: 1500, guard: 0 },
+  normal: { time: 450, width: 8, depths: [2, 4], vcfDepth: 4, vcfNodes: 1500, guard: 0 },
   hard: { time: 1100, width: 9, rootWidth: 14, depths: [2, 4, 6, 8, 10], vcfDepth: 16, vcfNodes: 40000, guard: 12 },
 };
 
@@ -434,7 +451,7 @@ export const chooseMove = (rule, moves, level = 'normal', opts = {}) => {
 
   // 2) 후보 정렬
   s.width = cfg.width;
-  s.maxPly = 24;
+  s.maxPly = 18;
   let root = s.ordered(info, cfg.rootWidth || cfg.width);
   // 같은 점수면 순서를 살짝 섞어 매번 같은 판이 되지 않게
   root.forEach((m) => { m.key += rng() * 2; });
@@ -474,7 +491,7 @@ export const chooseMove = (rule, moves, level = 'normal', opts = {}) => {
     }
     if (s.aborted) {
       // 중간에 끊긴 깊이: 이전 최선보다 좋은 수를 이미 찾았을 때만 채택
-      if (iterBest >= 0 && iterBest !== bestMove && scores.has(bestMove) && alpha > scores.get(bestMove)) bestMove = iterBest;
+      if (reached === 0) { if (iterBest >= 0) bestMove = iterBest; } else if (iterBest >= 0 && iterBest !== bestMove && scores.has(bestMove) && alpha > scores.get(bestMove)) bestMove = iterBest;
       break;
     }
     bestMove = iterBest;

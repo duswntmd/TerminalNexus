@@ -6,7 +6,7 @@ import { BLACK, WHITE, RULES, enemyOf, replay, finishWith } from './engine.js';
 import { playSound } from './sound.js';
 import GameScreen from './GameScreen.jsx';
 import { OptionButtons, ResultOverlay, Toast } from './parts.jsx';
-import { useOptions, useToast, useBoardInput, formatClock, colorKey, colorFromName } from './helpers.js';
+import { useOptions, useToast, useBoardInput, formatClock, colorKey, colorFromName, resultSide } from './helpers.js';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchWithAccessRaw } from '../../../util/fetchUtil';
 
@@ -380,7 +380,7 @@ const Room = ({ roomId, me, onExit, topbar }) => {
         </>
       )}
       overlay={finished && resultOpen && (
-        <ResultOverlay kind={kind} title={resultTitle} reason={resultReason}>
+        <ResultOverlay kind={kind} title={resultTitle} reason={resultReason} at={resultSide(game.winLine)}>
           {rematchButton}
           <button type="button" className="om-btn" onClick={() => setResultOpen(false)}>{t('omok.actions.review')}</button>
         </ResultOverlay>

@@ -2130,7 +2130,7 @@
       "easy": "Easy",
       "easy_desc": "Looks one move ahead",
       "normal": "Normal",
-      "normal_desc": "Two moves + forcing fours",
+      "normal_desc": "Reads two moves",
       "hard": "Hard",
       "hard_desc": "Deep reading"
     },
