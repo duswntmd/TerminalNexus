@@ -2110,7 +2110,8 @@
     "modes": {
       "ai": "vs AI",
       "local": "2 players",
-      "online": "Online"
+      "online": "Online",
+      "puzzle": "Puzzles"
     },
     "black": "Black",
     "white": "White",
@@ -2322,6 +2323,32 @@
         "Online",
         "Each move has a time limit (15, 30 or 60 seconds); running out loses. Undo needs the opponent's consent, and a rematch starts with colors swapped once both players press it."
       ]
-    ]
+    ],
+    "puzzle": {
+      "defender": "Defender (computer)",
+      "level_easy": "Easy",
+      "level_normal": "Medium",
+      "level_hard": "Hard",
+      "title_n": "Puzzle {{no}}",
+      "goal": "{{color}} to play and win within {{n}} moves",
+      "left": "{{n}} moves left",
+      "how": "Keep making fours so the opponent is forced to block. Finish with a five to solve it.",
+      "not_four": "That move does not make a four. Keep forcing with fours",
+      "lose": "After that move the opponent makes five right away",
+      "wrong": "That is a four, but it does not win in time",
+      "hint": "Hint",
+      "hint_at": "Hint: try {{at}}",
+      "answer": "Show answer",
+      "answer_title": "Solution",
+      "retry": "Retry",
+      "next": "Next puzzle",
+      "prev": "Previous puzzle",
+      "solved": "Solved!",
+      "solved_clean": "First try",
+      "solved_tries": "Solved after {{n}} wrong tries",
+      "progress": "Solved {{done}} / {{total}}",
+      "item": "Puzzle {{no}} ({{n}} moves)",
+      "cant_block": "Black cannot block: that point is forbidden!"
+    }
   }
 }

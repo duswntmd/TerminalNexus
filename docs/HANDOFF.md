@@ -10,8 +10,8 @@
 | 순서 | 할 일 | 상태 |
 |---|---|---|
 | 1 | 게임 규칙 가이드 `/rules` (화투 48장, 섯다 족보·확률·확인기, 고스톱 점수 계산기, 렌주룰 금수 그림) | 완료, `dev`에 커밋 (배포 전) |
-| 2 | 오목 묘수풀이: 흑(또는 백)이 이기는 수를 찾는 문제 수십 개, 정답은 `omok/engine.js`·`ai.js`로 검증 | 다음 차례 |
-| 3 | 새 게임 (리버시, 체커, 장기 AI 강화 중 고름). 게임 화면에는 광고를 넣지 않는다 | 대기 |
+| 2 | 오목 묘수풀이 (`/play/omok?mode=puzzle`): AI 자가대국에서 뽑은 연속 4(VCF) 문제, 풀이기 `omok/puzzle.js`, 문제 `omok/puzzles.js`(생성: `node scripts/omok-puzzles-gen.mjs 160`), 검증은 `omok-test.mjs` 10-2절. 50문제(대국마다 1문제, 흑 금수로 못 막는 문제 6개 포함) | 완료, `dev`에 커밋 (배포 전) |
+| 3 | 새 게임 (리버시, 체커, 장기 AI 강화 중 고름). 게임 화면에는 광고를 넣지 않는다 | 다음 차례 |
 
 - 규칙 가이드 글은 `frontend/src/content/rules.js` 한 곳에 있고 화면(`pages/rules/RulesPage.jsx`)과 `scripts/prerender.mjs`가 함께 쓴다.
 - 글 속 숫자·오목 그림은 `node scripts/rules-test.mjs`로 엔진과 맞는지 확인한다.

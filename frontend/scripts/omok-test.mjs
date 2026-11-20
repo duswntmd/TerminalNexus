@@ -10,6 +10,8 @@ import {
   newGame, playMove, moveError, replay, needsExactFive, isRestricted,
 } from '../src/pages/play/omok/engine.js';
 import { chooseMove } from '../src/pages/play/omok/ai.js';
+import { boardOf, fivePoints, vcfLength, winningFirstMoves, isGoodMove, attackStep } from '../src/pages/play/omok/puzzle.js';
+import { PUZZLES, PUZZLE_RULE } from '../src/pages/play/omok/puzzles.js';
 
 let failed = 0;
 let passed = 0;
@@ -401,6 +403,54 @@ const randomGames = (count, seed) => {
     fs.writeFileSync(path.join(dir, 'games.json'), JSON.stringify(games));
     console.log(`서버 대조 파일 기록: ${path.join(dir, 'games.json')} (${games.length}판)`);
   }
+}
+
+// ── 10-2. 묘수풀이 (연속 4)
+{
+  // 풀이기 자체: 손으로 만든 장면
+  const vcf2 = boardOf([]);
+  // 흑 가로 ●●●· (열린 3) + 세로 ●●· : 가로 4를 두면 열린 4 → 2수 승
+  [toIdx(5, 7), toIdx(6, 7), toIdx(7, 7)].forEach((i) => { vcf2[i] = BLACK; });
+  [toIdx(0, 0), toIdx(14, 14), toIdx(0, 14)].forEach((i) => { vcf2[i] = WHITE; });
+  eq('열린 3 → 2수 연속 4 승', vcfLength(vcf2, BLACK, 'renju', 4), 2);
+  eq('열린 4 만드는 수는 막을 수 없음', attackStep(vcf2, BLACK, 'renju', toIdx(8, 7)).type, 'win');
+  eq('4가 아닌 수', attackStep(vcf2, BLACK, 'renju', toIdx(9, 9)).type, 'none');
+
+  const ids = new Set();
+  let checked = 0;
+  for (const p of PUZZLES) {
+    const label = `묘수풀이 ${p.id}`;
+    check(`${label}: 번호 중복 없음`, !ids.has(p.id));
+    ids.add(p.id);
+    const g = replay(PUZZLE_RULE, p.moves);
+    eq(`${label}: 수순이 모두 둘 수 있는 수`, g.moves.length, p.moves.length);
+    const me = p.moves.length % 2 === 0 ? BLACK : WHITE;
+    eq(`${label}: 아직 진행 중`, g.status, 'PLAYING');
+    eq(`${label}: 바로 5목 없음`, fivePoints(g.board, me, PUZZLE_RULE).length, 0);
+    eq(`${label}: 상대 5목 위협 없음`, fivePoints(g.board, 3 - me, PUZZLE_RULE).length, 0);
+    eq(`${label}: 가장 짧은 승리 수`, vcfLength(g.board, me, PUZZLE_RULE, 8), p.n);
+    const firsts = winningFirstMoves(g.board, me, PUZZLE_RULE, p.n);
+    check(`${label}: 첫 수 정답 1~2개 (${firsts.length})`, firsts.length >= 1 && firsts.length <= 2);
+    // 화면처럼 끝까지 풀기: 매 수 isGoodMove 로 확인하고 막는 쪽은 5목 자리를 막는다
+    let cur = g;
+    let left = p.n;
+    while (cur.status === 'PLAYING' && left > 0) {
+      const m = winningFirstMoves(cur.board, me, PUZZLE_RULE, left)[0];
+      check(`${label}: 남은 ${left}수에서 정답 수가 있음`, m != null);
+      if (m == null) break;
+      check(`${label}: 정답 수는 isGoodMove 통과`, isGoodMove(cur.board, me, PUZZLE_RULE, m, left).ok);
+      cur = playMove(cur, m);
+      left -= 1;
+      if (cur.status !== 'PLAYING') break;
+      // 막을 자리가 금수(렌주룰 흑)면 다른 곳에 둘 수밖에 없다
+      const block = fivePoints(cur.board, me, PUZZLE_RULE).map((i) => playMove(cur, i)).find(Boolean)
+        || Array.from({ length: CELLS }, (_, i) => i).map((i) => (cur.board[i] === EMPTY ? playMove(cur, i) : null)).find(Boolean);
+      cur = block;
+    }
+    eq(`${label}: ${p.n}수 안에 승리`, cur.winner, me);
+    checked += 1;
+  }
+  check(`묘수풀이 30문제 이상 (${checked})`, checked >= 30);
 }
 
 // ── 11. AI
