@@ -28,6 +28,7 @@ import ChessPage from "./pages/play/chess/ChessPage";
 import GostopPage from "./pages/play/gostop/GostopPage";
 import SeotdaPage from "./pages/play/seotda/SeotdaPage";
 import OmokPage from "./pages/play/omok/OmokPage";
+import ReversiPage from "./pages/play/reversi/ReversiPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
@@ -182,6 +183,7 @@ const AppContent = () => {
           <Route path="/play/gostop" element={<GostopPage />} />
           <Route path="/play/seotda" element={<SeotdaPage />} />
           <Route path="/play/omok" element={<OmokPage />} />
+          <Route path="/play/reversi" element={<ReversiPage />} />
           <Route path="/play/linux" element={<><NavMeta id="linux" path="/play/linux" /><RockyLinuxPage /></>} />
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />

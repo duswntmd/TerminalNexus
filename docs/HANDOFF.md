@@ -10,8 +10,9 @@
 | 순서 | 할 일 | 상태 |
 |---|---|---|
 | 1 | 게임 규칙 가이드 `/rules` (화투 48장, 섯다 족보·확률·확인기, 고스톱 점수 계산기, 렌주룰 금수 그림) | 완료, `dev`에 커밋 (배포 전) |
-| 2 | 오목 묘수풀이 (`/play/omok?mode=puzzle`): AI 자가대국에서 뽑은 연속 4(VCF) 문제, 풀이기 `omok/puzzle.js`, 문제 `omok/puzzles.js`(생성: `node scripts/omok-puzzles-gen.mjs 160`), 검증은 `omok-test.mjs` 10-2절. 50문제(대국마다 1문제, 흑 금수로 못 막는 문제 6개 포함) | 완료, `dev`에 커밋 (배포 전) |
-| 3 | 새 게임 (리버시, 체커, 장기 AI 강화 중 고름). 게임 화면에는 광고를 넣지 않는다 | 다음 차례 |
+| 2 | 오목 묘수풀이 (`/play/omok?mode=puzzle`): AI 자가대국에서 뽑은 연속 4(VCF) 문제, 풀이기 `omok/puzzle.js`, 문제 `omok/puzzles.js`(생성: `node scripts/omok-puzzles-gen.mjs 260`), 검증은 `omok-test.mjs` 10-2절. 50문제(대국마다 1문제, 흑 금수로 못 막는 문제 6개 포함) | 완료, `dev`에 커밋 (배포 전) |
+| 3 | 리버시 `/play/reversi` (AI 3단계·2인, `play/reversi/`, 시험 `node scripts/reversi-test.mjs`). 게임 화면에는 광고를 넣지 않는다 | 완료, `dev`에 커밋 (배포 전) |
+| 4 | 다음 후보: 리버시 온라인 대국, 체커, 장기 AI 강화, 규칙 가이드 글 추가(리버시·장기·체스 입문) | 사용자 선택 대기 |
 
 - 규칙 가이드 글은 `frontend/src/content/rules.js` 한 곳에 있고 화면(`pages/rules/RulesPage.jsx`)과 `scripts/prerender.mjs`가 함께 쓴다.
 - 글 속 숫자·오목 그림은 `node scripts/rules-test.mjs`로 엔진과 맞는지 확인한다.

@@ -148,6 +148,14 @@ ${g.body.map(ruleBlockHtml).join('')}
 }
 
 add({
+  url: '/play/reversi',
+  title: ko.reversi.meta_title,
+  desc: ko.reversi.meta_desc,
+  body: `<h1>${esc(ko.reversi.title)}</h1><p>${esc(ko.reversi.meta_desc)}</p>
+<h2>${esc(ko.reversi.rules_title)}</h2><ul>${ko.reversi.rules.map(([n, d]) => `<li><b>${esc(n)}</b>: ${esc(d)}</li>`).join('')}</ul><p>${esc(ko.reversi.tip)}</p>`,
+});
+
+add({
   url: '/cert',
   title: ko.cert.meta_title,
   desc: ko.cert.meta_desc,
