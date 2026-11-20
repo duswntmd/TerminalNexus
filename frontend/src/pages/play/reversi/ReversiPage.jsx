@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { N, BLACK, WHITE, PASS, coordOf, legalMoves, countOf, newGame, playMove, replay, resignGame, flipsFor } from './engine.js';
 import { playSound } from '../omok/sound.js';
@@ -330,6 +330,7 @@ const ReversiPage = () => {
           <summary>{t('reversi.rules_title')}</summary>
           <ul>{Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}</ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/reversi-guide">{t('rules.link_reversi')} →</Link>
       </div>
     </div>
   );

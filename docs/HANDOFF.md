@@ -4,15 +4,16 @@
 
 ## 진행 중 (2026-11-21)
 
-운영은 `main` `d7fe8f0`(섯다·고스톱 화면 재구성, 오목 포함)이다. 아래 순서대로 이어서 만든다. 항목을 끝낼 때마다 이 표를 고친다.
+운영은 `main` `1942318`(1~3번 포함, 2026-11-21 배포)이다. 아래 순서대로 이어서 만든다. 항목을 끝낼 때마다 이 표를 고친다.
 배포(`main` 병합·push)는 사용자가 그 메시지에서 "배포해줘"라고 할 때만 한다.
 
 | 순서 | 할 일 | 상태 |
 |---|---|---|
-| 1 | 게임 규칙 가이드 `/rules` (화투 48장, 섯다 족보·확률·확인기, 고스톱 점수 계산기, 렌주룰 금수 그림) | 완료, `dev`에 커밋 (배포 전) |
-| 2 | 오목 묘수풀이 (`/play/omok?mode=puzzle`): AI 자가대국에서 뽑은 연속 4(VCF) 문제, 풀이기 `omok/puzzle.js`, 문제 `omok/puzzles.js`(생성: `node scripts/omok-puzzles-gen.mjs 260`), 검증은 `omok-test.mjs` 10-2절. 50문제(대국마다 1문제, 흑 금수로 못 막는 문제 6개 포함) | 완료, `dev`에 커밋 (배포 전) |
-| 3 | 리버시 `/play/reversi` (AI 3단계·2인, `play/reversi/`, 시험 `node scripts/reversi-test.mjs`). 게임 화면에는 광고를 넣지 않는다 | 완료, `dev`에 커밋 (배포 전) |
-| 4 | 다음 후보: 리버시 온라인 대국, 체커, 장기 AI 강화, 규칙 가이드 글 추가(리버시·장기·체스 입문) | 사용자 선택 대기 |
+| 1 | 게임 규칙 가이드 `/rules` (화투 48장, 섯다 족보·확률·확인기, 고스톱 점수 계산기, 렌주룰 금수 그림) | 완료, 배포 |
+| 2 | 오목 묘수풀이 (`/play/omok?mode=puzzle`): AI 자가대국에서 뽑은 연속 4(VCF) 문제, 풀이기 `omok/puzzle.js`, 문제 `omok/puzzles.js`(생성: `node scripts/omok-puzzles-gen.mjs 260`), 검증은 `omok-test.mjs` 10-2절. 50문제(대국마다 1문제, 흑 금수로 못 막는 문제 6개 포함) | 완료, 배포 |
+| 3 | 리버시 `/play/reversi` (AI 3단계·2인, `play/reversi/`, 시험 `node scripts/reversi-test.mjs`). 게임 화면에는 광고를 넣지 않는다 | 완료, 배포 |
+| 4 | 입문 가이드 글 3개 (리버시·장기·체스, `content/rules.js`) | 완료, `dev`에 커밋 (배포 전) |
+| 5 | 다음 후보: 리버시 온라인 대국, 체커, 장기 AI 강화 | 사용자 선택 대기 |
 
 - 규칙 가이드 글은 `frontend/src/content/rules.js` 한 곳에 있고 화면(`pages/rules/RulesPage.jsx`)과 `scripts/prerender.mjs`가 함께 쓴다.
 - 글 속 숫자·오목 그림은 `node scripts/rules-test.mjs`로 엔진과 맞는지 확인한다.
