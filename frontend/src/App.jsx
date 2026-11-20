@@ -28,10 +28,12 @@ import ChessPage from "./pages/play/chess/ChessPage";
 import GostopPage from "./pages/play/gostop/GostopPage";
 import SeotdaPage from "./pages/play/seotda/SeotdaPage";
 import OmokPage from "./pages/play/omok/OmokPage";
+import ReversiPage from "./pages/play/reversi/ReversiPage";
 import RockyLinuxPage from "./pages/play/RockyLinuxPage";
 import LottoPage from "./pages/lotto/LottoPage";
 import ToolsPage from "./pages/tools/ToolsPage";
 import LearnPage from "./pages/learn/LearnPage";
+import RulesPage from "./pages/rules/RulesPage";
 import AboutPage from "./pages/AboutPage";
 import ArcRaidersPage from "./pages/games/ArcRaidersPage";
 import LolPage from "./pages/games/lol/LolPage";
@@ -181,6 +183,7 @@ const AppContent = () => {
           <Route path="/play/gostop" element={<GostopPage />} />
           <Route path="/play/seotda" element={<SeotdaPage />} />
           <Route path="/play/omok" element={<OmokPage />} />
+          <Route path="/play/reversi" element={<ReversiPage />} />
           <Route path="/play/linux" element={<><NavMeta id="linux" path="/play/linux" /><RockyLinuxPage /></>} />
           <Route path="/lotto" element={<LottoPage />} />
           <Route path="/tools" element={<ToolsPage />} />
@@ -195,6 +198,8 @@ const AppContent = () => {
           <Route path="/games/lol/:section/:platform/:riotId" element={<LolPage />} />
           <Route path="/learn" element={<LearnPage />} />
           <Route path="/learn/:slug" element={<LearnPage />} />
+          <Route path="/rules" element={<RulesPage />} />
+          <Route path="/rules/:slug" element={<RulesPage />} />
           <Route path="/cert" element={<CertPage />} />
           <Route path="/cert/practice" element={<CertPractice />} />
           <Route path="/cert/wrong" element={<ProtectedRoute><CertPractice wrong /></ProtectedRoute>} />

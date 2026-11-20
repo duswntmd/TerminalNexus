@@ -1,0 +1,88 @@
+/* 게임 규칙 가이드 (RulesPage). 글 틀은 Learn.css 의 ln-* 를 함께 쓴다 */
+.ru-page { max-width: 860px; width: 100%; min-width: 0; box-sizing: border-box; }
+.ru-page article, .ru-page .ln-body { min-width: 0; }
+
+.ru-table-wrap { max-width: 100%; margin: 0 0 1.25rem; overflow-x: auto; border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius); }
+.ru-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; line-height: 1.5; }
+.ru-table th, .ru-table td { padding: 0.55rem 0.75rem; text-align: left; border-bottom: 1px solid var(--tn-line-soft); vertical-align: top; }
+.ru-table thead th { background: var(--tn-panel-2); color: var(--tn-text); font-weight: 700; white-space: nowrap; }
+.ru-table tbody th { font-weight: 600; white-space: nowrap; }
+.ru-table tbody tr:last-child > * { border-bottom: 0; }
+.ru-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--tn-panel) 55%, transparent); }
+
+.ru-caption { margin: 1rem 0 0.4rem !important; font-weight: 700; color: var(--tn-text-2); }
+.ru-sub { color: var(--tn-text-3); font-size: 0.88em; }
+.ru-hint { color: var(--tn-text-2); font-size: 0.92rem; }
+
+/* 화투 48장 */
+.ru-hwatu { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.75rem; margin: 0 0 1.5rem; }
+.ru-month { padding: 0.6rem; background: var(--tn-panel); border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius-lg); }
+.ru-month > strong { display: block; margin-bottom: 0.45rem; font-size: 0.95rem; }
+.ru-month > strong span { color: var(--tn-text-2); font-weight: 500; }
+.ru-month-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.3rem; }
+.ru-month-cards figure { margin: 0; text-align: center; }
+.ru-month-cards figcaption { margin-top: 0.2rem; font-size: 0.72rem; line-height: 1.25; color: var(--tn-text-2); word-break: keep-all; }
+
+/* 섯다 족보 순위 */
+.ru-pairs { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 0.55rem; }
+.ru-pair { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; padding: 0.55rem 0.4rem 0.5rem;
+  background: var(--tn-panel); border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius-lg); margin: 0 !important; }
+.ru-pair-cards { display: flex; gap: 0.25rem; }
+.ru-pair-cards .hw-card { width: 40px; }
+.ru-pair strong { font-size: 0.9rem; }
+.ru-rank { position: absolute; top: 0.3rem; left: 0.4rem; font: 700 0.72rem/1 var(--tn-mono); color: var(--tn-tape); }
+.ru-pairs.is-special .ru-pair { border-style: dashed; }
+
+/* 위젯 공통 */
+.ru-widget { margin: 2rem 0; padding: 1.1rem; background: var(--tn-panel); border: 1px solid var(--tn-line); border-radius: var(--tn-radius-lg); }
+.ru-widget h2 { margin-top: 0 !important; }
+.ru-result { margin-top: 0.9rem; padding-top: 0.8rem; border-top: 1px dashed var(--tn-line); }
+.ru-result p { margin: 0 0 0.45rem; }
+.ru-result .is-best strong { color: var(--tn-tape); }
+.ru-badge { margin-left: 0.4rem; padding: 0.05rem 0.4rem; border-radius: 999px; font-size: 0.75rem; background: var(--tn-tape); color: #1b1d22; font-weight: 700; }
+.ru-btn { margin-top: 0.35rem; padding: 0.4rem 0.85rem; border-radius: var(--tn-radius); border: 1px solid var(--tn-line); background: var(--tn-panel-2); color: var(--tn-text); cursor: pointer; font: inherit; font-size: 0.88rem; }
+.ru-btn:hover { border-color: var(--tn-tape); }
+
+.ru-pick20 { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 0.3rem; }
+.ru-pick20 button, .ru-pick-month button { padding: 0; border: 2px solid transparent; border-radius: 6px; background: none; cursor: pointer; transition: transform 0.12s, border-color 0.12s; }
+.ru-pick20 button:hover, .ru-pick-month button:hover { transform: translateY(-2px); }
+.ru-pick20 button.is-on, .ru-pick-month button.is-on { border-color: var(--tn-tape); transform: translateY(-3px); box-shadow: 0 0 0 2px color-mix(in srgb, var(--tn-tape) 35%, transparent); }
+.ru-pick20 button:focus-visible, .ru-pick-month button:focus-visible { outline: 2px solid var(--tn-tape); outline-offset: 2px; }
+
+/* 고스톱 계산기 */
+.ru-pick48 { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.45rem 0.7rem; }
+.ru-pick-month { display: grid; grid-template-columns: 2.2em repeat(4, minmax(0, 1fr)); align-items: center; gap: 0.25rem; }
+.ru-pick-month > span { font-size: 0.78rem; color: var(--tn-text-2); text-align: right; padding-right: 0.15rem; }
+.ru-opts { display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem; margin-top: 1rem; }
+.ru-num { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--tn-text-2); }
+.ru-stepper { display: inline-flex; align-items: center; border: 1px solid var(--tn-line); border-radius: var(--tn-radius); overflow: hidden; }
+.ru-stepper button { width: 2.1rem; height: 2.1rem; border: 0; background: var(--tn-panel-2); color: var(--tn-text); font-size: 1.1rem; cursor: pointer; }
+.ru-stepper button:hover { background: var(--tn-line); }
+.ru-stepper output { min-width: 2.4rem; text-align: center; color: var(--tn-text); font-weight: 700; }
+.ru-check { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; align-self: flex-end; padding-bottom: 0.4rem; cursor: pointer; }
+.ru-counts { color: var(--tn-text-2); }
+.ru-items { list-style: none; padding: 0 !important; margin: 0 0 0.5rem !important; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.ru-items li { margin: 0 !important; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--tn-panel-2); font-size: 0.88rem; }
+.ru-final { font-size: 1.25rem; }
+.ru-final b { color: var(--tn-tape); }
+
+/* 오목 그림 */
+.ru-omok { margin: 0.5rem 0 1.4rem; max-width: 300px; }
+.ru-omok svg { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 10px rgb(0 0 0 / 0.35); }
+.ru-omok figcaption { margin-top: 0.4rem; font-size: 0.88rem; color: var(--tn-text-2); }
+
+/* FAQ */
+.ru-faq details { border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius); padding: 0.6rem 0.85rem; margin-bottom: 0.5rem; background: var(--tn-panel); }
+.ru-faq summary { cursor: pointer; font-weight: 600; }
+.ru-faq details p { margin: 0.5rem 0 0; color: var(--tn-text-2); }
+
+.ru-credit { margin: 1rem 0 0; font-size: 0.78rem; color: var(--tn-text-3); }
+.ru-credit a { color: inherit; }
+
+@media (max-width: 560px) {
+  .ru-pick20 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .ru-hwatu { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .ru-month { padding: 0.45rem; }
+  .ru-pick48 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ru-widget { padding: 0.85rem; margin-left: -0.25rem; margin-right: -0.25rem; }
+}

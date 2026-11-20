@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import HwatuCard from '../../../components/hwatu/HwatuCard.jsx';
 import AiGame from './AiGame.jsx';
@@ -67,6 +67,7 @@ const GostopPage = () => {
             <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ko" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
           </p>
         </details>
+        <Link className="tn-guide-link" to="/rules/gostop-score">{t('rules.link_gostop')} →</Link>
         </div>
       </div>
     </div>

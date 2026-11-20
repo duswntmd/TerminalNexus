@@ -79,3 +79,7 @@ a { color: inherit; }
 .pr-page a { color: var(--tn-blue); }
 .pr-page pre { overflow-x: auto; }
 .tn-ad { margin-top: 1.75rem; min-height: 100px; }
+
+/* 게임 화면 → 규칙 가이드 링크 */
+.tn-guide-link { display: inline-block; margin: 0.6rem 0 0; color: var(--tn-tape); font-size: 0.9rem; font-weight: 600; text-decoration: none; }
+.tn-guide-link:hover { text-decoration: underline; }

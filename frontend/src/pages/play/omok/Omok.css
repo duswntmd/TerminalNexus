@@ -654,3 +654,21 @@
   .om-stone, .om-last, .om-selected-ring, .om-winline line, .om-winline circle, .om-confetti i, .om-result, .om-result-box { animation: none; }
   .om-winline line { stroke-dashoffset: 0; }
 }
+
+/* ── 묘수풀이 ── */
+.om-puzzle-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.om-puzzle-left { margin-left: auto; font-weight: 700; color: var(--tn-tape); }
+.om-rule-chip.lv-easy { background: #1f6f43; color: #eafff2; }
+.om-rule-chip.lv-normal { background: #8a6400; color: #fff6dc; }
+.om-rule-chip.lv-hard { background: #8f2a22; color: #ffecea; }
+.om-puzzles { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--tn-panel); border: 1px solid var(--tn-line-soft); border-radius: var(--tn-radius-lg); }
+.om-puzzles-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.85rem; font-weight: 700; }
+.om-puzzles-head .om-btn { padding: 4px 10px; min-height: 0; }
+.om-puzzles-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 5px; overflow-y: auto; min-height: 0; }
+.om-pz { width: 100%; aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--tn-line); background: var(--tn-panel-2); color: var(--tn-text); font: 700 0.8rem/1 var(--tn-mono); cursor: pointer; border-bottom-width: 3px; }
+.om-pz.lv-easy { border-bottom-color: #2fa86a; }
+.om-pz.lv-normal { border-bottom-color: #d39a00; }
+.om-pz.lv-hard { border-bottom-color: #d4473b; }
+.om-pz.is-solved { background: color-mix(in srgb, #2fa86a 25%, var(--tn-panel-2)); color: #9ff0c4; }
+.om-pz.is-current { outline: 2px solid var(--tn-tape); outline-offset: 1px; }
+.om-pz:hover { border-color: var(--tn-tape); }

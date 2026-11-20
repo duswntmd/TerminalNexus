@@ -621,6 +621,10 @@
       "name": "Server guides",
       "desc": "Commands and concepts for server work"
     },
+    "rules": {
+      "name": "Game rules",
+      "desc": "Seotda hands, Go-Stop score calculator, Renju rules"
+    },
     "arcraiders": {
       "name": "ARC Raiders Info",
       "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
@@ -636,6 +640,10 @@
     "omok": {
       "name": "Omok (Gomoku)",
       "desc": "Five in a row with renju rules: AI, local or online"
+    },
+    "reversi": {
+      "name": "Reversi",
+      "desc": "Flip discs by trapping them, vs AI or a friend"
     }
   },
   "home": {
@@ -1102,6 +1110,17 @@
     "try_tool": "Try {{name}}",
     "more": "More guides",
     "byline": "By Egosu · {{date}}"
+  },
+  "rules": {
+    "meta_title": "Game rules guide - Seotda, Go-Stop, Renju | TerminalNexus",
+    "meta_desc": "Hwatu card list, Seotda hand ranking and odds, Go-Stop score calculator and Renju forbidden moves. Written in Korean.",
+    "title": "Game rules guide",
+    "subtitle": "Hwatu, Seotda, Go-Stop and Omok rules with pictures and calculators. Guides are in Korean.",
+    "play": "Play {{name}}",
+    "more": "More rule guides",
+    "link_seotda": "Seotda hand ranking, odds and checker (Korean)",
+    "link_gostop": "Go-Stop scoring guide and calculator (Korean)",
+    "link_omok": "Renju forbidden moves explained (Korean)"
   },
   "share": {
     "label": "Share",
@@ -2095,7 +2114,8 @@
     "modes": {
       "ai": "vs AI",
       "local": "2 players",
-      "online": "Online"
+      "online": "Online",
+      "puzzle": "Puzzles"
     },
     "black": "Black",
     "white": "White",
@@ -2306,6 +2326,131 @@
       [
         "Online",
         "Each move has a time limit (15, 30 or 60 seconds); running out loses. Undo needs the opponent's consent, and a rematch starts with colors swapped once both players press it."
+      ]
+    ],
+    "puzzle": {
+      "defender": "Defender (computer)",
+      "level_easy": "Easy",
+      "level_normal": "Medium",
+      "level_hard": "Hard",
+      "title_n": "Puzzle {{no}}",
+      "goal": "{{color}} to play and win within {{n}} moves",
+      "left": "{{n}} moves left",
+      "how": "Keep making fours so the opponent is forced to block. Finish with a five to solve it.",
+      "not_four": "That move does not make a four. Keep forcing with fours",
+      "lose": "After that move the opponent makes five right away",
+      "wrong": "That is a four, but it does not win in time",
+      "hint": "Hint",
+      "hint_at": "Hint: try {{at}}",
+      "answer": "Show answer",
+      "answer_title": "Solution",
+      "retry": "Retry",
+      "next": "Next puzzle",
+      "prev": "Previous puzzle",
+      "solved": "Solved!",
+      "solved_clean": "First try",
+      "solved_tries": "Solved after {{n}} wrong tries",
+      "progress": "Solved {{done}} / {{total}}",
+      "item": "Puzzle {{no}} ({{n}} moves)",
+      "cant_block": "Black cannot block: that point is forbidden!"
+    }
+  },
+  "reversi": {
+    "title": "Reversi",
+    "meta_title": "Reversi - TerminalNexus | Free reversi vs AI or a friend",
+    "meta_desc": "Play reversi on an 8x8 board against a 3-level AI or a friend on one device. Move hints, undo and flip animations.",
+    "modes": {
+      "ai": "vs AI",
+      "local": "2 players"
+    },
+    "opts": {
+      "sound": "Sound",
+      "sound_short": "Sound",
+      "hints": "Show legal moves",
+      "hints_short": "Hints"
+    },
+    "board_label": "Reversi board",
+    "black": "Black",
+    "white": "White",
+    "can_place": "legal move",
+    "you": "You",
+    "ai_name": "Computer ({{level}})",
+    "player_black": "Black player",
+    "player_white": "White player",
+    "levels": {
+      "easy": "Easy",
+      "easy_desc": "Looks one move ahead, makes mistakes",
+      "normal": "Medium",
+      "normal_desc": "Three moves ahead, solves the last 8 squares",
+      "hard": "Hard",
+      "hard_desc": "Deep search, solves the last 14 squares"
+    },
+    "setup": {
+      "ai_title": "Game vs AI",
+      "local_title": "Two players",
+      "local_desc": "Take turns on one device. Black moves first.",
+      "my_color": "Your color",
+      "black": "Black",
+      "black_desc": "Moves first",
+      "white": "White",
+      "white_desc": "Moves second",
+      "random": "Random",
+      "random_desc": "Random color",
+      "level": "Level"
+    },
+    "status": {
+      "your_turn": "Your turn",
+      "thinking": "Computer is thinking…",
+      "thinking_short": "thinking",
+      "turn": "{{color}} to move",
+      "finished": "Game over"
+    },
+    "move_count": "{{n}} moves",
+    "passed": "{{color}} has no legal move and passes",
+    "result": {
+      "win": "You win!",
+      "lose": "You lose",
+      "draw": "Draw",
+      "black_wins": "Black wins!",
+      "white_wins": "White wins!",
+      "score": "Black {{b}} : White {{w}}",
+      "resigned": "{{color}} resigned"
+    },
+    "actions": {
+      "start": "Start",
+      "again": "Play again",
+      "view_board": "View board",
+      "new_game": "Settings",
+      "undo": "Undo",
+      "resign": "Resign"
+    },
+    "confirm_resign": "Resign this game?",
+    "tip": "Corners can never be flipped back, so they are the best squares. Squares next to an empty corner can give it away.",
+    "rules_title": "Reversi rules",
+    "rules": [
+      [
+        "Start",
+        "Two black and two white discs sit diagonally in the center. Black moves first."
+      ],
+      [
+        "Moves",
+        "You may only place a disc where it traps opponent discs between it and another of your discs, in any of 8 directions."
+      ],
+      [
+        "Flips",
+        "All trapped discs flip to your color, in every direction at once."
+      ],
+      [
+        "Pass",
+        "If you have no legal move your turn passes automatically. If you have one you must play."
+      ],
+      [
+        "End",
+        "The game ends when neither player can move. More discs wins."
+      ],
+      [
+        "Strategy",
+        "Keeping more options (mobility) and taking corners matters more than flipping many discs early."
       ]
     ]
   }

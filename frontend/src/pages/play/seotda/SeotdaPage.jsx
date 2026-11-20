@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LocalGame from './LocalGame.jsx';
 import OnlineSeotda from './OnlineSeotda.jsx';
@@ -57,6 +57,7 @@ const SeotdaPage = () => {
             {Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}
           </ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/seotda-jokbo">{t('rules.link_seotda')} →</Link>
         <p className="sd-credit">
           <a href="https://commons.wikimedia.org/wiki/Category:SVG_Hwatu" target="_blank" rel="noopener noreferrer">{t('gostop.card_credit')}</a>
           {' · '}

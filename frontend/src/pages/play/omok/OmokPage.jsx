@@ -1,12 +1,13 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LocalGame from './LocalGame.jsx';
 import OnlineOmok from './OnlineOmok.jsx';
+import PuzzleGame from './PuzzleGame.jsx';
 import './Omok.css';
 
-const MODES = ['ai', 'local', 'online'];
+const MODES = ['ai', 'local', 'puzzle', 'online'];
 
 /**
  * 오목: 게임판은 스크롤 없이 한 화면(머리글 아래 전체)을 쓰고, 규칙 설명은 그 아래에 둔다.
@@ -46,7 +47,7 @@ const OmokPage = () => {
         <link rel="canonical" href="https://tnhub.kr/play/omok" />
       </Helmet>
 
-      {mode === 'online' ? <OnlineOmok topbar={topbar} /> : <LocalGame mode={mode} topbar={topbar} />}
+      {mode === 'online' ? <OnlineOmok topbar={topbar} /> : mode === 'puzzle' ? <PuzzleGame topbar={topbar} /> : <LocalGame mode={mode} topbar={topbar} />}
 
       <div className="om-below">
         <details className="om-panel om-rules" open>
@@ -55,6 +56,7 @@ const OmokPage = () => {
             {Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}
           </ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/omok-renju">{t('rules.link_omok')} →</Link>
       </div>
     </div>
   );
