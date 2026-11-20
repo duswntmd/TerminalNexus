@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ARTICLES } from '../src/content/articles.js';
+import { RULE_GUIDES } from '../src/content/rules.js';
 import { ALL_NAV } from '../src/nav.js';
 import * as AR from '../src/content/arcRaiders.js';
 import * as DB from '../src/content/arcRaidersDb.js';
@@ -35,7 +36,7 @@ const crumbs = (items) => ({
 });
 
 const siteLinks = `<nav>${links([
-  ['/learn', ko.learn.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/about', '사이트 소개와 운영 원칙'], ['/guide', '기능 안내'], ['/privacy', '개인정보처리방침'], ['/terms', '이용약관'],
+  ['/learn', ko.learn.title], ['/rules', ko.rules.title], ['/tools', ko.tools.title], ['/cert', ko.cert.title], ['/lotto', '로또 6/45 당첨번호'], ['/about', '사이트 소개와 운영 원칙'], ['/guide', '기능 안내'], ['/privacy', '개인정보처리방침'], ['/terms', '이용약관'],
 ])}</nav>`;
 
 const pages = [];
@@ -48,6 +49,7 @@ add({
   desc: '리눅스 자격증 연습, 개발·인프라 도구, 서버 학습 글, 로또 당첨번호를 한곳에서 이용하세요.',
   body: `<h1>TerminalNexus</h1><p>리눅스 자격증 연습, 개발·인프라 도구, 서버 학습 글, 로또 당첨번호를 한곳에서 이용하세요.</p>
 <h2>${esc(ko.learn.title)}</h2>${links(ARTICLES.map((a) => [`/learn/${a.slug}`, a.title]))}
+<h2>${esc(ko.rules.title)}</h2>${links(RULE_GUIDES.map((g) => [`/rules/${g.slug}`, g.title]))}
 <h2>${esc(ko.tools.title)}</h2>${links(TOOL_IDS.map((id) => [`/tools/${id}`, ko.tools[id].name]))}`,
 });
 
@@ -99,6 +101,48 @@ ${a.body.map(blockHtml).join('')}<p>${link(`/tools/${a.tool}`, ko.tools[a.tool].
     jsonLd: [
       { '@context': 'https://schema.org', '@type': 'TechArticle', headline: a.title, description: a.desc, datePublished: a.date, dateModified: a.date, inLanguage: 'ko', url: `${SITE}/learn/${a.slug}`, author: { '@type': 'Person', name: '에고수', url: `${SITE}/about` }, publisher: { '@type': 'Organization', name: 'TerminalNexus', logo: { '@type': 'ImageObject', url: `${SITE}/favicon-192.png` } } },
       crumbs([[ko.learn.title, '/learn'], [a.title, `/learn/${a.slug}`]]),
+    ],
+  });
+}
+
+// 게임 규칙 가이드: 표·그림 블록은 글로 풀고, 계산기 같은 위젯은 설명 한 줄로 대신한다
+const WIDGET_TEXT = {
+  'hwatu-grid': '',
+  'seotda-ranks': '',
+  'seotda-checker': '<p>족보 확인기: 카드를 2장 또는 3장 고르면 족보를 알려 줍니다.</p>',
+  'gostop-calculator': '<p>고스톱 점수 계산기: 먹은 패와 고 횟수, 상대 피·광 장수를 넣으면 피박·광박·멍따·고박까지 곱한 최종 점수를 계산합니다.</p>',
+};
+const ruleBlockHtml = (b) => {
+  if (b.table) return `<table><thead><tr>${b.table.head.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${b.table.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  if (b.omok) return `<p>[그림] ${esc(b.omok.note)}</p>`;
+  if (b.widget) return WIDGET_TEXT[b.widget] || '';
+  return blockHtml(b);
+};
+
+add({
+  url: '/rules',
+  title: ko.rules.meta_title,
+  desc: ko.rules.meta_desc,
+  body: `<h1>${esc(ko.rules.title)}</h1><p>${esc(ko.rules.subtitle)}</p>
+<ul>${RULE_GUIDES.map((g) => `<li>${link(`/rules/${g.slug}`, g.title)}: ${esc(g.desc)}</li>`).join('')}</ul>`,
+  jsonLd: [crumbs([[ko.rules.title, '/rules']])],
+});
+
+for (const g of RULE_GUIDES) {
+  add({
+    url: `/rules/${g.slug}`,
+    lastmod: g.date,
+    title: `${g.title} | TerminalNexus`,
+    desc: g.desc,
+    type: 'article',
+    body: `<article><p>${link('/rules', ko.rules.title)}</p><h1>${esc(g.title)}</h1><p>${esc(g.desc)}</p><p>글 에고수 · ${g.date}</p>
+${g.body.map(ruleBlockHtml).join('')}
+<h2>자주 묻는 질문</h2>${g.faq.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join('')}
+<p>${link(g.game, `${g.gameName} 바로 하기`)}</p></article>`,
+    jsonLd: [
+      { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, datePublished: g.date, dateModified: g.date, inLanguage: 'ko', url: `${SITE}/rules/${g.slug}`, author: { '@type': 'Person', name: '에고수', url: `${SITE}/about` }, publisher: { '@type': 'Organization', name: 'TerminalNexus', logo: { '@type': 'ImageObject', url: `${SITE}/favicon-192.png` } } },
+      { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: g.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+      crumbs([[ko.rules.title, '/rules'], [g.short, `/rules/${g.slug}`]]),
     ],
   });
 }

@@ -621,6 +621,10 @@
       "name": "Server guides",
       "desc": "Commands and concepts for server work"
     },
+    "rules": {
+      "name": "Game rules",
+      "desc": "Seotda hands, Go-Stop score calculator, Renju rules"
+    },
     "arcraiders": {
       "name": "ARC Raiders Info",
       "desc": "Unofficial notes on maps, enemies, weapons, items and quests"
@@ -1102,6 +1106,17 @@
     "try_tool": "Try {{name}}",
     "more": "More guides",
     "byline": "By Egosu · {{date}}"
+  },
+  "rules": {
+    "meta_title": "Game rules guide - Seotda, Go-Stop, Renju | TerminalNexus",
+    "meta_desc": "Hwatu card list, Seotda hand ranking and odds, Go-Stop score calculator and Renju forbidden moves. Written in Korean.",
+    "title": "Game rules guide",
+    "subtitle": "Hwatu, Seotda, Go-Stop and Omok rules with pictures and calculators. Guides are in Korean.",
+    "play": "Play {{name}}",
+    "more": "More rule guides",
+    "link_seotda": "Seotda hand ranking, odds and checker (Korean)",
+    "link_gostop": "Go-Stop scoring guide and calculator (Korean)",
+    "link_omok": "Renju forbidden moves explained (Korean)"
   },
   "share": {
     "label": "Share",

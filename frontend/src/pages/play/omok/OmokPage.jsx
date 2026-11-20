@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LocalGame from './LocalGame.jsx';
 import OnlineOmok from './OnlineOmok.jsx';
@@ -55,6 +55,7 @@ const OmokPage = () => {
             {Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}
           </ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/omok-renju">{t('rules.link_omok')} →</Link>
       </div>
     </div>
   );

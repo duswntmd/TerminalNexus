@@ -30,6 +30,7 @@ export const NAV_GROUPS = [
     key: 'tools',
     items: [
       { key: 'learn', path: '/learn', glyph: '¶' },
+      { key: 'rules', path: '/rules', glyph: '§' },
       { key: 'cert', path: '/cert', glyph: 'A+' },
       { key: 'infra', path: '/tools', glyph: '%' },
       { key: 'lotto', path: '/lotto', glyph: '6' },
