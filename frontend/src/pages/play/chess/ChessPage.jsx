@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LocalGame from './LocalGame.jsx';
 import OnlineChess from './OnlineChess.jsx';
@@ -49,6 +49,7 @@ const ChessPage = () => {
             {Array.isArray(rules) && rules.map(([name, desc]) => <li key={name}><b>{name}</b>: {desc}</li>)}
           </ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/chess-guide">{t('rules.link_chess')} →</Link>
       </div>
     </div>
   );

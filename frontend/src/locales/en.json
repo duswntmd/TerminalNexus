@@ -1120,7 +1120,10 @@
     "more": "More rule guides",
     "link_seotda": "Seotda hand ranking, odds and checker (Korean)",
     "link_gostop": "Go-Stop scoring guide and calculator (Korean)",
-    "link_omok": "Renju forbidden moves explained (Korean)"
+    "link_omok": "Renju forbidden moves explained (Korean)",
+    "link_reversi": "Reversi beginner guide (Korean)",
+    "link_janggi": "Janggi beginner guide (Korean)",
+    "link_chess": "Chess beginner guide (Korean)"
   },
   "share": {
     "label": "Share",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import LocalGame from './LocalGame.jsx';
 import OnlineJanggi from './OnlineJanggi.jsx';
 import './Janggi.css';
@@ -62,6 +62,7 @@ const JanggiPage = () => {
             <li><b>점수</b>: 차 13 · 포 7 · 마 5 · 상 3 · 사 3 · 졸 2 (한은 덤 1.5점). 200수에 도달해도 점수 판정.</li>
           </ul>
         </details>
+        <Link className="tn-guide-link" to="/rules/janggi-guide">장기 입문 가이드: 기물 움직임·상차림·빅장 정리 →</Link>
       </div>
     </div>
   );
